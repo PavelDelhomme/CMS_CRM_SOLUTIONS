@@ -1,0 +1,31 @@
+version: '3.8'
+
+# Configuration de production - Override docker-compose.yml
+services:
+  backend:
+    environment:
+      APP_ENV: production
+      APP_DEBUG: false
+    volumes:
+      - ./backend:/var/www:ro  # Read-only en production
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile  # Production Dockerfile
+    environment:
+      NODE_ENV: production
+
+  mysql:
+    volumes:
+      - mysql_prod_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Supprimer PhpMyAdmin en production
+  phpmyadmin:
+    profiles:
+      - debug
+
+volumes:
+  mysql_prod_data:
+

@@ -1,0 +1,139 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import authService from '@/services/auth.service'
+import toast from 'react-hot-toast'
+
+const loginSchema = z.object({
+  email: z.string().email('Email invalide'),
+  password: z.string().min(1, 'Mot de passe requis'),
+})
+
+type LoginForm = z.infer<typeof loginSchema>
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  const onSubmit = async (data: LoginForm) => {
+    setLoading(true)
+    try {
+      await authService.login(data)
+      
+      if (authService.isSuperAdmin()) {
+        router.push('/admin/dashboard')
+      } else {
+        router.push('/dashboard')
+      }
+      
+      toast.success('Connexion réussie !')
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erreur de connexion')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
+        <div>
+          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900">
+            VTCBuilder
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Le WordPress des Chauffeurs VTC
+          </p>
+        </div>
+        
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                {...register('email')}
+                className="input mt-1"
+                placeholder="votre@email.com"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Mot de passe
+              </label>
+              <input
+                id="password"
+                type="password"
+                {...register('password')}
+                className="input mt-1"
+                placeholder="••••••••"
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <a href="/register" className="font-medium text-primary-600 hover:text-primary-500">
+                Créer un compte
+              </a>
+            </div>
+            <div className="text-sm">
+              <a href="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
+                Mot de passe oublié ?
+              </a>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn btn-primary py-3 text-lg"
+          >
+            {loading ? 'Connexion...' : 'Se connecter'}
+          </button>
+        </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                Comptes de test
+              </span>
+            </div>
+          </div>
+          
+          <div className="mt-4 text-xs text-gray-600 space-y-1">
+            <p><strong>Super Admin:</strong> admin@vtcbuilder.local / admin123</p>
+            <p><strong>Tenant Demo:</strong> jean@vtcdemo.fr / demo123</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+

@@ -1,0 +1,53 @@
+{
+  "name": "vtcbuilder-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.5",
+    "@tanstack/react-query": "^5.17.19",
+    "zustand": "^4.5.0",
+    "react-hook-form": "^7.49.3",
+    "zod": "^3.22.4",
+    "@hookform/resolvers": "^3.3.4",
+    "tailwindcss": "^3.4.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33",
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.3.1",
+    "react-hot-toast": "^2.4.1",
+    "recharts": "^2.10.4",
+    "stripe": "^14.14.0",
+    "@stripe/stripe-js": "^2.4.0",
+    "@stripe/react-stripe-js": "^2.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.5",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "prettier": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.11"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+

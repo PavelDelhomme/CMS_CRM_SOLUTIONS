@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # Traefik - Reverse Proxy pour multi-tenant
+  traefik:
+    image: traefik:v2.10
+    container_name: vtcbuilder_traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - vtcbuilder_network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: vtcbuilder_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vtcbuilder
+      MYSQL_USER: vtcbuilder_user
+      MYSQL_PASSWORD: vtcbuilder_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - vtcbuilder_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: vtcbuilder_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vtcbuilder_network
+
+  # Laravel Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vtcbuilder_backend
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - ./backend/storage:/var/www/storage
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: vtcbuilder
+      DB_USERNAME: vtcbuilder_user
+      DB_PASSWORD: vtcbuilder_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - vtcbuilder_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=9000"
+
+  # Nginx for Laravel
+  nginx:
+    image: nginx:alpine
+    container_name: vtcbuilder_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - vtcbuilder_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx.rule=Host(`api.localhost`)"
+
+  # React/Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: vtcbuilder_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://api.localhost
+    networks:
+      - vtcbuilder_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  # PhpMyAdmin (Development only)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: vtcbuilder_phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: vtcbuilder_user
+      PMA_PASSWORD: vtcbuilder_password
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - vtcbuilder_network
+
+networks:
+  vtcbuilder_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+
