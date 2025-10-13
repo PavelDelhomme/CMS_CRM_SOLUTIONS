@@ -1,8 +1,8 @@
-# 🚀 VTCBuilder - Plateforme SaaS Multi-Tenant pour Chauffeurs VTC
+# 🚀 VTCBuilder - Plateforme SaaS Multi-Tenant Django pour Chauffeurs VTC
 
-La solution professionnelle pour créer et gérer des sites web pour chauffeurs VTC avec un système multi-tenant complet.
+**Plateforme complète de gestion VTC avec architecture multi-tenant moderne construite avec Django.**
 
-**Le WordPress des chauffeurs VTC** - Créez votre site VTC professionnel en 2 minutes !
+**Le WordPress des chauffeurs VTC** - Créez votre site VTC professionnel en quelques clics !
 
 ## 📋 Fonctionnalités Principales
 
@@ -29,70 +29,75 @@ La solution professionnelle pour créer et gérer des sites web pour chauffeurs 
 
 ## 🏗️ Architecture Technique
 
-### Stack Technologique
-- **Backend**: Laravel 11 (PHP 8.2+)
-- **Frontend**: React 18 + Next.js 14
-- **Base de données**: MySQL 8.0
-- **Cache**: Redis
-- **Conteneurisation**: Docker
-- **Proxy**: Traefik (routage automatique)
+### Stack Technologique Moderne
+- **Backend**: Django 5.0.1 (Python 3.12)
+- **Frontend**: Next.js 14 (React 18 + TypeScript)
+- **Base de données**: PostgreSQL 15
+- **Cache**: Redis 7
+- **Conteneurisation**: Docker & Docker Compose
+- **Reverse Proxy**: Traefik (routage automatique)
 
 ### Architecture Multi-Tenant
-- **Isolation**: tenant_id dans une base de données unique
-- **Routage**: Sous-domaines automatiques (client.votredomaine.com)
-- **Sécurité**: Middleware d'isolation des données
-- **Scalabilité**: Docker containers par client
+- **Isolation complète**: Schémas PostgreSQL séparés par tenant
+- **Routage intelligent**: Sous-domaines automatiques
+- **Sécurité renforcée**: Middleware d'isolation des données
+- **Scalabilité**: Containers Docker indépendants
 
 ## 📦 Structure du Projet
 
 ```
 VTCBuilder/
-├── backend/              # Laravel API
-├── frontend/             # React/Next.js Admin & Client Interfaces
-├── public-site/          # Templates de sites VTC générés
-├── docker/               # Configuration Docker
-├── database/             # Migrations et seeds
-└── docs/                 # Documentation
+├── backend-django/       # Backend Django (principal)
+│   ├── vtcbuilder/      # Configuration Django
+│   ├── tenants/         # Gestion utilisateurs/rôles
+│   ├── pages/           # CMS et contenu
+│   ├── services/        # Services VTC
+│   ├── bookings/        # Réservations
+│   ├── media/           # Gestion médias
+│   └── api/             # Configuration API
+├── frontend/            # Application Next.js
+├── docker-compose.django.yml  # Configuration Docker Django
+├── public-site/         # Templates de sites
+└── docs/                # Documentation
 ```
 
-## 🚀 Installation
+## 🚀 Démarrage Rapide
 
 ### Prérequis
 - Docker & Docker Compose
-- Node.js 18+
-- PHP 8.2+
-- Composer
+- Git
+- Make (optionnel)
 
-### Démarrage Rapide
+### Installation
 
 ```bash
-# Cloner le projet
-git clone <repo-url>
+# 1. Cloner le projet
+git clone <votre-repo-github>
 cd VTCBuilder
 
-# Démarrer avec Docker
-docker-compose up -d
+# 2. Installation complète avec Docker
+cd backend-django
+make setup
 
-# Installer les dépendances backend
-cd backend
-composer install
-php artisan migrate --seed
+# 3. Démarrer les services
+make start
 
-# Installer les dépendances frontend
-cd ../frontend
-npm install
-npm run dev
+# 4. Créer un tenant de démonstration (optionnel)
+make demo-tenant
 ```
 
-## 🔐 Accès par Défaut
+## 🔐 Accès à l'Application
 
-- **Super Admin**: http://localhost:3000/admin
-  - Email: admin@example.com
-  - Password: admin123
+### URLs d'accès
+- **Frontend**: http://localhost:8001
+- **API Django**: http://api.localhost:7080/api/
+- **Admin Django**: http://api.localhost:7080/admin/
+- **Traefik Dashboard**: http://localhost:7081
+- **PgAdmin**: http://localhost:8082
 
-- **Client Demo**: http://localhost:3000/client
-  - Email: client@example.com
-  - Password: client123
+### Comptes de test
+- **Super Admin**: admin@vtcbuilder.com / admin123
+- **Demo Tenant**: admin@demo-vtc-company.com / admin123
 
 ## 📊 Modèle Commercial
 
@@ -114,52 +119,102 @@ npm run dev
 
 ## 🛠️ Développement
 
-### Commandes Utiles
+### Développement Backend (Django)
 
 ```bash
-# Backend (Laravel)
-php artisan tenant:create          # Créer un nouveau tenant
-php artisan tenant:migrate         # Migrer les tenants
-php artisan serve                  # Démarrer le serveur
+cd backend-django
 
-# Frontend (React)
-npm run dev                        # Mode développement
-npm run build                      # Build production
-npm run lint                       # Linter
+# Installation complète
+make setup
 
-# Docker
-docker-compose up -d               # Démarrer tous les services
-docker-compose logs -f             # Voir les logs
-docker-compose down                # Arrêter les services
+# Démarrer les services
+make start
+
+# Commandes Django
+make shell          # Shell Django
+make migrate        # Migrations
+make test           # Tests
+make lint           # Vérification code
+make format         # Formatage code
+
+# Logs
+make logs           # Tous les logs
+make logs-db        # Logs PostgreSQL
+```
+
+### Développement Frontend (Next.js)
+
+```bash
+cd frontend
+
+# Installation
+npm install
+
+# Développement
+npm run dev         # Mode développement
+npm run build       # Build production
+npm run lint        # Vérification code
+```
+
+### Base de données
+
+```bash
+# Accès PostgreSQL
+make dbshell
+
+# Migrations Django
+make migrations     # Créer nouvelles migrations
+make migrate        # Appliquer migrations
 ```
 
 ## 📈 Roadmap
 
-### Phase 1 - MVP (4 semaines)
-- [x] Architecture multi-tenant Laravel
-- [x] Interface Super Admin basique
-- [x] Template responsive
-- [x] Éditeur de contenu simple
-- [x] Déploiement Docker
+### ✅ Phase 1 - Migration & MVP Django (Terminée)
+- [x] Migration complète Laravel → Django
+- [x] Architecture multi-tenant avec django-tenants
+- [x] API REST complète avec DRF
+- [x] Système de rôles et permissions
+- [x] Déploiement Docker optimisé
 
-### Phase 2 - Version Complète (6 semaines)
+### 🚧 Phase 2 - Fonctionnalités Avancées (En cours)
 - [ ] Éditeur visuel avancé (drag & drop)
 - [ ] Système de templates multiples
-- [ ] Analytics et statistiques
-- [ ] Facturation Stripe
-- [ ] API REST complète
+- [ ] Analytics et statistiques détaillées
+- [ ] Facturation Stripe intégrée
+- [ ] Interface frontend complète
 
-### Phase 3 - Scaling (8 semaines)
-- [ ] Marketplace de templates
+### 📋 Phase 3 - Évolution Produit (Planifiée)
+- [ ] Marketplace de templates premium
 - [ ] White-label complet
-- [ ] App mobile
-- [ ] Intégrations tierces
+- [ ] Application mobile PWA
+- [ ] Intégrations tierces (calendrier, paiements)
+- [ ] API GraphQL
 
 ## 📝 License
 
-Propriétaire - Tous droits réservés
+**MIT License** - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-## 👨‍💻 Auteur
+## 👨‍💻 Auteur & Support
 
-Développé avec ❤️ pour créer la meilleure solution SaaS multi-tenant
+Développé avec ❤️ pour créer la meilleure solution SaaS multi-tenant pour chauffeurs VTC.
+
+**Support** : Pour toute question ou assistance :
+- 📧 Email : support@vtcbuilder.com
+- 💬 Discord : [Rejoindre la communauté](https://discord.gg/vtcbuilder)
+- 🐛 Issues : [GitHub Issues](https://github.com/votre-username/vtcbuilder-django/issues)
+
+---
+
+<div align="center">
+
+**🎯 Prêt pour la production ?**
+
+[![Deploy](https://img.shields.io/badge/Deploy-Production-green.svg)](https://github.com/votre-username/vtcbuilder-django/actions)
+
+**⭐ Si ce projet vous plaît, n'oubliez pas de lui donner une étoile !**
+
+[![GitHub stars](https://img.shields.io/github/stars/votre-username/vtcbuilder-django.svg?style=social&label=Star)](https://github.com/votre-username/vtcbuilder-django)
+[![GitHub forks](https://img.shields.io/github/forks/votre-username/vtcbuilder-django.svg?style=social&label=Fork)](https://github.com/votre-username/vtcbuilder-django/fork)
+
+</div>
 
