@@ -1,7 +1,7 @@
-.PHONY: help install setup start stop restart build logs clean migrate superuser shell test lint format
+.PHONY: help install setup start stop restart build logs clean migrate superuser shell test lint format up
 
 # Variables
-DOCKER_COMPOSE = docker-compose -f ../docker-compose.django.yml
+DOCKER_COMPOSE = docker-compose -f ../docker-compose.simple.yml
 BACKEND_CONTAINER = vtcbuilder_backend
 POSTGRES_CONTAINER = vtcbuilder_postgres
 COMPOSE_PROJECT_NAME = vtcbuilder_django
@@ -36,7 +36,7 @@ install: ## Installation du backend Django
 		echo "DB_HOST=postgres" >> .env; \
 		echo "DB_PORT=5432" >> .env; \
 		echo "REDIS_URL=redis://redis:6379/0" >> .env; \
-		echo "ALLOWED_HOSTS=localhost,127.0.0.1,api.localhost" >> .env; \
+		echo "ALLOWED_HOSTS=localhost,127.0.0.1,api.localhost,backend" >> .env; \
 	fi
 	@echo "$(GREEN)🐳 Construction des images Docker...$(NC)"
 	@$(DOCKER_COMPOSE) build backend
@@ -70,6 +70,10 @@ demo-tenant: ## Créer un tenant de démonstration
 ##@ Gestion des Services
 
 start: ## Démarrer les services Django
+	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
+	@./start.sh
+
+up: ## Démarrer les services Django
 	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
 	@./start.sh
 
@@ -200,13 +204,14 @@ status: ## Statut des services
 
 urls: ## Afficher les URLs importantes
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
-	@echo "$(GREEN)🌐 URLs Django Backend :$(NC)"
+	@echo "$(GREEN)🌐 URLs CMS CRM Solutions :$(NC)"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
-	@echo "  $(YELLOW)Frontend:$(NC)           http://localhost:8001"
-	@echo "  $(YELLOW)API Django:$(NC)         http://api.localhost:7080/api/"
-	@echo "  $(YELLOW)Admin Django:$(NC)      http://api.localhost:7080/admin/"
-	@echo "  $(YELLOW)Traefik Dashboard:$(NC) http://localhost:7081"
-	@echo "  $(YELLOW)PgAdmin:$(NC)           http://localhost:8082"
+	@echo "  $(YELLOW)Frontend:$(NC)           http://localhost:3004"
+	@echo "  $(YELLOW)API Django:$(NC)         http://localhost:8088/api/"
+	@echo "  $(YELLOW)Admin Django:$(NC)      http://localhost:8088/admin/"
+	@echo "  $(YELLOW)PgAdmin:$(NC)           http://localhost:8084"
+	@echo "  $(YELLOW)PostgreSQL:$(NC)        localhost:5434"
+	@echo "  $(YELLOW)Redis:$(NC)             localhost:6381"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 
 .DEFAULT_GOAL := help

@@ -1,4 +1,4 @@
-.PHONY: help install start stop restart build logs clean migrate seed fresh test bash-backend bash-frontend db-cli composer npm artisan
+.PHONY: help install setup start stop restart build logs clean migrate migrations migrate-fresh superuser shell dbshell collectstatic test lint format logs-backend logs-db logs-redis npm-install npm-build npm-dev npm bash-backend bash-frontend db-cli
 
 # Variables
 DOCKER_COMPOSE = docker-compose
@@ -18,145 +18,166 @@ NC = \033[0m # No Color
 
 help: ## Afficher l'aide
 	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
-	@echo "$(GREEN)    VTCBuilder - Commandes disponibles$(NC)"
+	@echo "$(GREEN)    VTCBuilder Django - Commandes disponibles$(NC)"
 	@echo "$(BLUE)═══════════════════════════════════════════════════════════════$(NC)"
 	@awk 'BEGIN {FS = ":.*##"; printf "\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  $(YELLOW)%-20s$(NC) %s\n", $$1, $$2 } /^##@/ { printf "\n$(BLUE)%s$(NC)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@echo ""
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📁 Commandes Backend Django (backend-django/):$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@cd backend-django && make help | grep -E "(install|setup|start|stop|restart|build|logs|clean|migrate|superuser|shell|test|lint|format|urls)" | sed 's/^/  /'
+	@echo ""
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📁 Commandes Frontend (frontend/):$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "  $(YELLOW)npm-install         $(NC) Installer les dépendances npm"
+	@echo "  $(YELLOW)npm-build           $(NC) Build du frontend"
+	@echo "  $(YELLOW)npm-dev             $(NC) Démarrer le mode développement"
+	@echo "  $(YELLOW)npm                 $(NC) Exécuter une commande npm"
 
 ##@ Installation et Configuration
 
 install: ## Installation complète du projet
-	@echo "$(GREEN)📦 Installation du projet VTCBuilder...$(NC)"
-	@if [ ! -f .env ]; then \
-		echo "$(YELLOW)⚙️  Création du fichier .env...$(NC)"; \
-		cp .env.example .env 2>/dev/null || echo "APP_NAME=VTCBuilder" > .env; \
-	fi
+	@echo "$(GREEN)📦 Installation du projet VTCBuilder Django...$(NC)"
 	@echo "$(GREEN)🐳 Construction des images Docker...$(NC)"
-	@$(DOCKER_COMPOSE) build
+	@cd backend-django && $(MAKE) install
 	@echo "$(GREEN)✅ Installation terminée !$(NC)"
 	@echo "$(BLUE)Utilisez 'make start' pour démarrer le projet$(NC)"
 
-setup: install start composer-install migrate seed ## Installation et configuration complète avec données de test
-	@echo "$(GREEN)✨ Configuration complète terminée !$(NC)"
+setup: ## Installation et configuration complète
+	@echo "$(GREEN)✨ Configuration complète Django...$(NC)"
+	@echo "$(YELLOW)📦 Installation du backend Django...$(NC)"
+	@cd backend-django && $(MAKE) install
+	@echo "$(YELLOW)🗄️  Configuration des migrations...$(NC)"
+	@cd backend-django && $(MAKE) migrate
+	@echo "$(YELLOW)🔐 Configuration des permissions...$(NC)"
+	@cd backend-django && $(MAKE) setup-permissions
+	@echo "$(GREEN)✅ Configuration terminée !$(NC)"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 	@echo "$(GREEN)🚀 Application disponible :$(NC)"
-	@echo "   Frontend: http://localhost:3000"
-	@echo "   API: http://localhost:8000"
-	@echo "   PhpMyAdmin: http://localhost:8081"
-	@echo "   Traefik Dashboard: http://localhost:8080"
+	@echo "   Frontend: http://localhost:3004"
+	@echo "   API Django: http://localhost:8088/api/"
+	@echo "   Admin Django: http://localhost:8088/admin/"
+	@echo "   PgAdmin: http://localhost:8084"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 
 ##@ Gestion des Containers
 
 start: ## Démarrer tous les services
-	@echo "$(GREEN)🚀 Démarrage des services...$(NC)"
-	@$(DOCKER_COMPOSE) up -d
+	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
+	@cd backend-django && $(MAKE) start
 	@echo "$(GREEN)✅ Services démarrés !$(NC)"
-	@make status
+
+up: ## Démarrer tous les services
+	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
+	@cd backend-django && $(MAKE) start
+	@echo "$(GREEN)✅ Services démarrés !$(NC)"
+
 
 stop: ## Arrêter tous les services
 	@echo "$(YELLOW)⏸️  Arrêt des services...$(NC)"
-	@$(DOCKER_COMPOSE) stop
+	@cd backend-django && $(MAKE) stop
 	@echo "$(GREEN)✅ Services arrêtés !$(NC)"
 
-restart: stop start ## Redémarrer tous les services
+restart: ## Redémarrer tous les services
+	@echo "$(YELLOW)🔄 Redémarrage des services...$(NC)"
+	@cd backend-django && $(MAKE) restart
+	@echo "$(GREEN)✅ Services redémarrés !$(NC)"
 
 down: ## Arrêter et supprimer tous les containers
 	@echo "$(RED)🗑️  Suppression des containers...$(NC)"
-	@$(DOCKER_COMPOSE) down
+	@cd backend-django && $(MAKE) down
 	@echo "$(GREEN)✅ Containers supprimés !$(NC)"
 
 build: ## Reconstruire les images Docker
 	@echo "$(GREEN)🔨 Reconstruction des images...$(NC)"
-	@$(DOCKER_COMPOSE) build --no-cache
+	@cd backend-django && $(MAKE) build
 	@echo "$(GREEN)✅ Images reconstruites !$(NC)"
 
-rebuild: down build start ## Tout reconstruire et redémarrer
+rebuild: ## Tout reconstruire et redémarrer
+	@echo "$(GREEN)🔄 Reconstruction complète...$(NC)"
+	@cd backend-django && $(MAKE) rebuild
+	@echo "$(GREEN)✅ Reconstruction terminée !$(NC)"
 
 status: ## Afficher le statut des services
-	@echo "$(BLUE)📊 Statut des services :$(NC)"
-	@$(DOCKER_COMPOSE) ps
+	@echo "$(BLUE)📊 Statut des services Django :$(NC)"
+	@cd backend-django && $(MAKE) status
 
-##@ Logs et Monitoring
+##@ Backend Django (backend-django/)
 
-logs: ## Afficher tous les logs
-	@$(DOCKER_COMPOSE) logs -f
+# Rediriger les commandes vers le Makefile Django
+migrate: ## Exécuter les migrations Django
+	@cd backend-django && $(MAKE) migrate
 
-logs-backend: ## Logs du backend Laravel
-	@$(DOCKER_COMPOSE) logs -f backend nginx
+migrations: ## Créer de nouvelles migrations
+	@cd backend-django && $(MAKE) migrations
 
-logs-frontend: ## Logs du frontend React
-	@$(DOCKER_COMPOSE) logs -f frontend
+migrate-fresh: ## Reset et re-exécuter les migrations
+	@cd backend-django && $(MAKE) migrate-fresh
 
-logs-db: ## Logs de la base de données
-	@$(DOCKER_COMPOSE) logs -f mysql
+superuser: ## Créer un superutilisateur
+	@cd backend-django && $(MAKE) superuser
+
+shell: ## Accéder au shell Django
+	@cd backend-django && $(MAKE) shell
+
+dbshell: ## Accéder au shell PostgreSQL
+	@cd backend-django && $(MAKE) dbshell
+
+collectstatic: ## Collecter les fichiers statiques
+	@cd backend-django && $(MAKE) collectstatic
+
+test: ## Exécuter les tests
+	@cd backend-django && $(MAKE) test
+
+lint: ## Vérification du code avec flake8
+	@cd backend-django && $(MAKE) lint
+
+format: ## Formatage du code avec black
+	@cd backend-django && $(MAKE) format
+
+logs-backend: ## Logs du backend Django
+	@cd backend-django && $(MAKE) logs
+
+logs-db: ## Logs PostgreSQL
+	@cd backend-django && $(MAKE) logs-db
 
 logs-redis: ## Logs Redis
-	@$(DOCKER_COMPOSE) logs -f redis
+	@cd backend-django && $(MAKE) logs-redis
+
+##@ Frontend (frontend/)
+
+npm-install: ## Installer les dépendances npm
+	@echo "$(GREEN)📦 Installation des dépendances npm...$(NC)"
+	@cd frontend && npm install
+
+npm-build: ## Build du frontend
+	@echo "$(GREEN)🔨 Build du frontend...$(NC)"
+	@cd frontend && npm run build
+
+npm-dev: ## Démarrer le mode développement
+	@echo "$(GREEN)🚀 Démarrage du mode développement...$(NC)"
+	@cd frontend && npm run dev
+
+npm: ## Exécuter une commande npm
+	@echo "$(BLUE)🔧 Exécution de npm $(cmd)...$(NC)"
+	@cd frontend && npm $(cmd)
 
 ##@ Accès aux Containers
 
-bash-backend: ## Accéder au terminal du backend
-	@echo "$(BLUE)🔧 Accès au container backend...$(NC)"
-	@docker exec -it $(BACKEND_CONTAINER) /bin/bash
+bash-backend: ## Accéder au terminal du backend Django
+	@echo "$(BLUE)🔧 Accès au container backend Django...$(NC)"
+	@cd backend-django && $(MAKE) shell
 
 bash-frontend: ## Accéder au terminal du frontend
 	@echo "$(BLUE)🔧 Accès au container frontend...$(NC)"
-	@docker exec -it $(FRONTEND_CONTAINER) /bin/sh
+	@docker exec -it vtcbuilder_frontend /bin/sh
 
-bash-nginx: ## Accéder au terminal Nginx
-	@docker exec -it $(NGINX_CONTAINER) /bin/sh
+db-cli: ## Accéder à PostgreSQL CLI
+	@echo "$(BLUE)🗄️  Accès à PostgreSQL...$(NC)"
+	@cd backend-django && $(MAKE) dbshell
 
-db-cli: ## Accéder à MySQL CLI
-	@echo "$(BLUE)🗄️  Accès à MySQL...$(NC)"
-	@docker exec -it $(MYSQL_CONTAINER) mysql -u vtcbuilder_user -pvtcbuilder_password vtcbuilder
-
-##@ Backend (Laravel)
-
-composer-install: ## Installer les dépendances Composer
-	@echo "$(GREEN)📦 Installation des dépendances Composer...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) composer install --no-interaction --prefer-dist --optimize-autoloader
-
-composer-update: ## Mettre à jour les dépendances Composer
-	@docker exec $(BACKEND_CONTAINER) composer update
-
-artisan: ## Exécuter une commande artisan (ex: make artisan cmd="migrate")
-	@docker exec $(BACKEND_CONTAINER) php artisan $(cmd)
-
-key-generate: ## Générer la clé d'application Laravel
-	@echo "$(GREEN)🔑 Génération de la clé d'application...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan key:generate
-
-migrate: ## Exécuter les migrations
-	@echo "$(GREEN)🗄️  Exécution des migrations...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan migrate --force
-
-migrate-fresh: ## Reset et re-exécuter les migrations
-	@echo "$(RED)⚠️  Reset de la base de données...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan migrate:fresh --force
-
-migrate-rollback: ## Rollback de la dernière migration
-	@docker exec $(BACKEND_CONTAINER) php artisan migrate:rollback
-
-seed: ## Exécuter les seeders
-	@echo "$(GREEN)🌱 Exécution des seeders...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan db:seed
-
-fresh: migrate-fresh seed ## Reset DB + migrations + seeders
-
-optimize: ## Optimiser Laravel (cache config, routes, views)
-	@echo "$(GREEN)⚡ Optimisation de Laravel...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan optimize
-	@docker exec $(BACKEND_CONTAINER) php artisan config:cache
-	@docker exec $(BACKEND_CONTAINER) php artisan route:cache
-	@docker exec $(BACKEND_CONTAINER) php artisan view:cache
-
-clear-cache: ## Nettoyer tous les caches Laravel
-	@echo "$(YELLOW)🧹 Nettoyage des caches...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan cache:clear
-	@docker exec $(BACKEND_CONTAINER) php artisan config:clear
-	@docker exec $(BACKEND_CONTAINER) php artisan route:clear
-	@docker exec $(BACKEND_CONTAINER) php artisan view:clear
+# Commandes Laravel supprimées - Projet migré vers Django
 
 ##@ Frontend (React/Next.js)
 

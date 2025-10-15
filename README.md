@@ -89,11 +89,12 @@ make demo-tenant
 ## 🔐 Accès à l'Application
 
 ### URLs d'accès
-- **Frontend**: http://localhost:8001
-- **API Django**: http://api.localhost:7080/api/
-- **Admin Django**: http://api.localhost:7080/admin/
-- **Traefik Dashboard**: http://localhost:7081
-- **PgAdmin**: http://localhost:8082
+- **Frontend**: http://localhost:3004
+- **API Django**: http://localhost:8088/api/
+- **Admin Django**: http://localhost:8088/admin/
+- **PgAdmin**: http://localhost:8084
+- **PostgreSQL**: localhost:5434
+- **Redis**: localhost:6381
 
 ### Comptes de test
 - **Super Admin**: admin@vtcbuilder.com / admin123
