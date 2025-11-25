@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
+import TenantLayout from '@/components/TenantLayout'
 
 export default function TenantDashboard() {
   const router = useRouter()
@@ -18,38 +19,27 @@ export default function TenantDashboard() {
   }, [router])
 
   if (!user) {
-    return <div className="p-8">Chargement...</div>
+    return (
+      <TenantLayout title="Dashboard">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement...</p>
+          </div>
+        </div>
+      </TenantLayout>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mon Dashboard VTC</h1>
-            <p className="text-sm text-gray-600 mt-1">Bonjour {user.name} !</p>
-          </div>
-          <button
-            onClick={() => {
-              authService.logout()
-              router.push('/login')
-            }}
-            className="btn btn-secondary"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </header>
+    <TenantLayout title="Mon Dashboard VTC" subtitle={`Bonjour ${user.name} !`}>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Pages */}
-          <button
-            onClick={() => router.push('/dashboard/pages')}
-            className="card hover:shadow-lg transition-all duration-200 cursor-pointer"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+        {/* Pages */}
+        <button
+          onClick={() => router.push('/dashboard/pages')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-blue-500 rounded-lg p-3">
                 <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,11 +53,11 @@ export default function TenantDashboard() {
             </div>
           </button>
 
-          {/* Services */}
-          <button
-            onClick={() => router.push('/dashboard/services')}
-            className="card hover:shadow-lg transition-all duration-200 cursor-pointer"
-          >
+        {/* Services */}
+        <button
+          onClick={() => router.push('/dashboard/services')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-green-500 rounded-lg p-3">
                 <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,11 +71,11 @@ export default function TenantDashboard() {
             </div>
           </button>
 
-          {/* Réservations */}
-          <button
-            onClick={() => router.push('/dashboard/bookings')}
-            className="card hover:shadow-lg transition-all duration-200 cursor-pointer"
-          >
+        {/* Réservations */}
+        <button
+          onClick={() => router.push('/dashboard/bookings')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-purple-500 rounded-lg p-3">
                 <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,11 +89,11 @@ export default function TenantDashboard() {
             </div>
           </button>
 
-          {/* Médias */}
-          <button
-            onClick={() => router.push('/dashboard/media')}
-            className="card hover:shadow-lg transition-all duration-200 cursor-pointer"
-          >
+        {/* Médias */}
+        <button
+          onClick={() => router.push('/dashboard/media')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-yellow-500 rounded-lg p-3">
                 <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,11 +107,11 @@ export default function TenantDashboard() {
             </div>
           </button>
 
-          {/* Templates */}
-          <button
-            onClick={() => router.push('/dashboard/templates')}
-            className="card hover:shadow-lg transition-all duration-200 cursor-pointer"
-          >
+        {/* Templates */}
+        <button
+          onClick={() => router.push('/dashboard/templates')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-indigo-500 rounded-lg p-3">
                 <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,11 +125,29 @@ export default function TenantDashboard() {
             </div>
           </button>
 
-          {/* Paramètres */}
-          <button
-            onClick={() => router.push('/dashboard/settings')}
-            className="card hover:shadow-lg transition-all duration-200 cursor-pointer"
-          >
+        {/* Utilisateurs */}
+        <button
+          onClick={() => router.push('/dashboard/users')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-pink-500 rounded-lg p-3">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Utilisateurs</h3>
+                <p className="text-sm text-gray-600">Gérer l'équipe</p>
+              </div>
+            </div>
+          </button>
+
+        {/* Paramètres */}
+        <button
+          onClick={() => router.push('/dashboard/settings')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-gray-500 rounded-lg p-3">
                 <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,24 +160,23 @@ export default function TenantDashboard() {
                 <p className="text-sm text-gray-600">Configuration</p>
               </div>
             </div>
-          </div>
-        </div>
+        </button>
+      </div>
 
-        {/* Welcome Message */}
-        <div className="mt-8 card bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-          <h2 className="text-2xl font-bold mb-2">Bienvenue sur VTCBuilder ! 🚀</h2>
-          <p className="text-blue-100 mb-4">
-            Créez et gérez votre site VTC professionnel facilement. Commencez par personnaliser vos pages et services.
-          </p>
-          <button
-            onClick={() => router.push('/dashboard/pages')}
-            className="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-          >
-            Commencer →
-          </button>
-        </div>
-      </main>
-    </div>
+      {/* Welcome Message */}
+      <div className="mt-6 lg:mt-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-lg p-6 lg:p-8">
+        <h2 className="text-xl lg:text-2xl font-bold mb-2">Bienvenue sur VTCBuilder ! 🚀</h2>
+        <p className="text-blue-100 mb-4 text-sm lg:text-base">
+          Créez et gérez votre site VTC professionnel facilement. Commencez par personnaliser vos pages et services.
+        </p>
+        <button
+          onClick={() => router.push('/dashboard/pages')}
+          className="bg-white text-blue-600 px-4 lg:px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm lg:text-base"
+        >
+          Commencer →
+        </button>
+      </div>
+    </TenantLayout>
   )
 }
 

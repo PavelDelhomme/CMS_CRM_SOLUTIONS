@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import api from '@/lib/api'
+import AdminLayout from '@/components/AdminLayout'
 
 interface DashboardStats {
   total_tenants: number
@@ -30,10 +31,25 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const response = await api.get('/admin/dashboard')
-      setStats(response.data.stats)
+      const response = await api.get('/dashboard/')
+      setStats(response.data.stats || {
+        total_tenants: 0,
+        active_tenants: 0,
+        trial_tenants: 0,
+        total_users: 0,
+        total_bookings: 0,
+        monthly_revenue: 0,
+      })
     } catch (error) {
       console.error('Erreur chargement dashboard:', error)
+      setStats({
+        total_tenants: 0,
+        active_tenants: 0,
+        trial_tenants: 0,
+        total_users: 0,
+        total_bookings: 0,
+        monthly_revenue: 0,
+      })
     } finally {
       setLoading(false)
     }
@@ -44,27 +60,12 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard Super Admin</h1>
-          <button
-            onClick={() => {
-              authService.logout()
-              router.push('/login')
-            }}
-            className="btn btn-secondary"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <AdminLayout
+      title="Dashboard Super Admin"
+      subtitle="Gestion complète de la plateforme VTCBuilder"
+    >
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           <div className="card">
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
@@ -149,9 +150,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-8">
+        <div className="mt-6 lg:mt-8">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Actions Rapides</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button
               onClick={() => router.push('/admin/tenants')}
               className="card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
@@ -204,8 +205,7 @@ export default function AdminDashboard() {
             </button>
           </div>
         </div>
-      </main>
-    </div>
+    </AdminLayout>
   )
 }
 

@@ -24,26 +24,167 @@ class TenantSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'email', 'plan', 'status',
             'trial_ends_at', 'subscribed_at', 'logo', 'primary_color',
             'secondary_color', 'settings', 'metadata', 'domains',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at', 'deleted_at'
         ]
-        read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'deleted_at']
+
+    def create(self, validated_data):
+        """Create tenant with auto-generated slug and schema_name, and create admin with invitation"""
+        from django.utils.text import slugify
+        from django.utils.crypto import get_random_string
+        from django.utils import timezone
+        from datetime import timedelta
+        from .models import User, InvitationToken
+        from .permissions import assign_role_permissions
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        # Generate slug if not provided
+        if not validated_data.get('slug'):
+            validated_data['slug'] = slugify(validated_data['name'])
+        
+        tenant = super().create(validated_data)
+        
+        # Use the email provided in tenant.email to create the admin user
+        admin_email = validated_data.get('email', tenant.email)
+        
+        # Generate username from email
+        username_base = admin_email.split('@')[0].replace('.', '_').replace('-', '_')
+        tenant_slug = tenant.slug.replace('-', '_')
+        username = f"{username_base}_{tenant_slug}"[:30]  # Max 30 chars for username
+        
+        # Generate a random password (user will set their own via invitation)
+        random_password = get_random_string(length=32)
+        
+        # Create admin user in public schema (for authentication)
+        try:
+            admin_user = User.objects.create_user(
+                username=username,
+                email=admin_email,
+                password=random_password,  # Temporary password, will be changed via invitation
+                first_name='',
+                last_name='',
+                tenant=tenant,
+                role='tenant-admin',
+                status='pending'  # Pending until they complete setup
+            )
+            
+            # Assign permissions if function exists
+            try:
+                from .permissions import assign_role_permissions
+                assign_role_permissions(admin_user, 'tenant-admin')
+            except ImportError:
+                pass  # Permissions system optional
+            
+            # Create invitation token (valid for 7 days)
+            invitation_token = get_random_string(length=64)
+            expires_at = timezone.now() + timedelta(days=7)
+            
+            InvitationToken.objects.create(
+                user=admin_user,
+                tenant=tenant,
+                token=invitation_token,
+                expires_at=expires_at
+            )
+            
+            # Generate setup URL
+            frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:9494')
+            # For local development, use tenant slug subdomain pattern
+            # In production, this would be tenant.domain.com
+            setup_url = f"{frontend_url}/setup?token={invitation_token}&email={admin_email}"
+            
+            # Send invitation email
+            try:
+                send_mail(
+                    subject=f'Invitation à configurer votre site VTC - {tenant.name}',
+                    message=f'''
+Bonjour,
+
+Vous avez été invité à configurer votre compte VTCBuilder pour {tenant.name}.
+
+Cliquez sur le lien suivant pour définir votre mot de passe et accéder à votre espace d'administration (lien valable 7 jours) :
+{setup_url}
+
+Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.
+
+Cordialement,
+L'équipe VTCBuilder
+                    ''',
+                    html_message=f'''
+                    <html>
+                    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                        <h2>Invitation à configurer votre compte VTCBuilder</h2>
+                        <p>Bonjour,</p>
+                        <p>Vous avez été invité à configurer votre compte VTCBuilder pour <strong>{tenant.name}</strong>.</p>
+                        <p>
+                            <a href="{setup_url}" style="background-color: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Configurer mon compte
+                            </a>
+                        </p>
+                        <p>Ou copiez ce lien dans votre navigateur :</p>
+                        <p style="word-break: break-all; color: #666;">{setup_url}</p>
+                        <p><small>Ce lien est valable pendant 7 jours.</small></p>
+                        <p>Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.</p>
+                        <hr>
+                        <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                    </body>
+                    </html>
+                    ''',
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
+                    recipient_list=[admin_email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # Email sending failure shouldn't prevent tenant creation
+                import logging
+                logging.getLogger(__name__).error(f"Failed to send invitation email: {e}")
+            
+        except Exception as e:
+            # Admin creation failure shouldn't prevent tenant creation, but log it
+            import logging
+            logging.getLogger(__name__).warning(f"Could not create admin for tenant {tenant.name}: {e}")
+        
+        return tenant
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model"""
     tenant_name = serializers.CharField(source='tenant.name', read_only=True)
+    roles = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'first_name', 'last_name',
-            'tenant', 'tenant_name', 'avatar', 'phone', 'role', 'status',
-            'email_verified_at', 'created_at', 'updated_at'
+            'id', 'username', 'email', 'first_name', 'last_name', 'name',
+            'tenant', 'tenant_id', 'tenant_name', 'avatar', 'phone', 'role', 'roles', 'status',
+            'permissions', 'email_verified_at', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
+    def get_roles(self, obj):
+        """Return roles as array"""
+        return [obj.role] if obj.role else []
+
+    def get_permissions(self, obj):
+        """Return user permissions"""
+        # TODO: Implement actual permissions from guardian
+        return []
+
+    def get_name(self, obj):
+        """Return full name"""
+        return obj.get_full_name() or obj.username
+
+    def to_representation(self, instance):
+        """Add tenant_id to representation"""
+        data = super().to_representation(instance)
+        if instance.tenant:
+            data['tenant_id'] = instance.tenant.id
+        return data
 
     def create(self, validated_data):
         """Create user with encrypted password"""

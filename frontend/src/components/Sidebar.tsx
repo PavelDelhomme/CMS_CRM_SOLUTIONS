@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
+import authService from '@/services/auth.service'
 
 interface MenuItem {
   name: string
@@ -9,9 +11,20 @@ interface MenuItem {
   icon: React.ReactNode
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProps = {}) {
   const router = useRouter()
   const pathname = usePathname()
+  const user = authService.getStoredUser()
+  const [isOpen, setIsOpen] = useState(false)
+
+  // Use external control if provided, otherwise use internal state
+  const sidebarOpen = externalIsOpen !== undefined ? externalIsOpen : isOpen
+  const handleClose = onClose || (() => setIsOpen(false))
 
   const menuItems: MenuItem[] = [
     {
@@ -69,6 +82,15 @@ export default function Sidebar() {
       ),
     },
     {
+      name: 'Utilisateurs',
+      href: '/dashboard/users',
+      icon: (
+        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+    },
+    {
       name: 'Paramètres',
       href: '/dashboard/settings',
       icon: (
@@ -80,37 +102,92 @@ export default function Sidebar() {
     },
   ]
 
-  return (
-    <aside className="w-64 bg-white shadow-lg h-screen fixed left-0 top-0">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold text-primary-600">VTCBuilder</h2>
-        <p className="text-xs text-gray-500">Le WordPress des VTC</p>
-      </div>
+  const handleItemClick = (href: string) => {
+    router.push(href)
+    handleClose() // Close sidebar on mobile after navigation
+  }
 
-      <nav className="mt-6">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-          
-          return (
+  return (
+    <>
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={handleClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={clsx(
+          'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col',
+          'lg:translate-x-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <div className="p-6 border-b flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-blue-600">VTCBuilder</h2>
+            <p className="text-xs text-gray-500">Le WordPress des VTC</p>
+          </div>
+          {/* Close button for mobile */}
+          <button
+            onClick={handleClose}
+            className="lg:hidden text-gray-500 hover:text-gray-700"
+            aria-label="Fermer le menu"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <nav className="flex-1 mt-6 overflow-y-auto">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+            
+            return (
+              <button
+                key={item.href}
+                onClick={() => handleItemClick(item.href)}
+                className={clsx(
+                  'w-full flex items-center px-6 py-3 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-700'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                )}
+              >
+                <span className={clsx(isActive ? 'text-blue-700' : 'text-gray-400')}>
+                  {item.icon}
+                </span>
+                <span className="ml-3">{item.name}</span>
+              </button>
+            )
+          })}
+        </nav>
+
+        <div className="p-6 border-t">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-900">{user?.name || 'Utilisateur'}</p>
+              <p className="text-xs text-gray-500 truncate max-w-[180px]">{user?.email}</p>
+            </div>
             <button
-              key={item.href}
-              onClick={() => router.push(item.href)}
-              className={clsx(
-                'w-full flex items-center px-6 py-3 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary-50 text-primary-700 border-r-4 border-primary-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              )}
+              onClick={() => {
+                authService.logout()
+                router.push('/login')
+              }}
+              className="text-gray-400 hover:text-gray-600"
+              title="Déconnexion"
             >
-              <span className={clsx(isActive ? 'text-primary-700' : 'text-gray-400')}>
-                {item.icon}
-              </span>
-              <span className="ml-3">{item.name}</span>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
             </button>
-          )
-        })}
-      </nav>
-    </aside>
+          </div>
+        </div>
+      </aside>
+    </>
   )
 }
 

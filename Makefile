@@ -42,9 +42,11 @@ install: ## Installation complète du projet
 	@echo "$(GREEN)🐳 Construction des images Docker...$(NC)"
 	@cd backend-django && $(MAKE) install
 	@echo "$(GREEN)✅ Installation terminée !$(NC)"
-	@echo "$(BLUE)Utilisez 'make start' pour démarrer le projet$(NC)"
+	@echo "$(BLUE)Utilisez 'make setup-backend-django' pour la configuration complète$(NC)"
 
-setup: ## Installation et configuration complète
+setup: setup-backend-django ## Alias pour setup-backend-django
+
+setup-backend-django: ## Installation et configuration complète du backend Django
 	@echo "$(GREEN)✨ Configuration complète Django...$(NC)"
 	@echo "$(YELLOW)📦 Installation du backend Django...$(NC)"
 	@cd backend-django && $(MAKE) install
@@ -54,12 +56,23 @@ setup: ## Installation et configuration complète
 	@cd backend-django && $(MAKE) setup-permissions
 	@echo "$(GREEN)✅ Configuration terminée !$(NC)"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
-	@echo "$(GREEN)🚀 Application disponible :$(NC)"
-	@echo "   Frontend: http://localhost:3004"
-	@echo "   API Django: http://localhost:8088/api/"
-	@echo "   Admin Django: http://localhost:8088/admin/"
-	@echo "   PgAdmin: http://localhost:8084"
+	@echo "$(GREEN)🚀 Application prête ! Utilisez 'make start' pour démarrer$(NC)"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📍 URLs disponibles après démarrage :$(NC)"
+	@echo "   Frontend:     http://localhost:9494"
+	@echo "   API Django:   http://localhost:9495/api/"
+	@echo "   Admin Django: http://localhost:9495/admin/"
+	@echo "   PgAdmin:      http://localhost:9498"
+	@echo "   PostgreSQL:   localhost:9496"
+	@echo "   Redis:        localhost:9497"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🔐 Compte Super Admin :$(NC)"
+	@echo "   Email:    admin@vtcbuilder.com"
+	@echo "   Password: admin123"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+
+quick-start: setup-backend-django start ## Configuration complète + démarrage en une commande
+	@echo "$(GREEN)🎉 Tout est prêt et démarré !$(NC)"
 
 ##@ Gestion des Containers
 
@@ -67,6 +80,15 @@ start: ## Démarrer tous les services
 	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
 	@cd backend-django && $(MAKE) start
 	@echo "$(GREEN)✅ Services démarrés !$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📍 URLs d'accès :$(NC)"
+	@echo "   Frontend:     http://localhost:9494"
+	@echo "   API Django:   http://localhost:9495/api/"
+	@echo "   Admin Django: http://localhost:9495/admin/"
+	@echo "   PgAdmin:      http://localhost:9498"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)💡 Utilisez 'make logs' pour voir les logs$(NC)"
+	@echo "$(GREEN)💡 Utilisez 'make status' pour vérifier le statut$(NC)"
 
 up: ## Démarrer tous les services
 	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
@@ -136,6 +158,11 @@ lint: ## Vérification du code avec flake8
 format: ## Formatage du code avec black
 	@cd backend-django && $(MAKE) format
 
+demo-tenant: ## Créer un tenant de démonstration
+	@cd backend-django && $(MAKE) demo-tenant
+
+logs: logs-backend ## Voir tous les logs (alias pour logs-backend)
+
 logs-backend: ## Logs du backend Django
 	@cd backend-django && $(MAKE) logs
 
@@ -177,68 +204,6 @@ db-cli: ## Accéder à PostgreSQL CLI
 	@echo "$(BLUE)🗄️  Accès à PostgreSQL...$(NC)"
 	@cd backend-django && $(MAKE) dbshell
 
-# Commandes Laravel supprimées - Projet migré vers Django
-
-##@ Frontend (React/Next.js)
-
-npm-install: ## Installer les dépendances npm
-	@echo "$(GREEN)📦 Installation des dépendances npm...$(NC)"
-	@docker exec $(FRONTEND_CONTAINER) npm install
-
-npm-build: ## Build du frontend
-	@echo "$(GREEN)🔨 Build du frontend...$(NC)"
-	@docker exec $(FRONTEND_CONTAINER) npm run build
-
-npm-dev: ## Démarrer le mode développement
-	@docker exec $(FRONTEND_CONTAINER) npm run dev
-
-npm: ## Exécuter une commande npm (ex: make npm cmd="run lint")
-	@docker exec $(FRONTEND_CONTAINER) npm $(cmd)
-
-##@ Tenants (Multi-tenant)
-
-tenant-create: ## Créer un nouveau tenant (ex: make tenant-create name="client1")
-	@echo "$(GREEN)🏢 Création d'un nouveau tenant...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan tenant:create $(name)
-
-tenant-list: ## Lister tous les tenants
-	@echo "$(BLUE)📋 Liste des tenants :$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan tenant:list
-
-tenant-migrate: ## Migrer les tenants
-	@echo "$(GREEN)🗄️  Migration des tenants...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan tenants:migrate
-
-tenant-seed: ## Seed des tenants
-	@docker exec $(BACKEND_CONTAINER) php artisan tenants:seed
-
-##@ Tests
-
-test: ## Exécuter les tests
-	@echo "$(GREEN)🧪 Exécution des tests...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) php artisan test
-
-test-coverage: ## Tests avec couverture de code
-	@docker exec $(BACKEND_CONTAINER) php artisan test --coverage
-
-##@ Base de données
-
-db-backup: ## Backup de la base de données
-	@echo "$(GREEN)💾 Backup de la base de données...$(NC)"
-	@mkdir -p ./backups
-	@docker exec $(MYSQL_CONTAINER) mysqldump -u vtcbuilder_user -pvtcbuilder_password vtcbuilder > ./backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
-	@echo "$(GREEN)✅ Backup créé dans ./backups/$(NC)"
-
-db-restore: ## Restaurer la base (ex: make db-restore file="backup.sql")
-	@echo "$(YELLOW)📥 Restauration de la base...$(NC)"
-	@docker exec -i $(MYSQL_CONTAINER) mysql -u vtcbuilder_user -pvtcbuilder_password vtcbuilder < $(file)
-	@echo "$(GREEN)✅ Base restaurée !$(NC)"
-
-db-reset: ## Reset complet de la base
-	@echo "$(RED)⚠️  Reset de la base de données...$(NC)"
-	@docker exec $(MYSQL_CONTAINER) mysql -u vtcbuilder_user -pvtcbuilder_password -e "DROP DATABASE IF EXISTS vtcbuilder; CREATE DATABASE vtcbuilder;"
-	@make migrate seed
-
 ##@ Nettoyage
 
 clean: ## Nettoyer les containers et volumes
@@ -270,30 +235,21 @@ prod-deploy: prod-build prod-up migrate optimize ## Déploiement complet en prod
 
 ##@ Utilitaires
 
-fix-permissions: ## Corriger les permissions des fichiers
-	@echo "$(YELLOW)🔧 Correction des permissions...$(NC)"
-	@docker exec $(BACKEND_CONTAINER) chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-	@docker exec $(BACKEND_CONTAINER) chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-	@echo "$(GREEN)✅ Permissions corrigées !$(NC)"
-
-update: ## Mettre à jour toutes les dépendances
-	@echo "$(GREEN)📦 Mise à jour des dépendances...$(NC)"
-	@make composer-update
-	@docker exec $(FRONTEND_CONTAINER) npm update
-	@echo "$(GREEN)✅ Dépendances mises à jour !$(NC)"
-
-shell-mysql: ## Shell MySQL direct
-	@docker exec -it $(MYSQL_CONTAINER) /bin/bash
+# Commandes Laravel obsolètes supprimées - Projet migré vers Django
 
 urls: ## Afficher toutes les URLs du projet
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
-	@echo "$(GREEN)🌐 URLs de l'application :$(NC)"
+	@echo "$(GREEN)🌐 URLs de l'application VTCBuilder :$(NC)"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
-	@echo "  $(YELLOW)Frontend:$(NC)          http://localhost:3000"
-	@echo "  $(YELLOW)Backend API:$(NC)       http://localhost:8000"
-	@echo "  $(YELLOW)PhpMyAdmin:$(NC)        http://localhost:8081"
-	@echo "  $(YELLOW)Traefik Dashboard:$(NC) http://localhost:8080"
-	@echo "  $(YELLOW)Redis Commander:$(NC)   http://localhost:8082"
+	@echo "  $(YELLOW)Frontend Next.js:$(NC)  http://localhost:9494"
+	@echo "  $(YELLOW)Backend API:$(NC)        http://localhost:9495/api/"
+	@echo "  $(YELLOW)Admin Django:$(NC)       http://localhost:9495/admin/"
+	@echo "  $(YELLOW)PgAdmin:$(NC)            http://localhost:9498"
+	@echo "  $(YELLOW)PostgreSQL:$(NC)         localhost:9496"
+	@echo "  $(YELLOW)Redis:$(NC)              localhost:9497"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🔐 Comptes de test :$(NC)"
+	@echo "  $(YELLOW)Super Admin:$(NC)        admin@vtcbuilder.com / admin123"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 
 info: ## Informations système Docker

@@ -22,11 +22,12 @@ Backend Django avec multi-tenant pour VTCBuilder, utilisant Django REST Framewor
    ```
 
 3. **Accéder à l'application :**
-   - Frontend : http://localhost:8001
-   - API Django : http://api.localhost:7080/api/
-   - Interface Admin Django : http://api.localhost:7080/admin/
-   - Traefik Dashboard : http://localhost:7081
-   - PgAdmin : http://localhost:8082
+   - Frontend : http://localhost:9494
+   - API Django : http://localhost:9495/api/
+   - Interface Admin Django : http://localhost:9495/admin/
+   - PgAdmin : http://localhost:9498
+   - PostgreSQL : localhost:9496
+   - Redis : localhost:9497
 
 4. **Créer un tenant de démonstration (manuel) :**
    ```bash

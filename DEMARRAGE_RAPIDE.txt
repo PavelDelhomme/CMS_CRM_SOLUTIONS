@@ -21,24 +21,25 @@
 🚀 ÉTAPE 2 : DÉMARRER LE PROJET (choisir UNE option)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-   Option A - Script automatique (Recommandé) :
+   Option A - Installation + Démarrage en une commande (Recommandé) :
    
-      ./start.sh
-   
-   ─────────────────────────────────────────────────────────────────────
-   
-   Option B - Avec Make :
-   
-      make setup
+      make quick-start
    
    ─────────────────────────────────────────────────────────────────────
    
-   Option C - Docker direct :
+   Option B - Installation puis démarrage séparé :
    
-      docker-compose up -d
-      docker exec vtcbuilder_backend composer install
-      docker exec vtcbuilder_backend php artisan key:generate
-      docker exec vtcbuilder_backend php artisan migrate --seed
+      # 1. Configuration complète
+      make setup-backend-django
+      
+      # 2. Démarrer les services
+      make start
+   
+   ─────────────────────────────────────────────────────────────────────
+   
+   Option C - Installation uniquement (si déjà fait, passez à start) :
+   
+      make setup-backend-django
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -47,10 +48,11 @@
 
    Ouvrez votre navigateur sur :
 
-   🌍 Frontend:          http://localhost:3000
-   🔧 Backend API:       http://localhost:8000
-   💾 PhpMyAdmin:        http://localhost:8081
-   📊 Traefik:           http://localhost:8080
+   🌍 Frontend:          http://localhost:9494
+   🔧 Backend API:       http://localhost:9495
+   💾 PgAdmin:           http://localhost:9498
+   🗄️  PostgreSQL:        localhost:9496
+   📦 Redis:             localhost:9497
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -59,17 +61,17 @@
 
    Super Admin (Vous) :
    
-      URL:      http://localhost:3000/admin
-      Email:    admin@example.com
+      URL:      http://localhost:9495/admin
+      Email:    admin@vtcbuilder.com
       Password: admin123
    
    ─────────────────────────────────────────────────────────────────────
    
    Client Demo :
    
-      URL:      http://localhost:3000/client
-      Email:    client@example.com
-      Password: client123
+      URL:      http://localhost:9494/dashboard
+      Email:    admin@demo-vtc-company.com
+      Password: admin123
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

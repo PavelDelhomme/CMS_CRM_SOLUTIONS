@@ -16,7 +16,7 @@ wait_for_service() {
     echo "⏳ Attente du démarrage de $service..."
 
     while [ $attempt -le $max_attempts ]; do
-        if docker-compose -f ../docker-compose.django.yml ps $service | grep -q "Up"; then
+        if docker-compose -f ../docker-compose.simple.yml ps $service | grep -q "Up"; then
             echo "✅ $service est démarré !"
             return 0
         fi
@@ -32,7 +32,7 @@ wait_for_service() {
 
 # Démarrer les services de base
 echo "🔧 Démarrage de PostgreSQL et Redis..."
-docker-compose -f ../docker-compose.django.yml up -d postgres redis
+docker-compose -f ../docker-compose.simple.yml up -d postgres redis
 
 # Attendre PostgreSQL
 wait_for_service postgres
@@ -42,32 +42,29 @@ wait_for_service redis
 
 # Démarrer le backend Django
 echo "🔧 Démarrage du backend Django..."
-docker-compose -f ../docker-compose.django.yml up -d backend
+docker-compose -f ../docker-compose.simple.yml up -d backend
 
 # Attendre que Django soit prêt
 sleep 10
 
 # Démarrer le frontend
 echo "🔧 Démarrage du frontend..."
-docker-compose -f ../docker-compose.django.yml up -d frontend
+docker-compose -f ../docker-compose.simple.yml up -d frontend
 
 # Démarrer PgAdmin
 echo "🔧 Démarrage de PgAdmin..."
-docker-compose -f ../docker-compose.django.yml up -d pgadmin
-
-# Démarrer Traefik en dernier
-echo "🔧 Démarrage de Traefik..."
-docker-compose -f ../docker-compose.django.yml up -d traefik
+docker-compose -f ../docker-compose.simple.yml up -d pgadmin
 
 echo ""
 echo "🎉 VTCBuilder Django est démarré !"
 echo ""
 echo "📍 URLs d'accès :"
-echo "   Frontend:     http://localhost:8001"
-echo "   API Django:   http://api.localhost:7080/api/"
-echo "   Admin:        http://api.localhost:7080/admin/"
-echo "   Traefik:      http://localhost:7081"
-echo "   PgAdmin:      http://localhost:8082"
+echo "   Frontend:     http://localhost:9494"
+echo "   API Django:   http://localhost:9495/api/"
+echo "   Admin:        http://localhost:9495/admin/"
+echo "   PgAdmin:      http://localhost:9498"
+echo "   PostgreSQL:   localhost:9496"
+echo "   Redis:        localhost:9497"
 echo ""
 echo "🔐 Comptes de test :"
 echo "   Super Admin: admin@vtcbuilder.com / admin123"

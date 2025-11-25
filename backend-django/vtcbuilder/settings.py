@@ -34,6 +34,7 @@ SHARED_APPS = [
 
     # Local apps (shared)
     'tenants',
+    'billing',
 ]
 
 TENANT_APPS = [
@@ -61,6 +62,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'vtcbuilder.urls'
 PUBLIC_SCHEMA_URLCONF = 'vtcbuilder.urls_public'
+
+# Disable APPEND_SLASH to avoid redirect issues with POST requests
+APPEND_SLASH = False
 
 TEMPLATES = [
     {
@@ -106,6 +110,7 @@ AUTH_USER_MODEL = 'tenants.User'
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
+    'tenants.backends.EmailBackend',  # Email authentication first
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 ]
@@ -164,11 +169,11 @@ SIMPLE_JWT = {
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8001",
-    "http://127.0.0.1:8001",
-    "http://api.localhost:7080",
+    "http://localhost:9494",
+    "http://127.0.0.1:9494",
+    "http://localhost:9495",
+    "http://127.0.0.1:9495",
+    "http://api.localhost:9400",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -194,4 +199,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@vtcbuilder.com')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:9494')
 

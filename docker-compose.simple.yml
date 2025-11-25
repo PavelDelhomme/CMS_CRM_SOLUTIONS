@@ -15,7 +15,7 @@ services:
       POSTGRES_USER: vtcbuilder_user
       POSTGRES_PASSWORD: vtcbuilder_password
     ports:
-      - "5434:5432"
+      - "9496:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -31,7 +31,7 @@ services:
     image: redis:7-alpine
     container_name: vtcbuilder_redis
     ports:
-      - "6381:6379"
+      - "9497:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -59,7 +59,7 @@ services:
       DJANGO_SETTINGS_MODULE: vtcbuilder.settings
       ALLOWED_HOSTS: "*"
     ports:
-      - "8088:8000"  # Django sur le port 8088
+      - "9495:8000"  # Django sur le port 9495
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,9 +80,9 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:8088
+      - NEXT_PUBLIC_API_URL=http://localhost:9495
     ports:
-      - "3004:3000"  # Next.js sur le port 3004
+      - "9494:3000"  # Next.js sur le port 9494
     networks:
       - cms_crm_network
 
@@ -95,7 +95,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
-      - "8084:80"
+      - "9498:80"
     depends_on:
       - postgres
     networks:

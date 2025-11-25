@@ -30,17 +30,24 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     setLoading(true)
     try {
-      await authService.login(data)
+      const response = await authService.login(data)
       
-      if (authService.isSuperAdmin()) {
-        router.push('/admin/dashboard')
+      // Vérifier si l'utilisateur est authentifié
+      if (authService.isAuthenticated()) {
+        const user = authService.getStoredUser()
+        if (user?.roles?.some((role: any) => role === 'super-admin' || role.name === 'super-admin')) {
+          router.push('/admin/dashboard')
+        } else {
+          router.push('/dashboard')
+        }
+        toast.success('Connexion réussie !')
       } else {
-        router.push('/dashboard')
+        toast.error('Erreur de connexion')
       }
-      
-      toast.success('Connexion réussie !')
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Erreur de connexion')
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erreur de connexion'
+      toast.error(errorMessage)
+      console.error('Login error:', error)
     } finally {
       setLoading(false)
     }
@@ -128,8 +135,8 @@ export default function LoginPage() {
           </div>
           
           <div className="mt-4 text-xs text-gray-600 space-y-1">
-            <p><strong>Super Admin:</strong> admin@vtcbuilder.local / admin123</p>
-            <p><strong>Tenant Demo:</strong> jean@vtcdemo.fr / demo123</p>
+            <p><strong>Super Admin:</strong> admin@vtcbuilder.com / admin123</p>
+            <p><strong>Tenant Demo:</strong> admin@demo-vtc-company.com / admin123</p>
           </div>
         </div>
       </div>
