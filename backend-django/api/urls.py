@@ -15,6 +15,10 @@ from pages.views import PageViewSet
 from services.views import ServiceViewSet
 from bookings.views import BookingViewSet
 from media.views import MediaViewSet, TemplateViewSet
+from billing.views import (
+    PricingPlanViewSet, SubscriptionViewSet,
+    InvoiceViewSet, PaymentViewSet, billing_stats
+)
 from .views import DashboardView
 
 # Router for viewsets
@@ -26,6 +30,10 @@ router.register(r'services', ServiceViewSet, basename='service')
 router.register(r'bookings', BookingViewSet, basename='booking')
 router.register(r'media', MediaViewSet, basename='media')
 router.register(r'templates', TemplateViewSet, basename='template')
+router.register(r'pricing-plans', PricingPlanViewSet, basename='pricing-plan')
+router.register(r'subscriptions', SubscriptionViewSet, basename='subscription')
+router.register(r'invoices', InvoiceViewSet, basename='invoice')
+router.register(r'payments', PaymentViewSet, basename='payment')
 
 urlpatterns = [
     # Authentication (support both with and without trailing slash)
@@ -50,6 +58,10 @@ urlpatterns = [
 
     # Dashboard
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    
+    # Billing stats
+    path('billing/stats', billing_stats, name='billing-stats'),
+    path('billing/stats/', billing_stats, name='billing-stats-slash'),
 
     # Include router URLs
     path('', include(router.urls)),

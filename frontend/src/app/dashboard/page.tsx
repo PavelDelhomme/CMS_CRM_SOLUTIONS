@@ -143,6 +143,24 @@ export default function TenantDashboard() {
             </div>
           </button>
 
+        {/* Facturation */}
+        <button
+          onClick={() => router.push('/dashboard/billing')}
+          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+        >
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-emerald-500 rounded-lg p-3">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Facturation</h3>
+                <p className="text-sm text-gray-600">Abonnements & paiements</p>
+              </div>
+            </div>
+          </button>
+
         {/* Paramètres */}
         <button
           onClick={() => router.push('/dashboard/settings')}
