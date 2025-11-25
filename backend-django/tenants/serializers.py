@@ -111,55 +111,51 @@ class TenantSerializer(serializers.ModelSerializer):
         else:
             invitation_token = existing_token.token
         
+        # Generate setup URL
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:9494')
+        setup_url = f"{frontend_url}/setup?token={invitation_token}&email={admin_email}"
+        
+        # Send invitation email
         try:
-            
-            # Generate setup URL
-            frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:9494')
-            # For local development, use tenant slug subdomain pattern
-            # In production, this would be tenant.domain.com
-            setup_url = f"{frontend_url}/setup?token={invitation_token}&email={admin_email}"
-            
-            # Send invitation email
-            try:
-                send_mail(
-                    subject=f'Invitation à configurer votre site VTC - {tenant.name}',
-                    message=f'''
+            send_mail(
+                subject=f'Invitation à configurer votre site VTC - {tenant.name}',
+                message=f'''
 Bonjour,
 
 Vous avez été invité à configurer votre compte VTCBuilder pour {tenant.name}.
 
-Cliquez sur le lien suivant pour définir votre mot de passe et accéder à votre espace d'administration (lien valable 7 jours) :
+Cliquez sur le lien suivant pour définir votre mot de passe et accéder à votre espace d'administration (lien valable 30 jours) :
 {setup_url}
 
 Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.
 
 Cordialement,
 L'équipe VTCBuilder
-                    ''',
-                    html_message=f'''
-                    <html>
-                    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                        <h2>Invitation à configurer votre compte VTCBuilder</h2>
-                        <p>Bonjour,</p>
-                        <p>Vous avez été invité à configurer votre compte VTCBuilder pour <strong>{tenant.name}</strong>.</p>
-                        <p>
-                            <a href="{setup_url}" style="background-color: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                                Configurer mon compte
-                            </a>
-                        </p>
-                        <p>Ou copiez ce lien dans votre navigateur :</p>
-                        <p style="word-break: break-all; color: #666;">{setup_url}</p>
-                        <p><small>Ce lien est valable pendant 7 jours.</small></p>
-                        <p>Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.</p>
-                        <hr>
-                        <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
-                    </body>
-                    </html>
-                    ''',
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
-                    recipient_list=[admin_email],
-                    fail_silently=False,
-                )
+                ''',
+                html_message=f'''
+                <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2>Invitation à configurer votre compte VTCBuilder</h2>
+                    <p>Bonjour,</p>
+                    <p>Vous avez été invité à configurer votre compte VTCBuilder pour <strong>{tenant.name}</strong>.</p>
+                    <p>
+                        <a href="{setup_url}" style="background-color: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                            Configurer mon compte
+                        </a>
+                    </p>
+                    <p>Ou copiez ce lien dans votre navigateur :</p>
+                    <p style="word-break: break-all; color: #666;">{setup_url}</p>
+                    <p><small>Ce lien est valable pendant 30 jours.</small></p>
+                    <p>Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.</p>
+                    <hr>
+                    <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                </body>
+                </html>
+                ''',
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
+                recipient_list=[admin_email],
+                fail_silently=False,
+            )
         except Exception as e:
             # Email sending failure shouldn't prevent tenant creation
             import logging
