@@ -266,6 +266,55 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserRegisterSerializer
         return UserSerializer
 
+    def update(self, request, *args, **kwargs):
+        """Update user with permission checks"""
+        user = self.get_object()
+        request_user = request.user
+        
+        # Check permissions
+        if not request_user.is_super_admin():
+            # Tenant admin can only update users in their tenant
+            if not request_user.is_tenant_admin() or request_user.tenant != user.tenant:
+                return Response(
+                    {'error': 'Vous n\'avez pas la permission de modifier cet utilisateur'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        
+        # Prevent changing super-admin role unless you're super-admin
+        if 'role' in request.data and request.data['role'] != 'super-admin':
+            if user.is_super_admin() and not request_user.is_super_admin():
+                return Response(
+                    {'error': 'Seul un super admin peut modifier le rôle d\'un super admin'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        
+        # Handle tenant assignment - check for tenant_id in data
+        if 'tenant_id' in request.data or 'tenant' in request.data:
+            tenant_id = request.data.get('tenant_id') or request.data.get('tenant')
+            if tenant_id:
+                try:
+                    from .models import Tenant
+                    tenant = Tenant.objects.get(id=tenant_id)
+                    request.data['tenant'] = tenant.id
+                except (Tenant.DoesNotExist, ValueError):
+                    return Response(
+                        {'error': 'Tenant non trouvé'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            elif tenant_id is None:
+                # If tenant_id is explicitly null, remove tenant assignment
+                request.data['tenant'] = None
+            
+            # Remove tenant_id if present (we use 'tenant' for the actual field)
+            if 'tenant_id' in request.data:
+                request.data.pop('tenant_id')
+        
+        # If role is super-admin, ensure tenant is None
+        if request.data.get('role') == 'super-admin':
+            request.data['tenant'] = None
+        
+        return super().update(request, *args, **kwargs)
+
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
         """Activate a user"""

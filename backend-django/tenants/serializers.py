@@ -167,6 +167,7 @@ L'équipe VTCBuilder
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model"""
     tenant_name = serializers.CharField(source='tenant.name', read_only=True)
+    tenant_id = serializers.IntegerField(source='tenant.id', read_only=True, allow_null=True)
     roles = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
@@ -176,11 +177,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name', 'name',
             'tenant', 'tenant_id', 'tenant_name', 'avatar', 'phone', 'role', 'roles', 'status',
-            'permissions', 'email_verified_at', 'created_at', 'updated_at'
+            'permissions', 'email_verified_at', 'created_at', 'updated_at', 'password'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'tenant_name', 'tenant_id']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True, 'required': False},
+            'tenant': {'required': False, 'allow_null': True}
         }
 
     def get_roles(self, obj):
@@ -201,6 +203,8 @@ class UserSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         if instance.tenant:
             data['tenant_id'] = instance.tenant.id
+        else:
+            data['tenant_id'] = None
         return data
 
     def create(self, validated_data):
