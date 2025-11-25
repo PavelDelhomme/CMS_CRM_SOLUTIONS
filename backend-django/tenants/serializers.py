@@ -48,37 +48,59 @@ class TenantSerializer(serializers.ModelSerializer):
         # Use the email provided in tenant.email to create the admin user
         admin_email = validated_data.get('email', tenant.email)
         
+        # If no email provided, generate a default one
+        if not admin_email:
+            admin_email = f"admin@{tenant.slug}.vtcbuilder.local"
+            tenant.email = admin_email
+            tenant.save(update_fields=['email'])
+        
         # Generate username from email
         username_base = admin_email.split('@')[0].replace('.', '_').replace('-', '_')
-        tenant_slug = tenant.slug.replace('-', '_')
+        tenant_slug = tenant.slug.replace('-', '_').replace('.', '_')
         username = f"{username_base}_{tenant_slug}"[:30]  # Max 30 chars for username
         
-        # Generate a random password (user will set their own via invitation)
-        random_password = get_random_string(length=32)
-        
-        # Create admin user in public schema (for authentication)
-        try:
+        # Check if user already exists with this email
+        existing_user = User.objects.filter(email=admin_email).first()
+        if existing_user:
+            # Update existing user to be admin of this tenant
+            existing_user.tenant = tenant
+            existing_user.role = 'tenant-admin'
+            existing_user.status = 'pending'
+            existing_user.save()
+            admin_user = existing_user
+        else:
+            # Generate a random password (user will set their own via invitation)
+            random_password = get_random_string(length=32)
+            
+            # Create admin user in public schema (for authentication)
             admin_user = User.objects.create_user(
                 username=username,
                 email=admin_email,
                 password=random_password,  # Temporary password, will be changed via invitation
-                first_name='',
-                last_name='',
+                first_name='Admin',
+                last_name=tenant.name[:30] if tenant.name else 'User',
                 tenant=tenant,
                 role='tenant-admin',
                 status='pending'  # Pending until they complete setup
             )
             
-            # Assign permissions if function exists
-            try:
-                from .permissions import assign_role_permissions
-                assign_role_permissions(admin_user, 'tenant-admin')
-            except ImportError:
-                pass  # Permissions system optional
-            
-            # Create invitation token (valid for 7 days)
+        # Assign permissions if function exists
+        try:
+            from .permissions import assign_role_permissions
+            assign_role_permissions(admin_user, 'tenant-admin')
+        except ImportError:
+            pass  # Permissions system optional
+        
+        # Create invitation token (valid for 30 days) - check if one already exists
+        existing_token = InvitationToken.objects.filter(
+            user=admin_user,
+            tenant=tenant,
+            used=False
+        ).first()
+        
+        if not existing_token:
             invitation_token = get_random_string(length=64)
-            expires_at = timezone.now() + timedelta(days=7)
+            expires_at = timezone.now() + timedelta(days=30)
             
             InvitationToken.objects.create(
                 user=admin_user,
@@ -86,6 +108,10 @@ class TenantSerializer(serializers.ModelSerializer):
                 token=invitation_token,
                 expires_at=expires_at
             )
+        else:
+            invitation_token = existing_token.token
+        
+        try:
             
             # Generate setup URL
             frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:9494')
@@ -134,15 +160,10 @@ L'équipe VTCBuilder
                     recipient_list=[admin_email],
                     fail_silently=False,
                 )
-            except Exception as e:
-                # Email sending failure shouldn't prevent tenant creation
-                import logging
-                logging.getLogger(__name__).error(f"Failed to send invitation email: {e}")
-            
         except Exception as e:
-            # Admin creation failure shouldn't prevent tenant creation, but log it
+            # Email sending failure shouldn't prevent tenant creation
             import logging
-            logging.getLogger(__name__).warning(f"Could not create admin for tenant {tenant.name}: {e}")
+            logging.getLogger(__name__).error(f"Failed to send invitation email: {e}")
         
         return tenant
 
