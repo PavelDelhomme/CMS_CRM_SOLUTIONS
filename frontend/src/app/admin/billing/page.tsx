@@ -637,42 +637,11 @@ export default function BillingPage() {
 
       {/* Payments Tab */}
       {activeTab === 'payments' && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <ResponsiveTable
-            headers={['Date', 'Tenant', 'Montant', 'Méthode', 'Statut']}
-            emptyMessage="Aucun paiement"
-          >
-            {payments.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                  Aucun paiement
-                </td>
-              </tr>
-            ) : (
-              payments.map((payment) => (
-                <tr key={payment.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {payment.paid_at ? new Date(payment.paid_at).toLocaleDateString('fr-FR') : '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {payment.tenant?.name || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    {payment.amount} {payment.currency}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
-                    {payment.method === 'card' ? 'Carte bancaire' : payment.method}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(payment.status)}`}>
-                      {payment.status === 'succeeded' ? 'Réussi' : payment.status}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            )}
-          </ResponsiveTable>
-        </div>
+        <PaymentsHistoryTab
+          payments={payments}
+          getStatusBadge={getStatusBadge}
+          onUpdate={loadBillingData}
+        />
       )}
 
       {/* Plans Tab */}
@@ -1474,6 +1443,232 @@ function PricingPlanForm({
         >
           Enregistrer
         </button>
+      </div>
+    </div>
+  )
+}
+
+// Payments History Tab Component
+function PaymentsHistoryTab({
+  payments,
+  getStatusBadge,
+  onUpdate,
+}: {
+  payments: Payment[]
+  getStatusBadge: (status: string) => string
+  onUpdate: () => void
+}) {
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterMethod, setFilterMethod] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<'date' | 'amount'>('date')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+  const getStatusLabel = (status: string) => {
+    const labels: { [key: string]: string } = {
+      pending: 'En attente',
+      processing: 'En cours',
+      succeeded: 'Réussi',
+      failed: 'Échoué',
+      refunded: 'Remboursé',
+    }
+    return labels[status] || status
+  }
+
+  const getMethodLabel = (method: string) => {
+    const labels: { [key: string]: string } = {
+      card: 'Carte bancaire',
+      bank_transfer: 'Virement bancaire',
+      paypal: 'PayPal',
+      other: 'Autre',
+    }
+    return labels[method] || method
+  }
+
+  // Filter and sort payments
+  const filteredPayments = payments
+    .filter((p) => {
+      if (filterStatus !== 'all' && p.status !== filterStatus) return false
+      if (filterMethod !== 'all' && p.method !== filterMethod) return false
+      return true
+    })
+    .sort((a, b) => {
+      let aValue: any, bValue: any
+      if (sortBy === 'date') {
+        aValue = new Date(a.paid_at || a.created_at).getTime()
+        bValue = new Date(b.paid_at || b.created_at).getTime()
+      } else {
+        aValue = parseFloat(a.amount.toString())
+        bValue = parseFloat(b.amount.toString())
+      }
+      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+    })
+
+  // Calculate statistics
+  const stats = {
+    total: filteredPayments.length,
+    totalAmount: filteredPayments
+      .filter((p) => p.status === 'succeeded')
+      .reduce((sum, p) => sum + parseFloat(p.amount.toString()), 0),
+    succeeded: filteredPayments.filter((p) => p.status === 'succeeded').length,
+    failed: filteredPayments.filter((p) => p.status === 'failed').length,
+    pending: filteredPayments.filter((p) => p.status === 'pending').length,
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 mb-2">Total Paiements</p>
+          <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 mb-2">Montant Total</p>
+          <p className="text-3xl font-bold text-green-600">
+            {stats.totalAmount.toFixed(2)}€
+          </p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 mb-2">Réussis</p>
+          <p className="text-3xl font-bold text-blue-600">{stats.succeeded}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 mb-2">Échoués</p>
+          <p className="text-3xl font-bold text-red-600">{stats.failed}</p>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Statut
+            </label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Tous</option>
+              <option value="pending">En attente</option>
+              <option value="processing">En cours</option>
+              <option value="succeeded">Réussi</option>
+              <option value="failed">Échoué</option>
+              <option value="refunded">Remboursé</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Méthode
+            </label>
+            <select
+              value={filterMethod}
+              onChange={(e) => setFilterMethod(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Toutes</option>
+              <option value="card">Carte bancaire</option>
+              <option value="bank_transfer">Virement bancaire</option>
+              <option value="paypal">PayPal</option>
+              <option value="other">Autre</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Trier par
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="date">Date</option>
+              <option value="amount">Montant</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Ordre
+            </label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="desc">Décroissant</option>
+              <option value="asc">Croissant</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Payments Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <ResponsiveTable
+          headers={['Date', 'Tenant', 'Facture', 'Montant', 'Méthode', 'Statut', 'Détails']}
+          emptyMessage="Aucun paiement"
+        >
+          {filteredPayments.length === 0 ? (
+            <tr>
+              <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                Aucun paiement trouvé
+              </td>
+            </tr>
+          ) : (
+            filteredPayments.map((payment) => (
+              <tr key={payment.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {payment.paid_at
+                    ? new Date(payment.paid_at).toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : payment.created_at
+                    ? new Date(payment.created_at).toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {payment.tenant?.name || '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {payment.invoice?.invoice_number || '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  {parseFloat(payment.amount.toString()).toFixed(2)} {payment.currency}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {getMethodLabel(payment.method)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
+                      payment.status
+                    )}`}
+                  >
+                    {getStatusLabel(payment.status)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {payment.stripe_payment_intent_id && (
+                    <span className="text-xs text-gray-500" title={payment.stripe_payment_intent_id}>
+                      Stripe: {payment.stripe_payment_intent_id.slice(-8)}
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))
+          )}
+        </ResponsiveTable>
       </div>
     </div>
   )
