@@ -153,12 +153,19 @@ collectstatic: ## Collecter les fichiers statiques
 
 ##@ Tests et qualité
 
-test: ## Exécuter les tests
-	@echo "$(GREEN)🧪 Exécution des tests...$(NC)"
+test: ## Exécuter les tests avec pytest
+	@echo "$(GREEN)🧪 Exécution des tests avec pytest...$(NC)"
 	@$(DOCKER_COMPOSE) up -d postgres redis backend
 	@sleep 5
-	@docker exec $(BACKEND_CONTAINER) python manage.py test
+	@docker exec $(BACKEND_CONTAINER) pytest --verbose --tb=short
 	@echo "$(GREEN)✅ Tests terminés !$(NC)"
+
+test-coverage: ## Exécuter les tests avec couverture
+	@echo "$(GREEN)📊 Exécution des tests avec couverture...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) pytest --cov=. --cov-report=html --cov-report=term-missing --verbose
+	@echo "$(GREEN)✅ Rapport de couverture généré dans htmlcov/index.html$(NC)"
 
 lint: ## Vérification du code avec flake8
 	@echo "$(BLUE)🔍 Vérification du code...$(NC)"

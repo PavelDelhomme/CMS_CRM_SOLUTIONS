@@ -32,7 +32,7 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         {/* Main Content */}
-        <div className="flex-1 lg:ml-64">
+        <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
           {/* Desktop Header avec hamburger pour ouvrir/fermer */}
           <header className="hidden lg:block bg-white shadow">
             <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">

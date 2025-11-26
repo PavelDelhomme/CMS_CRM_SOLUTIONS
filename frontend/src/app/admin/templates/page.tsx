@@ -230,18 +230,18 @@ export default function AdminTemplatesPage() {
     >
       {/* Form */}
       {showForm && (
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="bg-white shadow rounded-lg p-4 sm:p-6 mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
             {editingTemplate ? 'Modifier le Template' : 'Créer un Nouveau Template'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Tabs */}
-            <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
+            <div className="border-b border-gray-200 overflow-x-auto">
+              <nav className="-mb-px flex space-x-4 sm:space-x-8">
                 <button
                   type="button"
                   onClick={() => setActiveTab('info')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`py-2 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                     activeTab === 'info'
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -252,7 +252,7 @@ export default function AdminTemplatesPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('html')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`py-2 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                     activeTab === 'html'
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -263,7 +263,7 @@ export default function AdminTemplatesPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('css')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`py-2 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                     activeTab === 'css'
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -415,8 +415,8 @@ export default function AdminTemplatesPage() {
                   <textarea
                     value={formData.html_content}
                     onChange={(e) => setFormData({ ...formData, html_content: e.target.value })}
-                    rows={20}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    rows={15}
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-xs sm:text-sm"
                     placeholder="<!-- Entrez votre code HTML ici -->"
                   />
                 </div>
@@ -450,8 +450,8 @@ export default function AdminTemplatesPage() {
                   <textarea
                     value={formData.css_content}
                     onChange={(e) => setFormData({ ...formData, css_content: e.target.value })}
-                    rows={20}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    rows={15}
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-xs sm:text-sm"
                     placeholder="/* Entrez votre code CSS ici */"
                   />
                 </div>
@@ -502,10 +502,10 @@ export default function AdminTemplatesPage() {
                     <div className="text-xs text-gray-500 mt-1">{template.description}</div>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">{template.slug}</code>
+                <td className="px-3 sm:px-6 py-4">
+                  <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded break-all">{template.slug}</code>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getCategoryBadge(template.category)}`}>
                     {getCategoryLabel(template.category)}
                   </span>

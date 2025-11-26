@@ -125,7 +125,7 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col ${
           sidebarOpen 
             ? 'translate-x-0' 
-            : '-translate-x-full lg:translate-x-0'
+            : '-translate-x-full'
         }`}
       >
       <div className="p-6 border-b flex items-center justify-between">
@@ -135,11 +135,12 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
             {mounted ? 'Super Admin' : 'Admin'}
           </p>
         </div>
-        {/* Close button - visible sur mobile, et sur desktop si sidebar est ouverte */}
+        {/* Close button - toujours visible pour pouvoir fermer */}
         <button
           onClick={handleClose}
-          className="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100"
+          className="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 transition-colors"
           aria-label="Fermer le menu"
+          title="Fermer le menu"
         >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

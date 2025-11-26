@@ -32,7 +32,12 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 - ✅ Plans tarifaires et quotas
 - ✅ Système de facturation (modèles + API)
 - ✅ Dashboard avec statistiques
+- ✅ Statistiques détaillées avec monitoring complet
 - ✅ Mise à jour partielle utilisateurs (permet modification uniquement du mot de passe)
+- ✅ Système de paramètres globaux (singleton)
+- ✅ Gestion des templates avec HTML/CSS
+- ✅ Payment Methods (modes de paiement)
+- ✅ Gestion des erreurs améliorée (retour de tableaux vides au lieu de 500)
 
 #### Frontend Next.js
 - ✅ Interface super admin complète
@@ -43,6 +48,11 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 - ✅ Gestion utilisateurs tenant
 - ✅ Gestion facturation tenant
 - ✅ Modification mot de passe directe dans liste utilisateurs
+- ✅ Page statistiques détaillées avec alertes et monitoring
+- ✅ Page templates avec upload HTML/CSS
+- ✅ Page settings pour configuration système
+- ✅ Gestion gracieuse des erreurs API (404, 500)
+- ✅ Protection contre les erreurs undefined/null
 
 #### Configuration
 - ✅ Ports remappés sur 9494+ (frontend: 9494, backend: 9495)
@@ -57,17 +67,26 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 
 ## 🔧 Corrections Récentes
 
-1. ✅ **Statistiques dashboard** - Exclusion tenants soft-deleted
-2. ✅ **Affichage utilisateurs tenant** - Filtre par tenant_id corrigé
-3. ✅ **Mot de passe tenant** - Changé en `tenant123`
-4. ✅ **Modification mot de passe directe** - Formulaire inline dans onglet Utilisateurs
-5. ✅ **Erreur 400 Bad Request corrigée** - `username` et `email` rendus optionnels pour mises à jour partielles
-6. ✅ **Mise à jour partielle** - Permet modification uniquement du mot de passe (partial=True + extra_kwargs)
-7. ✅ **Gestion erreurs extensions** - Messages explicites pour ERR_BLOCKED_BY_CLIENT
-8. ✅ **Nettoyage documentation** - 47 fichiers .md supprimés, consolidation dans STATUS.md et LOGS.md
-9. ✅ **Boucle infinie de logs** - Suppression console.log répétitifs dans TenantUsersTab
-10. ✅ **Erreur 400 PUT → PATCH** - Changement de PUT vers PATCH pour mises à jour partielles (user.service.ts)
-11. ✅ **Configuration email SMTP OVH** - Configuration SMTP dans docker-compose.simple.yml (ssl0.ovh.net:587)
+### Janvier 2025
+1. ✅ **Page Stats - Erreurs corrigées** - Initialisation complète des valeurs par défaut, protection contre undefined
+2. ✅ **Page EditUserPage - Erreur tenants.map** - Gestion correcte de la réponse paginée, vérifications Array.isArray()
+3. ✅ **Templates API - Erreur 500 corrigée** - Logs détaillés, retour de tableau vide en cas d'erreur
+4. ✅ **Templates - Champs HTML/CSS** - Ajout de html_content et css_content, interface avec onglets
+5. ✅ **Payment Methods - Gestion 404** - Gestion gracieuse des erreurs, messages en développement seulement
+6. ✅ **System Settings - Endpoint créé** - Singleton pour paramètres globaux, test email intégré
+
+### Novembre 2024
+7. ✅ **Statistiques dashboard** - Exclusion tenants soft-deleted
+8. ✅ **Affichage utilisateurs tenant** - Filtre par tenant_id corrigé
+9. ✅ **Mot de passe tenant** - Changé en `tenant123`
+10. ✅ **Modification mot de passe directe** - Formulaire inline dans onglet Utilisateurs
+11. ✅ **Erreur 400 Bad Request corrigée** - `username` et `email` rendus optionnels pour mises à jour partielles
+12. ✅ **Mise à jour partielle** - Permet modification uniquement du mot de passe (partial=True + extra_kwargs)
+13. ✅ **Gestion erreurs extensions** - Messages explicites pour ERR_BLOCKED_BY_CLIENT
+14. ✅ **Nettoyage documentation** - 47 fichiers .md supprimés, consolidation dans STATUS.md et LOGS.md
+15. ✅ **Boucle infinie de logs** - Suppression console.log répétitifs dans TenantUsersTab
+16. ✅ **Erreur 400 PUT → PATCH** - Changement de PUT vers PATCH pour mises à jour partielles (user.service.ts)
+17. ✅ **Configuration email SMTP OVH** - Configuration SMTP dans docker-compose.simple.yml (ssl0.ovh.net:587)
 
 ---
 
@@ -101,6 +120,8 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 ## 📋 Tâches à Faire
 
 ### Priorité Haute
+- [ ] **Migration Django pour champs HTML/CSS** - Créer migration pour html_content et css_content dans Template
+- [ ] **Tests automatisés complets** - Finaliser le système de tests pour backend et frontend
 - [ ] **Routing multi-tenant** - Activer middleware django-tenants
 - [ ] **Pages tenant** - Créer pages login/admin pour sous-domaines tenant
 - [ ] **Site public tenant** - Créer pages publiques du tenant
@@ -111,12 +132,34 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 - [ ] **Éditeur WordPress** - WYSIWYG pour pages tenant
 - [ ] **Templates site** - Templates pour sites publics
 - [ ] **Analytics** - Statistiques d'utilisation
+- [ ] **Système de blocs** - Architecture de blocs pour éditeur de contenu
 
 ### Priorité Basse
 - [ ] **Notifications** - Système de notifications
 - [ ] **API webhooks** - Webhooks pour événements
 - [ ] **Export données** - Export CSV/JSON
 - [ ] **Multi-langue** - Internationalisation
+
+## 🧪 Tests Automatisés
+
+Un système de tests automatisés a été créé dans le répertoire `tests/`.
+
+### Structure
+- `tests/README.md` - Documentation complète du système de tests
+- `tests/api/test_endpoints.sh` - Script bash pour tester tous les endpoints API
+
+### Exécution
+
+```bash
+# Tests API (bash)
+./tests/api/test_endpoints.sh
+
+# Tests Backend Django
+cd backend-django && python manage.py test
+
+# Tests Frontend Next.js
+cd frontend && npm run test
+```
 
 ---
 
@@ -143,20 +186,55 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 
 ## 📈 Progression Globale
 
-- **Backend** : ~85% ✅
-- **Frontend Super Admin** : ~90% ✅
-- **Frontend Tenant Admin** : ~70% ✅
+- **Backend** : ~90% ✅ (améliorations gestion erreurs, templates HTML/CSS)
+- **Frontend Super Admin** : ~95% ✅ (stats, templates, settings fonctionnels)
+- **Frontend Tenant Admin** : ~75% ✅ (améliorations UX)
 - **Frontend Public** : ~10% ⏳
 - **Routing Multi-Tenant** : ~30% ⏳
-- **Documentation** : ~95% ✅
+- **Documentation** : ~98% ✅ (STATUS.md à jour, tests documentés)
+- **Tests Automatisés** : ~30% ⏳ (système de base créé, à étendre)
 
 ---
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-11-26 13:40
+**Date** : 2025-01-XX (Dernière mise à jour majeure)
 
-**Modifications** :
+**Modifications Récentes** :
+
+### ✅ Corrections Majeures (2025-01)
+1. ✅ **Page Stats - Erreurs corrigées**
+   - Correction de l'initialisation des valeurs par défaut pour `activity` et `registrations`
+   - Protection contre les erreurs "Cannot read properties of undefined"
+   - Gestion gracieuse des erreurs 404 sur `/api/stats/detailed/`
+
+2. ✅ **Page EditUserPage - Erreurs corrigées**
+   - Correction de l'erreur "tenants.map is not a function"
+   - Gestion correcte de la réponse paginée de l'API
+   - Import `toast` ajouté pour les notifications
+
+3. ✅ **Templates API - Erreur 500 corrigée**
+   - Amélioration de la gestion des erreurs dans `TemplateViewSet.list()`
+   - Logs détaillés pour le débogage
+   - Retour de tableau vide au lieu de 500 en cas d'erreur
+
+4. ✅ **Champs HTML/CSS ajoutés aux Templates**
+   - Ajout de `html_content` et `css_content` au modèle Template
+   - Interface améliorée avec onglets (Info / HTML / CSS)
+   - Upload de fichiers HTML/CSS
+   - Éditeurs de code pour HTML et CSS
+
+5. ✅ **Payment Methods API - Gestion d'erreur améliorée**
+   - Gestion gracieuse des erreurs 404
+   - Message d'avertissement seulement en développement
+   - Retour automatique de tableau vide
+
+6. ✅ **Système Settings - Endpoint créé**
+   - Endpoint `/api/system-settings/` pour la configuration système
+   - Endpoint `/api/system-settings/test_email/` pour tester les emails
+   - Gestion singleton pour les paramètres système
+
+### 📝 Modifications Antérieures (2025-11-26)
 - ✅ **Boucle infinie de logs corrigée** - Suppression console.log répétitifs dans TenantUsersTab
 - ✅ **Erreur 400 corrigée définitivement** - Changement PUT → PATCH dans user.service.ts pour mises à jour partielles
 - ✅ **Configuration email SMTP OVH** - Variables d'environnement ajoutées dans docker-compose.simple.yml

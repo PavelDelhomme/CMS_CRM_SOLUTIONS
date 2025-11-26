@@ -9,8 +9,7 @@ from tenants.views import (
     TenantViewSet, UserViewSet, UserProfileView,
     login_view, register_view, register_with_plan_view, logout_view,
     request_password_reset_view, reset_password_view, verify_reset_token_view,
-    verify_invitation_token_view, complete_invitation_view,
-    impersonate_user_view, stop_impersonating_view, impersonation_status_view
+    verify_invitation_token_view, complete_invitation_view
 )
 from pages.views import PageViewSet
 from services.views import ServiceViewSet

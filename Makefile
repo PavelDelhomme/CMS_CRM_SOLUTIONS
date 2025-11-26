@@ -149,8 +149,24 @@ dbshell: ## Accéder au shell PostgreSQL
 collectstatic: ## Collecter les fichiers statiques
 	@cd backend-django && $(MAKE) collectstatic
 
-test: ## Exécuter les tests
+test: test-backend test-frontend ## Exécuter tous les tests (backend + frontend)
+	@echo "$(GREEN)✅ Tous les tests terminés !$(NC)"
+
+test-backend: ## Exécuter les tests backend
+	@echo "$(GREEN)🧪 Exécution des tests backend...$(NC)"
 	@cd backend-django && $(MAKE) test
+	@echo "$(GREEN)✅ Tests backend terminés !$(NC)"
+
+test-frontend: ## Exécuter les tests frontend
+	@echo "$(GREEN)🧪 Exécution des tests frontend...$(NC)"
+	@cd frontend && npm test -- --passWithNoTests
+	@echo "$(GREEN)✅ Tests frontend terminés !$(NC)"
+
+test-coverage: ## Exécuter les tests avec couverture de code
+	@echo "$(GREEN)📊 Exécution des tests avec couverture...$(NC)"
+	@cd backend-django && $(MAKE) test-coverage
+	@cd frontend && npm test -- --coverage --passWithNoTests
+	@echo "$(GREEN)✅ Rapports de couverture générés !$(NC)"
 
 lint: ## Vérification du code avec flake8
 	@cd backend-django && $(MAKE) lint
@@ -185,6 +201,11 @@ npm-build: ## Build du frontend
 npm-dev: ## Démarrer le mode développement
 	@echo "$(GREEN)🚀 Démarrage du mode développement...$(NC)"
 	@cd frontend && npm run dev
+
+npm-test: ## Tester le frontend (unitaires)
+	@echo "$(GREEN)🧪 Tests unitaires du frontend...$(NC)"
+	@cd frontend && npm test -- --passWithNoTests
+	@echo "$(GREEN)✅ Tests frontend terminés$(NC)"
 
 npm: ## Exécuter une commande npm
 	@echo "$(BLUE)🔧 Exécution de npm $(cmd)...$(NC)"
