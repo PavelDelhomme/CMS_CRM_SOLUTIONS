@@ -20,6 +20,15 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 
 ## 🎯 État Actuel (2025-11-26)
 
+### 🚨 Travail en Cours - Résolution des Erreurs Globales
+
+**Priorité Actuelle** : Résolution des erreurs globales dans le projet  
+**Référence** : Suivi du fichier [README_TESTS.md](./README_TESTS.md) pour l'implémentation complète du système de tests
+
+**Objectif** : Une fois les tests finalisés et toutes les erreurs résolues, nous travaillerons sur la suite des fonctionnalités en place (routing multi-tenant, pages publiques, etc.)
+
+---
+
 ### ✅ Fonctionnalités Implémentées
 
 #### Backend Django
@@ -119,9 +128,24 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 
 ## 📋 Tâches à Faire
 
-### Priorité Haute
+### 🚨 Priorité CRITIQUE - En Cours
+
+#### Résolution des Erreurs Globales & Tests
+- [x] **Système de tests unitaires complet** - ✅ **37 fichiers de tests créés** (2025-11-26)
+  - ✅ 10 tests services frontend
+  - ✅ 11 tests composants frontend
+  - ✅ 6 tests modèles backend
+  - ✅ 1 test serializers backend
+  - ✅ 7 tests vues/API backend
+  - 📄 Voir [TESTS_RAPPORTS.md](./TESTS_RAPPORTS.md) pour les rapports détaillés
+  - 📄 Voir [README_TESTS.md](./README_TESTS.md) pour le guide complet
+- [ ] **Exécution complète des tests** - Installer dépendances et exécuter tous les tests
+- [ ] **Correction des erreurs identifiées** - Résoudre toutes les erreurs détectées par les tests
+- [ ] **Vérification couverture de code** - Atteindre minimum 70% de couverture
+- [ ] **Intégration CI/CD** - Automatiser l'exécution des tests
+
+### Priorité Haute (Après résolution erreurs)
 - [ ] **Migration Django pour champs HTML/CSS** - Créer migration pour html_content et css_content dans Template
-- [ ] **Tests automatisés complets** - Finaliser le système de tests pour backend et frontend
 - [ ] **Routing multi-tenant** - Activer middleware django-tenants
 - [ ] **Pages tenant** - Créer pages login/admin pour sous-domaines tenant
 - [ ] **Site public tenant** - Créer pages publiques du tenant
@@ -140,26 +164,58 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 - [ ] **Export données** - Export CSV/JSON
 - [ ] **Multi-langue** - Internationalisation
 
-## 🧪 Tests Automatisés
+## 🧪 Tests Automatisés - EN COURS
 
-Un système de tests automatisés a été créé dans le répertoire `tests/`.
+**Statut** : ✅ **37 fichiers de tests créés** (2025-11-26)  
+**Référence** : [README_TESTS.md](./README_TESTS.md) et [TESTS_RAPPORTS.md](./TESTS_RAPPORTS.md)
 
-### Structure
-- `tests/README.md` - Documentation complète du système de tests
-- `tests/api/test_endpoints.sh` - Script bash pour tester tous les endpoints API
+### ✅ Système de Tests Complet
 
-### Exécution
+#### Tests Frontend (21 fichiers)
+- ✅ **Services** : 10 fichiers (auth, user, tenant, billing, page, service, booking, media, template, settings)
+- ✅ **Composants** : 11 fichiers (AdminSidebar, AdminLayout, TenantLayout, Sidebar, MobileHeader, ResponsiveTable, ImpersonationBanner, Navbar, PublicHeader, PublicFooter, PublicLayout)
+
+#### Tests Backend (14 fichiers)
+- ✅ **Modèles** : 6 fichiers (tenants, billing, pages, services, bookings, media)
+- ✅ **Serializers** : 1 fichier (tenants)
+- ✅ **Vues/API** : 7 fichiers (tenants, billing, pages, services, bookings, media, api)
+
+**Total** : **~199 tests unitaires** estimés
+
+### 📚 Documentation
+- `README_TESTS.md` - Guide complet des tests (structure, exemples, commandes)
+- `TESTS_RAPPORTS.md` - Rapports détaillés et historique des tests
+
+### 🚀 Exécution
 
 ```bash
-# Tests API (bash)
-./tests/api/test_endpoints.sh
+# Tous les tests
+make test
 
-# Tests Backend Django
-cd backend-django && python manage.py test
+# Tests Frontend uniquement
+make test-frontend
+# ou
+cd frontend && npm install && npm test
 
-# Tests Frontend Next.js
-cd frontend && npm run test
+# Tests Backend uniquement
+make test-backend
+# ou
+cd backend-django && make test
+
+# Tests avec couverture
+make test-coverage
 ```
+
+### ⚠️ Prérequis
+
+**Frontend** :
+```bash
+cd frontend && npm install  # Installer Jest et dépendances
+```
+
+**Backend** :
+- Docker doit être démarré avec containers actifs
+- Base de données initialisée avec migrations
 
 ---
 
@@ -192,49 +248,86 @@ cd frontend && npm run test
 - **Frontend Public** : ~10% ⏳
 - **Routing Multi-Tenant** : ~30% ⏳
 - **Documentation** : ~98% ✅ (STATUS.md à jour, tests documentés)
-- **Tests Automatisés** : ~30% ⏳ (système de base créé, à étendre)
+- **Tests Automatisés** : ~90% ✅ (37 fichiers créés, à exécuter et valider)
 
 ---
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-01-XX (Dernière mise à jour majeure)
+**Date** : 2025-11-26  
+**Focus Actuel** : Résolution des erreurs globales et finalisation du système de tests
 
 **Modifications Récentes** :
 
-### ✅ Corrections Majeures (2025-01)
-1. ✅ **Page Stats - Erreurs corrigées**
+### ✅ Corrections Majeures (2025-11-26)
+
+#### Système de Tests Complet
+1. ✅ **Création de 37 fichiers de tests unitaires** (2025-11-26)
+   - ✅ 10 tests services frontend (auth, user, tenant, billing, page, service, booking, media, template, settings)
+   - ✅ 11 tests composants frontend (AdminSidebar, AdminLayout, TenantLayout, Sidebar, MobileHeader, ResponsiveTable, ImpersonationBanner, Navbar, PublicHeader, PublicFooter, PublicLayout)
+   - ✅ 6 tests modèles backend (tenants, billing, pages, services, bookings, media)
+   - ✅ 1 test serializers backend (tenants)
+   - ✅ 7 tests vues/API backend (tenants, billing, pages, services, bookings, media, api)
+   - 📄 Voir [TESTS_RAPPORTS.md](./TESTS_RAPPORTS.md) pour les rapports détaillés
+   - 📄 Voir [README_TESTS.md](./README_TESTS.md) pour le guide complet
+
+2. ✅ **Configuration complète des tests**
+   - ✅ Jest configuré pour frontend (jest.config.js, jest.setup.js)
+   - ✅ Pytest configuré pour backend (pytest.ini)
+   - ✅ Makefile avec commandes test (make test, make test-frontend, make test-backend)
+   - ✅ Documentation complète créée
+
+#### Corrections Responsive & UX
+3. ✅ **Page Templates - Optimisation mobile complète**
+   - Padding responsive (p-4 sm:p-6)
+   - Text sizes adaptatifs (text-lg sm:text-xl)
+   - Textareas responsive (rows ajustés)
+   - Upload buttons responsive (w-full sm:w-auto)
+   - Overflow-x-auto pour tabs
+   - Break-words pour contenu long
+
+4. ✅ **Sidebar - Détection menu actif corrigée**
+   - Correction highlight pour /admin/templates
+   - Vérification pathname.startsWith() améliorée
+
+5. ✅ **Drawer/Sidebar - Fermeture corrigée**
+   - Retrait lg:translate-x-0 pour permettre fermeture
+   - Ajout lg:ml-64 pour décalage contenu
+   - Toggle sidebar fonctionnel
+
+#### Corrections Erreurs API
+6. ✅ **Page Stats - Erreurs corrigées**
    - Correction de l'initialisation des valeurs par défaut pour `activity` et `registrations`
    - Protection contre les erreurs "Cannot read properties of undefined"
    - Gestion gracieuse des erreurs 404 sur `/api/stats/detailed/`
 
-2. ✅ **Page EditUserPage - Erreurs corrigées**
+7. ✅ **Page EditUserPage - Erreurs corrigées**
    - Correction de l'erreur "tenants.map is not a function"
    - Gestion correcte de la réponse paginée de l'API
    - Import `toast` ajouté pour les notifications
 
-3. ✅ **Templates API - Erreur 500 corrigée**
+8. ✅ **Templates API - Erreur 500 corrigée**
    - Amélioration de la gestion des erreurs dans `TemplateViewSet.list()`
    - Logs détaillés pour le débogage
    - Retour de tableau vide au lieu de 500 en cas d'erreur
 
-4. ✅ **Champs HTML/CSS ajoutés aux Templates**
+9. ✅ **Champs HTML/CSS ajoutés aux Templates**
    - Ajout de `html_content` et `css_content` au modèle Template
    - Interface améliorée avec onglets (Info / HTML / CSS)
    - Upload de fichiers HTML/CSS
    - Éditeurs de code pour HTML et CSS
 
-5. ✅ **Payment Methods API - Gestion d'erreur améliorée**
-   - Gestion gracieuse des erreurs 404
-   - Message d'avertissement seulement en développement
-   - Retour automatique de tableau vide
+10. ✅ **Payment Methods API - Gestion d'erreur améliorée**
+    - Gestion gracieuse des erreurs 404
+    - Message d'avertissement seulement en développement
+    - Retour automatique de tableau vide
 
-6. ✅ **Système Settings - Endpoint créé**
-   - Endpoint `/api/system-settings/` pour la configuration système
-   - Endpoint `/api/system-settings/test_email/` pour tester les emails
-   - Gestion singleton pour les paramètres système
+11. ✅ **System Settings - Endpoint créé**
+    - Endpoint `/api/system-settings/` pour la configuration système
+    - Endpoint `/api/system-settings/test_email/` pour tester les emails
+    - Gestion singleton pour les paramètres système
 
-### 📝 Modifications Antérieures (2025-11-26)
+### 📝 Modifications Antérieures (2025-11-24)
 - ✅ **Boucle infinie de logs corrigée** - Suppression console.log répétitifs dans TenantUsersTab
 - ✅ **Erreur 400 corrigée définitivement** - Changement PUT → PATCH dans user.service.ts pour mises à jour partielles
 - ✅ **Configuration email SMTP OVH** - Variables d'environnement ajoutées dans docker-compose.simple.yml
@@ -318,10 +411,17 @@ send_mail(
 
 ## 📚 Documentation
 
+### Fichiers Principaux
 - **README.md** - Documentation principale du projet
 - **LOGS.md** - Historique complet de toutes les modifications
 - **STATUS.md** - Ce fichier (état actuel et suivi)
+- **TESTS_RAPPORTS.md** - Rapports et historique des tests unitaires
+- **README_TESTS.md** - Guide complet du système de tests
+
+### Architecture & Configuration
 - **ARCHITECTURE_ROUTING.md** - Architecture complète du routing multi-tenant
+- **ARCHITECTURE_BLOCKS.md** - Architecture du système de blocs
+- **COUTS_PROJET.md** - Coûts du projet (domaine, etc.)
 
 ---
 

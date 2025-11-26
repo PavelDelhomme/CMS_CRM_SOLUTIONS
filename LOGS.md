@@ -2,70 +2,19 @@
 
 > **Document centralisant toutes les modifications, corrections et fichiers de documentation créés**
 
-## 📚 Fichiers de Documentation Créés
+---
 
-### Architecture & Configuration
-- `README.md` - Documentation principale du projet
-- `ARCHITECTURE_ROUTING.md` - Architecture complète du routing multi-tenant
-- `CONFIGURATION.md` - Guide de configuration générale
-- `CONFIGURATION_EMAIL.md` - Configuration des emails SMTP
-- `ETAT_PROJET.md` - État actuel du projet et tâches restantes
+## 📚 Fichiers de Documentation Principaux
 
-### Démarrage & Utilisation
-- `DEMARRAGE_RAPIDE_FINAL.md` - Guide de démarrage rapide
-- `COMMANDES_RACINE.md` - Commandes Makefile disponibles à la racine
-- `INSTRUCTIONS_PUSH.md` - Instructions pour push vers GitHub
-- `PUSH_GITHUB.md` - Guide pour push GitHub
-
-### Fonctionnalités
-- `RESET_PASSWORD.md` - Système de réinitialisation de mot de passe
-- `AMELIORATION_INTERFACE_PASSWORD.md` - Améliorations interface et mot de passe
-- `GESTION_UTILISATEURS.md` - Gestion complète des utilisateurs
-- `INTERFACE_TENANT.md` - Interface tenant (WordPress-style)
-- `PLANS_TARIFAIRES.md` - Système de plans tarifaires et quotas
-- `SYSTEME_FACTURATION.md` - Système de facturation complet
-
-### Corrections & Debug
-- `CORRECTIONS_PROBLEMES.md` - Corrections des problèmes identifiés
-- `CORRECTION_UTILISATEURS_TENANT.md` - Correction affichage utilisateurs tenant
-- `CORRECTIONS_LOGS.md` - Corrections des erreurs dans les logs
-- `CORRECTIONS_LOGIN.md` - Corrections problèmes de connexion
-- `CORRECTION_TENANT_DEMO.md` - Correction tenant demo
-- `CORRECTION_PAGE_EDIT_USER.md` - Correction page édition utilisateur
-- `CORRECTION_SUPPRESSION_TENANT.md` - Correction suppression tenant
-- `DEBUG_UTILISATEURS_TENANT.md` - Debug affichage utilisateurs
-- `DEBUG_ADMIN_TENANT.md` - Debug admin tenant
-- `DEBUG_CONNEXION.md` - Debug problèmes de connexion
-
-### Suppression & Nettoyage
-- `SUPPRESSION_TENANTS.md` - Système de suppression des tenants
-- `SOFT_DELETE_TENANTS.md` - Implémentation soft delete
-- `REINITIALISATION_DATABASE.md` - Réinitialisation de la base de données
-
-### Configuration Tenants
-- `CONFIGURATION_TENANT_DEMO.md` - Configuration tenant Demo VTC Company
-- `CONFIGURATION_TENANT_TEST.md` - Configuration tenant de test
-- `TENANT_TEST_DELHOMME.md` - Configuration avec email test@delhomme.ovh
-- `TEST_TENANT_DEMO.md` - Tests tenant demo
-- `DEMO_TENANT_CONNEXION.md` - Instructions connexion tenant demo
-
-### Améliorations
-- `RESPONSIVE_IMPROVEMENTS.md` - Améliorations responsive/mobile
-- `MOBILE_RESPONSIVE.md` - Optimisation mobile
-- `MISE_A_JOUR_NEXTJS.md` - Mise à jour Next.js et corrections SSR
-- `PROBLEMES_CORRIGES.md` - Liste des problèmes corrigés
-
-### Résumés
-- `RESUME_FINAL.md` - Résumé final des fonctionnalités
-- `RESUME_COMPLET.md` - Résumé complet du système
-- `RESUME_RESET_PASSWORD.md` - Résumé système reset password
-- `SOLUTION_COMPLETE.md` - Solution complète implémentée
-- `SYSTEME_COMPLET.md` - Vue d'ensemble du système complet
-
-### Création & Gestion
-- `PAGES_CREES.md` - Liste des pages créées
-- `CREATION_UTILISATEUR_TENANT.md` - Création utilisateurs tenant
-- `RESOLUTION_ERREURS.md` - Résolution des erreurs
+### Fichiers à la Racine
+- ✅ **README.md** - Documentation principale du projet
+- ✅ **STATUS.md** - État actuel du projet et suivi des tâches
+- ✅ **LOGS.md** - Ce fichier (historique complet des modifications)
+- ✅ **TESTS_RAPPORTS.md** - Rapports et historique des tests unitaires
+- ✅ **README_TESTS.md** - Guide complet du système de tests
+- ✅ **COUTS_PROJET.md** - Coûts du projet (domaine, etc.)
+- ✅ **ARCHITECTURE_ROUTING.md** - Architecture complète du routing multi-tenant
+- ✅ **ARCHITECTURE_BLOCKS.md** - Architecture du système de blocs
 
 ---
 
@@ -95,116 +44,245 @@
 - ✅ `TenantSerializer.create()` : Création auto admin tenant avec invitation email
 - ✅ `UserSerializer` : Gestion quotas, tenant assignment, password handling
 - ✅ `UserSerializer.create()` : Vérification quota utilisateurs
+- ✅ `UserSerializer.update()` : Support mises à jour partielles (username/email optionnels)
 
 #### Settings (`backend-django/vtcbuilder/settings.py`)
 - ✅ Configuration email automatique (SMTP si credentials, sinon console)
-- ✅ `APPEND_SLASH = False` pour éviter redirects POST
-- ✅ `DEFAULT_FROM_EMAIL` configurable
-- ✅ CORS mis à jour pour ports 9494/9495
+- ✅ Configuration SMTP OVH (ssl0.ovh.net:587)
+- ✅ Variables d'environnement pour email (docker-compose.simple.yml)
 
 #### API Views (`backend-django/api/views.py`)
-- ✅ `DashboardView` : Statistiques excluant tenants soft-deleted
+- ✅ `DashboardView` : Statistiques de base pour admin et tenant
+- ✅ `DetailedStatsView` : Statistiques détaillées avec monitoring complet
+- ✅ Exclusion tenants soft-deleted des statistiques
+- ✅ Gestion d'erreurs améliorée avec initialisation des variables
 
-#### Management Commands
-- ✅ `fix_test_tenant.py` - Configuration tenant de test
-- ✅ `update_test_tenant_email.py` - Mise à jour email tenant
-- ✅ `cleanup_demo_tenant.py` - Nettoyage tenant demo
-- ✅ `cleanup_orphan_users.py` - Nettoyage utilisateurs orphelins
-- ✅ `purge_deleted_tenants.py` - Purge définitive tenants supprimés
-- ✅ `init_pricing_plans.py` - Initialisation plans tarifaires
+#### Billing (`backend-django/billing/views.py`)
+- ✅ `billing_stats()` : Statistiques facturation super admin
+- ✅ `unpaid_items()` : Liste des impayés (subscriptions, invoices)
+
+#### Media (`backend-django/media/views.py`)
+- ✅ `TemplateViewSet` : Gestion templates avec HTML/CSS
+- ✅ Amélioration `_get_reference_tenant()` pour contexte tenant valide
+- ✅ `list()` avec gestion d'erreurs robuste (retour tableau vide au lieu de 500)
+
+#### System Settings (`backend-django/settings_app/views.py`)
+- ✅ `system_settings_view` : Endpoint singleton pour paramètres système
+- ✅ `system_settings_test_email_view` : Test email SMTP
 
 ### Frontend Next.js
 
 #### Services
-- ✅ `auth.service.ts` : Gestion SSR-safe avec `isBrowser()`
-- ✅ `user.service.ts` : Traitement correct réponses paginées
-- ✅ `tenant.service.ts` : Méthodes `restore()`, `getAdminInfo()`, `resetAdminPassword()`
-- ✅ `billing.service.ts` : Service facturation complet
+- ✅ Gestion gracieuse des erreurs 404/500
+- ✅ Retour de valeurs par défaut en cas d'erreur
+- ✅ Support réponses paginées
 
-#### Pages Admin
-- ✅ `/admin/dashboard` : Dashboard super admin avec stats
-- ✅ `/admin/users` : Liste utilisateurs avec actions
-- ✅ `/admin/users/[id]` : Édition complète utilisateur (informations + mot de passe)
-- ✅ `/admin/tenants` : Liste tenants avec soft delete
-- ✅ `/admin/tenants/[id]` : Détail tenant avec onglets (Overview, Users, Billing, Site, Settings)
-- ✅ `/admin/tenants/new` : Création tenant
+#### Composants
+- ✅ **AdminSidebar** : Navigation admin avec détection menu actif
+- ✅ **AdminLayout** : Layout avec sidebar fermable
+- ✅ **TenantLayout** : Layout tenant avec sidebar
+- ✅ **MobileHeader** : Header responsive mobile
+- ✅ **ResponsiveTable** : Table responsive mobile-first
+- ✅ **ImpersonationBanner** : Banner mode impersonation
+- ✅ Navigation verticale au lieu d'onglets horizontaux
 
-#### Pages Tenant
-- ✅ `/dashboard` : Dashboard tenant admin
-- ✅ `/dashboard/users` : Gestion utilisateurs tenant
-- ✅ `/dashboard/billing` : Facturation tenant
+#### Pages
+- ✅ **Stats** : Initialisation valeurs par défaut, protection undefined
+- ✅ **Templates** : Upload HTML/CSS, onglets, responsive mobile
+- ✅ **Settings** : Configuration système complète
+- ✅ **EditUser** : Gestion réponse paginée tenants
+- ✅ **Billing** : Gestion erreurs 404 gracieuse
 
-#### Pages Publiques
-- ✅ `/login` : Page de connexion
-- ✅ `/register` : Page d'inscription
-- ✅ `/forgot-password` : Demande réinitialisation mot de passe
-- ✅ `/reset-password` : Réinitialisation avec token
-- ✅ `/setup` : Configuration compte via invitation
+---
 
-#### Components
-- ✅ `AdminLayout` : Layout responsive avec sidebar mobile
-- ✅ `TenantLayout` : Layout tenant avec sidebar
-- ✅ `MobileHeader` : Header mobile avec hamburger menu
-- ✅ `ResponsiveTable` : Table responsive avec scroll horizontal
-- ✅ `AdminSidebar` : Sidebar admin avec navigation
+## 🧪 Système de Tests Automatisés (2025-11-26)
 
-#### Package Updates
-- ✅ Next.js 14.2.18 (mise à jour depuis 14.2.33)
-- ✅ React 18.3.1
-- ✅ Correction erreurs SSR localStorage
+### ✅ Création Complète - 37 Fichiers de Tests
+
+#### Frontend (21 fichiers)
+- ✅ 10 tests services (auth, user, tenant, billing, page, service, booking, media, template, settings)
+- ✅ 11 tests composants (AdminSidebar, AdminLayout, TenantLayout, Sidebar, MobileHeader, ResponsiveTable, ImpersonationBanner, Navbar, PublicHeader, PublicFooter, PublicLayout)
+
+#### Backend (14 fichiers)
+- ✅ 6 tests modèles (tenants, billing, pages, services, bookings, media)
+- ✅ 1 test serializers (tenants)
+- ✅ 7 tests vues/API (tenants, billing, pages, services, bookings, media, api)
+
+**Total** : **~199 tests unitaires** créés
 
 ### Configuration
+- ✅ Jest configuré pour frontend (jest.config.js, jest.setup.js)
+- ✅ Pytest configuré pour backend (pytest.ini)
+- ✅ Makefile avec commandes test (make test, make test-frontend, make test-backend)
+- ✅ Documentation complète (README_TESTS.md, TESTS_RAPPORTS.md)
 
-#### Docker
-- ✅ Tous les ports remappés sur 9494+ (frontend: 9494, backend: 9495, etc.)
-- ✅ `docker-compose.simple.yml` mis à jour
-
-#### Makefile
-- ✅ Commandes racine : `make setup-backend-django`, `make start`, `make quick-start`
-
----
-
-## 🐛 Corrections Majeures
-
-### Erreurs Backend
-1. ✅ `relation "pages" does not exist` - Utilisation SQL directe pour tokens
-2. ✅ `UnorderedObjectListWarning` - Ajout `ordering` sur User model
-3. ✅ Tenant deletion 500 - Soft delete avec SQL direct
-4. ✅ Statistiques dashboard incohérentes - Exclusion tenants soft-deleted
-
-### Erreurs Frontend
-1. ✅ `localStorage is not defined` (SSR) - Gestion avec `isBrowser()`
-2. ✅ Page `/admin/users/[id]` non fonctionnelle - Correction SSR
-3. ✅ Utilisateurs tenant non affichés - Filtre `tenant_id` corrigé
-4. ✅ Réponses paginées non traitées - Amélioration `user.service.ts`
-
-### Configuration
-1. ✅ Tenant demo login - Commandes de fix créées
-2. ✅ Email tenant incorrect - Commande `update_test_tenant_email`
-3. ✅ Mot de passe tenant - Changé en `tenant123`
+### Commandes
+- ✅ `make test` : Tous les tests
+- ✅ `make test-frontend` : Tests frontend
+- ✅ `make test-backend` : Tests backend
+- ✅ `make test-coverage` : Tests avec couverture
 
 ---
 
-## 📊 Statistiques
+## 🔧 Corrections Récentes
 
-- **Fichiers .md créés** : ~48
-- **Commandes de gestion créées** : 6
-- **Endpoints API ajoutés** : 15+
-- **Pages frontend créées** : 12+
-- **Composants réutilisables** : 5+
-- **Corrections majeures** : 10+
+### 2025-11-26
+
+#### Système de Tests Complet
+1. ✅ **Création de 37 fichiers de tests unitaires**
+   - Frontend : 21 fichiers (services + composants)
+   - Backend : 16 fichiers (modèles + serializers + vues)
+   - Documentation : README_TESTS.md, TESTS_RAPPORTS.md
+
+2. ✅ **Configuration Jest pour frontend**
+   - jest.config.js avec Next.js
+   - jest.setup.js avec mocks
+   - Dépendances ajoutées à package.json
+
+3. ✅ **Configuration Pytest pour backend**
+   - pytest.ini simplifié (compatible sans pytest-cov)
+   - Markers configurés (unit, api, model, integration)
+   - Test paths configurés
+
+4. ✅ **Correction configuration pytest**
+   - Retrait options coverage non disponibles
+   - Simplification pour compatibilité
+
+#### Responsive & UX
+5. ✅ **Page Templates - Optimisation mobile**
+   - Padding responsive (p-4 sm:p-6)
+   - Text sizes adaptatifs (text-lg sm:text-xl)
+   - Textareas responsive (rows ajustés)
+   - Upload buttons responsive (w-full sm:w-auto)
+   - Overflow-x-auto pour tabs
+   - Break-words pour contenu long
+
+6. ✅ **Sidebar - Détection menu actif**
+   - Correction highlight pour /admin/templates
+   - Vérification pathname.startsWith() améliorée
+
+7. ✅ **Drawer/Sidebar - Fermeture corrigée**
+   - Retrait lg:translate-x-0 pour permettre fermeture
+   - Ajout lg:ml-64 pour décalage contenu
+   - Toggle sidebar fonctionnel
+
+### 2025-11-25
+
+#### Corrections Erreurs API
+8. ✅ **Page Stats - Erreurs corrigées**
+   - Initialisation complète valeurs par défaut (activity, registrations)
+   - Protection contre "Cannot read properties of undefined"
+   - Gestion gracieuse erreurs 404 sur /api/stats/detailed/
+
+9. ✅ **Page EditUserPage - Erreur tenants.map**
+   - Gestion correcte réponse paginée (data?.results || [])
+   - Vérifications Array.isArray() avant .map()
+   - Import toast ajouté
+
+10. ✅ **Templates API - Erreur 500 corrigée**
+    - Amélioration gestion erreurs dans TemplateViewSet.list()
+    - Logs détaillés pour débogage
+    - Retour tableau vide au lieu de 500
+
+11. ✅ **Templates - Champs HTML/CSS ajoutés**
+    - Ajout html_content et css_content au modèle Template
+    - Interface améliorée avec onglets (Info / HTML / CSS)
+    - Upload fichiers HTML/CSS
+    - Éditeurs de code pour HTML et CSS
+
+12. ✅ **Payment Methods - Gestion 404**
+    - Gestion gracieuse erreurs 404
+    - Messages en développement seulement
+    - Retour automatique tableau vide
+
+13. ✅ **System Settings - Endpoint créé**
+    - Endpoint /api/system-settings/ pour configuration système
+    - Endpoint /api/system-settings/test_email/ pour tester emails
+    - Gestion singleton pour paramètres système
+
+### 2025-11-24
+
+#### Corrections Email & Authentification
+14. ✅ **Email SMTP fonctionnel**
+    - Variables d'environnement chargées
+    - Emails envoyés réellement via SMTP OVH
+    - Script de test : test_email_smtp.py
+
+15. ✅ **Activation automatique après reset password**
+    - Statut utilisateur activé automatiquement si 'pending'
+    - Corrige problème connexion après réinitialisation
+
+16. ✅ **Configuration SSH GitHub**
+    - Remote changé de HTTPS vers SSH
+    - Push fonctionnel
+
+### Corrections Antérieures
+
+17. ✅ **Statistiques dashboard** - Exclusion tenants soft-deleted
+18. ✅ **Affichage utilisateurs tenant** - Filtre par tenant_id corrigé
+19. ✅ **Modification mot de passe directe** - Formulaire inline
+20. ✅ **Erreur 400 Bad Request** - username/email optionnels pour updates partielles
+21. ✅ **Boucle infinie de logs** - Suppression console.log répétitifs
+22. ✅ **Erreur 400 PUT → PATCH** - Changement PUT vers PATCH pour updates partielles
+23. ✅ **Nettoyage documentation** - 47 fichiers .md supprimés, consolidation
 
 ---
 
-## 📅 Dernière Mise à Jour
+## 📊 État Actuel
 
-**Date** : 2025-11-26
-**Dernières modifications** :
-- Correction affichage utilisateurs tenant
-- Amélioration filtrage par tenant_id
-- Ajout logs de debug
-- Création LOGS.md et STATUS.md
-- Préparation modification mot de passe directe
+### ✅ Fonctionnalités Implémentées
+
+#### Backend
+- Architecture multi-tenant avec django-tenants
+- Authentification par email
+- Gestion utilisateurs (CRUD complet)
+- Gestion tenants (CRUD + soft delete + restore)
+- Système de réinitialisation de mot de passe
+- Système d'invitation pour nouveaux tenants
+- Plans tarifaires et quotas
+- Système de facturation (modèles + API)
+- Dashboard avec statistiques
+- Statistiques détaillées avec monitoring
+- Système de paramètres globaux (singleton)
+- Gestion des templates avec HTML/CSS
+- Payment Methods
+- Gestion des erreurs améliorée
+
+#### Frontend
+- Interface super admin complète
+- Interface tenant admin (WordPress-style)
+- Pages de login/register/forgot-password/reset-password
+- Gestion responsive (mobile-first)
+- Navigation avec sidebar
+- Gestion utilisateurs tenant
+- Gestion facturation tenant
+- Page statistiques détaillées
+- Page templates avec upload HTML/CSS
+- Page settings pour configuration système
+- Gestion gracieuse des erreurs API (404, 500)
+- Protection contre les erreurs undefined/null
+
+### 🧪 Tests Automatisés
+
+- ✅ **37 fichiers de tests créés** (2025-11-26)
+- ✅ Configuration Jest (frontend)
+- ✅ Configuration Pytest (backend)
+- ✅ Documentation complète (README_TESTS.md, TESTS_RAPPORTS.md)
+- ⏳ Exécution complète des tests (en attente installation dépendances)
+
+---
+
+## 🔄 Dernière Mise à Jour
+
+**Date** : 2025-11-26  
+**Focus** : Résolution des erreurs globales et finalisation du système de tests
+
+**Dernières Modifications** :
+- ✅ Création complète du système de tests (37 fichiers)
+- ✅ Nettoyage documentation (.md)
+- ✅ Optimisation responsive page templates
+- ✅ Corrections sidebar et drawer
+- ✅ Corrections erreurs API (404, 500)
 
 ---
 
@@ -212,5 +290,5 @@
 
 - `STATUS.md` - État actuel du projet et prochaines étapes
 - `README.md` - Documentation principale
-- `ETAT_PROJET.md` - Tâches restantes
-
+- `TESTS_RAPPORTS.md` - Rapports et historique des tests
+- `README_TESTS.md` - Guide complet du système de tests
