@@ -151,6 +151,7 @@
 - **README.md** - Documentation principale du projet
 - **LOGS.md** - Historique complet de toutes les modifications
 - **STATUS.md** - Ce fichier (état actuel et suivi)
+- **ARCHITECTURE_ROUTING.md** - Architecture complète du routing multi-tenant
 
 ---
 
