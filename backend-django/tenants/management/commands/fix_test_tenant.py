@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         tenant_slug = 'ma-societe-vtc'
         tenant_name = 'Ma Société VTC'
-        admin_email = 'admin@masociete-vtc.com'
+        admin_email = 'test@delhomme.ovh'
         password = options.get('password', 'admin123')
 
         self.stdout.write(f'🔧 Création/correction du tenant "{tenant_name}"...')
