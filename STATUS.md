@@ -164,6 +164,13 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 - [ ] **Export données** - Export CSV/JSON
 - [ ] **Multi-langue** - Internationalisation
 
+### Fonctionnalités Futures (Après finalisation tests)
+- [ ] **Mode sombre/clair** - Interface avec mode sombre et détection automatique
+  - Détection automatique du thème système (dark/light) de l'appareil utilisateur
+  - Basculement manuel entre modes sombre et clair
+  - Persistance du choix utilisateur
+  - Adaptation de tous les composants (sidebar, tables, formulaires, etc.)
+
 ## 🧪 Tests Automatisés - EN COURS
 
 **Statut** : ✅ **37 fichiers de tests créés** (2025-11-26)  
