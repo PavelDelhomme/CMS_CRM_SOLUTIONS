@@ -134,9 +134,13 @@ export default function LoginPage() {
             </div>
           </div>
           
-          <div className="mt-4 text-xs text-gray-600 space-y-1">
-            <p><strong>Super Admin:</strong> admin@vtcbuilder.com / admin123</p>
-            <p><strong>Tenant Test:</strong> admin@masociete-vtc.com / admin123</p>
+          <div className="mt-4 text-xs text-gray-600 space-y-2">
+            <p className="font-semibold text-gray-700 mb-1">Comptes de test :</p>
+            <div className="bg-gray-50 rounded p-3 space-y-1">
+              <p><strong>Super Admin:</strong> <code className="text-blue-600">admin@vtcbuilder.com</code> / <code className="text-blue-600">admin123</code></p>
+              <p><strong>Tenant Test:</strong> <code className="text-blue-600">admin@masociete-vtc.com</code> / <code className="text-blue-600">admin123</code></p>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">Le tenant de test est <strong>ma-societe-vtc</strong> (Ma Société VTC)</p>
           </div>
         </div>
       </div>
