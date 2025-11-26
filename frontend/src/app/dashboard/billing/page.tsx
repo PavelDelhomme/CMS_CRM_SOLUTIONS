@@ -350,24 +350,37 @@ export default function TenantBillingPage() {
               </div>
 
               <ul className="space-y-2 mb-6">
-                <li className="flex items-center text-sm text-gray-600">
-                  <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  {plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  {plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''}
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  {plan.max_storage_gb} Go de stockage
-                </li>
+                {plan.features && plan.features.length > 0 ? (
+                  plan.features.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-start text-sm text-gray-600">
+                      <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{feature}</span>
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex items-center text-sm text-gray-600">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}
+                    </li>
+                    <li className="flex items-center text-sm text-gray-600">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''}
+                    </li>
+                    <li className="flex items-center text-sm text-gray-600">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {plan.max_storage_gb} Go de stockage
+                    </li>
+                  </>
+                )}
               </ul>
 
               <button
