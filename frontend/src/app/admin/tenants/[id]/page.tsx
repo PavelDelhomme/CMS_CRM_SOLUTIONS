@@ -143,6 +143,9 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [editingPassword, setEditingPassword] = useState<number | null>(null)
+  const [passwordData, setPasswordData] = useState<{ [key: number]: { new_password: string; confirm_password: string } }>({})
+  const [passwordSaving, setPasswordSaving] = useState<{ [key: number]: boolean }>({})
 
   useEffect(() => {
     loadUsers()
@@ -152,11 +155,26 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
     try {
       setLoading(true)
       // Récupérer tous les utilisateurs du tenant spécifié
+      console.log('🔍 Chargement utilisateurs pour tenant:', tenantId)
       const data = await userService.getAll({ tenant_id: tenantId })
-      const usersArray = Array.isArray(data) ? data : (data.results || data.data || [])
+      console.log('📦 Données reçues:', data)
+      
+      // Handle different response formats
+      let usersArray: User[] = []
+      if (Array.isArray(data)) {
+        usersArray = data
+      } else if (data && typeof data === 'object') {
+        usersArray = data.results || data.data || []
+      }
+      
+      console.log('👥 Utilisateurs extraits:', usersArray)
       setUsers(usersArray)
+      
+      if (usersArray.length === 0) {
+        console.warn('⚠️ Aucun utilisateur trouvé pour ce tenant')
+      }
     } catch (error) {
-      console.error('Erreur chargement utilisateurs:', error)
+      console.error('❌ Erreur chargement utilisateurs:', error)
       toast.error('Erreur lors du chargement des utilisateurs')
       setUsers([])
     } finally {
@@ -190,6 +208,57 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
     } catch (error: any) {
       console.error('Erreur suppression utilisateur:', error)
       toast.error(error.response?.data?.error || 'Erreur lors de la suppression')
+    }
+  }
+
+  const handleEditPassword = (userId: number) => {
+    setEditingPassword(userId)
+    setPasswordData({
+      ...passwordData,
+      [userId]: { new_password: '', confirm_password: '' }
+    })
+  }
+
+  const handleCancelEditPassword = (userId: number) => {
+    setEditingPassword(null)
+    const newPasswordData = { ...passwordData }
+    delete newPasswordData[userId]
+    setPasswordData(newPasswordData)
+  }
+
+  const handleSavePassword = async (userId: number) => {
+    const pwdData = passwordData[userId]
+    if (!pwdData) return
+
+    if (pwdData.new_password !== pwdData.confirm_password) {
+      toast.error('Les mots de passe ne correspondent pas')
+      return
+    }
+
+    if (pwdData.new_password.length < 8) {
+      toast.error('Le mot de passe doit contenir au moins 8 caractères')
+      return
+    }
+
+    setPasswordSaving({ ...passwordSaving, [userId]: true })
+
+    try {
+      await userService.update(userId, {
+        password: pwdData.new_password
+      })
+      toast.success('Mot de passe modifié avec succès !')
+      handleCancelEditPassword(userId)
+      // Optionnel: forcer reconnexion utilisateur si besoin
+    } catch (error: any) {
+      console.error('Erreur modification mot de passe:', error)
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.detail || 
+                          (error.response?.data?.username ? `Erreur: ${error.response.data.username.join(', ')}` : null) ||
+                          'Erreur lors de la modification du mot de passe'
+      toast.error(errorMessage)
+      console.error('Détails erreur:', error.response?.data)
+    } finally {
+      setPasswordSaving({ ...passwordSaving, [userId]: false })
     }
   }
 
@@ -310,24 +379,84 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
                 {user.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '-'}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => handleResetPassword(user.id, user.email)}
-                    className="text-blue-600 hover:text-blue-900"
-                    title="Envoyer un email de réinitialisation"
-                  >
-                    🔑 Reset
-                  </button>
-                  {user.role !== 'tenant-admin' && (
+                {editingPassword === user.id ? (
+                  <div className="flex flex-col gap-2 items-end">
+                    <div className="flex gap-2">
+                      <input
+                        type="password"
+                        placeholder="Nouveau mot de passe"
+                        value={passwordData[user.id]?.new_password || ''}
+                        onChange={(e) => setPasswordData({
+                          ...passwordData,
+                          [user.id]: {
+                            ...passwordData[user.id],
+                            new_password: e.target.value,
+                            confirm_password: passwordData[user.id]?.confirm_password || ''
+                          }
+                        })}
+                        className="px-2 py-1 border border-gray-300 rounded text-xs w-32"
+                        minLength={8}
+                      />
+                      <input
+                        type="password"
+                        placeholder="Confirmer"
+                        value={passwordData[user.id]?.confirm_password || ''}
+                        onChange={(e) => setPasswordData({
+                          ...passwordData,
+                          [user.id]: {
+                            ...passwordData[user.id],
+                            confirm_password: e.target.value,
+                            new_password: passwordData[user.id]?.new_password || ''
+                          }
+                        })}
+                        className="px-2 py-1 border border-gray-300 rounded text-xs w-32"
+                        minLength={8}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleSavePassword(user.id)}
+                        disabled={passwordSaving[user.id]}
+                        className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+                      >
+                        {passwordSaving[user.id] ? 'Sauvegarde...' : '✅ Sauvegarder'}
+                      </button>
+                      <button
+                        onClick={() => handleCancelEditPassword(user.id)}
+                        disabled={passwordSaving[user.id]}
+                        className="px-3 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 disabled:opacity-50"
+                      >
+                        ❌ Annuler
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-end gap-2">
                     <button
-                      onClick={() => handleDeleteUser(user.id, user.email)}
-                      className="text-red-600 hover:text-red-900"
-                      title="Supprimer l'utilisateur"
+                      onClick={() => handleEditPassword(user.id)}
+                      className="text-green-600 hover:text-green-900"
+                      title="Modifier le mot de passe directement"
                     >
-                      🗑️
+                      🔒 Modifier MDP
                     </button>
-                  )}
-                </div>
+                    <button
+                      onClick={() => handleResetPassword(user.id, user.email)}
+                      className="text-blue-600 hover:text-blue-900"
+                      title="Envoyer un email de réinitialisation"
+                    >
+                      🔑 Reset Email
+                    </button>
+                    {user.role !== 'tenant-admin' && (
+                      <button
+                        onClick={() => handleDeleteUser(user.id, user.email)}
+                        className="text-red-600 hover:text-red-900"
+                        title="Supprimer l'utilisateur"
+                      >
+                        🗑️
+                      </button>
+                    )}
+                  </div>
+                )}
               </td>
             </tr>
           ))}
@@ -353,7 +482,11 @@ export default function TenantDetailPage() {
       return
     }
     if (tenantId) {
+      console.log('🔄 Chargement tenant avec ID:', tenantId)
       loadTenant()
+    } else {
+      console.warn('⚠️ Aucun tenantId fourni')
+      setLoading(false)
     }
   }, [router, tenantId])
 

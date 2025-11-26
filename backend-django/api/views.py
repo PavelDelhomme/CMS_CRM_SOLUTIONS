@@ -29,11 +29,11 @@ class DashboardView(APIView):
         }
 
         if user.is_super_admin():
-            # Super admin sees all stats
+            # Super admin sees all stats (exclude soft-deleted tenants)
             stats.update({
-                'total_tenants': Tenant.objects.count(),
-                'active_tenants': Tenant.objects.filter(status='active').count(),
-                'trial_tenants': Tenant.objects.filter(status='trial').count(),
+                'total_tenants': Tenant.objects.filter(deleted_at__isnull=True).count(),
+                'active_tenants': Tenant.objects.filter(status='active', deleted_at__isnull=True).count(),
+                'trial_tenants': Tenant.objects.filter(status='trial', deleted_at__isnull=True).count(),
                 'total_users': User.objects.count(),
             })
         elif hasattr(user, 'tenant') and user.tenant:

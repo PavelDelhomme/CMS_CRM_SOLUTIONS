@@ -25,7 +25,16 @@ class UserService {
     tenant_id?: number;
   }) {
     const response = await api.get('/users/', { params });
-    return Array.isArray(response.data) ? response.data : response.data.results || [];
+    // Handle paginated response (DRF format) or direct array
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    // DRF paginated response has 'results' key
+    if (response.data && typeof response.data === 'object' && 'results' in response.data) {
+      return response.data.results || [];
+    }
+    // Fallback to empty array
+    return [];
   }
 
   async getById(id: number) {

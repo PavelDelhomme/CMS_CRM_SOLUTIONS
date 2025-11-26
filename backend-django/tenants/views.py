@@ -358,10 +358,24 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Filter users based on tenant context"""
         user = self.request.user
+        queryset = User.objects.all().order_by('-created_at')
+        
+        # Super admin can filter by tenant_id parameter or see all users
         if user.is_super_admin():
-            return User.objects.all().order_by('-created_at')
+            tenant_id = self.request.query_params.get('tenant_id')
+            if tenant_id:
+                try:
+                    tenant_id = int(tenant_id)
+                    # Filter by tenant_id - only users belonging to this tenant
+                    queryset = queryset.filter(tenant_id=tenant_id)
+                except (ValueError, TypeError):
+                    # Invalid tenant_id, return all users
+                    pass
+            # Return queryset (filtered or all)
+            return queryset
         elif user.tenant:
-            return User.objects.filter(tenant=user.tenant).order_by('-created_at')
+            # Tenant admin only sees users from their tenant
+            return queryset.filter(tenant=user.tenant)
         return User.objects.none()
 
     def get_serializer_class(self):
@@ -449,6 +463,8 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.data.get('role') == 'super-admin':
             request.data['tenant'] = None
         
+        # Use partial update to allow updating only specific fields (like password)
+        kwargs['partial'] = True
         return super().update(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'])

@@ -24,12 +24,36 @@ export default function ForgotPasswordPage() {
 
       setSuccess(true)
     } catch (error: any) {
-      setError(
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        'Erreur lors de la demande de réinitialisation. Vérifiez votre email et réessayez.'
-      )
       console.error('Password reset request error:', error)
+      
+      // Gestion spécifique de l'erreur ERR_BLOCKED_BY_CLIENT
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        // Vérifier si c'est un blocage par extension
+        const isBlocked = error.config?.url?.includes('localhost') || 
+                         (typeof window !== 'undefined' && 
+                          window.navigator.userAgent.includes('Chrome') || 
+                          window.navigator.userAgent.includes('Firefox'))
+        
+        if (isBlocked) {
+          setError(
+            '⚠️ La requête a été bloquée par une extension de navigateur (bloqueur de publicité, privacy, etc.).\n\n' +
+            'Solutions :\n' +
+            '1. Désactivez temporairement vos extensions (AdBlock, uBlock, Privacy Badger, etc.)\n' +
+            '2. Ou utilisez le mode navigation privée\n' +
+            '3. Ou ajoutez localhost dans les exceptions de vos extensions'
+          )
+        } else {
+          setError(
+            'Erreur de connexion au serveur. Vérifiez que le backend est démarré et accessible sur http://localhost:9495'
+          )
+        }
+      } else {
+        setError(
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          'Erreur lors de la demande de réinitialisation. Vérifiez votre email et réessayez.'
+        )
+      }
     } finally {
       setLoading(false)
     }
@@ -77,7 +101,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg whitespace-pre-line">
             {error}
           </div>
         )}
