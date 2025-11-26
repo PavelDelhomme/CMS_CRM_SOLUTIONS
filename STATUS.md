@@ -174,7 +174,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 ## 🧪 Tests Automatisés - EN COURS
 
 **Statut** : ✅ **37 fichiers de tests créés** (2025-11-26)  
-**Référence** : [README_TESTS.md](./README_TESTS.md) et [TESTS_RAPPORTS.md](./TESTS_RAPPORTS.md)
+**Référence** : [docs/tests/README_TESTS.md](./docs/tests/README_TESTS.md) et [docs/tests/TESTS_RAPPORTS.md](./docs/tests/TESTS_RAPPORTS.md)
 
 ### ✅ Système de Tests Complet
 

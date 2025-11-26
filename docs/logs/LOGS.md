@@ -288,7 +288,7 @@
 
 ## 🔗 Voir Aussi
 
-- `STATUS.md` - État actuel du projet et prochaines étapes
-- `README.md` - Documentation principale
-- `TESTS_RAPPORTS.md` - Rapports et historique des tests
+- [`../../STATUS.md`](../../STATUS.md) - État actuel du projet et prochaines étapes
+- [`../../README.md`](../../README.md) - Documentation principale
+- [`../tests/TESTS_RAPPORTS.md`](../tests/TESTS_RAPPORTS.md) - Rapports et historique des tests
 - `README_TESTS.md` - Guide complet du système de tests

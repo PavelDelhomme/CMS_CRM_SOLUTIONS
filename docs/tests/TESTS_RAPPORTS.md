@@ -314,8 +314,8 @@ make test-coverage     # Avec couverture
 ## 📚 DOCUMENTATION
 
 ### Fichiers Créés
-- ✅ `README_TESTS.md` - Guide complet des tests
-- ✅ `TESTS_RAPPORTS.md` - Ce fichier (historique et rapports)
+- ✅ [`README_TESTS.md`](./README_TESTS.md) - Guide complet des tests
+- ✅ [`TESTS_RAPPORTS.md`](./TESTS_RAPPORTS.md) - Ce fichier (historique et rapports)
 
 ### Guides
 - Configuration Jest : `frontend/jest.config.js`

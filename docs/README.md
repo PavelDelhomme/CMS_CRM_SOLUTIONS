@@ -15,8 +15,8 @@ docs/
 ## 📖 Fichiers Principaux
 
 ### À la Racine du Projet
-- **README.md** - Documentation principale du projet
-- **STATUS.md** - État actuel et suivi du projet (⚠️ **Fichier principal pour les avancements**)
+- [`../../README.md`](../../README.md) - Documentation principale du projet
+- [`../../STATUS.md`](../../STATUS.md) - État actuel et suivi du projet (⚠️ **Fichier principal pour les avancements**)
 
 ## 📂 Catégories
 
