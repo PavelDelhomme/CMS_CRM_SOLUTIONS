@@ -5,8 +5,7 @@ import pytest
 from django.utils import timezone
 from datetime import timedelta
 from django_tenants.utils import schema_context
-from tenants.models import Tenant, User, PasswordResetToken, InvitationToken
-from django_tenants.models import Domain
+from tenants.models import Tenant, User, PasswordResetToken, InvitationToken, Domain
 
 
 @pytest.mark.django_db

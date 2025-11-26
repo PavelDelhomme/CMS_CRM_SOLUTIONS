@@ -139,8 +139,20 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
   - ✅ 7 tests vues/API backend
   - 📄 Voir [docs/tests/TESTS_RAPPORTS.md](./docs/tests/TESTS_RAPPORTS.md) pour les rapports détaillés
   - 📄 Voir [docs/tests/README_TESTS.md](./docs/tests/README_TESTS.md) pour le guide complet
-- [ ] **Exécution complète des tests** - Installer dépendances et exécuter tous les tests
-- [ ] **Correction des erreurs identifiées** - Résoudre toutes les erreurs détectées par les tests
+- [x] **Exécution complète des tests** - ✅ Tests backend exécutés (2025-11-27)
+  - ✅ 36 tests passés
+  - ⚠️ 36 tests échoués + 2 erreurs
+  - Principales causes identifiées :
+    - Tests tenant-specific nécessitent `tenant_context` (pages, services, bookings, media)
+    - Slug auto-généré manquant dans certains tests
+    - Domaines manquants pour tenants de test
+    - Schémas tenant non créés pour tests
+- [ ] **Correction des erreurs identifiées** - En cours (2025-11-27)
+  - Correction import Domain ✅
+  - Fichier DEMARRAGE_RAPIDE.txt supprimé ✅
+  - À faire : Corriger tests tenant-specific avec tenant_context
+  - À faire : Ajouter génération slug dans tests Tenant
+  - À faire : Créer domaines pour tous les tenants de test
 - [ ] **Vérification couverture de code** - Atteindre minimum 70% de couverture
 - [ ] **Intégration CI/CD** - Automatiser l'exécution des tests
 

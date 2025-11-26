@@ -821,7 +821,7 @@ def register_with_plan_view(request):
     """
     from django.utils.text import slugify
     from billing.models import PricingPlan, Subscription
-    from django_tenants.models import Domain
+    from tenants.models import Domain
     
     # Extract data
     tenant_name = request.data.get('tenant_name')
