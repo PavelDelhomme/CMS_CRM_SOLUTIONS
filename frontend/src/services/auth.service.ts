@@ -72,19 +72,23 @@ class AuthService {
   }
 
   getStoredUser(): User | null {
+    if (typeof window === 'undefined') return null; // SSR safety
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   }
 
   getToken(): string | null {
+    if (typeof window === 'undefined') return null; // SSR safety
     return localStorage.getItem('token');
   }
 
   isAuthenticated(): boolean {
+    if (typeof window === 'undefined') return false; // SSR safety
     return !!this.getToken();
   }
 
   isSuperAdmin(): boolean {
+    if (typeof window === 'undefined') return false; // SSR safety
     const user = this.getStoredUser();
     if (!user || !user.roles) return false;
     return user.roles.some((role: any) => {
@@ -94,6 +98,7 @@ class AuthService {
   }
 
   isTenantAdmin(): boolean {
+    if (typeof window === 'undefined') return false; // SSR safety
     const user = this.getStoredUser();
     if (!user || !user.roles) return false;
     return user.roles.some((role: any) => {

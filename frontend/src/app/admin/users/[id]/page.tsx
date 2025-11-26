@@ -35,6 +35,9 @@ export default function EditUserPage() {
   })
 
   useEffect(() => {
+    // Vérifier côté client uniquement
+    if (typeof window === 'undefined') return
+    
     if (!authService.isSuperAdmin()) {
       router.push('/dashboard')
       return
