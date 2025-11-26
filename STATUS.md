@@ -130,6 +130,19 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 ### 🚨 Priorité CRITIQUE - En Cours
 
+#### Plan d'Implémentation Complet (2025-11-27)
+
+**Voir** : [`PLAN_IMPLEMENTATION.md`](./PLAN_IMPLEMENTATION.md) pour le plan détaillé
+
+**Phases** :
+1. 🔴 **Correction tests backend** (36 échoués, 2 erreurs) - EN COURS
+2. 💳 **Intégration Stripe complète** - À FAIRE
+3. 📝 **Éditeur WordPress-like** (blocs, drag & drop, code) - À FAIRE
+4. 📋 **Système de formulaires** intégré - À FAIRE
+5. 🌓 **Mode sombre/clair** - À FAIRE
+6. 🧪 **Tests frontend** - À FAIRE
+7. 📊 **Documentation** - À FAIRE
+
 #### Résolution des Erreurs Globales & Tests
 - [x] **Système de tests unitaires complet** - ✅ **37 fichiers de tests créés** (2025-11-26)
   - ✅ 10 tests services frontend
