@@ -44,8 +44,10 @@
 2. ✅ **Affichage utilisateurs tenant** - Filtre par tenant_id corrigé
 3. ✅ **Mot de passe tenant** - Changé en `tenant123`
 4. ✅ **Modification mot de passe directe** - Formulaire inline dans onglet Utilisateurs
-5. ✅ **Mise à jour partielle** - Permet modification uniquement du mot de passe (partial=True)
-6. ✅ **Gestion erreurs extensions** - Messages explicites pour ERR_BLOCKED_BY_CLIENT
+5. ✅ **Erreur 400 Bad Request corrigée** - `username` et `email` rendus optionnels pour mises à jour partielles
+6. ✅ **Mise à jour partielle** - Permet modification uniquement du mot de passe (partial=True + extra_kwargs)
+7. ✅ **Gestion erreurs extensions** - Messages explicites pour ERR_BLOCKED_BY_CLIENT
+8. ✅ **Nettoyage documentation** - 47 fichiers .md supprimés, consolidation dans STATUS.md et LOGS.md
 
 ---
 
