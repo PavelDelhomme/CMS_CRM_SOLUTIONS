@@ -14,7 +14,7 @@
 - TVA (20%) : 12,68 €
 - **Total TTC : 76,09 €**
 
-Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
+Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de détails.
 
 ---
 
@@ -23,7 +23,7 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
 ### 🚨 Travail en Cours - Résolution des Erreurs Globales
 
 **Priorité Actuelle** : Résolution des erreurs globales dans le projet  
-**Référence** : Suivi du fichier [README_TESTS.md](./README_TESTS.md) pour l'implémentation complète du système de tests
+**Référence** : Suivi du fichier [docs/tests/README_TESTS.md](./docs/tests/README_TESTS.md) pour l'implémentation complète du système de tests
 
 **Objectif** : Une fois les tests finalisés et toutes les erreurs résolues, nous travaillerons sur la suite des fonctionnalités en place (routing multi-tenant, pages publiques, etc.)
 
@@ -137,8 +137,8 @@ Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
   - ✅ 6 tests modèles backend
   - ✅ 1 test serializers backend
   - ✅ 7 tests vues/API backend
-  - 📄 Voir [TESTS_RAPPORTS.md](./TESTS_RAPPORTS.md) pour les rapports détaillés
-  - 📄 Voir [README_TESTS.md](./README_TESTS.md) pour le guide complet
+  - 📄 Voir [docs/tests/TESTS_RAPPORTS.md](./docs/tests/TESTS_RAPPORTS.md) pour les rapports détaillés
+  - 📄 Voir [docs/tests/README_TESTS.md](./docs/tests/README_TESTS.md) pour le guide complet
 - [ ] **Exécution complète des tests** - Installer dépendances et exécuter tous les tests
 - [ ] **Correction des erreurs identifiées** - Résoudre toutes les erreurs détectées par les tests
 - [ ] **Vérification couverture de code** - Atteindre minimum 70% de couverture
@@ -275,8 +275,8 @@ cd frontend && npm install  # Installer Jest et dépendances
    - ✅ 6 tests modèles backend (tenants, billing, pages, services, bookings, media)
    - ✅ 1 test serializers backend (tenants)
    - ✅ 7 tests vues/API backend (tenants, billing, pages, services, bookings, media, api)
-   - 📄 Voir [TESTS_RAPPORTS.md](./TESTS_RAPPORTS.md) pour les rapports détaillés
-   - 📄 Voir [README_TESTS.md](./README_TESTS.md) pour le guide complet
+   - 📄 Voir [docs/tests/TESTS_RAPPORTS.md](./docs/tests/TESTS_RAPPORTS.md) pour les rapports détaillés
+   - 📄 Voir [docs/tests/README_TESTS.md](./docs/tests/README_TESTS.md) pour le guide complet
 
 2. ✅ **Configuration complète des tests**
    - ✅ Jest configuré pour frontend (jest.config.js, jest.setup.js)
@@ -418,17 +418,29 @@ send_mail(
 
 ## 📚 Documentation
 
-### Fichiers Principaux
+### Fichiers Principaux (Racine)
 - **README.md** - Documentation principale du projet
-- **LOGS.md** - Historique complet de toutes les modifications
 - **STATUS.md** - Ce fichier (état actuel et suivi)
-- **TESTS_RAPPORTS.md** - Rapports et historique des tests unitaires
-- **README_TESTS.md** - Guide complet du système de tests
 
-### Architecture & Configuration
+### Structure de Documentation
+
+La documentation est organisée dans le dossier `docs/` avec les sous-dossiers suivants :
+
+#### 📁 `docs/architecture/`
 - **ARCHITECTURE_ROUTING.md** - Architecture complète du routing multi-tenant
 - **ARCHITECTURE_BLOCKS.md** - Architecture du système de blocs
+
+#### 🧪 `docs/tests/`
+- **README_TESTS.md** - Guide complet du système de tests
+- **TESTS_RAPPORTS.md** - Rapports et historique des tests unitaires
+
+#### 📊 `docs/project/`
 - **COUTS_PROJET.md** - Coûts du projet (domaine, etc.)
+
+#### 📝 `docs/logs/`
+- **LOGS.md** - Historique complet de toutes les modifications
+
+**Note** : Pour consulter les avancements et l'état du projet, référez-vous à **STATUS.md** qui centralise toutes les informations importantes.
 
 ---
 
