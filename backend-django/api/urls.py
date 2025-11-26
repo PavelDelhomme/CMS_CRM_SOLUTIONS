@@ -15,6 +15,7 @@ from pages.views import PageViewSet
 from services.views import ServiceViewSet
 from bookings.views import BookingViewSet
 from media.views import MediaViewSet, TemplateViewSet
+from blocks.views import BlockTypeViewSet, BlockTemplateViewSet
 from billing.views import (
     PricingPlanViewSet, SubscriptionViewSet,
     InvoiceViewSet, PaymentViewSet, PaymentMethodViewSet, billing_stats, unpaid_items
@@ -32,6 +33,8 @@ router.register(r'services', ServiceViewSet, basename='service')
 router.register(r'bookings', BookingViewSet, basename='booking')
 router.register(r'media', MediaViewSet, basename='media')
 router.register(r'templates', TemplateViewSet, basename='template')
+router.register(r'blocks/types', BlockTypeViewSet, basename='block-type')
+router.register(r'blocks/templates', BlockTemplateViewSet, basename='block-template')
 router.register(r'pricing-plans', PricingPlanViewSet, basename='pricing-plan')
 router.register(r'subscriptions', SubscriptionViewSet, basename='subscription')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
