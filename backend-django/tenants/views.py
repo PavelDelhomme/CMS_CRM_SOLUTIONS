@@ -166,9 +166,8 @@ class TenantViewSet(viewsets.ModelViewSet):
         
         try:
             import logging
-            from django.db import transaction
+            from django.db import transaction, connection
             from django.utils import timezone
-            from django_tenants.utils import schema_context
             logger = logging.getLogger(__name__)
             
             tenant_id = tenant.id
@@ -201,14 +200,47 @@ class TenantViewSet(viewsets.ModelViewSet):
                 tenant_users = list(User.objects.filter(tenant_id=tenant_id).values_list('id', flat=True))
                 logger.info(f"Found {len(tenant_users)} users for tenant {tenant_id}")
                 
+                # Delete tokens using direct SQL to avoid schema access issues
+                if tenant_users:
+                    try:
+                        from django.db import connection
+                        with connection.cursor() as cursor:
+                            # Delete password reset tokens (use IN clause instead of ANY for PostgreSQL)
+                            if tenant_users:
+                                placeholders = ','.join(['%s'] * len(tenant_users))
+                                cursor.execute(
+                                    f"DELETE FROM password_reset_tokens WHERE user_id IN ({placeholders});",
+                                    tenant_users
+                                )
+                                deleted_count = cursor.rowcount
+                                logger.info(f"Deleted {deleted_count} password reset tokens")
+                            
+                            # Delete invitation tokens
+                            if tenant_users:
+                                placeholders = ','.join(['%s'] * len(tenant_users))
+                                cursor.execute(
+                                    f"DELETE FROM invitation_tokens WHERE user_id IN ({placeholders}) OR tenant_id = %s;",
+                                    tenant_users + [tenant_id]
+                                )
+                                deleted_count = cursor.rowcount
+                                logger.info(f"Deleted {deleted_count} invitation tokens")
+                            else:
+                                # Delete by tenant_id only if no users
+                                cursor.execute(
+                                    "DELETE FROM invitation_tokens WHERE tenant_id = %s;",
+                                    [tenant_id]
+                                )
+                                logger.info(f"Deleted invitation tokens for tenant {tenant_id}")
+                    except Exception as token_error:
+                        logger.warning(f"Could not delete tokens: {str(token_error)}")
+                
                 if has_active_subscription:
                     # If active subscription: deactivate users instead of deleting
-                    for user_id in tenant_users:
-                        try:
-                            User.objects.filter(id=user_id).update(status='inactive')
-                            logger.info(f"Deactivated user {user_id}")
-                        except Exception as e:
-                            logger.warning(f"Could not deactivate user {user_id}: {str(e)}")
+                    try:
+                        User.objects.filter(tenant_id=tenant_id).update(status='inactive')
+                        logger.info(f"Deactivated {len(tenant_users)} users")
+                    except Exception as e:
+                        logger.warning(f"Could not deactivate users: {str(e)}")
                 
                 # Soft delete the tenant (just update fields, no schema access needed)
                 # Use update() to avoid triggering any schema operations

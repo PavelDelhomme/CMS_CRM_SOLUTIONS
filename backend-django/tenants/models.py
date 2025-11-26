@@ -151,6 +151,7 @@ class User(GuardianUserMixin, AbstractUser):
 
     class Meta:
         db_table = 'users'
+        ordering = ['-created_at']  # Fix pagination warning
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.get_role_display()})"
