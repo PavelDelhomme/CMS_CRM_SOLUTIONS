@@ -203,10 +203,18 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@vtcbuilder.co
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:9494')
 
 # Automatically choose backend based on configuration
+# Force SMTP if variables are set, otherwise use console
 if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     # Production: Use SMTP backend (OVH Mail, Gmail, etc.)
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    # Debug: Log email configuration
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"EMAIL BACKEND: SMTP configured - Host: {EMAIL_HOST}:{EMAIL_PORT}, User: {EMAIL_HOST_USER}")
 else:
     # Development: Use console backend (emails printed in console)
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning(f"EMAIL BACKEND: Console (SMTP not configured - HOST={EMAIL_HOST}, USER={EMAIL_HOST_USER})")
 

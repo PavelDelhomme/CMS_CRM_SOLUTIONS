@@ -155,9 +155,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
     try {
       setLoading(true)
       // Récupérer tous les utilisateurs du tenant spécifié
-      console.log('🔍 Chargement utilisateurs pour tenant:', tenantId)
       const data = await userService.getAll({ tenant_id: tenantId })
-      console.log('📦 Données reçues:', data)
       
       // Handle different response formats
       let usersArray: User[] = []
@@ -167,14 +165,9 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
         usersArray = data.results || data.data || []
       }
       
-      console.log('👥 Utilisateurs extraits:', usersArray)
       setUsers(usersArray)
-      
-      if (usersArray.length === 0) {
-        console.warn('⚠️ Aucun utilisateur trouvé pour ce tenant')
-      }
     } catch (error) {
-      console.error('❌ Erreur chargement utilisateurs:', error)
+      console.error('Erreur chargement utilisateurs:', error)
       toast.error('Erreur lors du chargement des utilisateurs')
       setUsers([])
     } finally {
@@ -482,10 +475,8 @@ export default function TenantDetailPage() {
       return
     }
     if (tenantId) {
-      console.log('🔄 Chargement tenant avec ID:', tenantId)
       loadTenant()
     } else {
-      console.warn('⚠️ Aucun tenantId fourni')
       setLoading(false)
     }
   }, [router, tenantId])
@@ -495,7 +486,7 @@ export default function TenantDetailPage() {
       const data = await tenantService.getById(tenantId!)
       setTenant(data)
     } catch (error) {
-      console.error('Erreur chargement tenant:', error)
+      // Erreur chargement tenant - redirection vers liste
       router.push('/admin/tenants')
     } finally {
       setLoading(false)

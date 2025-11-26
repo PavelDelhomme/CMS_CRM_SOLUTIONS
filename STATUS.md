@@ -34,7 +34,10 @@
 - ✅ Ports remappés sur 9494+ (frontend: 9494, backend: 9495)
 - ✅ Docker Compose configuré
 - ✅ Commandes Makefile à la racine (`make start`, `make setup-backend-django`)
-- ✅ Configuration email (SMTP/console automatique)
+- ✅ Configuration email (SMTP OVH configuré dans docker-compose.simple.yml)
+  - Serveur: ssl0.ovh.net:587 (TLS)
+  - Authentification: test@delhomme.ovh
+  - Script de test: backend-django/test_email.py
 
 ---
 
@@ -48,6 +51,9 @@
 6. ✅ **Mise à jour partielle** - Permet modification uniquement du mot de passe (partial=True + extra_kwargs)
 7. ✅ **Gestion erreurs extensions** - Messages explicites pour ERR_BLOCKED_BY_CLIENT
 8. ✅ **Nettoyage documentation** - 47 fichiers .md supprimés, consolidation dans STATUS.md et LOGS.md
+9. ✅ **Boucle infinie de logs** - Suppression console.log répétitifs dans TenantUsersTab
+10. ✅ **Erreur 400 PUT → PATCH** - Changement de PUT vers PATCH pour mises à jour partielles (user.service.ts)
+11. ✅ **Configuration email SMTP OVH** - Configuration SMTP dans docker-compose.simple.yml (ssl0.ovh.net:587)
 
 ---
 
@@ -129,21 +135,85 @@
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-11-26 02:20
+**Date** : 2025-11-26 02:35
 
 **Modifications** :
-- ✅ **Correction erreur 400 Bad Request** - `username` et `email` rendus optionnels dans UserSerializer (extra_kwargs)
-- ✅ **Ajout partial=True** - Permet modification uniquement du mot de passe sans erreur
-- ✅ **Modification mot de passe directe** - Fonctionnelle dans onglet Utilisateurs tenant
-- ✅ **Amélioration gestion erreurs** - Messages détaillés dans toast
-- ✅ **Nettoyage fichiers .md** - 47 fichiers supprimés, consolidation dans STATUS.md et LOGS.md
-- ✅ **Documentation extensions navigateur** - Solutions intégrées dans STATUS.md
+- ✅ **Boucle infinie de logs corrigée** - Suppression console.log répétitifs dans TenantUsersTab
+- ✅ **Erreur 400 corrigée définitivement** - Changement PUT → PATCH dans user.service.ts pour mises à jour partielles
+- ✅ **Configuration email SMTP OVH** - Variables d'environnement ajoutées dans docker-compose.simple.yml
+  - EMAIL_HOST: ssl0.ovh.net
+  - EMAIL_PORT: 587
+  - EMAIL_HOST_USER: test@delhomme.ovh
+  - Script de test créé: backend-django/test_email.py
+- ✅ **Nettoyage logs** - Suppression de tous les logs de debug répétitifs
 - ✅ **Configuration SSH GitHub** - Remote changé de HTTPS vers SSH, push fonctionnel
+- ✅ **Email SMTP fonctionnel** - Variables d'environnement chargées, emails envoyés réellement via SMTP OVH
+  - Script de test complet : `test_email_smtp.py`
+  - Backend SMTP activé : ssl0.ovh.net:587
 
 **Tests validés** :
 - ✅ Modification mot de passe utilisateur depuis `/admin/tenants/5` (onglet Utilisateurs)
 - ✅ Backend API répond correctement (testé avec curl)
 - ✅ Formulaire inline fonctionne correctement
+
+**Actions requises pour tester email** :
+1. ⚠️ **RECRÉER le conteneur** (pas juste restart) : `docker-compose -f docker-compose.simple.yml down backend && docker-compose -f docker-compose.simple.yml up -d backend`
+2. Tester email : `docker-compose -f docker-compose.simple.yml exec backend python test_email_smtp.py`
+3. Vérifier boîte mail : `test@delhomme.ovh`
+
+**✅ Résolution Problème Email** :
+- Les emails étaient affichés dans les logs Docker (backend console) au lieu d'être envoyés via SMTP
+- **Cause** : Variables d'environnement pas chargées car conteneur créé avant leur ajout
+- **Solution** : Recréer le conteneur backend pour charger les variables d'environnement
+- **Script de test** : `test_email_smtp.py` vérifie config, connexion SMTP et envoi réel
+
+---
+
+## 📧 Code d'Envoi d'Email - Référence
+
+### Emplacements du Code
+
+1. **Configuration Email** :
+   - Fichier : `backend-django/vtcbuilder/settings.py` (ligne 194-211)
+   - Variables d'environnement dans `docker-compose.simple.yml`
+
+2. **Réinitialisation Mot de Passe (Public)** :
+   - Fichier : `backend-django/tenants/views.py` (ligne ~714)
+   - Fonction : `request_password_reset_view`
+   - Endpoint : `POST /api/auth/password-reset/request/`
+   - Permissions : `AllowAny` (public)
+
+3. **Réinitialisation Mot de Passe (Admin)** :
+   - Fichier : `backend-django/tenants/views.py` (ligne ~540)
+   - Fonction : `send_password_reset` (action de UserViewSet)
+   - Endpoint : `POST /api/users/{id}/send_password_reset/`
+   - Permissions : Super admin ou Tenant admin
+
+4. **Invitation Nouveau Tenant** :
+   - Fichier : `backend-django/tenants/serializers.py` (ligne ~90-165)
+   - Fonction : `TenantSerializer.create`
+   - Déclencheur : Automatique lors création d'un tenant
+
+### Template de Base
+
+```python
+from django.core.mail import send_mail
+from django.conf import settings
+
+send_mail(
+    subject='Sujet de l\'email',
+    message='Version texte...',
+    html_message='<html>Version HTML...</html>',
+    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
+    recipient_list=['destinataire@example.com'],
+    fail_silently=False,
+)
+```
+
+### Script de Test
+
+- Script : `backend-django/test_email_smtp.py`
+- Usage : `docker-compose -f docker-compose.simple.yml exec backend python test_email_smtp.py`
 
 ---
 

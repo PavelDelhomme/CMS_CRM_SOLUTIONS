@@ -48,7 +48,8 @@ class UserService {
   }
 
   async update(id: number, data: Partial<User>) {
-    const response = await api.put(`/users/${id}/`, data);
+    // Use PATCH for partial updates (like password only)
+    const response = await api.patch(`/users/${id}/`, data);
     return response.data;
   }
 
