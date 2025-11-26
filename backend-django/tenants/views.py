@@ -287,9 +287,9 @@ class UserViewSet(viewsets.ModelViewSet):
         """Filter users based on tenant context"""
         user = self.request.user
         if user.is_super_admin():
-            return User.objects.all()
+            return User.objects.all().order_by('-created_at')
         elif user.tenant:
-            return User.objects.filter(tenant=user.tenant)
+            return User.objects.filter(tenant=user.tenant).order_by('-created_at')
         return User.objects.none()
 
     def get_serializer_class(self):
