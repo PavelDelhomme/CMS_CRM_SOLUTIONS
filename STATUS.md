@@ -129,7 +129,7 @@
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-11-26
+**Date** : 2025-11-26 02:16
 
 **Modifications** :
 - ✅ **Correction erreur 400 Bad Request** - `username` et `email` rendus optionnels dans UserSerializer (extra_kwargs)
@@ -138,6 +138,11 @@
 - ✅ **Amélioration gestion erreurs** - Messages détaillés dans toast
 - ✅ **Nettoyage fichiers .md** - 47 fichiers supprimés, consolidation dans STATUS.md et LOGS.md
 - ✅ **Documentation extensions navigateur** - Solutions intégrées dans STATUS.md
+
+**Tests validés** :
+- ✅ Modification mot de passe utilisateur depuis `/admin/tenants/5` (onglet Utilisateurs)
+- ✅ Backend API répond correctement (testé avec curl)
+- ✅ Formulaire inline fonctionne correctement
 
 ---
 
