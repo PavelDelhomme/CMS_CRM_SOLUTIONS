@@ -70,12 +70,20 @@ GOOGLE_MAPS_API_KEY=
 # ============================================
 # EMAIL (Configuration SMTP)
 # ============================================
-EMAIL_HOST=smtp.mailtrap.io
-EMAIL_PORT=2525
+# Pour OVH Mail (maily.ovh) :
+EMAIL_HOST=ssl0.ovh.net
+EMAIL_PORT=587
 EMAIL_USE_TLS=True
-EMAIL_HOST_USER=
-EMAIL_HOST_PASSWORD=
+EMAIL_USE_SSL=False
+EMAIL_HOST_USER=noreply@vtcbuilder.com
+EMAIL_HOST_PASSWORD=votre_mot_de_passe_email
 DEFAULT_FROM_EMAIL=noreply@vtcbuilder.com
+FRONTEND_URL=http://localhost:9494
+
+# Laissez vides pour utiliser le backend console (développement)
+# EMAIL_HOST=
+# EMAIL_HOST_USER=
+# EMAIL_HOST_PASSWORD=
 ```
 
 ### Variables Frontend (frontend/.env.local)

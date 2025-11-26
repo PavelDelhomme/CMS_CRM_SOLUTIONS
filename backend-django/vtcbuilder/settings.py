@@ -191,13 +191,22 @@ STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 # Google Maps
 GOOGLE_MAPS_API_KEY = config('GOOGLE_MAPS_API_KEY', default='')
 
-# Email
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Dev
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.mailtrap.io')
-EMAIL_PORT = config('EMAIL_PORT', default=2525, cast=int)
-EMAIL_USE_TLS = True
+# Email Configuration
+# Use SMTP backend if credentials are provided, otherwise use console backend for development
+EMAIL_HOST = config('EMAIL_HOST', default='')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@vtcbuilder.com')
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:9494')
+
+# Automatically choose backend based on configuration
+if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    # Production: Use SMTP backend (OVH Mail, Gmail, etc.)
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    # Development: Use console backend (emails printed in console)
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
