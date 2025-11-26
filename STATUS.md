@@ -44,7 +44,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ Statistiques détaillées avec monitoring complet
 - ✅ Mise à jour partielle utilisateurs (permet modification uniquement du mot de passe)
 - ✅ Système de paramètres globaux (singleton)
-- ✅ Gestion des templates avec HTML/CSS
+- ✅ Gestion des templates avec HTML/CSS (interface complète + tests unitaires)
 - ✅ Payment Methods (modes de paiement)
 - ✅ Gestion des erreurs améliorée (retour de tableaux vides au lieu de 500)
 - ✅ **Intégration Stripe complète (2025-11-27)** - Service Stripe, webhooks, actions subscription
@@ -167,6 +167,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - [ ] **Correction des erreurs identifiées** - En cours (2025-11-27)
   - Correction import Domain ✅
   - Fichier DEMARRAGE_RAPIDE.txt supprimé ✅
+  - Tests templates créés ✅ (2025-11-27)
   - À faire : Corriger tests tenant-specific avec tenant_context
   - À faire : Ajouter génération slug dans tests Tenant
   - À faire : Créer domaines pour tous les tenants de test
