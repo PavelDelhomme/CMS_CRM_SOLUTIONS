@@ -99,9 +99,11 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
   ]
 
   const isActive = (href: string) => {
+    // Exact match for dashboard
     if (href === '/admin/dashboard') {
       return pathname === '/admin/dashboard'
     }
+    // For other routes, check if pathname starts with href
     return pathname.startsWith(href)
   }
 
