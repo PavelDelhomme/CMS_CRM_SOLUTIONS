@@ -845,6 +845,9 @@ def reset_password_view(request):
 
         # Set new password
         user.set_password(new_password)
+        # Activate user if status is pending (password reset implies user wants to use the account)
+        if user.status == 'pending':
+            user.status = 'active'
         user.save()
 
         # Mark token as used
