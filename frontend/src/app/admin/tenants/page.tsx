@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
-import AdminSidebar from '@/components/AdminSidebar'
+import AdminLayout from '@/components/AdminLayout'
 import tenantService, { Tenant } from '@/services/tenant.service'
 
 export default function TenantsPage() {
@@ -108,39 +108,31 @@ export default function TenantsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex">
-        <AdminSidebar />
-        <div className="flex-1 ml-64 p-8">
-          <p>Chargement...</p>
-        </div>
-      </div>
+      <AdminLayout
+        title="Gestion des Tenants"
+        subtitle="Gérez tous vos clients et leurs sites"
+      >
+        <p>Chargement...</p>
+      </AdminLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <AdminSidebar />
-
-      <div className="flex-1 ml-64">
-        <header className="bg-white shadow">
-          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Gestion des Tenants</h1>
-              <p className="text-sm text-gray-600 mt-1">Gérez tous vos clients et leurs sites</p>
-            </div>
-            <button
-              onClick={() => router.push('/admin/tenants/new')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
-            >
-              <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Nouveau Tenant
-            </button>
-          </div>
-        </header>
-
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <AdminLayout
+      title="Gestion des Tenants"
+      subtitle="Gérez tous vos clients et leurs sites"
+      headerActions={
+        <button
+          onClick={() => router.push('/admin/tenants/new')}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+        >
+          <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Nouveau Tenant
+        </button>
+      }
+    >
           {/* Search */}
           <div className="mb-6">
             <input
@@ -278,9 +270,7 @@ export default function TenantsPage() {
               </tbody>
             </table>
           </div>
-        </main>
-      </div>
-    </div>
+    </AdminLayout>
   )
 }
 

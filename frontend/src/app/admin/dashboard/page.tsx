@@ -95,14 +95,16 @@ export default function AdminDashboard() {
           </div>
 
           <div className="card">
-            <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="ml-5">
-              <p className="text-sm font-medium text-gray-500">En Trial</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats?.trial_tenants || 0}</p>
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-5">
+                <p className="text-sm font-medium text-gray-500">En Trial</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats?.trial_tenants || 0}</p>
+              </div>
             </div>
           </div>
 

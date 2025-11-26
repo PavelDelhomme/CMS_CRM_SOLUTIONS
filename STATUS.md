@@ -268,6 +268,18 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 ### ✅ Corrections Majeures (2025-11-26)
 
+#### Corrections Interface & UX
+1. ✅ **Page /admin/tenants - Drawer manquant corrigé**
+   - Remplacement de la structure manuelle par `AdminLayout`
+   - Drawer/sidebar maintenant fonctionnel avec toggle
+   - HeaderActions intégré pour le bouton "Nouveau Tenant"
+   - Cohérence avec les autres pages admin
+
+2. ✅ **Dashboard - Affichage "En Trial" corrigé**
+   - Structure de la carte alignée avec les autres cartes
+   - Ajout de `flex items-center` pour alignement cohérent
+   - Affichage uniforme avec les autres statistiques
+
 #### Système de Tests Complet
 1. ✅ **Création de 37 fichiers de tests unitaires** (2025-11-26)
    - ✅ 10 tests services frontend (auth, user, tenant, billing, page, service, booking, media, template, settings)
