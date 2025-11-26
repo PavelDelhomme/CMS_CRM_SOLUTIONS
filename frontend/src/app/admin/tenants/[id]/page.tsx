@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import authService from '@/services/auth.service'
 import AdminSidebar from '@/components/AdminSidebar'
 import tenantService, { Tenant } from '@/services/tenant.service'
+import userService, { User } from '@/services/user.service'
+import ResponsiveTable from '@/components/ResponsiveTable'
 import toast from 'react-hot-toast'
 
 function AdminDebugSection({ tenantId }: { tenantId: number }) {
@@ -133,6 +135,204 @@ function AdminDebugSection({ tenantId }: { tenantId: number }) {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName: string }) {
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    loadUsers()
+  }, [tenantId])
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true)
+      // Récupérer tous les utilisateurs du tenant spécifié
+      const data = await userService.getAll({ tenant_id: tenantId })
+      const usersArray = Array.isArray(data) ? data : (data.results || data.data || [])
+      setUsers(usersArray)
+    } catch (error) {
+      console.error('Erreur chargement utilisateurs:', error)
+      toast.error('Erreur lors du chargement des utilisateurs')
+      setUsers([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async (userId: number, userEmail: string) => {
+    if (!confirm(`Envoyer un email de réinitialisation de mot de passe à ${userEmail} ?`)) {
+      return
+    }
+
+    try {
+      await userService.sendPasswordReset(userId)
+      toast.success('Email de réinitialisation envoyé avec succès !')
+    } catch (error: any) {
+      console.error('Erreur envoi email reset:', error)
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'envoi de l\'email')
+    }
+  }
+
+  const handleDeleteUser = async (userId: number, userEmail: string) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${userEmail} ?`)) {
+      return
+    }
+
+    try {
+      await userService.delete(userId)
+      toast.success('Utilisateur supprimé avec succès !')
+      loadUsers()
+    } catch (error: any) {
+      console.error('Erreur suppression utilisateur:', error)
+      toast.error(error.response?.data?.error || 'Erreur lors de la suppression')
+    }
+  }
+
+  const getStatusBadge = (status: string) => {
+    const badges: { [key: string]: string } = {
+      active: 'bg-green-100 text-green-800',
+      inactive: 'bg-gray-100 text-gray-800',
+      suspended: 'bg-red-100 text-red-800',
+      pending: 'bg-yellow-100 text-yellow-800',
+    }
+    return badges[status] || 'bg-gray-100 text-gray-800'
+  }
+
+  const getRoleBadge = (role: string) => {
+    const badges: { [key: string]: string } = {
+      'tenant-admin': 'bg-purple-100 text-purple-800',
+      'driver': 'bg-blue-100 text-blue-800',
+      'operator': 'bg-indigo-100 text-indigo-800',
+    }
+    return badges[role] || 'bg-gray-100 text-gray-800'
+  }
+
+  const filteredUsers = users.filter(user => {
+    if (!search) return true
+    const searchLower = search.toLowerCase()
+    return (
+      user.email?.toLowerCase().includes(searchLower) ||
+      user.name?.toLowerCase().includes(searchLower) ||
+      user.first_name?.toLowerCase().includes(searchLower) ||
+      user.last_name?.toLowerCase().includes(searchLower)
+    )
+  })
+
+  if (loading) {
+    return (
+      <div className="bg-white shadow rounded-lg p-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement des utilisateurs...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white shadow rounded-lg p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+          <h2 className="text-xl font-semibold">Utilisateurs de {tenantName}</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            {users.length} utilisateur{users.length > 1 ? 's' : ''} au total
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      {filteredUsers.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600 mb-4">
+            {search ? 'Aucun utilisateur trouvé pour cette recherche' : 'Aucun utilisateur trouvé pour ce tenant'}
+          </p>
+          {!search && (
+            <p className="text-sm text-gray-500">
+              L'utilisateur admin devrait normalement apparaître ici. Vérifiez que le tenant a bien un admin.
+            </p>
+          )}
+        </div>
+      ) : (
+        <ResponsiveTable
+          headers={['Nom', 'Email', 'Rôle', 'Statut', 'Créé le', 'Actions']}
+          emptyMessage="Aucun utilisateur"
+        >
+          {filteredUsers.map((user) => (
+            <tr key={user.id} className="hover:bg-gray-50">
+              <td className="px-4 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-sm font-medium text-gray-700">
+                      {user.first_name?.[0] || user.last_name?.[0] || user.email?.[0]?.toUpperCase() || '?'}
+                    </span>
+                  </div>
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {user.name || user.email || 'Sans nom'}
+                    </div>
+                    {user.first_name || user.last_name ? (
+                      <div className="text-sm text-gray-500">
+                        {user.first_name} {user.last_name}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-900 font-mono">{user.email}</div>
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap">
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadge(user.role)}`}>
+                  {user.role === 'tenant-admin' ? 'Admin Tenant' : user.role}
+                </span>
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap">
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(user.status)}`}>
+                  {user.status === 'active' ? 'Actif' : user.status === 'pending' ? 'En attente' : user.status}
+                </span>
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                {user.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '-'}
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => handleResetPassword(user.id, user.email)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title="Envoyer un email de réinitialisation"
+                  >
+                    🔑 Reset
+                  </button>
+                  {user.role !== 'tenant-admin' && (
+                    <button
+                      onClick={() => handleDeleteUser(user.id, user.email)}
+                      className="text-red-600 hover:text-red-900"
+                      title="Supprimer l'utilisateur"
+                    >
+                      🗑️
+                    </button>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </ResponsiveTable>
+      )}
     </div>
   )
 }
@@ -296,15 +496,7 @@ export default function TenantDetailPage() {
           )}
 
           {activeTab === 'users' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Utilisateurs</h2>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                  + Ajouter un utilisateur
-                </button>
-              </div>
-              <p className="text-gray-600">Liste des utilisateurs de ce tenant (à implémenter)</p>
-            </div>
+            <TenantUsersTab tenantId={tenantId!} tenantName={tenant.name} />
           )}
 
           {activeTab === 'billing' && (
