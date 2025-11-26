@@ -72,6 +72,11 @@
 
 **Backend vérifié** : ✅ Fonctionne correctement (testé avec curl)
 
+**Note** : Si le login échoue après un reset password, vérifiez :
+1. Les extensions ne bloquent pas les requêtes (`ERR_BLOCKED_BY_CLIENT`)
+2. Le mot de passe est bien celui défini dans le reset
+3. Le statut utilisateur est bien 'active' (activé automatiquement lors du reset)
+
 **Compte de test** :
 - Email : `test@delhomme.ovh`
 - Mot de passe : `tenant123`
