@@ -183,7 +183,9 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at', 'tenant_name', 'tenant_id']
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
-            'tenant': {'required': False, 'allow_null': True}
+            'tenant': {'required': False, 'allow_null': True},
+            'username': {'required': False},  # Allow partial updates without username
+            'email': {'required': False},  # Allow partial updates without email
         }
 
     def get_roles(self, obj):
