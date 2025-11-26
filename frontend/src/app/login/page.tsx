@@ -45,9 +45,25 @@ export default function LoginPage() {
         toast.error('Erreur de connexion')
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erreur de connexion'
-      toast.error(errorMessage)
       console.error('Login error:', error)
+      
+      // Gérer les erreurs de réseau spécifiquement
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
+        toast.error(
+          'Erreur de connexion au serveur. Vérifiez que :\n' +
+          '1. Les extensions de navigateur (bloqueurs de pub) ne bloquent pas les requêtes\n' +
+          '2. Le backend est bien démarré\n' +
+          '3. L\'URL de l\'API est correcte',
+          { duration: 6000 }
+        )
+        console.error('Network error - possibly blocked by browser extension:', error)
+      } else if (error.response?.status === 401) {
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Email ou mot de passe incorrect'
+        toast.error(errorMessage)
+      } else {
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erreur de connexion'
+        toast.error(errorMessage)
+      }
     } finally {
       setLoading(false)
     }
