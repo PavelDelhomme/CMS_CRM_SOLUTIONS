@@ -224,6 +224,15 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_403_FORBIDDEN
                 )
         
+        # Cancel via Stripe if connected
+        if subscription.stripe_subscription_id:
+            try:
+                from .stripe_service import StripeService
+                StripeService.cancel_subscription(subscription)
+            except Exception as e:
+                # If Stripe fails, still cancel locally
+                pass
+        
         subscription.status = 'cancelled'
         subscription.cancelled_at = timezone.now()
         subscription.save(update_fields=['status', 'cancelled_at'])
@@ -243,6 +252,17 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
                 {'error': 'Only super admin can reactivate subscriptions'},
                 status=status.HTTP_403_FORBIDDEN
             )
+        
+        # Reactivate via Stripe if connected
+        if subscription.stripe_subscription_id:
+            try:
+                from .stripe_service import StripeService
+                StripeService.reactivate_subscription(subscription)
+            except Exception as e:
+                return Response(
+                    {'error': f'Erreur réactivation Stripe: {str(e)}'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         
         subscription.status = 'active'
         subscription.cancelled_at = None

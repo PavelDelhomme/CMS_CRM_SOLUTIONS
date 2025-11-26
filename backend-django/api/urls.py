@@ -20,6 +20,7 @@ from billing.views import (
     InvoiceViewSet, PaymentViewSet, PaymentMethodViewSet, billing_stats, unpaid_items
 )
 from settings_app.views import system_settings_view, system_settings_test_email_view
+from billing.webhooks import stripe_webhook
 from .views import DashboardView, DetailedStatsView
 
 # Router for viewsets
@@ -82,6 +83,10 @@ urlpatterns = [
     path('auth/verify-invitation', verify_invitation_token_view, name='verify-invitation'),
     path('auth/complete-invitation/', complete_invitation_view, name='complete-invitation-slash'),
     path('auth/complete-invitation', complete_invitation_view, name='complete-invitation'),
+    
+    # Stripe Webhooks
+    path('billing/webhooks/stripe/', stripe_webhook, name='stripe-webhook-slash'),
+    path('billing/webhooks/stripe', stripe_webhook, name='stripe-webhook'),
 
     # Include router URLs LAST (order matters!)
     path('', include(router.urls)),

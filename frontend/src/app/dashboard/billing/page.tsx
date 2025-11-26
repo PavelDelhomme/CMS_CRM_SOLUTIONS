@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import TenantLayout from '@/components/TenantLayout'
 import billingService, { Subscription, Invoice, Payment, PricingPlan } from '@/services/billing.service'
+import stripeService from '@/services/stripe.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
+import StripeCheckout from '@/components/payment/StripeCheckout'
 import toast from 'react-hot-toast'
 
 export default function TenantBillingPage() {
