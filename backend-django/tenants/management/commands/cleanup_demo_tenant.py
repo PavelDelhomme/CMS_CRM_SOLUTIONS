@@ -31,6 +31,21 @@ class Command(BaseCommand):
         if demo_tenant:
             self.stdout.write(f'🗑️  Suppression du tenant "Demo VTC Company" (ID: {demo_tenant.id})...')
             
+            # Supprimer les utilisateurs associés au tenant demo
+            demo_users = User.objects.filter(tenant=demo_tenant)
+            deleted_users_count = 0
+            for user in demo_users:
+                if user.role != 'super-admin':  # Ne pas supprimer les super-admins
+                    self.stdout.write(f'   Suppression utilisateur: {user.email}')
+                    try:
+                        user.delete()
+                        deleted_users_count += 1
+                    except Exception as e:
+                        self.stdout.write(self.style.WARNING(f'   ⚠️  Erreur suppression utilisateur {user.email}: {e}'))
+            
+            if deleted_users_count > 0:
+                self.stdout.write(self.style.SUCCESS(f'   ✅ {deleted_users_count} utilisateur(s) supprimé(s)'))
+            
             # Supprimer les subscriptions
             subscriptions = Subscription.objects.filter(tenant=demo_tenant)
             for sub in subscriptions:
