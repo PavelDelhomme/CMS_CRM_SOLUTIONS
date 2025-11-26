@@ -60,11 +60,23 @@ class TenantService {
     return response.data;
   }
 
-  async restore(id: number) {
-    const response = await api.post(`/tenants/${id}/restore/`);
-    return response.data;
-  }
-}
+      async restore(id: number) {
+        const response = await api.post(`/tenants/${id}/restore/`);
+        return response.data;
+      }
 
-export default new TenantService();
+      async getAdminInfo(id: number) {
+        const response = await api.get(`/tenants/${id}/get_admin_info/`);
+        return response.data;
+      }
+
+      async resetAdminPassword(id: number, password?: string) {
+        const response = await api.post(`/tenants/${id}/reset_admin_password/`, {
+          password: password || 'admin123',
+        });
+        return response.data;
+      }
+    }
+
+    export default new TenantService();
 

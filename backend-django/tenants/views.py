@@ -80,6 +80,78 @@ class TenantViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Tenant suspended'})
     
     @action(detail=True, methods=['post'])
+    def reset_admin_password(self, request, pk=None):
+        """
+        Reset the admin user password for a tenant (for super admin debug)
+        Sets password to 'admin123' by default
+        """
+        if not request.user.is_super_admin():
+            return Response(
+                {'error': 'Only super admin can reset tenant admin passwords'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        tenant = self.get_object()
+        
+        # Get the admin user for this tenant
+        admin_user = User.objects.filter(
+            tenant=tenant,
+            role='tenant-admin'
+        ).first()
+        
+        if not admin_user:
+            return Response(
+                {'error': 'No admin user found for this tenant'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Reset password to default
+        default_password = request.data.get('password', 'admin123')
+        admin_user.set_password(default_password)
+        admin_user.status = 'active'
+        admin_user.save(update_fields=['password', 'status'])
+        
+        return Response({
+            'status': 'Password reset successfully',
+            'email': admin_user.email,
+            'password': default_password,
+            'message': f'Le mot de passe de {admin_user.email} a été réinitialisé.'
+        })
+
+    @action(detail=True, methods=['get'])
+    def get_admin_info(self, request, pk=None):
+        """
+        Get admin user information for a tenant (for super admin)
+        """
+        if not request.user.is_super_admin():
+            return Response(
+                {'error': 'Only super admin can view tenant admin info'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        tenant = self.get_object()
+        
+        # Get the admin user for this tenant
+        admin_user = User.objects.filter(
+            tenant=tenant,
+            role='tenant-admin'
+        ).first()
+        
+        if not admin_user:
+            return Response({
+                'exists': False,
+                'message': 'Aucun utilisateur admin trouvé pour ce tenant'
+            })
+        
+        return Response({
+            'exists': True,
+            'email': admin_user.email,
+            'username': admin_user.username,
+            'status': admin_user.status,
+            'created_at': admin_user.created_at.isoformat() if admin_user.created_at else None,
+        })
+
+    @action(detail=True, methods=['post'])
     def restore(self, request, pk=None):
         """
         Restore a soft deleted tenant

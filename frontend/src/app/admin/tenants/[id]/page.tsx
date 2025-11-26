@@ -5,6 +5,137 @@ import { useRouter, useParams } from 'next/navigation'
 import authService from '@/services/auth.service'
 import AdminSidebar from '@/components/AdminSidebar'
 import tenantService, { Tenant } from '@/services/tenant.service'
+import toast from 'react-hot-toast'
+
+function AdminDebugSection({ tenantId }: { tenantId: number }) {
+  const [adminInfo, setAdminInfo] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [resetting, setResetting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [password, setPassword] = useState('admin123')
+
+  useEffect(() => {
+    loadAdminInfo()
+  }, [tenantId])
+
+  const loadAdminInfo = async () => {
+    try {
+      setLoading(true)
+      const info = await tenantService.getAdminInfo(tenantId)
+      setAdminInfo(info)
+    } catch (error) {
+      console.error('Erreur chargement info admin:', error)
+      setAdminInfo({ exists: false })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async () => {
+    if (!confirm(`Réinitialiser le mot de passe de ${adminInfo?.email || 'l\'admin'} en "${password}" ?`)) {
+      return
+    }
+
+    try {
+      setResetting(true)
+      const result = await tenantService.resetAdminPassword(tenantId, password)
+      setShowPassword(true)
+      toast.success('Mot de passe réinitialisé avec succès !')
+      loadAdminInfo()
+    } catch (error: any) {
+      console.error('Erreur réinitialisation mot de passe:', error)
+      toast.error(error.response?.data?.error || 'Erreur lors de la réinitialisation')
+    } finally {
+      setResetting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        <p className="text-yellow-800">Chargement des informations admin...</p>
+      </div>
+    )
+  }
+
+  if (!adminInfo || !adminInfo.exists) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-yellow-900 mb-2">🔐 Informations Admin (Debug)</h3>
+        <p className="text-yellow-800">{adminInfo?.message || 'Aucun utilisateur admin trouvé pour ce tenant'}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+      <h3 className="text-lg font-semibold text-yellow-900 mb-4">🔐 Informations Admin (Debug)</h3>
+      
+      <dl className="grid grid-cols-1 gap-4 mb-4">
+        <div>
+          <dt className="text-sm font-medium text-yellow-800">Email Admin</dt>
+          <dd className="mt-1 text-sm text-yellow-900 font-mono">{adminInfo.email}</dd>
+        </div>
+        <div>
+          <dt className="text-sm font-medium text-yellow-800">Username</dt>
+          <dd className="mt-1 text-sm text-yellow-900 font-mono">{adminInfo.username}</dd>
+        </div>
+        <div>
+          <dt className="text-sm font-medium text-yellow-800">Statut</dt>
+          <dd className="mt-1 text-sm text-yellow-900 capitalize">{adminInfo.status}</dd>
+        </div>
+      </dl>
+
+      <div className="border-t border-yellow-300 pt-4 mt-4">
+        <div className="flex items-end gap-4">
+          <div className="flex-1">
+            <label htmlFor="password" className="block text-sm font-medium text-yellow-800 mb-2">
+              Mot de passe à définir
+            </label>
+            <input
+              id="password"
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-yellow-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              placeholder="admin123"
+            />
+          </div>
+          <button
+            onClick={handleResetPassword}
+            disabled={resetting || !password}
+            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {resetting ? 'Réinitialisation...' : 'Réinitialiser'}
+          </button>
+        </div>
+
+        {showPassword && (
+          <div className="mt-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+            <p className="text-sm font-medium text-yellow-900 mb-1">✅ Mot de passe réinitialisé !</p>
+            <p className="text-xs text-yellow-800">
+              Email: <span className="font-mono font-semibold">{adminInfo.email}</span>
+            </p>
+            <p className="text-xs text-yellow-800">
+              Mot de passe: <span className="font-mono font-semibold">{password}</span>
+            </p>
+            <p className="text-xs text-yellow-700 mt-2">
+              Vous pouvez maintenant vous connecter avec ces identifiants sur{' '}
+              <a
+                href="http://localhost:9494/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-semibold"
+              >
+                http://localhost:9494/login
+              </a>
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 type Tab = 'overview' | 'users' | 'billing' | 'site' | 'settings'
 
@@ -127,36 +258,40 @@ export default function TenantDetailPage() {
         {/* Tab Content */}
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {activeTab === 'overview' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Informations du Tenant</h2>
-              <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Nom</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{tenant.name}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Email</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{tenant.email}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Slug</dt>
-                  <dd className="mt-1 text-sm text-gray-900">/{tenant.slug}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Plan</dt>
-                  <dd className="mt-1 text-sm text-gray-900 capitalize">{tenant.plan}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Statut</dt>
-                  <dd className="mt-1 text-sm text-gray-900 capitalize">{tenant.status}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Créé le</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
-                  </dd>
-                </div>
-              </dl>
+            <div className="space-y-6">
+              <div className="bg-white shadow rounded-lg p-6">
+                <h2 className="text-xl font-semibold mb-4">Informations du Tenant</h2>
+                <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Nom</dt>
+                    <dd className="mt-1 text-sm text-gray-900">{tenant.name}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Email</dt>
+                    <dd className="mt-1 text-sm text-gray-900">{tenant.email}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Slug</dt>
+                    <dd className="mt-1 text-sm text-gray-900">/{tenant.slug}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Plan</dt>
+                    <dd className="mt-1 text-sm text-gray-900 capitalize">{tenant.plan}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Statut</dt>
+                    <dd className="mt-1 text-sm text-gray-900 capitalize">{tenant.status}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Créé le</dt>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              <AdminDebugSection tenantId={tenantId!} />
             </div>
           )}
 
