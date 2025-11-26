@@ -19,38 +19,45 @@ export interface Page {
 }
 
 class PageService {
-  async getAll(params?: { status?: string }) {
-    const response = await api.get('/pages', { params });
-    return response.data;
+  async getAll(params?: { status?: string; tenant_id?: number }) {
+    const response = await api.get('/pages/', { params });
+    // Handle paginated response
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data && typeof response.data === 'object' && 'results' in response.data) {
+      return response.data.results || [];
+    }
+    return [];
   }
 
   async getById(id: number) {
-    const response = await api.get(`/pages/${id}`);
-    return response.data.page;
+    const response = await api.get(`/pages/${id}/`);
+    return response.data;
   }
 
   async create(data: Partial<Page>) {
-    const response = await api.post('/pages', data);
+    const response = await api.post('/pages/', data);
     return response.data;
   }
 
   async update(id: number, data: Partial<Page>) {
-    const response = await api.put(`/pages/${id}`, data);
+    const response = await api.patch(`/pages/${id}/`, data);
     return response.data;
   }
 
   async delete(id: number) {
-    const response = await api.delete(`/pages/${id}`);
+    const response = await api.delete(`/pages/${id}/`);
     return response.data;
   }
 
   async publish(id: number) {
-    const response = await api.post(`/pages/${id}/publish`);
+    const response = await api.post(`/pages/${id}/publish/`);
     return response.data;
   }
 
   async duplicate(id: number) {
-    const response = await api.post(`/pages/${id}/duplicate`);
+    const response = await api.post(`/pages/${id}/duplicate/`);
     return response.data;
   }
 }

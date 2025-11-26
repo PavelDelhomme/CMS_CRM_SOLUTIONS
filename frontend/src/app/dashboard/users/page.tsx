@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import TenantLayout from '@/components/TenantLayout'
+import ResponsiveTable from '@/components/ResponsiveTable'
 import userService, { User } from '@/services/user.service'
+import toast from 'react-hot-toast'
 
 export default function TenantUsersPage() {
   const router = useRouter()
@@ -56,10 +58,11 @@ export default function TenantUsersPage() {
       })
       setShowAddForm(false)
       setFormData({ email: '', first_name: '', last_name: '', role: 'operator', password: '' })
+      toast.success('Utilisateur créé avec succès !')
       loadUsers()
     } catch (error: any) {
       console.error('Erreur création utilisateur:', error)
-      alert(error.response?.data?.error || 'Erreur lors de la création')
+      toast.error(error.response?.data?.error || 'Erreur lors de la création')
     }
   }
 
@@ -67,9 +70,9 @@ export default function TenantUsersPage() {
     if (!confirm(`Envoyer un email de réinitialisation de mot de passe à ${email} ?`)) return
     try {
       const result = await userService.sendPasswordReset(id)
-      alert(result.message || 'Email envoyé avec succès !')
+      toast.success(result.message || 'Email envoyé avec succès !')
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Erreur lors de l\'envoi')
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'envoi')
     }
   }
 
@@ -83,11 +86,11 @@ export default function TenantUsersPage() {
     
     try {
       await userService.delete(id)
-      alert('Utilisateur supprimé avec succès')
+      toast.success('Utilisateur supprimé avec succès')
       loadUsers()
     } catch (error: any) {
       console.error('Erreur suppression:', error)
-      alert(error.response?.data?.error || 'Erreur lors de la suppression. Impossible de supprimer un super-admin.')
+      toast.error(error.response?.data?.error || 'Erreur lors de la suppression. Impossible de supprimer un super-admin.')
     }
   }
 
@@ -235,78 +238,59 @@ export default function TenantUsersPage() {
       </div>
 
       {/* Users List */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Rôle</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Status</th>
-                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredUsers.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                        {search ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur pour le moment'}
-                      </td>
-                    </tr>
-                  ) : (
-                  filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{user.name || user.email}</div>
-                        <div className="text-xs sm:text-sm text-gray-500">{user.email}</div>
-                        <div className="sm:hidden mt-1 flex flex-wrap gap-1">
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadge(user.role)}`}>
-                            {user.role}
-                          </span>
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(user.status)}`}>
-                            {user.status}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadge(user.role)}`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(user.status)}`}>
-                          {user.status}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-1 sm:space-x-2">
-                            <button
-                              onClick={() => handlePasswordReset(user.id, user.email)}
-                              className="text-blue-600 hover:text-blue-900"
-                              title="Réinitialiser le mot de passe"
-                            >
-                              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(user.id, user.email, user.name)}
-                              className="text-red-600 hover:text-red-900"
-                              title="Supprimer définitivement"
-                            >
-                              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-          </tbody>
-        </table>
-        </div>
-      </div>
+      <ResponsiveTable
+        headers={['Utilisateur', 'Rôle', 'Status', 'Actions']}
+        emptyMessage={search ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur pour le moment'}
+      >
+        {filteredUsers.length === 0 ? (
+          <tr>
+            <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+              {search ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur pour le moment'}
+            </td>
+          </tr>
+        ) : (
+          filteredUsers.map((user) => (
+          <tr key={user.id} className="hover:bg-gray-50">
+            <td className="px-4 sm:px-6 py-4">
+              <div className="text-sm font-medium text-gray-900">{user.name || user.email}</div>
+              <div className="text-xs sm:text-sm text-gray-500">{user.email}</div>
+            </td>
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadge(user.role)}`}>
+                {user.role === 'tenant-admin' ? 'Administrateur' : user.role === 'driver' ? 'Chauffeur' : 'Opérateur'}
+              </span>
+            </td>
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(user.status)}`}>
+                {user.status === 'active' ? 'Actif' : user.status === 'inactive' ? 'Inactif' : user.status === 'suspended' ? 'Suspendu' : 'En attente'}
+              </span>
+            </td>
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <div className="flex justify-end items-center space-x-2">
+                <button
+                  onClick={() => handlePasswordReset(user.id, user.email)}
+                  className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                  title="Réinitialiser le mot de passe"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => handleDelete(user.id, user.email, user.name)}
+                  className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                  title="Supprimer définitivement"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          ))
+        )}
+      </ResponsiveTable>
     </TenantLayout>
   )
 }

@@ -40,13 +40,16 @@ class PricingPlan(models.Model):
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     
+    # Display order
+    order = models.IntegerField(default=0, help_text="Ordre d'affichage sur le site public")
+    
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'pricing_plans'
-        ordering = ['price_monthly']
+        ordering = ['order', 'price_monthly']
     
     def __str__(self):
         return self.name
@@ -194,4 +197,61 @@ class Payment(models.Model):
     
     def __str__(self):
         return f"Payment {self.id} - {self.amount} {self.currency}"
+
+
+class PaymentMethod(models.Model):
+    """
+    Payment Method model for managing available payment methods
+    """
+    METHOD_TYPE_CHOICES = [
+        ('card', 'Carte bancaire'),
+        ('bank_transfer', 'Virement bancaire'),
+        ('paypal', 'PayPal'),
+        ('stripe', 'Stripe'),
+        ('check', 'Chèque'),
+        ('cash', 'Espèces'),
+        ('other', 'Autre'),
+    ]
+    
+    # Basic info
+    name = models.CharField(max_length=100, unique=True)
+    method_type = models.CharField(max_length=20, choices=METHOD_TYPE_CHOICES)
+    description = models.TextField(blank=True, null=True)
+    
+    # Configuration
+    is_active = models.BooleanField(default=True)
+    is_enabled = models.BooleanField(default=True, help_text="Disponible pour les tenants")
+    requires_validation = models.BooleanField(default=False, help_text="Nécessite validation manuelle")
+    
+    # Settings (JSON field for flexible configuration)
+    settings = models.JSONField(default=dict, blank=True, help_text="Configuration spécifique (clés API, etc.)")
+    
+    # Display
+    icon = models.CharField(max_length=50, blank=True, null=True, help_text="Icône ou emoji")
+    order = models.IntegerField(default=0, help_text="Ordre d'affichage")
+    
+    # Fees
+    fee_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Commission en %")
+    fee_fixed = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Commission fixe")
+    
+    # Limits
+    min_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Montant minimum")
+    max_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Montant maximum")
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'payment_methods'
+        ordering = ['order', 'name']
+        verbose_name = 'Mode de paiement'
+        verbose_name_plural = 'Modes de paiement'
+    
+    def __str__(self):
+        return self.name
+    
+    def is_available(self):
+        """Check if payment method is available"""
+        return self.is_active and self.is_enabled
 

@@ -69,6 +69,20 @@ class MediaListSerializer(serializers.ModelSerializer):
 
 class TemplateSerializer(serializers.ModelSerializer):
     """Serializer for Template model"""
+    
+    def create(self, validated_data):
+        """Auto-generate slug if not provided"""
+        if not validated_data.get('slug') and validated_data.get('name'):
+            from django.utils.text import slugify
+            validated_data['slug'] = slugify(validated_data['name'])
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        """Auto-generate slug if name changed and slug not provided"""
+        if 'name' in validated_data and not validated_data.get('slug') and not instance.slug:
+            from django.utils.text import slugify
+            validated_data['slug'] = slugify(validated_data['name'])
+        return super().update(instance, validated_data)
 
     class Meta:
         model = Template
@@ -78,7 +92,7 @@ class TemplateSerializer(serializers.ModelSerializer):
             'category', 'is_premium', 'price', 'is_active',
             'usage_count', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'slug', 'usage_count', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'usage_count', 'created_at', 'updated_at']
 
 
 class TemplateListSerializer(serializers.ModelSerializer):

@@ -28,6 +28,18 @@ class TenantSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'slug', 'created_at', 'updated_at', 'deleted_at']
 
+    def update(self, instance, validated_data):
+        """Update tenant, merging settings JSON instead of replacing"""
+        # Handle settings merge for partial updates
+        if 'settings' in validated_data:
+            current_settings = instance.settings or {}
+            new_settings = validated_data['settings']
+            # Merge new settings with existing ones
+            if isinstance(new_settings, dict) and isinstance(current_settings, dict):
+                validated_data['settings'] = {**current_settings, **new_settings}
+        
+        return super().update(instance, validated_data)
+
     def create(self, validated_data):
         """Create tenant with auto-generated slug and schema_name, and create admin with invitation"""
         from django.utils.text import slugify
@@ -202,12 +214,21 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.get_full_name() or obj.username
 
     def to_representation(self, instance):
-        """Add tenant_id to representation"""
+        """Add tenant_id and tenant_name to representation"""
         data = super().to_representation(instance)
         if instance.tenant:
             data['tenant_id'] = instance.tenant.id
+            data['tenant_name'] = instance.tenant.name
+            # Also include tenant object for compatibility
+            if 'tenant' not in data or not data.get('tenant'):
+                data['tenant'] = {
+                    'id': instance.tenant.id,
+                    'name': instance.tenant.name,
+                }
         else:
             data['tenant_id'] = None
+            data['tenant_name'] = None
+            data['tenant'] = None
         return data
 
     def create(self, validated_data):

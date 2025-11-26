@@ -35,6 +35,7 @@ SHARED_APPS = [
     # Local apps (shared)
     'tenants',
     'billing',
+    'settings_app',
 ]
 
 TENANT_APPS = [
@@ -201,6 +202,14 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+# Session Configuration (for impersonation)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'vtcbuilder_sessionid'
+SESSION_COOKIE_AGE = 86400  # 24 hours
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG  # Only in production
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # Guardian settings
 GUARDIAN_MONKEY_PATCH = False

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Sidebar from './Sidebar'
+import ImpersonationBanner from './ImpersonationBanner'
 
 interface TenantLayoutProps {
   children: React.ReactNode
@@ -15,6 +16,9 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Impersonation Banner */}
+      <ImpersonationBanner />
+      
       {/* Mobile Header */}
       <header className="lg:hidden bg-white shadow-sm border-b sticky top-0 z-30">
         <div className="flex items-center justify-between px-4 py-3">
@@ -23,7 +27,7 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
             className="text-gray-600 hover:text-gray-900"
             aria-label="Ouvrir le menu"
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>

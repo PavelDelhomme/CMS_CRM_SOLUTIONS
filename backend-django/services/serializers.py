@@ -21,8 +21,9 @@ class ServiceSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Auto-generate slug if not provided"""
+        from django.utils.text import slugify
         if not validated_data.get('slug'):
-            validated_data['slug'] = validated_data['name'].lower().replace(' ', '-')
+            validated_data['slug'] = slugify(validated_data.get('name', ''))
         return super().create(validated_data)
 
 

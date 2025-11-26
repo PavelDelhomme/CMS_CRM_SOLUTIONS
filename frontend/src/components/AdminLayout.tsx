@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import AdminSidebar from './AdminSidebar'
 import MobileHeader from './MobileHeader'
+import ImpersonationBanner from './ImpersonationBanner'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -16,6 +17,9 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Impersonation Banner */}
+      <ImpersonationBanner />
+      
       {/* Mobile Header */}
       <MobileHeader title={title} subtitle={subtitle} />
 

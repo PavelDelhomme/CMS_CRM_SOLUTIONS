@@ -77,6 +77,29 @@ class UserService {
     const response = await api.post(`/users/${id}/send_password_reset/`);
     return response.data;
   }
+
+  async impersonate(id: number) {
+    const response = await api.post(`/users/${id}/impersonate/`);
+    return response.data;
+  }
+
+  async stopImpersonating() {
+    const response = await api.post(`/users/stop-impersonating/`);
+    return response.data;
+  }
+
+  async getImpersonationStatus() {
+    try {
+      const response = await api.get(`/users/impersonation-status/`);
+      return response.data;
+    } catch (error: any) {
+      // If endpoint doesn't exist (404), return default status
+      if (error.response?.status === 404) {
+        return { is_impersonating: false, impersonating: false };
+      }
+      throw error;
+    }
+  }
 }
 
 export default new UserService();

@@ -8,6 +8,9 @@ import tenantService, { Tenant } from '@/services/tenant.service'
 import userService, { User } from '@/services/user.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import toast from 'react-hot-toast'
+import TenantBillingTab from './TenantBillingTab'
+import TenantSiteTab from './TenantSiteTab'
+import TenantSettingsTab from './TenantSettingsTab'
 
 function AdminDebugSection({ tenantId }: { tenantId: number }) {
   const [adminInfo, setAdminInfo] = useState<any>(null)
@@ -624,39 +627,15 @@ export default function TenantDetailPage() {
           )}
 
           {activeTab === 'billing' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Facturation</h2>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                  + Nouvel abonnement
-                </button>
-              </div>
-              <p className="text-gray-600">Gestion des abonnements et factures (à implémenter)</p>
-            </div>
+            <TenantBillingTab tenantId={tenantId!} tenantName={tenant.name} />
           )}
 
           {activeTab === 'site' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Gestion du Site Web</h2>
-                <a
-                  href={`http://${tenant.slug}.localhost:9494`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-                >
-                  Voir le site
-                </a>
-              </div>
-              <p className="text-gray-600">Interface de gestion du site (éditeur WordPress-style à implémenter)</p>
-            </div>
+            <TenantSiteTab tenantId={tenantId!} tenantName={tenant.name} tenantSlug={tenant.slug} />
           )}
 
           {activeTab === 'settings' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Paramètres</h2>
-              <p className="text-gray-600">Paramètres du tenant (à implémenter)</p>
-            </div>
+            <TenantSettingsTab tenantId={tenantId!} tenantName={tenant.name} />
           )}
         </main>
       </div>

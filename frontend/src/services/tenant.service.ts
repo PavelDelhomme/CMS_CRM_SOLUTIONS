@@ -41,7 +41,8 @@ class TenantService {
   }
 
   async update(id: number, data: Partial<Tenant>) {
-    const response = await api.put(`/tenants/${id}/`, data);
+    // Use PATCH for partial updates (allows merging settings JSON field)
+    const response = await api.patch(`/tenants/${id}/`, data);
     return response.data;
   }
 

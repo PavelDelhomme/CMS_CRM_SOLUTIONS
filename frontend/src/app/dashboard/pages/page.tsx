@@ -147,8 +147,9 @@ export default function PagesManagement() {
                     <button
                       onClick={() => router.push(`/dashboard/pages/${page.id}/edit`)}
                       className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                      title="Éditer avec l'éditeur WordPress-style"
                     >
-                      Éditer
+                      ✏️ Éditer
                     </button>
                     <button
                       onClick={() => handleDuplicate(page.id)}

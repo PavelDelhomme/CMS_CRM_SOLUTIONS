@@ -5,27 +5,43 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import authService from '@/services/auth.service'
 import billingService, { PricingPlan } from '@/services/billing.service'
+import PublicHeader from '@/components/PublicHeader'
+import PublicFooter from '@/components/PublicFooter'
+import { isTenantSubdomain } from '@/lib/tenant-utils'
+import pageService, { Page } from '@/services/page.service'
 
 export default function HomePage() {
   const router = useRouter()
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
   const [loading, setLoading] = useState(true)
+  const [isTenantDomain, setIsTenantDomain] = useState(false)
+  const [tenantPage, setTenantPage] = useState<Page | null>(null)
 
   useEffect(() => {
-    // Si utilisateur connecté, rediriger vers le dashboard approprié
-    if (authService.isAuthenticated()) {
-      if (authService.isSuperAdmin()) {
-        router.push('/admin/dashboard')
-        return
-      } else if (authService.isTenantAdmin()) {
-        router.push('/dashboard')
-        return
-      }
+    // Check if we're on a tenant subdomain
+    if (isTenantSubdomain()) {
+      setIsTenantDomain(true)
+      loadTenantHomePage()
+    } else {
+      // Load pricing plans for VTCBuilder landing page
+      loadPricingPlans()
     }
-    
-    // Charger les plans tarifaires
-    loadPricingPlans()
-  }, [router])
+  }, [])
+
+  const loadTenantHomePage = async () => {
+    try {
+      setLoading(true)
+      // Load published pages and find homepage
+      const pages = await pageService.getAll({ status: 'published' })
+      const homePage = pages.find((p: Page) => p.is_homepage || p.slug === 'home') || pages[0]
+      setTenantPage(homePage || null)
+    } catch (error) {
+      console.error('Erreur chargement page tenant:', error)
+      setTenantPage(null)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const loadPricingPlans = async () => {
     try {
@@ -42,38 +58,140 @@ export default function HomePage() {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
   }
 
-  // Afficher la page vitrine seulement si non connecté
-  if (authService.isAuthenticated()) {
-    return null // Sera redirigé
-  }
+  // If on tenant subdomain, show tenant public site
+  if (isTenantDomain) {
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement du site...</p>
+          </div>
+        </div>
+      )
+    }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <h1 className="text-2xl font-bold text-white">VTCBuilder</h1>
-              <span className="text-xs text-white/80">Beta</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="text-white hover:text-blue-100 font-medium"
-              >
-                Connexion
-              </Link>
-              <Link
-                href="/register"
-                className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-              >
-                Créer un compte
-              </Link>
+    if (!tenantPage) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+          <div className="max-w-md w-full mx-auto px-6 text-center">
+            <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+              {/* Construction Icon */}
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-100 rounded-full">
+                  <svg 
+                    className="w-12 h-12 text-blue-600" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" 
+                    />
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" 
+                    />
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Title */}
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+                Site en Construction
+              </h1>
+              
+              {/* Description */}
+              <p className="text-gray-600 mb-2 text-lg">
+                Notre site est actuellement en cours de développement.
+              </p>
+              <p className="text-gray-500 mb-8 text-sm">
+                Revenez bientôt pour découvrir notre nouveau site web !
+              </p>
+              
+              {/* Divider */}
+              <div className="w-20 h-1 bg-blue-500 mx-auto mb-8 rounded-full"></div>
+              
+              {/* Actions */}
+              <div className="space-y-3">
+                <a
+                  href="/login"
+                  className="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+                >
+                  🔐 Se connecter pour accéder à l'administration
+                </a>
+                <a
+                  href="/admin"
+                  className="block w-full bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Accéder à l'administration (si connecté)
+                </a>
+              </div>
+              
+              {/* Progress indicator */}
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-75"></div>
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-150"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </header>
+      )
+    }
+
+    // Render tenant public homepage
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Simple header for tenant public site */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-900">{tenantPage.title}</h1>
+              <nav className="hidden md:flex items-center space-x-6">
+                <a href="/" className="text-gray-700 hover:text-gray-900">Accueil</a>
+                <a href="/book" className="text-gray-700 hover:text-gray-900">Réserver</a>
+                <a href="/contact" className="text-gray-700 hover:text-gray-900">Contact</a>
+                <a href="/admin" className="text-blue-600 hover:text-blue-800 font-medium">Administration</a>
+              </nav>
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <article>
+            {tenantPage.content && (
+              <div 
+                className="prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: tenantPage.content }}
+              />
+            )}
+          </article>
+        </main>
+
+        {/* Simple footer */}
+        <footer className="bg-gray-900 text-white py-12 mt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; {new Date().getFullYear()} Tous droits réservés.</p>
+          </div>
+        </footer>
+      </div>
+    )
+  }
+
+  // VTCBuilder landing page (for localhost:9494)
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
+      {/* Header */}
+      <PublicHeader />
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
@@ -164,7 +282,10 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {pricingPlans.map((plan) => (
+              {pricingPlans
+                .filter(plan => plan.is_active)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map((plan) => (
                 <div
                   key={plan.id}
                   className={`bg-white rounded-xl shadow-lg p-8 relative ${
@@ -251,45 +372,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">VTCBuilder</h3>
-              <p className="text-gray-400">
-                La plateforme SaaS complète pour créer et gérer votre site VTC professionnel.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Produit</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="#pricing" className="hover:text-white">Tarifs</Link></li>
-                <li><Link href="/features" className="hover:text-white">Fonctionnalités</Link></li>
-                <li><Link href="/templates" className="hover:text-white">Templates</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/docs" className="hover:text-white">Documentation</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
-                <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Légal</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/legal/terms" className="hover:text-white">CGV</Link></li>
-                <li><Link href="/legal/privacy" className="hover:text-white">Confidentialité</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 VTCBuilder. Tous droits réservés.</p>
-            <p className="mt-2 text-sm">vtcbuilder.com - Développé avec ❤️ en France</p>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import authService from '@/services/auth.service'
 import TenantLayout from '@/components/TenantLayout'
 import billingService, { Subscription, Invoice, Payment, PricingPlan } from '@/services/billing.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
+import toast from 'react-hot-toast'
 
 export default function TenantBillingPage() {
   const router = useRouter()
@@ -63,9 +64,9 @@ export default function TenantBillingPage() {
         })
       }
       loadBillingData()
-      alert('Plan mis à jour avec succès !')
+      toast.success('Plan mis à jour avec succès !')
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Erreur lors de la mise à jour du plan')
+      toast.error(error.response?.data?.error || 'Erreur lors de la mise à jour du plan')
     }
   }
 
@@ -77,9 +78,38 @@ export default function TenantBillingPage() {
     try {
       await billingService.cancelSubscription(subscription.id)
       loadBillingData()
-      alert('Abonnement annulé')
+      toast.success('Abonnement annulé')
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Erreur lors de l\'annulation')
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'annulation')
+    }
+  }
+
+  const handleGenerateInvoice = async () => {
+    if (!subscription) {
+      toast.error('Vous devez avoir un abonnement actif pour générer une facture')
+      return
+    }
+    
+    try {
+      const result = await billingService.generateInvoice(subscription.id)
+      toast.success('Facture générée avec succès !')
+      loadBillingData()
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erreur lors de la génération de la facture')
+    }
+  }
+
+  const handleViewInvoice = (invoice: Invoice) => {
+    // Open invoice detail modal or page
+    window.open(`/dashboard/billing/invoices/${invoice.id}`, '_blank')
+  }
+
+  const handleDownloadInvoice = async (invoiceId: number) => {
+    try {
+      // Open invoice detail page in new tab for viewing/printing
+      router.push(`/dashboard/billing/invoices/${invoiceId}`)
+    } catch (error: any) {
+      toast.error('Erreur lors de l\'ouverture de la facture')
     }
   }
 
@@ -234,50 +264,81 @@ export default function TenantBillingPage() {
 
       {/* Invoices Tab */}
       {activeTab === 'invoices' && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <ResponsiveTable
-            headers={['N° Facture', 'Date', 'Montant', 'Statut', 'Actions']}
-            emptyMessage="Aucune facture pour le moment"
-          >
-            {invoices.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                  Aucune facture pour le moment
-                </td>
-              </tr>
-            ) : (
-              invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {invoice.invoice_number}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    {invoice.total} {invoice.currency}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getInvoiceStatusBadge(invoice.status)}`}>
-                      {invoice.status === 'paid' ? 'Payée' : invoice.status === 'open' ? 'En attente' : invoice.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    {invoice.pdf_url && (
-                      <a
-                        href={invoice.pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        Télécharger PDF
-                      </a>
-                    )}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900">Mes Factures</h2>
+            {subscription && subscription.status === 'active' && (
+              <button
+                onClick={handleGenerateInvoice}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+              >
+                <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Générer une facture
+              </button>
+            )}
+          </div>
+
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <ResponsiveTable
+              headers={['N° Facture', 'Date d\'émission', 'Date d\'échéance', 'Montant', 'Statut', 'Actions']}
+              emptyMessage="Aucune facture pour le moment"
+            >
+              {invoices.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    Aucune facture pour le moment
                   </td>
                 </tr>
-              ))
-            )}
-          </ResponsiveTable>
+              ) : (
+                invoices.map((invoice) => (
+                  <tr key={invoice.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {invoice.invoice_number}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(invoice.due_date).toLocaleDateString('fr-FR')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                      {invoice.total.toFixed(2)} {invoice.currency}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getInvoiceStatusBadge(invoice.status)}`}>
+                        {invoice.status === 'paid' ? 'Payée' : invoice.status === 'open' ? 'En attente' : invoice.status === 'draft' ? 'Brouillon' : invoice.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                      <div className="flex justify-end items-center space-x-2">
+                        <button
+                          onClick={() => handleViewInvoice(invoice)}
+                          className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50"
+                          title="Voir la facture"
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDownloadInvoice(invoice.id)}
+                          className="text-green-600 hover:text-green-900 p-2 rounded-lg hover:bg-green-50"
+                          title="Télécharger PDF"
+                        >
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </ResponsiveTable>
+          </div>
         </div>
       )}
 

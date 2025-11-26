@@ -77,6 +77,38 @@ export default function UsersPage() {
     }
   }
 
+  const handleImpersonate = async (id: number, email: string) => {
+    if (!confirm(`Impersonner l'utilisateur ${email} ?\n\nVous serez connecté en tant que cet utilisateur pour gérer ses problèmes.`)) {
+      return
+    }
+    
+    try {
+      const result = await userService.impersonate(id)
+      
+      // Update tokens in localStorage
+      if (result.tokens?.access) {
+        localStorage.setItem('token', result.tokens.access)
+        localStorage.setItem('refresh_token', result.tokens.refresh)
+        localStorage.setItem('user', JSON.stringify(result.target_user))
+      }
+      
+      alert(result.message || 'Impersonnification démarrée')
+      
+      // Redirect to appropriate dashboard
+      if (result.target_user?.role === 'tenant-admin') {
+        router.push('/dashboard')
+      } else {
+        router.push('/dashboard')
+      }
+      
+      // Reload page to refresh user context
+      window.location.reload()
+    } catch (error: any) {
+      console.error('Erreur impersonnification:', error)
+      alert(error.response?.data?.error || 'Erreur lors de l\'impersonnification')
+    }
+  }
+
   const handleDelete = async (id: number, email: string, userName: string, role: string) => {
     // Prevent deletion of super-admin
     if (role === 'super-admin') {
@@ -121,10 +153,14 @@ export default function UsersPage() {
     return badges[role as keyof typeof badges] || 'bg-gray-100 text-gray-800'
   }
 
-  const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(search.toLowerCase()) ||
-    (user.name && user.name.toLowerCase().includes(search.toLowerCase()))
-  )
+  const filteredUsers = users.filter(user => {
+    const searchLower = search.toLowerCase()
+    return (
+      user.email.toLowerCase().includes(searchLower) ||
+      (user.name && user.name.toLowerCase().includes(searchLower)) ||
+      (user.tenant_name && user.tenant_name.toLowerCase().includes(searchLower))
+    )
+  })
 
   if (loading) {
     return (
@@ -176,7 +212,7 @@ export default function UsersPage() {
                         </span>
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {user.tenant?.name || '-'}
+                        {user.tenant_name || user.tenant?.name || '-'}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(user.status)}`}>
@@ -197,6 +233,17 @@ export default function UsersPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                           </button>
+                          {user.role !== 'super-admin' && (
+                            <button
+                              onClick={() => handleImpersonate(user.id, user.email)}
+                              className="text-purple-600 hover:text-purple-900"
+                              title="Impersonner cet utilisateur"
+                            >
+                              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </button>
+                          )}
                           <button
                             onClick={() => handlePasswordReset(user.id, user.email)}
                             className="text-blue-600 hover:text-blue-900"
