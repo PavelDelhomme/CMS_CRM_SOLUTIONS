@@ -5,7 +5,7 @@
 **Nom** : Ma Société VTC  
 **Slug** : `ma-societe-vtc`  
 **Domaine** : `ma-societe-vtc.localhost`  
-**Email Admin** : `admin@masociete-vtc.com`  
+**Email Admin** : `test@delhomme.ovh`  
 **Mot de passe** : `admin123`  
 **Statut** : Active  
 **Rôle** : Tenant Admin
@@ -23,7 +23,7 @@
   - Facturation globale
 
 ### Tenant Admin (Gestion du site VTC)
-- **Email** : `admin@masociete-vtc.com`
+- **Email** : `test@delhomme.ovh`
 - **Mot de passe** : `admin123`
 - **Accès** : http://localhost:9494/dashboard
 - **Fonctionnalités** :
@@ -57,7 +57,7 @@ Cette commande :
 
 1. **Aller sur** : http://localhost:9494/login
 2. **Entrer les identifiants** :
-   - Email : `admin@masociete-vtc.com`
+   - Email : `test@delhomme.ovh`
    - Mot de passe : `admin123`
 3. **Vous serez redirigé vers** : `/dashboard`
 4. **Interface WordPress-like** pour gérer son site VTC
@@ -85,7 +85,7 @@ L'interface `/dashboard` permet de :
 
 La page de login affiche maintenant :
 - **Super Admin** : admin@vtcbuilder.com / admin123
-- **Tenant Test** : admin@masociete-vtc.com / admin123
+- **Tenant Test** : test@delhomme.ovh / admin123
 
 ---
 
