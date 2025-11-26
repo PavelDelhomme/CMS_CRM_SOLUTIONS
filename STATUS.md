@@ -47,6 +47,8 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ Gestion des templates avec HTML/CSS
 - ✅ Payment Methods (modes de paiement)
 - ✅ Gestion des erreurs améliorée (retour de tableaux vides au lieu de 500)
+- ✅ **Intégration Stripe complète (2025-11-27)** - Service Stripe, webhooks, actions subscription
+- ✅ **API Blocs pour éditeur WordPress (2025-11-27)** - BlockType, BlockTemplate ViewSets
 
 #### Frontend Next.js
 - ✅ Interface super admin complète
@@ -62,6 +64,8 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ Page settings pour configuration système
 - ✅ Gestion gracieuse des erreurs API (404, 500)
 - ✅ Protection contre les erreurs undefined/null
+- ✅ **Service Stripe frontend (2025-11-27)** - Composant StripeCheckout créé
+- ✅ **Service blocs frontend (2025-11-27)** - blocks.service.ts pour gestion BlockType/BlockTemplate
 
 #### Configuration
 - ✅ Ports remappés sur 9494+ (frontend: 9494, backend: 9495)
@@ -136,8 +140,8 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 **Phases** :
 1. 🔴 **Correction tests backend** (36 échoués, 2 erreurs) - EN COURS
-2. 💳 **Intégration Stripe complète** - À FAIRE
-3. 📝 **Éditeur WordPress-like** (blocs, drag & drop, code) - À FAIRE
+2. 💳 **Intégration Stripe complète** - ⏳ **BACKEND + WEBHOOKS FAIT (2025-11-27)**, reste intégration frontend complète
+3. 📝 **Éditeur WordPress-like** (blocs, drag & drop, code) - ⏳ **API BACKEND + SERVICES FRONTEND FAIT (2025-11-27)**, reste composants éditeur
 4. 📋 **Système de formulaires** intégré - À FAIRE
 5. 🌓 **Mode sombre/clair** - À FAIRE
 6. 🧪 **Tests frontend** - À FAIRE
