@@ -49,14 +49,27 @@ export default function LoginPage() {
       
       // Gérer les erreurs de réseau spécifiquement
       if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
+        const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'unknown'
+        const apiUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9495') : 'http://localhost:9495'
+        
         toast.error(
-          'Erreur de connexion au serveur. Vérifiez que :\n' +
-          '1. Les extensions de navigateur (bloqueurs de pub) ne bloquent pas les requêtes\n' +
-          '2. Le backend est bien démarré\n' +
-          '3. L\'URL de l\'API est correcte',
-          { duration: 6000 }
+          `Erreur de connexion au serveur.\n\n` +
+          `🔍 Diagnostic:\n` +
+          `• Hostname actuel: ${currentHost}\n` +
+          `• API URL: ${apiUrl}\n\n` +
+          `✅ Solutions:\n` +
+          `1. Mode navigation privée (Ctrl+Shift+N) pour désactiver extensions\n` +
+          `2. Désactiver uBlock Origin / AdBlock temporairement\n` +
+          `3. Vérifier que le backend est démarré: docker-compose ps\n` +
+          `4. Vérifier CORS dans les logs backend`,
+          { duration: 10000 }
         )
-        console.error('Network error - possibly blocked by browser extension:', error)
+        console.error('Network error - ERR_BLOCKED_BY_CLIENT:', {
+          error,
+          currentHost,
+          apiUrl,
+          suggestion: 'Cette erreur est généralement causée par des extensions navigateur qui bloquent les requêtes vers localhost'
+        })
       } else if (error.response?.status === 401) {
         const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Email ou mot de passe incorrect'
         toast.error(errorMessage)

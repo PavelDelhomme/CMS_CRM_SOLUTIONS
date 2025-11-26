@@ -1,9 +1,9 @@
 version: '3.8'
 
 networks:
-  cms_crm_network:
+  vtcbuilder_network:
     driver: bridge
-    name: cms_crm_network
+    name: vtcbuilder_network
 
 services:
   # PostgreSQL Database
@@ -19,7 +19,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - cms_crm_network
+      - vtcbuilder_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U vtcbuilder_user -d vtcbuilder"]
       interval: 10s
@@ -35,7 +35,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - cms_crm_network
+      - vtcbuilder_network
 
   # Django Backend API
   backend:
@@ -75,7 +75,7 @@ services:
       redis:
         condition: service_started
     networks:
-      - cms_crm_network
+      - vtcbuilder_network
 
   # React/Next.js Frontend
   frontend:
@@ -93,7 +93,7 @@ services:
     ports:
       - "9494:3000"  # Next.js sur le port 9494
     networks:
-      - cms_crm_network
+      - vtcbuilder_network
 
   # PgAdmin (Development only)
   pgadmin:
@@ -108,7 +108,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - cms_crm_network
+      - vtcbuilder_network
 
 volumes:
   postgres_data:

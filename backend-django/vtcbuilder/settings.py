@@ -168,14 +168,39 @@ SIMPLE_JWT = {
 }
 
 # CORS Settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:9494",
-    "http://127.0.0.1:9494",
-    "http://localhost:9495",
-    "http://127.0.0.1:9495",
-    "http://api.localhost:9400",
-]
+# En développement, autoriser tous les origines localhost et sous-domaines
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True  # Autoriser tous les origines en développement
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^http://.*\.localhost:9494$",  # Tous les sous-domaines tenant
+        r"^http://localhost:.*$",
+        r"^http://127\.0\.0\.1:.*$",
+    ]
+else:
+    # En production, lister explicitement les origines autorisées
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:9494",
+        "http://127.0.0.1:9494",
+        "http://localhost:9495",
+        "http://127.0.0.1:9495",
+        "http://api.localhost:9400",
+    ]
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://.*\.vtcbuilder\.com$",  # Tous les sous-domaines en production
+    ]
+
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Guardian settings
 GUARDIAN_MONKEY_PATCH = False

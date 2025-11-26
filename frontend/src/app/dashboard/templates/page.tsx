@@ -1,37 +1,38 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import api from '@/lib/api'
+import TenantLayout from '@/components/TenantLayout'
+import templateService, { Template } from '@/services/template.service'
 import toast from 'react-hot-toast'
 
-interface Template {
-  id: number
-  name: string
-  slug: string
-  description: string
-  category: string
-  is_premium: boolean
-  price: number
-  thumbnail?: string
-}
-
 export default function TemplatesPage() {
-  const router = useRouter()
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState<number | null>(null)
+  const [filter, setFilter] = useState<string>('all')
 
   useEffect(() => {
     loadTemplates()
-  }, [])
+  }, [filter])
 
   const loadTemplates = async () => {
     try {
-      const response = await api.get('/templates')
-      setTemplates(response.data)
+      setLoading(true)
+      const params: any = {}
+      if (filter !== 'all') {
+        if (filter === 'free') {
+          params.is_premium = false
+        } else if (filter === 'premium') {
+          params.is_premium = true
+        } else {
+          params.category = filter
+        }
+      }
+      const data = await templateService.getAll(params)
+      setTemplates(Array.isArray(data) ? data : [])
     } catch (error) {
-      toast.error('Erreur de chargement des templates')
+      console.error('Erreur chargement templates:', error)
+      toast.error('Erreur lors du chargement des templates')
     } finally {
       setLoading(false)
     }
@@ -40,15 +41,11 @@ export default function TemplatesPage() {
   const handleApplyTemplate = async (templateId: number) => {
     setApplying(templateId)
     try {
-      await api.post(`/templates/${templateId}/apply`)
+      await templateService.useTemplate(templateId)
       toast.success('Template appliqué avec succès !')
-      
-      // Générer le site
-      await api.post('/site/generate')
-      toast.success('Site généré !')
-      
+      loadTemplates()
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Erreur lors de l\'application')
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'application')
     } finally {
       setApplying(null)
     }
@@ -56,100 +53,165 @@ export default function TemplatesPage() {
 
   const getCategoryBadge = (category: string) => {
     const badges: Record<string, string> = {
-      modern: 'bg-blue-100 text-blue-800',
-      luxury: 'bg-purple-100 text-purple-800',
+      vtc: 'bg-blue-100 text-blue-800',
+      business: 'bg-purple-100 text-purple-800',
       classic: 'bg-green-100 text-green-800',
       minimal: 'bg-gray-100 text-gray-800',
+      modern: 'bg-indigo-100 text-indigo-800',
     }
     return badges[category] || 'bg-gray-100 text-gray-800'
   }
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
+  }
+
   if (loading) {
-    return <div className="p-8">Chargement...</div>
+    return (
+      <TenantLayout title="Templates" subtitle="Choisissez le design de votre site">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement...</p>
+          </div>
+        </div>
+      </TenantLayout>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="text-sm text-gray-600 hover:text-gray-900 mb-2 flex items-center"
-          >
-            ← Retour au dashboard
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Choisir un Template</h1>
-          <p className="text-gray-600 mt-1">Sélectionnez le design de votre site VTC</p>
+    <TenantLayout 
+      title="Templates" 
+      subtitle="Choisissez le design de votre site VTC"
+    >
+      <div className="space-y-6">
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow p-4">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                filter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Tous
+            </button>
+            <button
+              onClick={() => setFilter('free')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                filter === 'free'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Gratuits
+            </button>
+            <button
+              onClick={() => setFilter('premium')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                filter === 'premium'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Premium
+            </button>
+            {['vtc', 'business', 'minimal', 'modern', 'classic'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${
+                  filter === cat
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((template) => (
-            <div key={template.id} className="card overflow-hidden">
-              {/* Preview Image */}
-              <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
-                {template.thumbnail ? (
-                  <img 
-                    src={template.thumbnail} 
-                    alt={template.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">
-                    {template.name}
-                  </div>
-                )}
-                
-                {/* Badges */}
-                <div className="absolute top-2 right-2 flex gap-2">
-                  <span className={`badge ${getCategoryBadge(template.category)}`}>
-                    {template.category}
-                  </span>
-                  {template.is_premium && (
-                    <span className="badge bg-yellow-100 text-yellow-800">
-                      Premium {template.price}€
-                    </span>
+        {/* Templates Grid */}
+        {templates.length === 0 ? (
+          <div className="bg-white rounded-lg shadow p-12 text-center">
+            <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun template disponible</h3>
+            <p className="text-gray-500">
+              {filter !== 'all' ? 'Essayez de modifier vos filtres' : 'Aucun template trouvé'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.map((template) => (
+              <div key={template.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
+                {/* Preview Image */}
+                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+                  {template.thumbnail ? (
+                    <img 
+                      src={template.thumbnail} 
+                      alt={template.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">
+                      {template.name}
+                    </div>
                   )}
+                  
+                  {/* Badges */}
+                  <div className="absolute top-2 right-2 flex gap-2 flex-wrap">
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${getCategoryBadge(template.category)}`}>
+                      {template.category}
+                    </span>
+                    {template.is_premium && (
+                      <span className="px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800">
+                        ⭐ {formatPrice(template.price)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    {template.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 min-h-[40px]">
+                    {template.description || 'Aucune description'}
+                  </p>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleApplyTemplate(template.id)}
+                      disabled={applying === template.id}
+                      className="flex-1 btn btn-primary"
+                    >
+                      {applying === template.id ? 'Application...' : template.is_premium ? 'Acheter' : 'Appliquer'}
+                    </button>
+                    {template.preview_url && (
+                      <a
+                        href={template.preview_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center justify-center"
+                        title="Aperçu"
+                      >
+                        👁️
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {template.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  {template.description}
-                </p>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleApplyTemplate(template.id)}
-                    disabled={applying === template.id}
-                    className="flex-1 btn btn-primary"
-                  >
-                    {applying === template.id ? 'Application...' : 'Appliquer'}
-                  </button>
-                  <button
-                    onClick={() => router.push(`/dashboard/templates/${template.id}/preview`)}
-                    className="btn btn-secondary"
-                  >
-                    👁️ Preview
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {templates.length === 0 && (
-          <div className="card text-center py-12">
-            <p className="text-gray-500">Aucun template disponible</p>
+            ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </TenantLayout>
   )
 }
 

@@ -110,8 +110,21 @@ export default function EditUserPage() {
         updateData.tenant = null
       }
 
-      await userService.update(userId, updateData)
+      const updatedUser = await userService.update(userId, updateData)
       setSuccess('Utilisateur mis à jour avec succès !')
+      
+      // Si l'email a été modifié, mettre à jour le localStorage et forcer une reconnexion si c'est l'utilisateur connecté
+      const currentUser = authService.getStoredUser()
+      if (currentUser && currentUser.id === userId && formData.email !== user?.email) {
+        // Email changé pour l'utilisateur connecté - nettoyer le localStorage
+        authService.logout()
+        toast.success('Email modifié. Veuillez vous reconnecter avec le nouvel email.')
+        setTimeout(() => {
+          router.push('/login')
+        }, 2000)
+        return
+      }
+      
       setTimeout(() => {
         router.push('/admin/users')
       }, 1500)

@@ -4,6 +4,20 @@
 
 ---
 
+## 💰 Coûts du Projet
+
+**Domaine vtcbuilder.com** : 76,09 € TTC (13/10/2025 - 13/10/2030, 5 ans)
+- Nom de domaine .com : 61,95 € HT
+- DNS Anycast : 5,45 € HT
+- Zimbra Starter : 0,30 € HT
+- Total HT : 63,41 €
+- TVA (20%) : 12,68 €
+- **Total TTC : 76,09 €**
+
+Voir [COUTS_PROJET.md](./COUTS_PROJET.md) pour plus de détails.
+
+---
+
 ## 🎯 État Actuel (2025-11-26)
 
 ### ✅ Fonctionnalités Implémentées

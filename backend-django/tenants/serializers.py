@@ -236,7 +236,17 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
-        """Update user with password handling"""
+        """Update user with password handling and email validation"""
+        # Check if email is being changed and validate uniqueness
+        if 'email' in validated_data and validated_data['email'] != instance.email:
+            from django.core.exceptions import ValidationError
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            # Check if new email already exists
+            if User.objects.filter(email=validated_data['email']).exclude(id=instance.id).exists():
+                from rest_framework.exceptions import ValidationError as DRFValidationError
+                raise DRFValidationError({'email': 'Un utilisateur avec cet email existe déjà.'})
+        
         password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)
         if password:
