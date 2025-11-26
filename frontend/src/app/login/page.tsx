@@ -136,7 +136,7 @@ export default function LoginPage() {
           
           <div className="mt-4 text-xs text-gray-600 space-y-1">
             <p><strong>Super Admin:</strong> admin@vtcbuilder.com / admin123</p>
-            <p><strong>Tenant Demo:</strong> admin@demo-vtc-company.com / admin123</p>
+            <p><strong>Tenant Test:</strong> admin@masociete-vtc.com / admin123</p>
           </div>
         </div>
       </div>
