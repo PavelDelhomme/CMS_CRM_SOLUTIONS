@@ -55,7 +55,9 @@ class TestPricingPlanViewSet:
         response = authenticated_client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) >= 2
+        # Handle paginated or list response
+        data = response.data.get('results', response.data) if isinstance(response.data, dict) else response.data
+        assert len(data) >= 2
 
     def test_create_pricing_plan_as_super_admin(self, authenticated_client):
         """Test creating a pricing plan as super admin"""
