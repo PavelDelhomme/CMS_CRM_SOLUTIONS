@@ -209,7 +209,23 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        """Create user with encrypted password"""
+        """Create user with encrypted password and quota check"""
+        # Check quota if user is being added to a tenant
+        tenant = validated_data.get('tenant')
+        if tenant:
+            from .quota import check_user_quota
+            can_add, current_count, max_users, error_message = check_user_quota(tenant)
+            
+            if not can_add:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({
+                    'tenant': error_message,
+                    'quota': {
+                        'current': current_count,
+                        'max': max_users,
+                    }
+                })
+        
         password = validated_data.pop('password', None)
         user = super().create(validated_data)
         if password:

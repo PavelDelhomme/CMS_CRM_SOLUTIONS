@@ -298,6 +298,38 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserRegisterSerializer
         return UserSerializer
 
+    def create(self, request, *args, **kwargs):
+        """Create user with quota check"""
+        # Get tenant from request user or request data
+        tenant = None
+        if request.user.tenant:
+            tenant = request.user.tenant
+        elif request.data.get('tenant'):
+            try:
+                from .models import Tenant
+                tenant = Tenant.objects.get(id=request.data.get('tenant'))
+            except Tenant.DoesNotExist:
+                pass
+        
+        # Check quota before creating user
+        if tenant:
+            from .quota import check_user_quota
+            can_add, current_count, max_users, error_message = check_user_quota(tenant)
+            
+            if not can_add:
+                return Response(
+                    {
+                        'error': error_message,
+                        'quota': {
+                            'current': current_count,
+                            'max': max_users,
+                        }
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return super().create(request, *args, **kwargs)
+
     def update(self, request, *args, **kwargs):
         """Update user with permission checks"""
         user = self.get_object()
