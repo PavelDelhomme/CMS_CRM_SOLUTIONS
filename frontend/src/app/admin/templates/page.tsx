@@ -427,11 +427,11 @@ export default function AdminTemplatesPage() {
             {activeTab === 'css' && (
               <div className="space-y-4">
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
                     <label className="block text-sm font-medium text-gray-700">
                       Contenu CSS
                     </label>
-                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer w-full sm:w-auto">
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
@@ -489,17 +489,17 @@ export default function AdminTemplatesPage() {
         >
           {templates.length === 0 ? (
             <tr>
-              <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+              <td colSpan={8} className="px-3 sm:px-6 py-12 text-center text-gray-500">
                 Aucun template pour le moment. Créez-en un nouveau !
               </td>
             </tr>
           ) : (
             templates.map((template) => (
               <tr key={template.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{template.name}</div>
+                <td className="px-3 sm:px-6 py-4">
+                  <div className="text-sm font-medium text-gray-900 break-words">{template.name}</div>
                   {template.description && (
-                    <div className="text-xs text-gray-500 mt-1">{template.description}</div>
+                    <div className="text-xs text-gray-500 mt-1 line-clamp-2">{template.description}</div>
                   )}
                 </td>
                 <td className="px-3 sm:px-6 py-4">
@@ -510,7 +510,7 @@ export default function AdminTemplatesPage() {
                     {getCategoryLabel(template.category)}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                   {template.is_premium ? (
                     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                       Premium
@@ -521,10 +521,10 @@ export default function AdminTemplatesPage() {
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {template.is_premium ? `${template.price}€` : '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => handleToggleActive(template)}
                     className={`px-2 py-1 text-xs font-semibold rounded-full ${
@@ -536,11 +536,11 @@ export default function AdminTemplatesPage() {
                     {template.is_active ? 'Actif' : 'Inactif'}
                   </button>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {template.usage_count || 0}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex justify-end items-center space-x-2">
+                <td className="px-3 sm:px-6 py-4 text-right text-sm font-medium">
+                  <div className="flex justify-end items-center flex-wrap gap-1 sm:gap-2">
                     {template.preview_url && (
                       <a
                         href={template.preview_url}
