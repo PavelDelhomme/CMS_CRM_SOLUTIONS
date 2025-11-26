@@ -130,11 +130,12 @@
 **Date** : 2025-11-26
 
 **Modifications** :
-- ✅ Correction erreur 400 Bad Request - Mise à jour partielle utilisateurs (partial=True)
-- ✅ Modification mot de passe directe fonctionnelle dans onglet Utilisateurs tenant
-- ✅ Amélioration gestion erreurs avec messages détaillés
-- ✅ Nettoyage fichiers .md - Consolidation dans STATUS.md et LOGS.md
-- ✅ Documentation solutions extensions navigateur intégrée
+- ✅ **Correction erreur 400 Bad Request** - `username` et `email` rendus optionnels dans UserSerializer (extra_kwargs)
+- ✅ **Ajout partial=True** - Permet modification uniquement du mot de passe sans erreur
+- ✅ **Modification mot de passe directe** - Fonctionnelle dans onglet Utilisateurs tenant
+- ✅ **Amélioration gestion erreurs** - Messages détaillés dans toast
+- ✅ **Nettoyage fichiers .md** - 47 fichiers supprimés, consolidation dans STATUS.md et LOGS.md
+- ✅ **Documentation extensions navigateur** - Solutions intégrées dans STATUS.md
 
 ---
 
