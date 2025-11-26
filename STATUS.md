@@ -135,7 +135,7 @@
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-11-26 02:35
+**Date** : 2025-11-26 13:40
 
 **Modifications** :
 - ✅ **Boucle infinie de logs corrigée** - Suppression console.log répétitifs dans TenantUsersTab
@@ -150,6 +150,8 @@
 - ✅ **Email SMTP fonctionnel** - Variables d'environnement chargées, emails envoyés réellement via SMTP OVH
   - Script de test complet : `test_email_smtp.py`
   - Backend SMTP activé : ssl0.ovh.net:587
+- ✅ **Activation automatique après reset password** - Statut utilisateur activé automatiquement si 'pending' lors du reset
+  - Corrige problème de connexion après réinitialisation du mot de passe
 
 **Tests validés** :
 - ✅ Modification mot de passe utilisateur depuis `/admin/tenants/5` (onglet Utilisateurs)
