@@ -4,6 +4,16 @@
 
 **Le WordPress des chauffeurs VTC** - Créez votre site VTC professionnel en quelques clics !
 
+---
+
+## 📊 Suivi du Projet
+
+> **⚠️ Pour suivre l'avancement du projet, consultez [STATUS.md](./STATUS.md)**  
+> Ce fichier centralise toutes les informations importantes : état actuel, tâches, corrections, tests, etc.
+
+---
+
+
 ## 📋 Fonctionnalités Principales
 
 ### 🔧 Backoffice Super Admin
