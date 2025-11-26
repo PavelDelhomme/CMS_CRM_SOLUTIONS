@@ -52,14 +52,33 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Liste des endpoints où les erreurs 404/500 sont attendues (ne pas les logger)
+const SILENT_ERROR_ENDPOINTS = [
+  '/payment-methods/',
+  '/system-settings/',
+  '/billing/unpaid-items/',
+  '/templates/',
+  '/pricing-plans/', // Peut être en erreur temporaire
+];
+
 // Intercepteur pour gérer les erreurs
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url || '';
+    const status = error.response?.status;
+    
+    // Ne pas logger les erreurs attendues pour certains endpoints
+    const isSilentError = SILENT_ERROR_ENDPOINTS.some(endpoint => url.includes(endpoint));
+    
+    if (status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+    } else if (!isSilentError && status) {
+      // Ne logger que les erreurs non attendues
+      // (Les erreurs attendues sont gérées gracieusement dans les composants)
     }
+    
     return Promise.reject(error);
   }
 );

@@ -91,8 +91,43 @@ export default function StatsPage() {
     try {
       const response = await api.get('/stats/detailed/')
       setStats(response.data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur chargement statistiques:', error)
+      // Si 404, l'endpoint n'est pas disponible - probablement backend non redémarré
+      if (error.response?.status === 404) {
+        console.warn('⚠️ Endpoint /api/stats/detailed/ non disponible (404). Veuillez redémarrer le backend Django.')
+        // Initialiser avec des valeurs vides pour éviter les erreurs d'affichage
+        setStats({
+          overview: {
+            total_tenants: 0,
+            active_tenants: 0,
+            trial_tenants: 0,
+            suspended_tenants: 0,
+            cancelled_tenants: 0,
+            total_users: 0,
+            active_subscriptions: 0,
+            trial_subscriptions: 0,
+            past_due_subscriptions: 0,
+            cancelled_subscriptions: 0,
+            expiring_soon_subscriptions: 0,
+          },
+          activity: {},
+          registrations: {
+            pending_invitations: 0,
+            expired_invitations: 0,
+            users_by_day: [],
+            tenants_by_day: [],
+          },
+          users_by_role: [],
+          users_by_status: [],
+          tenants_by_plan: [],
+          tenants_by_status: [],
+          tenants_by_month: [],
+          users_by_month: [],
+          revenue: { monthly: 0, total: 0, by_month: [] },
+          alerts: [],
+        } as DetailedStats)
+      }
     } finally {
       setLoading(false)
     }
@@ -238,7 +273,7 @@ export default function StatsPage() {
         )}
 
         {/* Activité Récente */}
-        {stats.activity && (
+        {stats && stats.activity && (
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Activité Récente</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -275,7 +310,7 @@ export default function StatsPage() {
         )}
 
         {/* Demandes d'inscription */}
-        {stats.registrations && (
+        {stats && stats.registrations && (
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Demandes d'Inscription</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -295,7 +330,8 @@ export default function StatsPage() {
               )}
             </div>
             {/* Graphique des inscriptions par jour */}
-            {(stats.registrations.users_by_day.length > 0 || stats.registrations.tenants_by_day.length > 0) && (
+            {stats.registrations && stats.registrations.users_by_day && stats.registrations.tenants_by_day && 
+             (stats.registrations.users_by_day.length > 0 || stats.registrations.tenants_by_day.length > 0) && (
               <div className="mt-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Inscriptions par jour (7 derniers jours)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

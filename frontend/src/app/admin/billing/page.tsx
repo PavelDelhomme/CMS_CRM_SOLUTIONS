@@ -286,6 +286,43 @@ export default function BillingPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'subscriptions' | 'invoices' | 'payments' | 'plans' | 'payment-methods' | 'unpaid'>('overview')
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [unpaidItems, setUnpaidItems] = useState<any>(null)
+  const [loadingUnpaid, setLoadingUnpaid] = useState(false)
+
+  // Charger les impayés automatiquement quand on change d'onglet
+  useEffect(() => {
+    if (activeTab === 'unpaid' && unpaidItems === null && !loadingUnpaid) {
+      loadUnpaidItems()
+    }
+  }, [activeTab, unpaidItems, loadingUnpaid])
+
+  const loadUnpaidItems = async () => {
+    setLoadingUnpaid(true)
+    try {
+      const data = await billingService.getUnpaidItems()
+      setUnpaidItems(data)
+    } catch (error: any) {
+      console.error('Erreur chargement impayés:', error)
+      // Ne pas afficher d'erreur si c'est un 404 (endpoint non disponible)
+      if (error.response?.status !== 404) {
+        toast.error('Erreur lors du chargement des impayés')
+      }
+      // Initialiser avec des données vides
+      setUnpaidItems({
+        past_due_subscriptions: [],
+        unpaid_invoices: [],
+        overdue_invoices: [],
+        stats: {
+          past_due_count: 0,
+          unpaid_invoices_count: 0,
+          overdue_invoices_count: 0,
+          total_unpaid_amount: 0,
+          total_overdue_amount: 0,
+        }
+      })
+    } finally {
+      setLoadingUnpaid(false)
+    }
+  }
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -297,23 +334,31 @@ export default function BillingPage() {
 
   const loadBillingData = async () => {
     try {
-      const [statsData, subs, invs, pays, plans, methods] = await Promise.all([
+      const results = await Promise.allSettled([
         billingService.getBillingStats(),
         billingService.getSubscriptions(),
         billingService.getInvoices(),
         billingService.getPayments(),
         billingService.getPricingPlans(),
-        billingService.getPaymentMethods(),
+        billingService.getPaymentMethods().catch(() => []), // Retourne tableau vide si 404
       ])
       
-      setStats(statsData)
-      setSubscriptions(subs)
-      setInvoices(invs)
-      setPayments(pays)
-      setPricingPlans(plans)
-      setPaymentMethods(methods)
-    } catch (error) {
-      console.error('Erreur chargement facturation:', error)
+      if (results[0].status === 'fulfilled') setStats(results[0].value)
+      if (results[1].status === 'fulfilled') setSubscriptions(results[1].value)
+      if (results[2].status === 'fulfilled') setInvoices(results[2].value)
+      if (results[3].status === 'fulfilled') setPayments(results[3].value)
+      if (results[4].status === 'fulfilled') setPricingPlans(results[4].value)
+      if (results[5].status === 'fulfilled') setPaymentMethods(results[5].value || [])
+      else setPaymentMethods([]) // Si erreur, tableau vide
+    } catch (error: any) {
+      // Ne pas logger les erreurs attendues (gérées gracieusement)
+      if (!error.response || (error.response?.status !== 404 && error.response?.status !== 500)) {
+        console.error('Erreur chargement facturation:', error)
+      }
+      // Ne pas afficher de toast pour les erreurs attendues
+      if (!error.response || (error.response?.status !== 404 && error.response?.status !== 500)) {
+        toast.error('Erreur lors du chargement des données de facturation')
+      }
     } finally {
       setLoading(false)
     }
@@ -368,7 +413,36 @@ export default function BillingPage() {
     >
       {/* Tabs */}
       <div className="mb-6 border-b border-gray-200">
-        <nav className="flex space-x-4 overflow-x-auto">
+        {/* Mobile: Menu déroulant */}
+        <div className="lg:hidden mb-4">
+          <select
+            value={activeTab}
+            onChange={(e) => {
+              const tab = e.target.value as typeof activeTab
+              setActiveTab(tab)
+              if (tab === 'unpaid' && !unpaidItems) {
+                billingService.getUnpaidItems()
+                  .then(data => setUnpaidItems(data))
+                  .catch(error => {
+                    console.error('Erreur chargement impayés:', error)
+                    toast.error('Erreur lors du chargement des impayés')
+                  })
+              }
+            }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+          >
+            <option value="overview">Vue d'ensemble</option>
+            <option value="subscriptions">Abonnements ({subscriptions.length})</option>
+            <option value="invoices">Factures ({invoices.length})</option>
+            <option value="payments">Paiements ({payments.length})</option>
+            <option value="plans">Plans Tarifaires ({pricingPlans.length})</option>
+            <option value="payment-methods">Modes de Paiement ({paymentMethods.length})</option>
+            <option value="unpaid">⚠️ Impayés</option>
+          </select>
+        </div>
+        
+        {/* Desktop: Onglets horizontaux */}
+        <nav className="hidden lg:flex space-x-4 overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
@@ -430,17 +504,9 @@ export default function BillingPage() {
             Modes de Paiement ({paymentMethods.length})
           </button>
           <button
-            onClick={async () => {
+            onClick={() => {
               setActiveTab('unpaid')
-              if (!unpaidItems) {
-                try {
-                  const data = await billingService.getUnpaidItems()
-                  setUnpaidItems(data)
-                } catch (error) {
-                  console.error('Erreur chargement impayés:', error)
-                  toast.error('Erreur lors du chargement des impayés')
-                }
-              }
+              // Le useEffect chargera automatiquement les données si nécessaire
             }}
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'unpaid'
@@ -483,11 +549,11 @@ export default function BillingPage() {
       {/* Subscriptions Tab */}
       {activeTab === 'subscriptions' && (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-lg font-semibold text-gray-900">Gestion des Abonnements</h2>
             <button
               onClick={() => alert('Fonctionnalité à venir : Créer un nouvel abonnement')}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+              className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm whitespace-nowrap"
             >
               + Nouvel Abonnement
             </button>
@@ -631,14 +697,14 @@ export default function BillingPage() {
       {/* Unpaid Items Tab */}
       {activeTab === 'unpaid' && (
         <div className="space-y-6">
-          {!unpaidItems ? (
+          {loadingUnpaid || unpaidItems === null ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
                 <p className="text-gray-600">Chargement des impayés...</p>
               </div>
             </div>
-          ) : (
+          ) : unpaidItems && unpaidItems.stats ? (
             <>
               {/* Stats Cards */}
               {unpaidItems.stats && (
@@ -885,6 +951,11 @@ export default function BillingPage() {
                 </div>
               )}
             </>
+          ) : (
+            <div className="bg-white rounded-lg shadow p-12 text-center">
+              <p className="text-gray-500 text-lg mb-2">Aucun élément impayé pour le moment</p>
+              <p className="text-gray-400 text-sm">Les abonnements en retard et factures impayées apparaîtront ici</p>
+            </div>
           )}
         </div>
       )}

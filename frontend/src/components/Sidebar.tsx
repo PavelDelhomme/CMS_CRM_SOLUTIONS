@@ -225,12 +225,12 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
 
         <div className="p-6 border-t">
           <div className="flex items-center justify-between">
-            <div suppressHydrationWarning>
-              <p className="text-sm font-medium text-gray-900">
-                {typeof window !== 'undefined' ? (user?.name || 'Utilisateur') : 'Utilisateur'}
+            <div>
+              <p className="text-sm font-medium text-gray-900" suppressHydrationWarning>
+                {user?.name || 'Utilisateur'}
               </p>
-              <p className="text-xs text-gray-500 truncate max-w-[180px]">
-                {typeof window !== 'undefined' ? (user?.email || '') : ''}
+              <p className="text-xs text-gray-500 truncate max-w-[180px]" suppressHydrationWarning>
+                {user?.email || ''}
               </p>
             </div>
             <button

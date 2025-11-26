@@ -105,6 +105,8 @@ class Template(models.Model):
     # Template data
     structure = models.JSONField(default=dict, blank=True)
     default_settings = models.JSONField(default=dict, blank=True)
+    html_content = models.TextField(blank=True, null=True, help_text="HTML content of the template")
+    css_content = models.TextField(blank=True, null=True, help_text="CSS content of the template")
 
     # Classification
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='vtc')

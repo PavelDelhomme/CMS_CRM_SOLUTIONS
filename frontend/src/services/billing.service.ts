@@ -91,8 +91,16 @@ export interface PaymentMethod {
 class BillingService {
   // Pricing Plans
   async getPricingPlans() {
-    const response = await api.get('/pricing-plans/');
-    return Array.isArray(response.data) ? response.data : response.data.results || [];
+    try {
+      const response = await api.get('/pricing-plans/');
+      return Array.isArray(response.data) ? response.data : response.data.results || [];
+    } catch (error: any) {
+      // Retourner un tableau vide en cas d'erreur (CORS, 500, etc.)
+      if (error.response?.status === 404 || error.response?.status === 500 || error.code === 'ERR_FAILED') {
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getPricingPlan(id: number) {
@@ -240,15 +248,49 @@ class BillingService {
   }
 
   // Unpaid items (super admin only)
-  async getUnpaidItems() {
-    const response = await api.get('/billing/unpaid-items/');
-    return response.data;
+  async getUnpaidItems(): Promise<UnpaidItems> {
+    try {
+      const response = await api.get('/billing/unpaid-items/');
+      return response.data;
+    } catch (error: any) {
+      // Retourner une structure vide si l'endpoint n'est pas disponible
+      if (error.response?.status === 404) {
+        return {
+          past_due_subscriptions: [],
+          unpaid_invoices: [],
+          overdue_invoices: [],
+          stats: {
+            past_due_count: 0,
+            unpaid_invoices_count: 0,
+            overdue_invoices_count: 0,
+            total_unpaid_amount: 0,
+            total_overdue_amount: 0,
+          }
+        };
+      }
+      throw error;
+    }
   }
 
   // Payment Methods
-  async getPaymentMethods() {
-    const response = await api.get('/payment-methods/');
-    return Array.isArray(response.data) ? response.data : response.data.results || [];
+  async getPaymentMethods(): Promise<PaymentMethod[]> {
+    try {
+      const response = await api.get('/payment-methods/');
+      return Array.isArray(response.data) ? response.data : response.data.results || [];
+    } catch (error: any) {
+      // Retourner un tableau vide si l'endpoint n'est pas disponible (404)
+      // Ne pas logger l'erreur car c'est attendu si le backend n'est pas redémarré
+      if (error.response?.status === 404 || error.code === 'ERR_FAILED') {
+        // Optionnel: Logger seulement en mode développement
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('⚠️ Endpoint /api/payment-methods/ non disponible (404). Veuillez redémarrer le backend Django.');
+        }
+        return [];
+      }
+      // Logger seulement les autres erreurs
+      console.error('Erreur lors de la récupération des méthodes de paiement:', error);
+      throw error;
+    }
   }
 
   async getPaymentMethod(id: number) {

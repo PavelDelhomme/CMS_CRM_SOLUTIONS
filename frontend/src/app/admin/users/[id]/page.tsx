@@ -6,6 +6,7 @@ import authService from '@/services/auth.service'
 import AdminLayout from '@/components/AdminLayout'
 import userService, { User } from '@/services/user.service'
 import tenantService from '@/services/tenant.service'
+import { toast } from 'react-hot-toast'
 
 export default function EditUserPage() {
   const router = useRouter()
@@ -42,6 +43,7 @@ export default function EditUserPage() {
       router.push('/dashboard')
       return
     }
+    
     if (userId) {
       loadUser()
       loadTenants()
@@ -49,7 +51,7 @@ export default function EditUserPage() {
       setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, router])
+  }, [userId])
 
   const loadUser = async () => {
     if (!userId) return
@@ -77,9 +79,14 @@ export default function EditUserPage() {
   const loadTenants = async () => {
     try {
       const data = await tenantService.getAll()
-      setTenants(data)
+      // L'API peut retourner un objet paginé {results: [...]} ou un tableau direct
+      // Utiliser la même logique que dans admin/tenants/page.tsx: response.results || response || []
+      const tenantsArray = data?.results || (Array.isArray(data) ? data : [])
+      setTenants(Array.isArray(tenantsArray) ? tenantsArray : [])
     } catch (error) {
       console.error('Erreur chargement tenants:', error)
+      // En cas d'erreur, s'assurer que tenants reste un tableau vide
+      setTenants([])
     }
   }
 
@@ -334,7 +341,7 @@ export default function EditUserPage() {
                   }`}
                 >
                   <option value="">Aucun tenant</option>
-                  {tenants.map((tenant) => (
+                  {Array.isArray(tenants) && tenants.length > 0 && tenants.map((tenant: any) => (
                     <option key={tenant.id} value={tenant.id}>
                       {tenant.name}
                     </option>

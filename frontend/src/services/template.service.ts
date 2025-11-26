@@ -9,6 +9,8 @@ export interface Template {
   preview_url?: string;
   structure?: Record<string, any>;
   default_settings?: Record<string, any>;
+  html_content?: string;
+  css_content?: string;
   category: 'vtc' | 'business' | 'minimal' | 'modern' | 'classic';
   is_premium: boolean;
   price: number;
@@ -20,15 +22,23 @@ export interface Template {
 
 class TemplateService {
   async getAll(params?: { category?: string; is_premium?: boolean }) {
-    const response = await api.get('/templates/', { params });
-    // Handle paginated response
-    if (Array.isArray(response.data)) {
-      return response.data;
+    try {
+      const response = await api.get('/templates/', { params });
+      // Handle paginated response
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+      if (response.data && typeof response.data === 'object' && 'results' in response.data) {
+        return response.data.results || [];
+      }
+      return [];
+    } catch (error: any) {
+      // Retourner un tableau vide en cas d'erreur (500, etc.)
+      if (error.response?.status === 404 || error.response?.status === 500 || error.code === 'ERR_FAILED') {
+        return [];
+      }
+      throw error;
     }
-    if (response.data && typeof response.data === 'object' && 'results' in response.data) {
-      return response.data.results || [];
-    }
-    return [];
   }
 
   async getById(id: number) {
@@ -58,6 +68,28 @@ class TemplateService {
 
   async delete(id: number) {
     const response = await api.delete(`/templates/${id}/`);
+    return response.data;
+  }
+
+  async uploadHtmlFile(file: File) {
+    const formData = new FormData();
+    formData.append('html_file', file);
+    const response = await api.post('/templates/upload_html/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+
+  async uploadCssFile(file: File) {
+    const formData = new FormData();
+    formData.append('css_file', file);
+    const response = await api.post('/templates/upload_css/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   }
 }

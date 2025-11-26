@@ -20,7 +20,7 @@ from billing.views import (
     PricingPlanViewSet, SubscriptionViewSet,
     InvoiceViewSet, PaymentViewSet, PaymentMethodViewSet, billing_stats, unpaid_items
 )
-from settings_app.views import SystemSettingsViewSet
+from settings_app.views import system_settings_view, system_settings_test_email_view
 from .views import DashboardView, DetailedStatsView
 
 # Router for viewsets
@@ -37,7 +37,7 @@ router.register(r'subscriptions', SubscriptionViewSet, basename='subscription')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
 router.register(r'payments', PaymentViewSet, basename='payment')
 router.register(r'payment-methods', PaymentMethodViewSet, basename='payment-method')
-router.register(r'system-settings', SystemSettingsViewSet, basename='system-settings')
+# System settings is handled as a singleton with a direct view function above
 
 urlpatterns = [
     # IMPORTANT: Specific routes must come BEFORE the router to avoid conflicts
@@ -55,6 +55,12 @@ urlpatterns = [
     path('billing/stats', billing_stats, name='billing-stats'),
     path('billing/unpaid-items/', unpaid_items, name='billing-unpaid-items-slash'),
     path('billing/unpaid-items', unpaid_items, name='billing-unpaid-items'),
+    
+    # System Settings - must come before router for singleton access
+    path('system-settings/', system_settings_view, name='system-settings-slash'),
+    path('system-settings', system_settings_view, name='system-settings'),
+    path('system-settings/test_email/', system_settings_test_email_view, name='system-settings-test-email-slash'),
+    path('system-settings/test_email', system_settings_test_email_view, name='system-settings-test-email'),
     
     # Authentication (support both with and without trailing slash)
     path('auth/login/', login_view, name='login-slash'),

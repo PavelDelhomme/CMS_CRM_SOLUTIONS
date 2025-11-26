@@ -26,7 +26,17 @@ export default function PublicHeader() {
             <span className="text-xs text-white/80">Beta</span>
           </Link>
           <div className="flex items-center space-x-4">
-            {isMounted && isAuthenticated ? (
+            {!isMounted ? (
+              <>
+                <Link
+                  href="/login"
+                  className="text-white hover:text-blue-100 font-medium"
+                  suppressHydrationWarning
+                >
+                  Connexion
+                </Link>
+              </>
+            ) : isAuthenticated ? (
               <>
                 {isSuperAdmin ? (
                   <Link

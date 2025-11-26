@@ -30,8 +30,11 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """List services with error handling"""
+        import logging
+        logger = logging.getLogger(__name__)
         from django_tenants.utils import tenant_context
         from tenants.models import Tenant
+        from django.db import connection
         
         user = request.user
         
@@ -39,7 +42,9 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             try:
                 with tenant_context(user.tenant):
-                    queryset = Service.objects.filter(tenant=user.tenant)
+                    # In tenant context, all services belong to this tenant
+                    # So we can query all services without filtering by tenant
+                    queryset = Service.objects.all()
                     
                     # Apply filters from query params
                     is_active = request.query_params.get('is_active')
@@ -51,10 +56,12 @@ class ServiceViewSet(viewsets.ModelViewSet):
                     serializer = ServiceListSerializer(queryset, many=True)
                     return Response(serializer.data)
             except Exception as e:
-                import logging
-                logger = logging.getLogger(__name__)
-                logger.error(f"Error listing services: {e}", exc_info=True)
-                return Response([], status=status.HTTP_200_OK)
+                logger.error(f"Error listing services for tenant {user.tenant.id if user.tenant else 'None'}: {str(e)}", exc_info=True)
+                # Return error details for debugging
+                return Response(
+                    {'error': f'Erreur lors de la récupération des services: {str(e)}', 'details': str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
         
         # Super admin with tenant_id
         if user.is_super_admin():
@@ -66,11 +73,17 @@ class ServiceViewSet(viewsets.ModelViewSet):
                         queryset = Service.objects.all()
                         serializer = ServiceListSerializer(queryset, many=True)
                         return Response(serializer.data)
+                except Tenant.DoesNotExist:
+                    return Response(
+                        {'error': 'Tenant not found'},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
                 except Exception as e:
-                    import logging
-                    logger = logging.getLogger(__name__)
-                    logger.error(f"Error listing services: {e}", exc_info=True)
-                    return Response([], status=status.HTTP_200_OK)
+                    logger.error(f"Error listing services for tenant {tenant_id}: {str(e)}", exc_info=True)
+                    return Response(
+                        {'error': f'Erreur lors de la récupération des services: {str(e)}', 'details': str(e)},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
         
         return Response([], status=status.HTTP_200_OK)
 
@@ -94,7 +107,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
                     validated_data['slug'] = slugify(validated_data.get('name'))
                 
                 with tenant_context(user.tenant):
-                    # Create service directly in tenant context
+                    # Set tenant FK - django-tenants handles cross-schema FK
                     validated_data['tenant'] = user.tenant
                     service = Service.objects.create(**validated_data)
                     
@@ -131,7 +144,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
                 with tenant_context(user.tenant):
                     partial = kwargs.pop('partial', False)
                     pk = kwargs.get('pk')
-                    instance = Service.objects.get(pk=pk, tenant=user.tenant)
+                    instance = Service.objects.get(pk=pk)
                     serializer = ServiceSerializer(instance, data=request.data, partial=partial)
                     serializer.is_valid(raise_exception=True)
                     serializer.save()
@@ -165,7 +178,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
             try:
                 with tenant_context(user.tenant):
                     pk = kwargs.get('pk')
-                    instance = Service.objects.get(pk=pk, tenant=user.tenant)
+                    instance = Service.objects.get(pk=pk)
                     instance.delete()
                     return Response(status=status.HTTP_204_NO_CONTENT)
             except Service.DoesNotExist:
@@ -196,7 +209,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             with tenant_context(user.tenant):
                 pk = self.kwargs.get('pk')
-                return Service.objects.get(pk=pk, tenant=user.tenant)
+                return Service.objects.get(pk=pk)
         
         # For super admin with tenant_id
         from tenants.models import Tenant
@@ -219,7 +232,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             try:
                 with tenant_context(user.tenant):
-                    service = Service.objects.get(pk=pk, tenant=user.tenant)
+                    service = Service.objects.get(pk=pk)
                     service.is_active = True
                     service.save()
                     return Response({'status': 'Service activated'})
@@ -251,7 +264,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             try:
                 with tenant_context(user.tenant):
-                    service = Service.objects.get(pk=pk, tenant=user.tenant)
+                    service = Service.objects.get(pk=pk)
                     service.is_active = False
                     service.save()
                     return Response({'status': 'Service deactivated'})
@@ -283,7 +296,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             try:
                 with tenant_context(user.tenant):
-                    queryset = Service.objects.filter(tenant=user.tenant, is_active=True)
+                    queryset = Service.objects.filter(is_active=True)
                     serializer = ServiceListSerializer(queryset, many=True)
                     return Response(serializer.data)
             except Exception as e:
@@ -303,7 +316,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             try:
                 with tenant_context(user.tenant):
-                    queryset = Service.objects.filter(tenant=user.tenant, is_active=True)
+                    queryset = Service.objects.filter(is_active=True)
                     serializer = ServicePriceSerializer(queryset, many=True)
                     return Response(serializer.data)
             except Exception as e:
@@ -323,7 +336,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         if hasattr(user, 'tenant') and user.tenant:
             try:
                 with tenant_context(user.tenant):
-                    service = Service.objects.get(pk=pk, tenant=user.tenant)
+                    service = Service.objects.get(pk=pk)
                     serializer = ServicePriceSerializer(service)
                     return Response(serializer.data)
             except Service.DoesNotExist:

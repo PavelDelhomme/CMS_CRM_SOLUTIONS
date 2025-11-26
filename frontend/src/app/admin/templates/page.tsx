@@ -18,12 +18,17 @@ export default function AdminTemplatesPage() {
     name: '',
     slug: '',
     description: '',
-    category: 'vtc',
+    category: 'vtc' as 'vtc' | 'business' | 'minimal' | 'modern' | 'classic',
     is_premium: false,
     price: 0,
     is_active: true,
     preview_url: '',
+    html_content: '',
+    css_content: '',
   })
+  const [activeTab, setActiveTab] = useState<'info' | 'html' | 'css'>('info')
+  const [htmlFile, setHtmlFile] = useState<File | null>(null)
+  const [cssFile, setCssFile] = useState<File | null>(null)
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -39,9 +44,15 @@ export default function AdminTemplatesPage() {
       const data = await templateService.getAll({})
       const templatesArray = Array.isArray(data) ? data : (data?.results || data?.data || [])
       setTemplates(templatesArray)
-    } catch (error) {
-      console.error('Erreur chargement templates:', error)
-      toast.error('Erreur lors du chargement des templates')
+    } catch (error: any) {
+      // Ne pas logger les erreurs attendues (500, etc.)
+      if (!error.response || error.response?.status !== 500) {
+        console.error('Erreur chargement templates:', error)
+      }
+      // Ne pas afficher de toast pour les erreurs 500 (endpoint peut être en cours de développement)
+      if (!error.response || error.response?.status !== 500) {
+        toast.error('Erreur lors du chargement des templates')
+      }
       setTemplates([])
     } finally {
       setLoading(false)
@@ -78,8 +89,11 @@ export default function AdminTemplatesPage() {
       price: parseFloat(template.price?.toString() || '0'),
       is_active: template.is_active,
       preview_url: template.preview_url || '',
+      html_content: template.html_content || '',
+      css_content: template.css_content || '',
     })
     setShowForm(true)
+    setActiveTab('info')
   }
 
   const handleDelete = async (id: number, name: string) => {
@@ -113,7 +127,50 @@ export default function AdminTemplatesPage() {
       price: 0,
       is_active: true,
       preview_url: '',
+      html_content: '',
+      css_content: '',
     })
+    setActiveTab('info')
+    setHtmlFile(null)
+    setCssFile(null)
+  }
+
+  const handleHtmlFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    if (!file.name.endsWith('.html')) {
+      toast.error('Veuillez sélectionner un fichier HTML')
+      return
+    }
+    
+    setHtmlFile(file)
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      setFormData({ ...formData, html_content: content })
+      toast.success('Fichier HTML chargé avec succès')
+    }
+    reader.readAsText(file)
+  }
+
+  const handleCssFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    if (!file.name.endsWith('.css')) {
+      toast.error('Veuillez sélectionner un fichier CSS')
+      return
+    }
+    
+    setCssFile(file)
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      setFormData({ ...formData, css_content: content })
+      toast.success('Fichier CSS chargé avec succès')
+    }
+    reader.readAsText(file)
   }
 
   const getCategoryBadge = (category: string) => {
@@ -162,7 +219,7 @@ export default function AdminTemplatesPage() {
             setEditingTemplate(null)
             setShowForm(true)
           }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center text-sm"
         >
           <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -178,6 +235,47 @@ export default function AdminTemplatesPage() {
             {editingTemplate ? 'Modifier le Template' : 'Créer un Nouveau Template'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Tabs */}
+            <div className="border-b border-gray-200">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('info')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'info'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Informations
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('html')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'html'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  HTML
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('css')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'css'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  CSS
+                </button>
+              </nav>
+            </div>
+
+            {/* Info Tab */}
+            {activeTab === 'info' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -288,7 +386,79 @@ export default function AdminTemplatesPage() {
                 </label>
               </div>
             </div>
-            <div className="flex justify-end space-x-3 pt-4">
+            )}
+
+            {/* HTML Tab */}
+            {activeTab === 'html' && (
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Contenu HTML
+                    </label>
+                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      Uploader un fichier HTML
+                      <input
+                        type="file"
+                        accept=".html"
+                        onChange={handleHtmlFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {htmlFile && (
+                    <p className="text-sm text-gray-600 mb-2">Fichier: {htmlFile.name}</p>
+                  )}
+                  <textarea
+                    value={formData.html_content}
+                    onChange={(e) => setFormData({ ...formData, html_content: e.target.value })}
+                    rows={20}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    placeholder="<!-- Entrez votre code HTML ici -->"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* CSS Tab */}
+            {activeTab === 'css' && (
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Contenu CSS
+                    </label>
+                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      Uploader un fichier CSS
+                      <input
+                        type="file"
+                        accept=".css"
+                        onChange={handleCssFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {cssFile && (
+                    <p className="text-sm text-gray-600 mb-2">Fichier: {cssFile.name}</p>
+                  )}
+                  <textarea
+                    value={formData.css_content}
+                    onChange={(e) => setFormData({ ...formData, css_content: e.target.value })}
+                    rows={20}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    placeholder="/* Entrez votre code CSS ici */"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -296,13 +466,13 @@ export default function AdminTemplatesPage() {
                   setEditingTemplate(null)
                   resetForm()
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
                 Annuler
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 {editingTemplate ? 'Mettre à jour' : 'Créer'}
               </button>

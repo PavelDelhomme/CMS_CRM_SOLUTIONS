@@ -172,10 +172,11 @@ SIMPLE_JWT = {
 # En développement, autoriser tous les origines localhost et sous-domaines
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True  # Autoriser tous les origines en développement
+    # Also allow all localhost subdomains
     CORS_ALLOWED_ORIGIN_REGEXES = [
-        r"^http://.*\.localhost:9494$",  # Tous les sous-domaines tenant
-        r"^http://localhost:.*$",
-        r"^http://127\.0\.0\.1:.*$",
+        r"^http(s)?://.*\.localhost:\d+$",  # Tous les sous-domaines localhost
+        r"^http(s)?://localhost:\d+$",  # localhost direct
+        r"^http(s)?://127\.0\.0\.1:\d+$",  # 127.0.0.1
     ]
 else:
     # En production, lister explicitement les origines autorisées
@@ -201,6 +202,15 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+]
+# Autoriser toutes les méthodes
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 # Session Configuration (for impersonation)

@@ -12,6 +12,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [testingEmail, setTestingEmail] = useState(false)
+  const [testEmailRecipient, setTestEmailRecipient] = useState('')
   const [settings, setSettings] = useState<SystemSettings | null>(null)
   const [activeTab, setActiveTab] = useState<'general' | 'email' | 'security' | 'billing' | 'storage' | 'notifications' | 'maintenance'>('general')
 
@@ -29,9 +30,7 @@ export default function SettingsPage() {
       const data = await settingsService.getSettings()
       setSettings(data)
     } catch (error: any) {
-      console.error('Erreur chargement paramètres:', error)
-      toast.error('Erreur lors du chargement des paramètres')
-      // Si les paramètres n'existent pas, créer avec des valeurs par défaut
+      // Si 404, créer avec valeurs par défaut (silencieux)
       if (error.response?.status === 404) {
         const defaultSettings = {
           site_name: 'VTCBuilder',
@@ -42,9 +41,16 @@ export default function SettingsPage() {
         try {
           await settingsService.updateSettings(defaultSettings)
           loadSettings()
-        } catch (err) {
-          console.error('Erreur création paramètres:', err)
+        } catch (err: any) {
+          // Erreur silencieuse lors de la création
+          if (err.response?.status !== 404) {
+            console.error('Erreur création paramètres:', err)
+          }
         }
+      } else {
+        // Ne logger que les erreurs non attendues
+        console.error('Erreur chargement paramètres:', error)
+        toast.error('Erreur lors du chargement des paramètres')
       }
     } finally {
       setLoading(false)
@@ -67,11 +73,17 @@ export default function SettingsPage() {
   }
 
   const handleTestEmail = async () => {
+    if (!testEmailRecipient || !testEmailRecipient.includes('@')) {
+      toast.error('Veuillez entrer une adresse email valide')
+      return
+    }
+
     try {
       setTestingEmail(true)
-      const result = await settingsService.testEmail()
+      const result = await settingsService.testEmail(testEmailRecipient)
       if (result.status === 'success') {
-        toast.success(result.message || 'Email de test envoyé avec succès !')
+        toast.success(result.message || `Email de test envoyé avec succès à ${testEmailRecipient} !`)
+        setTestEmailRecipient('')
       } else {
         toast.error(result.message || 'Erreur lors de l\'envoi de l\'email de test')
       }
@@ -119,7 +131,31 @@ export default function SettingsPage() {
       <div className="space-y-6">
         {/* Tabs */}
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-4 overflow-x-auto">
+          {/* Mobile: Menu déroulant */}
+          <div className="lg:hidden mb-4">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value as any)}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+            >
+              {[
+                { id: 'general', label: 'Général', icon: '⚙️' },
+                { id: 'email', label: 'Email', icon: '📧' },
+                { id: 'security', label: 'Sécurité', icon: '🔒' },
+                { id: 'billing', label: 'Facturation', icon: '💳' },
+                { id: 'storage', label: 'Stockage', icon: '📦' },
+                { id: 'notifications', label: 'Notifications', icon: '🔔' },
+                { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
+              ].map((tab) => (
+                <option key={tab.id} value={tab.id}>
+                  {tab.icon} {tab.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Desktop: Onglets horizontaux */}
+          <nav className="hidden lg:flex space-x-4 overflow-x-auto">
             {[
               { id: 'general', label: 'Général', icon: '⚙️' },
               { id: 'email', label: 'Email', icon: '📧' },
@@ -205,102 +241,61 @@ export default function SettingsPage() {
         {/* Email Tab */}
         {activeTab === 'email' && (
           <div className="bg-white rounded-lg shadow p-6 space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Configuration Email</h2>
-              <button
-                onClick={handleTestEmail}
-                disabled={testingEmail}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {testingEmail ? 'Test en cours...' : 'Tester l\'envoi d\'email'}
-              </button>
-            </div>
+            <h2 className="text-xl font-semibold text-gray-900">Configuration Email</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Serveur SMTP (Host)
-                </label>
-                <input
-                  type="text"
-                  value={settings.email_host}
-                  onChange={(e) => updateSetting('email_host', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="smtp.maily.ovh"
-                />
+            {/* Info Box - Configuration simplifiée */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <svg className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Configuration Email Automatique</p>
+                  <p className="text-blue-700">
+                    Les emails sont envoyés automatiquement depuis <strong>noreply@vtcbuilder.com</strong> pour :
+                  </p>
+                  <ul className="list-disc list-inside mt-2 text-blue-700 space-y-1">
+                    <li>Réinitialisation de mot de passe</li>
+                    <li>Validation de création de compte</li>
+                    <li>Factures et notifications de paiement</li>
+                    <li>Notifications système</li>
+                  </ul>
+                  <p className="text-blue-700 mt-2">
+                    La configuration SMTP est gérée via les variables d'environnement dans le fichier <code className="bg-blue-100 px-1 rounded">.env</code> du backend.
+                  </p>
+                </div>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Port SMTP
-                </label>
-                <input
-                  type="number"
-                  value={settings.email_port}
-                  onChange={(e) => updateSetting('email_port', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="587"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Utilisateur SMTP
-                </label>
-                <input
-                  type="text"
-                  value={settings.email_host_user || ''}
-                  onChange={(e) => updateSetting('email_host_user', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mot de passe SMTP
-                </label>
-                <input
-                  type="password"
-                  value={settings.email_host_password || ''}
-                  onChange={(e) => updateSetting('email_host_password', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email expéditeur
-                </label>
+            {/* Test Email Section */}
+            <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Tester l'envoi d'email</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Entrez une adresse email pour recevoir un email de test et vérifier que la configuration fonctionne correctement.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="email"
-                  value={settings.email_from}
-                  onChange={(e) => updateSetting('email_from', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="noreply@vtcbuilder.com"
+                  value={testEmailRecipient}
+                  onChange={(e) => setTestEmailRecipient(e.target.value)}
+                  placeholder="votre-email@exemple.com"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <button
+                  onClick={handleTestEmail}
+                  disabled={testingEmail || !testEmailRecipient}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  {testingEmail ? 'Envoi en cours...' : 'Envoyer un email de test'}
+                </button>
               </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={settings.email_use_tls}
-                  onChange={(e) => updateSetting('email_use_tls', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span className="text-sm font-medium text-gray-700">Utiliser TLS</span>
-              </label>
-
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={settings.email_use_ssl}
-                  onChange={(e) => updateSetting('email_use_ssl', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span className="text-sm font-medium text-gray-700">Utiliser SSL</span>
-              </label>
+              
+              {testEmailRecipient && (
+                <p className="mt-2 text-xs text-gray-500">
+                  Un email de test sera envoyé à <strong>{testEmailRecipient}</strong>
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -582,11 +577,11 @@ export default function SettingsPage() {
         )}
 
         {/* Save Button */}
-        <div className="flex justify-end">
+        <div className="flex flex-col sm:flex-row justify-end gap-3">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+            className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
           >
             {saving ? 'Sauvegarde...' : 'Enregistrer les paramètres'}
           </button>
