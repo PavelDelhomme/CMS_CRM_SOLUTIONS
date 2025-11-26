@@ -46,7 +46,8 @@ class TenantSerializer(serializers.ModelSerializer):
         tenant = super().create(validated_data)
         
         # Use the email provided in tenant.email to create the admin user
-        admin_email = validated_data.get('email', tenant.email)
+        # The email field should always be set when creating a tenant
+        admin_email = tenant.email or validated_data.get('email')
         
         # If no email provided, generate a default one
         if not admin_email:
