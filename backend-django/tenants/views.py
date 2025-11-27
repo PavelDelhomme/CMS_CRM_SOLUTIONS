@@ -769,10 +769,33 @@ def login_view(request):
     user = authenticate(email=email, password=password)
 
     if user:
-        if not user.is_active_user():
+        # Check user status and provide specific error messages
+        if user.status == 'suspended':
             return Response(
-                {'error': 'Account is not active'},
-                status=status.HTTP_401_UNAUTHORIZED
+                {
+                    'error': 'Compte suspendu',
+                    'detail': 'Votre compte a été suspendu. Veuillez contacter l\'administrateur.',
+                    'status': 'suspended'
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+        elif user.status == 'inactive':
+            return Response(
+                {
+                    'error': 'Compte désactivé',
+                    'detail': 'Votre compte a été désactivé. Veuillez contacter l\'administrateur.',
+                    'status': 'inactive'
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+        elif not user.is_active_user():
+            return Response(
+                {
+                    'error': 'Compte non actif',
+                    'detail': 'Votre compte n\'est pas actif. Veuillez contacter l\'administrateur.',
+                    'status': user.status
+                },
+                status=status.HTTP_403_FORBIDDEN
             )
 
         refresh = RefreshToken.for_user(user)
