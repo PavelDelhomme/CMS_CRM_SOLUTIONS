@@ -1073,6 +1073,298 @@ function BlockRenderer({
   }
 }
 
+// Block Style Panel (Peinture/Styling)
+function BlockStylePanel({
+  block,
+  onUpdate,
+}: {
+  block: Block
+  onUpdate: (updates: Partial<Block>) => void
+}) {
+  const updateStyle = (key: string, value: any) => {
+    onUpdate({
+      styles: {
+        ...block.styles,
+        [key]: value,
+      },
+    })
+  }
+
+  const commonColors = [
+    { name: 'Blanc', value: '#ffffff', class: 'bg-white' },
+    { name: 'Noir', value: '#000000', class: 'bg-black' },
+    { name: 'Gris clair', value: '#f3f4f6', class: 'bg-gray-100' },
+    { name: 'Gris', value: '#6b7280', class: 'bg-gray-500' },
+    { name: 'Gris foncé', value: '#1f2937', class: 'bg-gray-800' },
+    { name: 'Bleu', value: '#3b82f6', class: 'bg-blue-500' },
+    { name: 'Bleu foncé', value: '#1e40af', class: 'bg-blue-800' },
+    { name: 'Vert', value: '#10b981', class: 'bg-green-500' },
+    { name: 'Rouge', value: '#ef4444', class: 'bg-red-500' },
+    { name: 'Jaune', value: '#f59e0b', class: 'bg-yellow-500' },
+    { name: 'Violet', value: '#8b5cf6', class: 'bg-purple-500' },
+    { name: 'Rose', value: '#ec4899', class: 'bg-pink-500' },
+  ]
+
+  return (
+    <div className="space-y-4">
+      {/* Couleur de fond */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Couleur de fond
+        </label>
+        <div className="flex items-center gap-2 mb-2">
+          <input
+            type="color"
+            value={block.styles?.background_color || '#ffffff'}
+            onChange={(e) => updateStyle('background_color', e.target.value)}
+            className="w-12 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+          />
+          <input
+            type="text"
+            value={block.styles?.background_color || '#ffffff'}
+            onChange={(e) => updateStyle('background_color', e.target.value)}
+            className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            placeholder="#ffffff"
+          />
+        </div>
+        <div className="grid grid-cols-6 gap-1">
+          {commonColors.map((color) => (
+            <button
+              key={color.value}
+              type="button"
+              onClick={() => updateStyle('background_color', color.value)}
+              className={`w-full h-8 rounded border-2 ${
+                block.styles?.background_color === color.value
+                  ? 'border-blue-500 ring-2 ring-blue-200'
+                  : 'border-gray-300 dark:border-gray-600'
+              } ${color.class}`}
+              title={color.name}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Couleur de texte */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Couleur de texte
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={block.styles?.color || '#000000'}
+            onChange={(e) => updateStyle('color', e.target.value)}
+            className="w-12 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+          />
+          <input
+            type="text"
+            value={block.styles?.color || '#000000'}
+            onChange={(e) => updateStyle('color', e.target.value)}
+            className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            placeholder="#000000"
+          />
+        </div>
+      </div>
+
+      {/* Padding */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Espacement interne (Padding)
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Vertical</label>
+            <input
+              type="text"
+              value={block.styles?.padding_vertical || ''}
+              onChange={(e) => updateStyle('padding_vertical', e.target.value)}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="1rem"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Horizontal</label>
+            <input
+              type="text"
+              value={block.styles?.padding_horizontal || ''}
+              onChange={(e) => updateStyle('padding_horizontal', e.target.value)}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="1rem"
+            />
+          </div>
+        </div>
+        <div className="mt-2 flex gap-1">
+          {['0', '0.5rem', '1rem', '2rem', '3rem', '4rem'].map((val) => (
+            <button
+              key={val}
+              type="button"
+              onClick={() => {
+                updateStyle('padding_vertical', val)
+                updateStyle('padding_horizontal', val)
+              }}
+              className={`flex-1 px-2 py-1 text-[10px] rounded border ${
+                block.styles?.padding_vertical === val && block.styles?.padding_horizontal === val
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                  : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              {val}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Margin */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Espacement externe (Margin)
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Vertical</label>
+            <input
+              type="text"
+              value={block.styles?.margin_vertical || ''}
+              onChange={(e) => updateStyle('margin_vertical', e.target.value)}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Horizontal</label>
+            <input
+              type="text"
+              value={block.styles?.margin_horizontal || ''}
+              onChange={(e) => updateStyle('margin_horizontal', e.target.value)}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="0"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Bordures */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Bordures
+        </label>
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Largeur</label>
+              <select
+                value={block.styles?.border_width || '0'}
+                onChange={(e) => updateStyle('border_width', e.target.value)}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="0">Aucune</option>
+                <option value="1px">1px</option>
+                <option value="2px">2px</option>
+                <option value="4px">4px</option>
+                <option value="8px">8px</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Style</label>
+              <select
+                value={block.styles?.border_style || 'solid'}
+                onChange={(e) => updateStyle('border_style', e.target.value)}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="solid">Solide</option>
+                <option value="dashed">Tirets</option>
+                <option value="dotted">Pointillés</option>
+                <option value="double">Double</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Couleur</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={block.styles?.border_color || '#e5e7eb'}
+                onChange={(e) => updateStyle('border_color', e.target.value)}
+                className="w-10 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={block.styles?.border_color || '#e5e7eb'}
+                onChange={(e) => updateStyle('border_color', e.target.value)}
+                className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="#e5e7eb"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Rayon (Border radius)</label>
+            <select
+              value={block.styles?.border_radius || '0'}
+              onChange={(e) => updateStyle('border_radius', e.target.value)}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            >
+              <option value="0">Aucun</option>
+              <option value="0.25rem">Petit (0.25rem)</option>
+              <option value="0.5rem">Moyen (0.5rem)</option>
+              <option value="1rem">Grand (1rem)</option>
+              <option value="1.5rem">Très grand (1.5rem)</option>
+              <option value="9999px">Rond</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Ombres */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Ombres
+        </label>
+        <select
+          value={block.styles?.box_shadow || 'none'}
+          onChange={(e) => updateStyle('box_shadow', e.target.value)}
+          className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        >
+          <option value="none">Aucune</option>
+          <option value="sm">Petite (sm)</option>
+          <option value="md">Moyenne (md)</option>
+          <option value="lg">Grande (lg)</option>
+          <option value="xl">Très grande (xl)</option>
+          <option value="2xl">Énorme (2xl)</option>
+        </select>
+      </div>
+
+      {/* Alignement du texte */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Alignement du texte
+        </label>
+        <div className="flex gap-1">
+          {[
+            { value: 'left', icon: '⬅️', label: 'Gauche' },
+            { value: 'center', icon: '↔️', label: 'Centre' },
+            { value: 'right', icon: '➡️', label: 'Droite' },
+            { value: 'justify', icon: '↔️', label: 'Justifié' },
+          ].map((align) => (
+            <button
+              key={align.value}
+              type="button"
+              onClick={() => updateStyle('text_align', align.value)}
+              className={`flex-1 px-2 py-2 text-xs rounded border ${
+                block.styles?.text_align === align.value
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                  : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+              }`}
+              title={align.label}
+            >
+              {align.icon}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Block Properties Panel
 function BlockPropertiesPanel({
   block,
