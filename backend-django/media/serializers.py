@@ -1,6 +1,7 @@
 """
 Serializers for media models
 """
+import time
 from rest_framework import serializers
 from .models import Media, Template
 
@@ -32,7 +33,7 @@ class MediaSerializer(serializers.ModelSerializer):
 
 class MediaUploadSerializer(serializers.ModelSerializer):
     """Serializer for media upload"""
-    file = serializers.FileField(write_only=True)
+    file = serializers.FileField(write_only=True, required=True)
 
     class Meta:
         model = Media
@@ -42,10 +43,75 @@ class MediaUploadSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create media from uploaded file"""
+        import os
+        from django.core.files.storage import default_storage
+        from django.core.files.base import ContentFile
+        from django.utils.text import slugify
+        from django.conf import settings
+        
         file = validated_data.pop('file')
-        # Handle file upload logic here
-        # This would typically involve saving to storage and creating Media record
-        return super().create(validated_data)
+        
+        # Generate file info
+        file_name = file.name
+        file_size = file.size
+        mime_type = file.content_type or 'application/octet-stream'
+        
+        # Generate name if not provided
+        name = validated_data.get('name') or os.path.splitext(file_name)[0]
+        
+        # Determine collection from mime type if not provided
+        collection = validated_data.get('collection', 'other')
+        if not collection or collection == 'other':
+            if mime_type.startswith('image/'):
+                collection = 'images'
+            elif mime_type.startswith('video/'):
+                collection = 'videos'
+            elif mime_type.startswith('audio/'):
+                collection = 'audio'
+            elif mime_type.startswith('application/') or mime_type.startswith('text/'):
+                collection = 'documents'
+            else:
+                collection = 'other'
+        
+        # Generate path for storage
+        # Use tenant ID if available, otherwise use 'default'
+        tenant = validated_data.get('tenant')
+        tenant_prefix = f'tenant_{tenant.id}' if tenant else 'default'
+        safe_name = slugify(name) or 'file'
+        timestamp = int(time.time())
+        file_extension = os.path.splitext(file_name)[1]
+        storage_path = f'media/{tenant_prefix}/{timestamp}_{safe_name}{file_extension}'
+        
+        # Save file to storage
+        try:
+            # Read file content
+            file_content = file.read()
+            file.seek(0)  # Reset file pointer
+            
+            # Save to default storage
+            saved_path = default_storage.save(storage_path, ContentFile(file_content))
+            
+            # Create Media record
+            media = Media.objects.create(
+                tenant=tenant,
+                name=name,
+                file_name=file_name,
+                mime_type=mime_type,
+                path=saved_path,
+                disk='local',
+                size=file_size,
+                collection=collection,
+                alt_text=validated_data.get('alt_text', ''),
+                order=validated_data.get('order', 0),
+                metadata={}
+            )
+            
+            return media
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error saving file: {e}", exc_info=True)
+            raise serializers.ValidationError(f'Erreur lors de la sauvegarde du fichier: {str(e)}')
 
 
 class MediaListSerializer(serializers.ModelSerializer):

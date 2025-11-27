@@ -203,25 +203,37 @@ class MediaViewSet(viewsets.ModelViewSet):
     def upload(self, request):
         """Upload a media file"""
         from django_tenants.utils import tenant_context
+        import logging
+        logger = logging.getLogger(__name__)
         
         user = request.user
         
         if hasattr(user, 'tenant') and user.tenant:
             try:
-                serializer = MediaUploadSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
+                # Remove tenant from request.data if present (will be set from user context)
+                data = request.data.copy()
+                if 'tenant' in data:
+                    del data['tenant']
+                
+                serializer = MediaUploadSerializer(data=data)
+                if not serializer.is_valid():
+                    logger.error(f"Serializer validation errors: {serializer.errors}")
+                    return Response(
+                        {'error': 'Erreur de validation', 'details': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
                 validated_data = serializer.validated_data
                 
                 with tenant_context(user.tenant):
+                    # Set tenant FK - django-tenants handles cross-schema FK
                     validated_data['tenant'] = user.tenant
-                    media = Media.objects.create(**validated_data)
+                    media = serializer.save(tenant=user.tenant)
                     return Response(MediaSerializer(media).data, status=status.HTTP_201_CREATED)
             except Exception as e:
-                import logging
-                logger = logging.getLogger(__name__)
-                logger.error(f"Error uploading media: {str(e)}")
+                logger.error(f"Error uploading media: {str(e)}", exc_info=True)
                 if hasattr(e, 'detail'):
-                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': str(e.detail), 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
                 return Response(
                     {'error': f'Erreur lors du téléversement: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
