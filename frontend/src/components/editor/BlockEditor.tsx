@@ -2113,6 +2113,598 @@ function BlockRenderer({
           </div>
         </div>
       )
+    case 'booking-form':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre du formulaire
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Réservez votre course"
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-pickup-${block.id}`}
+                checked={block.data.show_pickup !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_pickup: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-pickup-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Point de prise en charge
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-dropoff-${block.id}`}
+                checked={block.data.show_dropoff !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_dropoff: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-dropoff-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Point de destination
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-date-${block.id}`}
+                checked={block.data.show_date !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_date: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-date-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Date et heure
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-passengers-${block.id}`}
+                checked={block.data.show_passengers || false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_passengers: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-passengers-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Nombre de passagers
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-vehicle-${block.id}`}
+                checked={block.data.show_vehicle || false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_vehicle: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-vehicle-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Type de véhicule
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-phone-${block.id}`}
+                checked={block.data.show_phone !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_phone: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-phone-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Téléphone
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`booking-notes-${block.id}`}
+                checked={block.data.show_notes || false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_notes: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`booking-notes-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Notes spéciales
+              </label>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du bouton
+            </label>
+            <input
+              type="text"
+              value={block.data.button_text || 'Réserver'}
+              onChange={(e) => onUpdate({ data: { ...block.data, button_text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+        </div>
+      )
+    case 'pricing-table':
+      const pricingRows = block.data.rows || [{ route: '', price: '', duration: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Nos tarifs"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Lignes de tarifs ({pricingRows.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {pricingRows.map((row: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={row.route || ''}
+                    onChange={(e) => {
+                      const newRows = [...pricingRows]
+                      newRows[index] = { ...row, route: e.target.value }
+                      onUpdate({ data: { ...block.data, rows: newRows } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Trajet (ex: Aéroport → Centre-ville)"
+                  />
+                  <div className="grid grid-cols-2 gap-1">
+                    <input
+                      type="text"
+                      value={row.price || ''}
+                      onChange={(e) => {
+                        const newRows = [...pricingRows]
+                        newRows[index] = { ...row, price: e.target.value }
+                        onUpdate({ data: { ...block.data, rows: newRows } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                      placeholder="Prix (ex: 45€)"
+                    />
+                    <input
+                      type="text"
+                      value={row.duration || ''}
+                      onChange={(e) => {
+                        const newRows = [...pricingRows]
+                        newRows[index] = { ...row, duration: e.target.value }
+                        onUpdate({ data: { ...block.data, rows: newRows } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                      placeholder="Durée (ex: 30 min)"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, rows: [...pricingRows, { route: '', price: '', duration: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {pricingRows.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, rows: pricingRows.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'service-zones':
+      const zones = block.data.zones || [{ name: '', description: '', icon: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Zones de service"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Zones ({zones.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {zones.map((zone: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={zone.name || ''}
+                    onChange={(e) => {
+                      const newZones = [...zones]
+                      newZones[index] = { ...zone, name: e.target.value }
+                      onUpdate({ data: { ...block.data, zones: newZones } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Nom de la zone"
+                  />
+                  <textarea
+                    value={zone.description || ''}
+                    onChange={(e) => {
+                      const newZones = [...zones]
+                      newZones[index] = { ...zone, description: e.target.value }
+                      onUpdate({ data: { ...block.data, zones: newZones } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Description"
+                    rows={2}
+                  />
+                  <input
+                    type="text"
+                    value={zone.icon || ''}
+                    onChange={(e) => {
+                      const newZones = [...zones]
+                      newZones[index] = { ...zone, icon: e.target.value }
+                      onUpdate({ data: { ...block.data, zones: newZones } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Icône emoji (ex: 🚗)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, zones: [...zones, { name: '', description: '', icon: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {zones.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, zones: zones.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'vehicle-gallery':
+      const vehicles = block.data.vehicles || [{ name: '', image: '', description: '', features: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Notre flotte"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Véhicules ({vehicles.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {vehicles.map((vehicle: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={vehicle.name || ''}
+                    onChange={(e) => {
+                      const newVehicles = [...vehicles]
+                      newVehicles[index] = { ...vehicle, name: e.target.value }
+                      onUpdate({ data: { ...block.data, vehicles: newVehicles } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Nom du véhicule"
+                  />
+                  <input
+                    type="url"
+                    value={vehicle.image || ''}
+                    onChange={(e) => {
+                      const newVehicles = [...vehicles]
+                      newVehicles[index] = { ...vehicle, image: e.target.value }
+                      onUpdate({ data: { ...block.data, vehicles: newVehicles } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="URL image"
+                  />
+                  <textarea
+                    value={vehicle.description || ''}
+                    onChange={(e) => {
+                      const newVehicles = [...vehicles]
+                      newVehicles[index] = { ...vehicle, description: e.target.value }
+                      onUpdate({ data: { ...block.data, vehicles: newVehicles } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Description"
+                    rows={2}
+                  />
+                  <input
+                    type="text"
+                    value={vehicle.features || ''}
+                    onChange={(e) => {
+                      const newVehicles = [...vehicles]
+                      newVehicles[index] = { ...vehicle, features: e.target.value }
+                      onUpdate({ data: { ...block.data, vehicles: newVehicles } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Caractéristiques (ex: 4 places, WiFi, Climatisation)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, vehicles: [...vehicles, { name: '', image: '', description: '', features: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {vehicles.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, vehicles: vehicles.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'contact-buttons':
+      const contacts = block.data.contacts || [{ type: 'phone', label: '', value: '', icon: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Contactez-nous"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Contacts ({contacts.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {contacts.map((contact: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <select
+                    value={contact.type || 'phone'}
+                    onChange={(e) => {
+                      const newContacts = [...contacts]
+                      newContacts[index] = { ...contact, type: e.target.value }
+                      onUpdate({ data: { ...block.data, contacts: newContacts } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                  >
+                    <option value="phone">Téléphone</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="email">Email</option>
+                    <option value="sms">SMS</option>
+                  </select>
+                  <input
+                    type="text"
+                    value={contact.label || ''}
+                    onChange={(e) => {
+                      const newContacts = [...contacts]
+                      newContacts[index] = { ...contact, label: e.target.value }
+                      onUpdate({ data: { ...block.data, contacts: newContacts } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Label (ex: Appelez-nous)"
+                  />
+                  <input
+                    type="text"
+                    value={contact.value || ''}
+                    onChange={(e) => {
+                      const newContacts = [...contacts]
+                      newContacts[index] = { ...contact, value: e.target.value }
+                      onUpdate({ data: { ...block.data, contacts: newContacts } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Valeur (ex: +33 6 12 34 56 78)"
+                  />
+                  <input
+                    type="text"
+                    value={contact.icon || ''}
+                    onChange={(e) => {
+                      const newContacts = [...contacts]
+                      newContacts[index] = { ...contact, icon: e.target.value }
+                      onUpdate({ data: { ...block.data, contacts: newContacts } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Icône emoji (ex: 📞)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, contacts: [...contacts, { type: 'phone', label: '', value: '', icon: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {contacts.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, contacts: contacts.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'map':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Notre zone de service"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Adresse ou coordonnées
+            </label>
+            <input
+              type="text"
+              value={block.data.address || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, address: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Ex: Paris, France ou 48.8566, 2.3522"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Hauteur de la carte (px)
+            </label>
+            <input
+              type="number"
+              value={block.data.height || 400}
+              onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 400 } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              min={200}
+              max={800}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`map-zoom-${block.id}`}
+              checked={block.data.show_controls || false}
+              onChange={(e) => onUpdate({ data: { ...block.data, show_controls: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`map-zoom-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Afficher les contrôles (zoom, etc.)
+            </label>
+          </div>
+        </div>
+      )
+    case 'badges':
+      const badges = block.data.badges || [{ text: '', icon: '', color: 'blue' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Certifications et badges"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Badges ({badges.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {badges.map((badge: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={badge.text || ''}
+                    onChange={(e) => {
+                      const newBadges = [...badges]
+                      newBadges[index] = { ...badge, text: e.target.value }
+                      onUpdate({ data: { ...block.data, badges: newBadges } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Texte du badge"
+                  />
+                  <div className="grid grid-cols-2 gap-1">
+                    <input
+                      type="text"
+                      value={badge.icon || ''}
+                      onChange={(e) => {
+                        const newBadges = [...badges]
+                        newBadges[index] = { ...badge, icon: e.target.value }
+                        onUpdate({ data: { ...block.data, badges: newBadges } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                      placeholder="Icône emoji"
+                    />
+                    <select
+                      value={badge.color || 'blue'}
+                      onChange={(e) => {
+                        const newBadges = [...badges]
+                        newBadges[index] = { ...badge, color: e.target.value }
+                        onUpdate({ data: { ...block.data, badges: newBadges } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    >
+                      <option value="blue">Bleu</option>
+                      <option value="green">Vert</option>
+                      <option value="red">Rouge</option>
+                      <option value="yellow">Jaune</option>
+                      <option value="purple">Violet</option>
+                      <option value="gray">Gris</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, badges: [...badges, { text: '', icon: '', color: 'blue' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {badges.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, badges: badges.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
     default:
       return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">

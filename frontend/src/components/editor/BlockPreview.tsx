@@ -1078,6 +1078,361 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         </div>
       )
 
+    case 'booking-form':
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+              {block.data.title}
+            </h2>
+          )}
+          <form className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 space-y-4">
+            {block.data.show_pickup !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Point de prise en charge
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Adresse de départ"
+                />
+              </div>
+            )}
+            {block.data.show_dropoff !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Point de destination
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Adresse d'arrivée"
+                />
+              </div>
+            )}
+            {block.data.show_date !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Date et heure
+                </label>
+                <input
+                  type="datetime-local"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+            {block.data.show_passengers && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Nombre de passagers
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="8"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+            {block.data.show_vehicle && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Type de véhicule
+                </label>
+                <select className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option>Berline</option>
+                  <option>Van</option>
+                  <option>Luxe</option>
+                </select>
+              </div>
+            )}
+            {block.data.show_phone !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="+33 6 12 34 56 78"
+                />
+              </div>
+            )}
+            {block.data.show_notes && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Notes spéciales
+                </label>
+                <textarea
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  rows={3}
+                  placeholder="Informations supplémentaires..."
+                />
+              </div>
+            )}
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              {block.data.button_text || 'Réserver'}
+            </button>
+          </form>
+        </div>
+      )
+
+    case 'pricing-table':
+      const pricingRows = block.data.rows || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="overflow-x-auto">
+            <table className="w-full bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Trajet</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Prix</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Durée</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {pricingRows.length > 0 ? (
+                  pricingRows.map((row: any, index: number) => (
+                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {row.route || 'Trajet'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {row.price || 'Prix'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        {row.duration || 'Durée'}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                      Aucun tarif configuré
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )
+
+    case 'service-zones':
+      const zones = block.data.zones || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {zones.length > 0 ? (
+              zones.map((zone: any, index: number) => (
+                <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 text-center">
+                  {zone.icon && (
+                    <div className="text-4xl mb-3">{zone.icon}</div>
+                  )}
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    {zone.name || 'Zone'}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {zone.description || 'Description de la zone'}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucune zone configurée
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'vehicle-gallery':
+      const vehicles = block.data.vehicles || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vehicles.length > 0 ? (
+              vehicles.map((vehicle: any, index: number) => (
+                <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  {vehicle.image ? (
+                    <img
+                      src={vehicle.image}
+                      alt={vehicle.name}
+                      className="w-full h-48 object-cover"
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="18" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3EVéhicule%3C/text%3E%3C/svg%3E'
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                      <span className="text-gray-400">Image</span>
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                      {vehicle.name || 'Véhicule'}
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 mb-3">
+                      {vehicle.description || 'Description du véhicule'}
+                    </p>
+                    {vehicle.features && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {vehicle.features}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucun véhicule configuré
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'contact-buttons':
+      const contacts = block.data.contacts || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="flex flex-wrap justify-center gap-4">
+            {contacts.length > 0 ? (
+              contacts.map((contact: any, index: number) => {
+                const getHref = () => {
+                  switch (contact.type) {
+                    case 'phone':
+                      return `tel:${contact.value}`
+                    case 'whatsapp':
+                      return `https://wa.me/${contact.value.replace(/[^0-9]/g, '')}`
+                    case 'email':
+                      return `mailto:${contact.value}`
+                    case 'sms':
+                      return `sms:${contact.value}`
+                    default:
+                      return '#'
+                  }
+                }
+                return (
+                  <a
+                    key={index}
+                    href={getHref()}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    {contact.icon && <span className="text-xl">{contact.icon}</span>}
+                    <span>{contact.label || contact.type}</span>
+                  </a>
+                )
+              })
+            ) : (
+              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded w-full">
+                Aucun contact configuré
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'map':
+      const mapAddress = block.data.address || ''
+      const mapHeight = block.data.height || 400
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600" style={{ height: `${mapHeight}px` }}>
+            {mapAddress ? (
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodeURIComponent(mapAddress)}`}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+                <div className="text-center">
+                  <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <p>Configurez une adresse pour afficher la carte</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'badges':
+      const badges = block.data.badges || []
+      const getBadgeColor = (color: string) => {
+        const colors: Record<string, string> = {
+          blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+          green: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+          red: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+          yellow: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+          purple: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+          gray: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+        }
+        return colors[color] || colors.blue
+      }
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="flex flex-wrap justify-center gap-3">
+            {badges.length > 0 ? (
+              badges.map((badge: any, index: number) => (
+                <div
+                  key={index}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium ${getBadgeColor(badge.color || 'blue')}`}
+                >
+                  {badge.icon && <span className="text-lg">{badge.icon}</span>}
+                  <span>{badge.text || 'Badge'}</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded w-full">
+                Aucun badge configuré
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
     case 'gallery':
       const images = block.data.images || []
       const galleryColumns = block.data.columns || 3
