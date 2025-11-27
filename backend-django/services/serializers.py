@@ -8,6 +8,7 @@ from .models import Service
 class ServiceSerializer(serializers.ModelSerializer):
     """Serializer for Service model"""
     tenant_name = serializers.CharField(source='tenant.name', read_only=True)
+    tenant = serializers.PrimaryKeyRelatedField(read_only=True)  # Make tenant read-only, set by view
 
     class Meta:
         model = Service
@@ -17,7 +18,7 @@ class ServiceSerializer(serializers.ModelSerializer):
             'min_price', 'max_passengers', 'max_luggage', 'features',
             'is_active', 'order', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'tenant', 'slug', 'created_at', 'updated_at']
 
     def create(self, validated_data):
         """Auto-generate slug if not provided"""

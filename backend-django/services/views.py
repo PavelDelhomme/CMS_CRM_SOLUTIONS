@@ -91,15 +91,28 @@ class ServiceViewSet(viewsets.ModelViewSet):
         """Create a new service"""
         from django_tenants.utils import tenant_context
         from django.utils.text import slugify
+        import logging
+        logger = logging.getLogger(__name__)
         
         user = request.user
         
         # Tenant admin creates service in their tenant
         if hasattr(user, 'tenant') and user.tenant:
             try:
+                # Remove tenant from request.data if present (will be set from user context)
+                data = request.data.copy()
+                if 'tenant' in data:
+                    del data['tenant']
+                
                 # Validate data first using serializer (without saving)
-                serializer = ServiceSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
+                serializer = ServiceSerializer(data=data)
+                if not serializer.is_valid():
+                    logger.error(f"Serializer validation errors: {serializer.errors}")
+                    return Response(
+                        {'error': 'Erreur de validation', 'details': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
                 validated_data = serializer.validated_data
                 
                 # Auto-generate slug if not provided
@@ -115,13 +128,11 @@ class ServiceViewSet(viewsets.ModelViewSet):
                     response_serializer = ServiceSerializer(service)
                     return Response(response_serializer.data, status=status.HTTP_201_CREATED)
             except Exception as e:
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.error(f"Error creating service: {e}", exc_info=True)
                 
                 # If serializer validation error, return validation errors
                 if hasattr(e, 'detail'):
-                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': str(e.detail), 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
                 
                 return Response(
                     {'error': f'Erreur lors de la création: {str(e)}'},
