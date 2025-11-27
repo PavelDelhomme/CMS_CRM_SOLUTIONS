@@ -115,7 +115,14 @@ class DetailedStatsView(APIView):
             
             # Tenants by plan
             try:
-                tenants_by_plan = list(tenants_qs.values('plan').annotate(count=Count('id')))
+                tenants_by_plan_raw = tenants_qs.values('plan').annotate(count=Count('id'))
+                tenants_by_plan = [
+                    {
+                        'plan': item['plan'] if item['plan'] else 'Aucun',
+                        'count': item['count']
+                    }
+                    for item in tenants_by_plan_raw
+                ]
             except Exception as e:
                 logger.warning(f"Error getting tenants_by_plan: {e}")
                 tenants_by_plan = []
@@ -151,47 +158,83 @@ class DetailedStatsView(APIView):
             
             # Tenants created over time (last 12 months)
             try:
+                from django.db.models.functions import TruncMonth
                 tenants_by_month = list(tenants_qs.filter(
                     created_at__gte=twelve_months_ago
-                ).extra(
-                    select={'month': "DATE_TRUNC('month', created_at)"}
+                ).annotate(
+                    month=TruncMonth('created_at')
                 ).values('month').annotate(count=Count('id')).order_by('month'))
             except Exception as e:
-                logger.warning(f"Error getting tenants_by_month: {e}")
-                tenants_by_month = []
+                # Fallback to raw SQL if TruncMonth fails
+                try:
+                    tenants_by_month = list(tenants_qs.filter(
+                        created_at__gte=twelve_months_ago
+                    ).extra(
+                        select={'month': "DATE_TRUNC('month', created_at)"}
+                    ).values('month').annotate(count=Count('id')).order_by('month'))
+                except Exception as e2:
+                    logger.warning(f"Error getting tenants_by_month: {e2}")
+                    tenants_by_month = []
             
             # Users created over time (last 12 months)
             try:
+                from django.db.models.functions import TruncMonth
                 users_by_month = list(User.objects.filter(
                     created_at__gte=twelve_months_ago
-                ).extra(
-                    select={'month': "DATE_TRUNC('month', created_at)"}
+                ).annotate(
+                    month=TruncMonth('created_at')
                 ).values('month').annotate(count=Count('id')).order_by('month'))
             except Exception as e:
-                logger.warning(f"Error getting users_by_month: {e}")
-                users_by_month = []
+                # Fallback to raw SQL if TruncMonth fails
+                try:
+                    users_by_month = list(User.objects.filter(
+                        created_at__gte=twelve_months_ago
+                    ).extra(
+                        select={'month': "DATE_TRUNC('month', created_at)"}
+                    ).values('month').annotate(count=Count('id')).order_by('month'))
+                except Exception as e2:
+                    logger.warning(f"Error getting users_by_month: {e2}")
+                    users_by_month = []
             
             # Users created by day (last 7 days) for trend
             try:
+                from django.db.models.functions import TruncDate
                 users_by_day = list(User.objects.filter(
                     created_at__gte=week_ago
-                ).extra(
-                    select={'day': "DATE(created_at)"}
+                ).annotate(
+                    day=TruncDate('created_at')
                 ).values('day').annotate(count=Count('id')).order_by('day'))
             except Exception as e:
-                logger.warning(f"Error getting users_by_day: {e}")
-                users_by_day = []
+                # Fallback to raw SQL
+                try:
+                    users_by_day = list(User.objects.filter(
+                        created_at__gte=week_ago
+                    ).extra(
+                        select={'day': "DATE(created_at)"}
+                    ).values('day').annotate(count=Count('id')).order_by('day'))
+                except Exception as e2:
+                    logger.warning(f"Error getting users_by_day: {e2}")
+                    users_by_day = []
             
             # Tenants created by day (last 7 days)
             try:
+                from django.db.models.functions import TruncDate
                 tenants_by_day = list(tenants_qs.filter(
                     created_at__gte=week_ago
-                ).extra(
-                    select={'day': "DATE(created_at)"}
+                ).annotate(
+                    day=TruncDate('created_at')
                 ).values('day').annotate(count=Count('id')).order_by('day'))
             except Exception as e:
-                logger.warning(f"Error getting tenants_by_day: {e}")
-                tenants_by_day = []
+                # Fallback to raw SQL
+                try:
+                    tenants_by_day = list(tenants_qs.filter(
+                        created_at__gte=week_ago
+                    ).extra(
+                        select={'day': "DATE(created_at)"}
+                    ).values('day').annotate(count=Count('id')).order_by('day'))
+                except Exception as e2:
+                    logger.warning(f"Error getting tenants_by_day: {e2}")
+                    tenants_by_day = []
             
             # Revenue stats (from billing)
             monthly_revenue = 0
@@ -225,12 +268,22 @@ class DetailedStatsView(APIView):
                 cancelled_subscriptions = Subscription.objects.filter(status='cancelled').count()
                 
                 # Revenue by month (last 12 months)
-                revenue_by_month = Payment.objects.filter(
-                    status='succeeded',
-                    paid_at__gte=twelve_months_ago
-                ).extra(
-                    select={'month': "DATE_TRUNC('month', paid_at)"}
-                ).values('month').annotate(total=Sum('amount')).order_by('month')
+                try:
+                    from django.db.models.functions import TruncMonth
+                    revenue_by_month = list(Payment.objects.filter(
+                        status='succeeded',
+                        paid_at__gte=twelve_months_ago
+                    ).annotate(
+                        month=TruncMonth('paid_at')
+                    ).values('month').annotate(total=Sum('amount')).order_by('month'))
+                except Exception as e:
+                    # Fallback to raw SQL
+                    revenue_by_month = list(Payment.objects.filter(
+                        status='succeeded',
+                        paid_at__gte=twelve_months_ago
+                    ).extra(
+                        select={'month': "DATE_TRUNC('month', paid_at)"}
+                    ).values('month').annotate(total=Sum('amount')).order_by('month'))
                 
                 # Subscriptions expiring soon (next 7 days)
                 expiring_soon = Subscription.objects.filter(
@@ -430,7 +483,7 @@ class DetailedStatsView(APIView):
                     'name': t.name,
                     'email': t.email,
                     'status': t.status,
-                    'plan': t.plan,
+                    'plan': t.plan if hasattr(t, 'plan') else 'starter',
                     'created_at': t.created_at.isoformat(),
                 }
                 for t in recent_tenants
