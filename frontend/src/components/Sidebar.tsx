@@ -6,6 +6,7 @@ import { clsx } from 'clsx'
 import authService from '@/services/auth.service'
 import tenantService from '@/services/tenant.service'
 import { isFeatureEnabled } from '@/lib/tenant-features'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface MenuItem {
   name: string
@@ -25,6 +26,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
   const user = authService.getStoredUser()
   const [isOpen, setIsOpen] = useState(false)
   const [enabledFeatures, setEnabledFeatures] = useState<string[]>([])
+  const { resolvedTheme, toggleTheme } = useTheme()
 
   // Use external control if provided, otherwise use internal state
   const sidebarOpen = externalIsOpen !== undefined ? externalIsOpen : isOpen
@@ -177,20 +179,20 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
       {/* Sidebar */}
       <aside
         className={clsx(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col',
+          'fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col',
           'lg:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="p-6 border-b flex items-center justify-between">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-blue-600">VTCBuilder</h2>
-            <p className="text-xs text-gray-500">Le WordPress des VTC</p>
+            <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">VTCBuilder</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Le WordPress des VTC</p>
           </div>
           {/* Close button for mobile */}
           <button
             onClick={handleClose}
-            className="lg:hidden text-gray-500 hover:text-gray-700"
+            className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             aria-label="Fermer le menu"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -210,8 +212,8 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
                 className={clsx(
                   'w-full flex items-center px-6 py-3 text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-r-4 border-blue-700 dark:border-blue-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                 )}
               >
                 <span className={clsx(isActive ? 'text-blue-700' : 'text-gray-400')}>
@@ -223,28 +225,49 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
           })}
         </nav>
 
-        <div className="p-6 border-t">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-900" suppressHydrationWarning>
-                {user?.name || 'Utilisateur'}
-              </p>
-              <p className="text-xs text-gray-500 truncate max-w-[180px]" suppressHydrationWarning>
-                {user?.email || ''}
-              </p>
-            </div>
+        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="space-y-3">
+            {/* Theme Toggle */}
             <button
-              onClick={() => {
-                authService.logout()
-                router.push('/login')
-              }}
-              className="text-gray-400 hover:text-gray-600"
-              title="Déconnexion"
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {resolvedTheme === 'dark' ? '🌙 Mode sombre' : '☀️ Mode clair'}
+              </span>
+              <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {resolvedTheme === 'dark' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                )}
               </svg>
             </button>
+            
+            {/* User Info & Logout */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100" suppressHydrationWarning>
+                  {user?.name || 'Utilisateur'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]" suppressHydrationWarning>
+                  {user?.email || ''}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  authService.logout()
+                  router.push('/login')
+                }}
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                title="Déconnexion"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </aside>
