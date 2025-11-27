@@ -129,9 +129,24 @@ class PageViewSet(viewsets.ModelViewSet):
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error creating page: {e}", exc_info=True)
                 
-                # If serializer validation error, return validation errors
+                # If serializer validation error, return validation errors with details
                 if hasattr(e, 'detail'):
-                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                    # Handle ValidationError from serializer
+                    if isinstance(e.detail, dict):
+                        error_messages = []
+                        for field, messages in e.detail.items():
+                            if isinstance(messages, list):
+                                error_messages.extend([f"{field}: {msg}" for msg in messages])
+                            else:
+                                error_messages.append(f"{field}: {messages}")
+                        return Response({
+                            'error': 'Erreur de validation',
+                            'details': error_messages,
+                            'fields': e.detail
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({
+                        'error': str(e.detail) if hasattr(e.detail, '__str__') else 'Erreur de validation'
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 
                 return Response(
                     {'error': f'Erreur lors de la création: {str(e)}'},

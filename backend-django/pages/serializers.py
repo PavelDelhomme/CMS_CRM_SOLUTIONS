@@ -20,9 +20,17 @@ class PageSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
 
     def create(self, validated_data):
-        """Auto-generate slug if not provided"""
-        if not validated_data.get('slug'):
-            validated_data['slug'] = validated_data['title'].lower().replace(' ', '-')
+        """Auto-generate slug if not provided and ensure blocks is a list"""
+        if not validated_data.get('slug') and validated_data.get('title'):
+            from django.utils.text import slugify
+            validated_data['slug'] = slugify(validated_data.get('title'))
+        
+        # Ensure blocks is always a list
+        if 'blocks' not in validated_data:
+            validated_data['blocks'] = []
+        elif not isinstance(validated_data.get('blocks'), list):
+            validated_data['blocks'] = []
+        
         return super().create(validated_data)
 
 

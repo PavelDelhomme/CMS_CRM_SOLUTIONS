@@ -115,7 +115,13 @@ export default function EditPage() {
             onClick={() => router.push('/dashboard/pages')}
             className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
           >
-            Annuler
+            Retour
+          </button>
+          <button
+            onClick={() => router.push(`/dashboard/pages/${pageId}/edit-visual`)}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            🎨 Mode Visuel
           </button>
           <button
             onClick={handleSave}
