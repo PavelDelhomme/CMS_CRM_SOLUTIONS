@@ -173,29 +173,72 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                 {categoryLabels[category] || category}
               </h4>
               <div className="space-y-2.5">
-                {categoryBlocks.map((blockType: BlockType) => (
-                  <button
-                    key={blockType.id}
-                    onClick={() => {
-                      addBlock(blockType)
-                      setSidebarOpen(false) // Close sidebar on mobile after adding
-                    }}
-                    className="w-full px-3 sm:px-4 py-3 text-left bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md transition-all duration-200 flex items-center gap-3 group"
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-600 group-hover:from-blue-100 group-hover:to-blue-200 dark:group-hover:from-blue-900/30 dark:group-hover:to-blue-800/30 transition-all">
-                      <span className="text-xl sm:text-2xl">{blockType.icon || '📦'}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{blockType.label}</div>
-                      {blockType.description && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 hidden sm:block mt-0.5">{blockType.description}</div>
+                {categoryBlocks.map((blockType: BlockType) => {
+                  const isPremium = blockType.requires_premium
+                  const canUse = canUseBlockType(blockType.name, isPremium)
+                  
+                  return (
+                    <button
+                      key={blockType.id}
+                      onClick={() => {
+                        if (canUse) {
+                          addBlock(blockType)
+                          setSidebarOpen(false)
+                        }
+                      }}
+                      disabled={!canUse}
+                      className={`w-full px-3 sm:px-4 py-3 text-left bg-white dark:bg-gray-800 border-2 rounded-xl transition-all duration-200 flex items-center gap-3 ${
+                        canUse
+                          ? 'border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md cursor-pointer group'
+                          : 'border-gray-100 dark:border-gray-800 opacity-60 cursor-not-allowed'
+                      }`}
+                      title={!canUse && isPremium ? 'Bloc premium - Nécessite un abonnement supérieur' : ''}
+                    >
+                      <div className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br flex items-center justify-center border transition-all ${
+                        canUse
+                          ? 'from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-gray-200 dark:border-gray-600 group-hover:from-blue-100 group-hover:to-blue-200 dark:group-hover:from-blue-900/30 dark:group-hover:to-blue-800/30'
+                          : 'from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-gray-100 dark:border-gray-700'
+                      }`}>
+                        <span className="text-xl sm:text-2xl">{blockType.icon || '📦'}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className={`text-sm sm:text-base font-semibold truncate transition-colors ${
+                            canUse ? 'text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+                          }`}>
+                            {blockType.label}
+                          </div>
+                          {isPremium && (
+                            <span className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full flex-shrink-0">
+                              ⭐ Premium
+                            </span>
+                          )}
+                        </div>
+                        {blockType.description && (
+                          <div className={`text-xs line-clamp-1 hidden sm:block mt-0.5 ${
+                            canUse ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'
+                          }`}>
+                            {blockType.description}
+                          </div>
+                        )}
+                        {!canUse && isPremium && (
+                          <div className="text-xs text-orange-600 dark:text-orange-400 mt-1 hidden sm:block">
+                            Nécessite un abonnement premium
+                          </div>
+                        )}
+                      </div>
+                      {canUse ? (
+                        <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
                       )}
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  </button>
-                ))}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )
