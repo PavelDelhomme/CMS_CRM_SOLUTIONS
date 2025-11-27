@@ -3,11 +3,17 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import authService from '@/services/auth.service'
+import { useTheme } from '@/contexts/ThemeContext'
 
-export default function PublicHeader() {
+interface PublicHeaderProps {
+  showThemeToggle?: boolean
+}
+
+export default function PublicHeader({ showThemeToggle = false }: PublicHeaderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const { resolvedTheme, toggleTheme } = useTheme()
 
   useEffect(() => {
     setIsMounted(true)
@@ -18,19 +24,54 @@ export default function PublicHeader() {
   }, [])
 
   return (
-    <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+    <header className={`sticky top-0 z-50 transition-colors duration-300 ${
+      resolvedTheme === 'dark' 
+        ? 'bg-gray-900/90 backdrop-blur-md border-b border-gray-800' 
+        : 'bg-white/10 backdrop-blur-md border-b border-white/20'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-white">VTCBuilder</h1>
-            <span className="text-xs text-white/80">Beta</span>
+            <h1 className={`text-2xl font-bold ${
+              resolvedTheme === 'dark' ? 'text-white' : 'text-white'
+            }`}>VTCBuilder</h1>
+            <span className={`text-xs ${
+              resolvedTheme === 'dark' ? 'text-gray-400' : 'text-white/80'
+            }`}>Beta</span>
           </Link>
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle - Discret */}
+            {showThemeToggle && (
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-lg transition-colors ${
+                  resolvedTheme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
+                aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+                title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+              >
+                {resolvedTheme === 'dark' ? (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
+            )}
             {!isMounted ? (
               <>
                 <Link
                   href="/login"
-                  className="text-white hover:text-blue-100 font-medium"
+                  className={`${
+                    resolvedTheme === 'dark' 
+                      ? 'text-gray-300 hover:text-white' 
+                      : 'text-white hover:text-blue-100'
+                  } font-medium`}
                   suppressHydrationWarning
                 >
                   Connexion
@@ -41,14 +82,22 @@ export default function PublicHeader() {
                 {isSuperAdmin ? (
                   <Link
                     href="/admin/dashboard"
-                    className="bg-white dark:bg-gray-800 text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      resolvedTheme === 'dark'
+                        ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
+                        : 'bg-white text-blue-600 hover:bg-blue-50'
+                    }`}
                   >
                     Administration
                   </Link>
                 ) : (
                   <Link
                     href="/dashboard"
-                    className="bg-white dark:bg-gray-800 text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      resolvedTheme === 'dark'
+                        ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
+                        : 'bg-white text-blue-600 hover:bg-blue-50'
+                    }`}
                   >
                     Mon Dashboard
                   </Link>
@@ -58,13 +107,21 @@ export default function PublicHeader() {
               <>
                 <Link
                   href="/login"
-                  className="text-white hover:text-blue-100 font-medium"
+                  className={`${
+                    resolvedTheme === 'dark' 
+                      ? 'text-gray-300 hover:text-white' 
+                      : 'text-white hover:text-blue-100'
+                  } font-medium`}
                 >
                   Connexion
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-white dark:bg-gray-800 text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    resolvedTheme === 'dark'
+                      ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
+                      : 'bg-white text-blue-600 hover:bg-blue-50'
+                  }`}
                 >
                   Créer un compte
                 </Link>

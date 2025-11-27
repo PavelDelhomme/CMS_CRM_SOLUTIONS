@@ -1189,7 +1189,7 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def billing_stats(request):
-    """Get billing statistics (super admin only)"""
+    """Get comprehensive billing statistics (super admin only)"""
     try:
         if not request.user.is_super_admin():
             error_response = Response(
@@ -1199,73 +1199,152 @@ def billing_stats(request):
             add_cors_headers(error_response, request)
             return error_response
         
-        # Total revenue
-        try:
-            total_revenue = Payment.objects.filter(
-                status='succeeded'
-            ).aggregate(total=Sum('amount'))['total'] or 0
-        except Exception as e:
-            logger.warning(f"Error getting total_revenue: {e}")
-            total_revenue = 0
+        now = timezone.now()
+        this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_month_start = (this_month_start - timedelta(days=1)).replace(day=1)
+        last_month_end = this_month_start - timedelta(seconds=1)
+        this_year_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
         
-        # Monthly revenue
-        try:
-            this_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            monthly_revenue = Payment.objects.filter(
+        # ========== REVENUS ==========
+        total_revenue = Payment.objects.filter(status='succeeded').aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        monthly_revenue = Payment.objects.filter(status='succeeded', paid_at__gte=this_month_start).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        last_month_revenue = Payment.objects.filter(status='succeeded', paid_at__gte=last_month_start, paid_at__lte=last_month_end).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        yearly_revenue = Payment.objects.filter(status='succeeded', paid_at__gte=this_year_start).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        
+        # ========== ABONNEMENTS ==========
+        total_subscriptions = Subscription.objects.count()
+        active_subscriptions = Subscription.objects.filter(status='active').count()
+        trial_subscriptions = Subscription.objects.filter(status='trial').count()
+        cancelled_subscriptions = Subscription.objects.filter(status='cancelled').count()
+        past_due_subscriptions = Subscription.objects.filter(status='past_due').count()
+        expired_subscriptions = Subscription.objects.filter(status='expired').count()
+        
+        # Répartition par cycle de facturation
+        monthly_billing = Subscription.objects.filter(billing_cycle='monthly').count()
+        yearly_billing = Subscription.objects.filter(billing_cycle='yearly').count()
+        
+        # Plans tarifaires les plus utilisés
+        from django.db.models import Count
+        plan_usage = PricingPlan.objects.annotate(
+            subscription_count=Count('subscriptions')
+        ).order_by('-subscription_count')[:5]
+        popular_plans = [
+            {
+                'id': plan.id,
+                'name': plan.name,
+                'subscriptions_count': plan.subscription_count,
+                'price_monthly': float(plan.price_monthly),
+            }
+            for plan in plan_usage
+        ]
+        
+        # ========== FACTURES ==========
+        total_invoices = Invoice.objects.count()
+        paid_invoices = Invoice.objects.filter(status='paid').count()
+        unpaid_invoices = Invoice.objects.filter(status__in=['open', 'draft']).count()
+        overdue_invoices = Invoice.objects.filter(status__in=['open', 'draft'], due_date__lt=now).count()
+        
+        unpaid_amount = Invoice.objects.filter(status__in=['open', 'draft']).aggregate(total=Sum('total'))['total'] or Decimal('0')
+        overdue_amount = Invoice.objects.filter(status__in=['open', 'draft'], due_date__lt=now).aggregate(total=Sum('total'))['total'] or Decimal('0')
+        
+        # Revenus par factures
+        invoice_revenue = Invoice.objects.filter(status='paid').aggregate(total=Sum('total'))['total'] or Decimal('0')
+        
+        # ========== PAIEMENTS ==========
+        total_payments = Payment.objects.count()
+        succeeded_payments = Payment.objects.filter(status='succeeded').count()
+        pending_payments = Payment.objects.filter(status='pending').count()
+        failed_payments = Payment.objects.filter(status='failed').count()
+        
+        # Répartition par méthode de paiement
+        payment_methods_dist = Payment.objects.values('method').annotate(
+            count=Count('id'),
+            total_amount=Sum('amount')
+        ).order_by('-count')
+        payment_methods_stats = [
+            {
+                'method': pm['method'],
+                'count': pm['count'],
+                'total_amount': float(pm['total_amount'] or 0),
+            }
+            for pm in payment_methods_dist
+        ]
+        
+        # Revenus des 12 derniers mois
+        monthly_revenues = []
+        for i in range(11, -1, -1):
+            month_start = (now - timedelta(days=30*i)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            if i == 0:
+                month_end = now
+            else:
+                next_month = month_start + timedelta(days=32)
+                month_end = next_month.replace(day=1) - timedelta(seconds=1)
+            
+            month_revenue = Payment.objects.filter(
                 status='succeeded',
-                paid_at__gte=this_month_start
-            ).aggregate(total=Sum('amount'))['total'] or 0
-        except Exception as e:
-            logger.warning(f"Error getting monthly_revenue: {e}")
-            monthly_revenue = 0
+                paid_at__gte=month_start,
+                paid_at__lte=month_end
+            ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+            
+            monthly_revenues.append({
+                'month': month_start.strftime('%Y-%m'),
+                'label': month_start.strftime('%b %Y'),
+                'revenue': float(month_revenue),
+            })
         
-        # Active subscriptions
-        try:
-            active_subscriptions = Subscription.objects.filter(status='active').count()
-        except Exception as e:
-            logger.warning(f"Error getting active_subscriptions: {e}")
-            active_subscriptions = 0
+        # ========== STATISTIQUES GLOBALES ==========
+        total_tenants = Tenant.objects.filter(deleted_at__isnull=True).count()
+        tenants_with_subscription = Subscription.objects.values('tenant').distinct().count()
+        tenants_without_subscription = total_tenants - tenants_with_subscription
         
-        # Pending payments
-        try:
-            pending_payments = Payment.objects.filter(status='pending').count()
-        except Exception as e:
-            logger.warning(f"Error getting pending_payments: {e}")
-            pending_payments = 0
-        
-        # Unpaid invoices
-        try:
-            unpaid_invoices = Invoice.objects.filter(
-                status__in=['open', 'draft']
-            ).count()
-        except Exception as e:
-            logger.warning(f"Error getting unpaid_invoices: {e}")
-            unpaid_invoices = 0
-        
-        # Past due subscriptions
-        try:
-            past_due_subscriptions = Subscription.objects.filter(status='past_due').count()
-        except Exception as e:
-            logger.warning(f"Error getting past_due_subscriptions: {e}")
-            past_due_subscriptions = 0
-        
-        # Total unpaid amount
-        try:
-            unpaid_amount = Invoice.objects.filter(
-                status__in=['open', 'draft']
-            ).aggregate(total=Sum('total'))['total'] or 0
-        except Exception as e:
-            logger.warning(f"Error getting unpaid_amount: {e}")
-            unpaid_amount = 0
+        # Revenu récurrent mensuel (MRR)
+        mrr = Decimal('0')
+        for sub in Subscription.objects.filter(status='active'):
+            if sub.billing_cycle == 'monthly':
+                mrr += sub.plan.price_monthly
+            else:  # yearly
+                mrr += sub.plan.price_yearly / 12 if sub.plan.price_yearly else sub.plan.price_monthly
         
         response = Response({
+            # Revenus
             'total_revenue': float(total_revenue),
             'monthly_revenue': float(monthly_revenue),
+            'last_month_revenue': float(last_month_revenue),
+            'yearly_revenue': float(yearly_revenue),
+            'monthly_recurring_revenue': float(mrr),
+            'monthly_revenues_chart': monthly_revenues,
+            
+            # Abonnements
+            'total_subscriptions': total_subscriptions,
             'active_subscriptions': active_subscriptions,
-            'pending_payments': pending_payments,
-            'unpaid_invoices': unpaid_invoices,
+            'trial_subscriptions': trial_subscriptions,
+            'cancelled_subscriptions': cancelled_subscriptions,
             'past_due_subscriptions': past_due_subscriptions,
+            'expired_subscriptions': expired_subscriptions,
+            'monthly_billing': monthly_billing,
+            'yearly_billing': yearly_billing,
+            'popular_plans': popular_plans,
+            
+            # Factures
+            'total_invoices': total_invoices,
+            'paid_invoices': paid_invoices,
+            'unpaid_invoices': unpaid_invoices,
+            'overdue_invoices': overdue_invoices,
             'unpaid_amount': float(unpaid_amount),
+            'overdue_amount': float(overdue_amount),
+            'invoice_revenue': float(invoice_revenue),
+            
+            # Paiements
+            'total_payments': total_payments,
+            'succeeded_payments': succeeded_payments,
+            'pending_payments': pending_payments,
+            'failed_payments': failed_payments,
+            'payment_methods_stats': payment_methods_stats,
+            
+            # Tenants
+            'total_tenants': total_tenants,
+            'tenants_with_subscription': tenants_with_subscription,
+            'tenants_without_subscription': tenants_without_subscription,
         })
         add_cors_headers(response, request)
         return response
@@ -1274,13 +1353,6 @@ def billing_stats(request):
         error_response = Response({
             'error': 'An error occurred while fetching billing statistics',
             'message': str(e) if settings.DEBUG else 'Unable to load billing statistics',
-            'total_revenue': 0,
-            'monthly_revenue': 0,
-            'active_subscriptions': 0,
-            'pending_payments': 0,
-            'unpaid_invoices': 0,
-            'past_due_subscriptions': 0,
-            'unpaid_amount': 0,
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         add_cors_headers(error_response, request)
         return error_response

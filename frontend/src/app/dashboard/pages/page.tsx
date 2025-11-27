@@ -6,6 +6,7 @@ import TenantLayout from '@/components/TenantLayout'
 import pageService from '@/services/page.service'
 import type { Page } from '@/services/page.service'
 import toast from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
 
 export default function PagesManagement() {
   const router = useRouter()
@@ -80,12 +81,7 @@ export default function PagesManagement() {
   if (loading) {
     return (
       <TenantLayout title="Pages" subtitle="Gestion de vos pages">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement des pages..." />
       </TenantLayout>
     )
   }

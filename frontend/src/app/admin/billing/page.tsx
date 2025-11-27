@@ -9,6 +9,8 @@ import tenantService, { Tenant } from '@/services/tenant.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import CreateSubscriptionModal from './CreateSubscriptionModal'
 import toast from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
+import FeaturesListEditor from '@/components/FeaturesListEditor'
 
 function SubscriptionRow({
   subscription,
@@ -290,7 +292,6 @@ export default function BillingPage() {
   const [unpaidItems, setUnpaidItems] = useState<any>(null)
   const [loadingUnpaid, setLoadingUnpaid] = useState(false)
   const [showCreateSubscriptionModal, setShowCreateSubscriptionModal] = useState(false)
-  const [showCreateSubscriptionModal, setShowCreateSubscriptionModal] = useState(false)
 
   // Charger les impayés automatiquement quand on change d'onglet
   useEffect(() => {
@@ -400,12 +401,7 @@ export default function BillingPage() {
   if (loading) {
     return (
       <AdminLayout title="Facturation">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement de la facturation..." />
       </AdminLayout>
     )
   }
@@ -528,25 +524,321 @@ export default function BillingPage() {
         </nav>
       </div>
 
-      {/* Overview Tab */}
+      {/* Overview Tab - Dashboard Complet */}
       {activeTab === 'overview' && stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Revenus Totaux</p>
-            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.total_revenue?.toFixed(2) || '0.00'}€</p>
+        <div className="space-y-6">
+          {/* Cartes Statistiques Principales */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Revenus Totaux */}
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm opacity-90">Revenus Totaux</p>
+                <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-3xl font-bold">{stats.total_revenue?.toFixed(2) || '0.00'}€</p>
+              {stats.yearly_revenue && stats.yearly_revenue > 0 && (
+                <p className="text-sm opacity-80 mt-1">Année en cours: {stats.yearly_revenue.toFixed(2)}€</p>
+              )}
+            </div>
+
+            {/* Revenus Mensuels */}
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm opacity-90">Revenus Ce Mois</p>
+                <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <p className="text-3xl font-bold">{stats.monthly_revenue?.toFixed(2) || '0.00'}€</p>
+              {stats.last_month_revenue && stats.last_month_revenue > 0 && (
+                <p className="text-sm opacity-80 mt-1">
+                  Mois dernier: {stats.last_month_revenue.toFixed(2)}€
+                  {stats.monthly_revenue > stats.last_month_revenue ? (
+                    <span className="ml-2">📈 +{((stats.monthly_revenue / stats.last_month_revenue - 1) * 100).toFixed(1)}%</span>
+                  ) : stats.monthly_revenue < stats.last_month_revenue ? (
+                    <span className="ml-2">📉 {((stats.monthly_revenue / stats.last_month_revenue - 1) * 100).toFixed(1)}%</span>
+                  ) : null}
+                </p>
+              )}
+            </div>
+
+            {/* MRR (Monthly Recurring Revenue) */}
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm opacity-90">Revenus Récurrents</p>
+                <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <p className="text-3xl font-bold">{stats.monthly_recurring_revenue?.toFixed(2) || '0.00'}€</p>
+              <p className="text-sm opacity-80 mt-1">MRR mensuel</p>
+            </div>
+
+            {/* Abonnements Actifs */}
+            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm opacity-90">Abonnements Actifs</p>
+                <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <p className="text-3xl font-bold">{stats.active_subscriptions || 0}</p>
+              {stats.total_subscriptions && (
+                <p className="text-sm opacity-80 mt-1">Sur {stats.total_subscriptions} au total</p>
+              )}
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Revenus Mensuels</p>
-            <p className="text-3xl font-bold text-green-600">{stats.monthly_revenue?.toFixed(2) || '0.00'}€</p>
+
+          {/* Deuxième rangée de statistiques */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Factures */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Factures</p>
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total_invoices || 0}</p>
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-green-600">✓ Payées: {stats.paid_invoices || 0}</span>
+                {' • '}
+                <span className="text-red-600">⚠ Impayées: {stats.unpaid_invoices || 0}</span>
+              </div>
+            </div>
+
+            {/* Paiements */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Paiements</p>
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total_payments || 0}</p>
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-green-600">✓ Réussis: {stats.succeeded_payments || 0}</span>
+                {' • '}
+                <span className="text-yellow-600">⏳ En attente: {stats.pending_payments || 0}</span>
+              </div>
+            </div>
+
+            {/* Tenants */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Tenants</p>
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total_tenants || 0}</p>
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-blue-600">✓ Avec abonnement: {stats.tenants_with_subscription || 0}</span>
+                {' • '}
+                <span className="text-gray-600">Sans: {stats.tenants_without_subscription || 0}</span>
+              </div>
+            </div>
+
+            {/* Montant Impayé */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-red-500">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Montant Impayé</p>
+                <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold text-red-600">{stats.unpaid_amount?.toFixed(2) || '0.00'}€</p>
+              {stats.overdue_amount && stats.overdue_amount > 0 && (
+                <p className="text-xs text-red-600 mt-1">Dont en retard: {stats.overdue_amount.toFixed(2)}€</p>
+              )}
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Abonnements Actifs</p>
-            <p className="text-3xl font-bold text-blue-600">{stats.active_subscriptions || 0}</p>
+
+          {/* Graphique des Revenus Mensuels */}
+          {stats.monthly_revenues_chart && stats.monthly_revenues_chart.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Revenus des 12 Derniers Mois</h3>
+              <div className="flex items-end justify-between space-x-2 h-64">
+                {stats.monthly_revenues_chart.map((month: any, index: number) => {
+                  const maxRevenue = Math.max(...stats.monthly_revenues_chart.map((m: any) => m.revenue || 0))
+                  const height = maxRevenue > 0 ? (month.revenue / maxRevenue) * 100 : 0
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-t relative" style={{ height: `${Math.max(height, 5)}%` }}>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t"></div>
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center transform -rotate-45 origin-top-left whitespace-nowrap">
+                        {month.label?.split(' ')[0] || month.month}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{month.revenue.toFixed(0)}€</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Plans Tarifaires les Plus Utilisés */}
+          {stats.popular_plans && stats.popular_plans.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Plans Tarifaires les Plus Utilisés</h3>
+              <div className="space-y-4">
+                {stats.popular_plans.map((plan: any, index: number) => {
+                  const percentage = stats.total_subscriptions > 0 
+                    ? (plan.subscriptions_count / stats.total_subscriptions) * 100 
+                    : 0
+                  return (
+                    <div key={plan.id || index} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">{plan.name}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{plan.subscriptions_count} abonnement{plan.subscriptions_count > 1 ? 's' : ''}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-gray-900 dark:text-gray-100">{plan.price_monthly.toFixed(2)}€/mois</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{percentage.toFixed(1)}%</p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all"
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Répartition des Modes de Paiement */}
+          {stats.payment_methods_stats && stats.payment_methods_stats.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Répartition des Modes de Paiement</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {stats.payment_methods_stats.map((pm: any, index: number) => {
+                  const methodLabels: { [key: string]: string } = {
+                    'card': '💳 Carte Bancaire',
+                    'bank_transfer': '🏦 Virement',
+                    'paypal': '🅿️ PayPal',
+                    'other': '📄 Autre',
+                  }
+                  const percentage = stats.total_payments > 0 
+                    ? (pm.count / stats.total_payments) * 100 
+                    : 0
+                  return (
+                    <div key={index} className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                      <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                        {methodLabels[pm.method] || pm.method}
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{pm.count}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {percentage.toFixed(1)}% • {pm.total_amount.toFixed(2)}€
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Répartition des Statuts d'Abonnements */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Statuts des Abonnements */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Répartition des Abonnements</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-green-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Actifs</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.active_subscriptions || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">En Trial</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.trial_subscriptions || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">En Retard</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.past_due_subscriptions || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Annulés</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.cancelled_subscriptions || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-gray-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Expirés</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.expired_subscriptions || 0}</span>
+                </div>
+              </div>
+              {stats.monthly_billing !== undefined && stats.yearly_billing !== undefined && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Cycle de facturation:</p>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Mensuel: {stats.monthly_billing}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Annuel: {stats.yearly_billing}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Statuts des Factures */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Répartition des Factures</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-green-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Payées</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.paid_invoices || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Ouvertes</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.unpaid_invoices || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-500 rounded"></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">En Retard</span>
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.overdue_invoices || 0}</span>
+                </div>
+              </div>
+              {stats.invoice_revenue && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Revenus des factures:</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.invoice_revenue.toFixed(2)}€</p>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Factures Impayées</p>
-            <p className="text-3xl font-bold text-red-600">{stats.unpaid_invoices || 0}</p>
-          </div>
+        </div>
+      )}
+
+      {/* Fallback si pas de stats */}
+      {activeTab === 'overview' && !stats && (
+        <div className="text-center py-12">
+          <p className="text-gray-600 dark:text-gray-400">Chargement des statistiques...</p>
         </div>
       )}
 
@@ -966,7 +1258,7 @@ function PricingPlansTab({
   const [editing, setEditing] = useState<number | null>(null)
   const [formData, setFormData] = useState<Partial<PricingPlan>>({})
   const [showCreate, setShowCreate] = useState(false)
-  const [featuresText, setFeaturesText] = useState('')
+  const [features, setFeatures] = useState<string[]>([])
 
   const handleCreate = () => {
     setShowCreate(true)
@@ -986,27 +1278,21 @@ function PricingPlansTab({
       is_featured: false,
       order: pricingPlans.length > 0 ? Math.max(...pricingPlans.map(p => p.order || 0)) + 1 : 0,
     })
-    setFeaturesText('')
+    setFeatures([])
   }
 
   const handleEdit = (plan: PricingPlan) => {
     setEditing(plan.id)
     setFormData(plan)
     setShowCreate(false)
-    setFeaturesText(Array.isArray(plan.features) ? plan.features.join('\n') : '')
+    setFeatures(Array.isArray(plan.features) ? plan.features : [])
   }
 
   const handleSave = async () => {
     try {
-      // Convert features text to array
-      const features = featuresText
-        .split('\n')
-        .map(f => f.trim())
-        .filter(f => f.length > 0)
-
       const dataToSave = {
         ...formData,
-        features,
+        features: features.filter(f => f.trim().length > 0),
       }
 
       // Generate slug from name if not provided
@@ -1029,7 +1315,7 @@ function PricingPlansTab({
       setEditing(null)
       setShowCreate(false)
       setFormData({})
-      setFeaturesText('')
+      setFeatures([])
       onUpdate()
     } catch (error: any) {
       toast.error(error.response?.data?.error || error.response?.data?.slug?.[0] || 'Erreur lors de la sauvegarde')
@@ -1090,14 +1376,14 @@ function PricingPlansTab({
           <PricingPlanForm
             formData={formData}
             setFormData={setFormData}
-            featuresText={featuresText}
-            setFeaturesText={setFeaturesText}
+            features={features}
+            setFeatures={setFeatures}
             onSave={handleSave}
             onCancel={() => {
               setShowCreate(false)
               setEditing(null)
               setFormData({})
-              setFeaturesText('')
+              setFeatures([])
             }}
           />
         </div>
@@ -1277,15 +1563,15 @@ function PricingPlansTab({
 function PricingPlanForm({
   formData,
   setFormData,
-  featuresText,
-  setFeaturesText,
+  features,
+  setFeatures,
   onSave,
   onCancel,
 }: {
   formData: Partial<PricingPlan>
   setFormData: (data: Partial<PricingPlan>) => void
-  featuresText: string
-  setFeaturesText: (text: string) => void
+  features: string[]
+  setFeatures: (features: string[]) => void
   onSave: () => void
   onCancel: () => void
 }) {
@@ -1413,17 +1699,11 @@ function PricingPlanForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Fonctionnalités (une par ligne)
-        </label>
-        <textarea
-          value={featuresText}
-          onChange={(e) => setFeaturesText(e.target.value)}
-          className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={5}
-          placeholder="Support prioritaire&#10;API complète&#10;Analytics avancés"
+        <FeaturesListEditor
+          features={features}
+          onChange={setFeatures}
+          placeholder="Ex: Support prioritaire, API complète, Analytics avancés..."
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Séparez chaque fonctionnalité par un saut de ligne</p>
       </div>
 
       <div className="flex items-center gap-6">

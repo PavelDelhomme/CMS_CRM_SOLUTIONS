@@ -6,11 +6,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.utils import timezone
+from api.mixins import CORSMixin
+from api.utils import add_cors_headers
 from .models import Page
 from .serializers import PageSerializer, PageListSerializer, PageContentSerializer
 
 
-class PageViewSet(viewsets.ModelViewSet):
+class PageViewSet(CORSMixin, viewsets.ModelViewSet):
     """ViewSet for managing pages"""
     permission_classes = [IsAuthenticated]
 
@@ -49,12 +51,16 @@ class PageViewSet(viewsets.ModelViewSet):
                     
                     # Serialize within tenant context
                     serializer = PageListSerializer(queryset, many=True)
-                    return Response(serializer.data)
+                    response = Response(serializer.data)
+                    add_cors_headers(response, request)
+                    return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error listing pages: {e}", exc_info=True)
-                return Response([], status=status.HTTP_200_OK)
+                response = Response([], status=status.HTTP_200_OK)
+                add_cors_headers(response, request)
+                return response
         
         # Super admin with tenant_id
         if user.is_super_admin():
@@ -65,14 +71,20 @@ class PageViewSet(viewsets.ModelViewSet):
                     with tenant_context(tenant):
                         queryset = Page.objects.all()
                         serializer = PageListSerializer(queryset, many=True)
-                        return Response(serializer.data)
+                        response = Response(serializer.data)
+                        add_cors_headers(response, request)
+                        return response
                 except Exception as e:
                     import logging
                     logger = logging.getLogger(__name__)
                     logger.error(f"Error listing pages: {e}", exc_info=True)
-                    return Response([], status=status.HTTP_200_OK)
+                    response = Response([], status=status.HTTP_200_OK)
+                    add_cors_headers(response, request)
+                    return response
         
-        return Response([], status=status.HTTP_200_OK)
+        response = Response([], status=status.HTTP_200_OK)
+        add_cors_headers(response, request)
+        return response
 
     def get_object(self):
         """Get page object within tenant context"""
@@ -119,10 +131,12 @@ class PageViewSet(viewsets.ModelViewSet):
                     import logging
                     logger = logging.getLogger(__name__)
                     logger.error(f"Validation errors: {serializer.errors}")
-                    return Response({
+                    response = Response({
                         'error': 'Erreur de validation',
                         'details': serializer.errors
                     }, status=status.HTTP_400_BAD_REQUEST)
+                    add_cors_headers(response, request)
+                    return response
                 
                 validated_data = serializer.validated_data
                 
@@ -143,7 +157,9 @@ class PageViewSet(viewsets.ModelViewSet):
                     
                     # Serialize within tenant context
                     response_serializer = PageSerializer(page)
-                    return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+                    response = Response(response_serializer.data, status=status.HTTP_201_CREATED)
+                    add_cors_headers(response, request)
+                    return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
@@ -159,24 +175,32 @@ class PageViewSet(viewsets.ModelViewSet):
                                 error_messages.extend([f"{field}: {msg}" for msg in messages])
                             else:
                                 error_messages.append(f"{field}: {messages}")
-                        return Response({
+                        response = Response({
                             'error': 'Erreur de validation',
                             'details': error_messages,
                             'fields': e.detail
                         }, status=status.HTTP_400_BAD_REQUEST)
-                    return Response({
+                        add_cors_headers(response, request)
+                        return response
+                    response = Response({
                         'error': str(e.detail) if hasattr(e.detail, '__str__') else 'Erreur de validation'
                     }, status=status.HTTP_400_BAD_REQUEST)
+                    add_cors_headers(response, request)
+                    return response
                 
-                return Response(
+                response = Response(
                     {'error': f'Erreur lors de la création: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response
 
     def update(self, request, *args, **kwargs):
         """Update a page"""
@@ -193,25 +217,33 @@ class PageViewSet(viewsets.ModelViewSet):
                     serializer = PageSerializer(instance, data=request.data, partial=partial)
                     serializer.is_valid(raise_exception=True)
                     serializer.save()
-                    return Response(serializer.data)
+                    response = Response(serializer.data)
+                    add_cors_headers(response, request)
+                    return response
             except Page.DoesNotExist:
-                return Response(
+                response = Response(
                     {'error': 'Page not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error updating page: {e}", exc_info=True)
-                return Response(
+                response = Response(
                     {'error': f'Erreur lors de la mise à jour: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response
 
     def destroy(self, request, *args, **kwargs):
         """Delete a page"""
@@ -225,25 +257,33 @@ class PageViewSet(viewsets.ModelViewSet):
                     pk = kwargs.get('pk')
                     instance = Page.objects.get(pk=pk, tenant=user.tenant)
                     instance.delete()
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    response = Response(status=status.HTTP_204_NO_CONTENT)
+                    add_cors_headers(response, request)
+                    return response
             except Page.DoesNotExist:
-                return Response(
+                response = Response(
                     {'error': 'Page not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error deleting page: {e}", exc_info=True)
-                return Response(
+                response = Response(
                     {'error': f'Erreur lors de la suppression: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response
 
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
@@ -259,25 +299,33 @@ class PageViewSet(viewsets.ModelViewSet):
                     if not page.published_at:
                         page.published_at = timezone.now()
                     page.save()
-                    return Response({'status': 'Page published'})
+                    response = Response({'status': 'Page published'})
+                    add_cors_headers(response, request)
+                    return response
             except Page.DoesNotExist:
-                return Response(
+                response = Response(
                     {'error': 'Page not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error publishing page: {e}", exc_info=True)
-                return Response(
+                response = Response(
                     {'error': f'Erreur lors de la publication: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response
 
     @action(detail=True, methods=['post'])
     def unpublish(self, request, pk=None):
@@ -291,25 +339,33 @@ class PageViewSet(viewsets.ModelViewSet):
                     page = Page.objects.get(pk=pk, tenant=user.tenant)
                     page.status = 'draft'
                     page.save()
-                    return Response({'status': 'Page unpublished'})
+                    response = Response({'status': 'Page unpublished'})
+                    add_cors_headers(response, request)
+                    return response
             except Page.DoesNotExist:
-                return Response(
+                response = Response(
                     {'error': 'Page not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error unpublishing page: {e}", exc_info=True)
-                return Response(
+                response = Response(
                     {'error': f'Erreur lors de la dépublication: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response
 
     @action(detail=True, methods=['post'])
     def set_homepage(self, request, pk=None):
@@ -329,25 +385,33 @@ class PageViewSet(viewsets.ModelViewSet):
                     page.is_homepage = True
                     page.save()
 
-                    return Response({'status': 'Page set as homepage'})
+                    response = Response({'status': 'Page set as homepage'})
+                    add_cors_headers(response, request)
+                    return response
             except Page.DoesNotExist:
-                return Response(
+                response = Response(
                     {'error': 'Page not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error setting homepage: {e}", exc_info=True)
-                return Response(
+                response = Response(
                     {'error': f'Erreur: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response
 
     @action(detail=False, methods=['get'])
     def published(self, request):
@@ -364,14 +428,20 @@ class PageViewSet(viewsets.ModelViewSet):
                         published_at__lte=timezone.now()
                     )
                     serializer = PageContentSerializer(queryset, many=True)
-                    return Response(serializer.data)
+                    response = Response(serializer.data)
+                    add_cors_headers(response, request)
+                    return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error getting published pages: {e}", exc_info=True)
-                return Response([], status=status.HTTP_200_OK)
+                response = Response([], status=status.HTTP_200_OK)
+                add_cors_headers(response, request)
+                return response
         
-        return Response([], status=status.HTTP_200_OK)
+        response = Response([], status=status.HTTP_200_OK)
+        add_cors_headers(response, request)
+        return response
 
     @action(detail=False, methods=['get'])
     def homepage(self, request):
@@ -388,22 +458,30 @@ class PageViewSet(viewsets.ModelViewSet):
                         status='published'
                     )
                     serializer = PageContentSerializer(homepage)
-                    return Response(serializer.data)
+                    response = Response(serializer.data)
+                    add_cors_headers(response, request)
+                    return response
             except Page.DoesNotExist:
-                return Response(
+                response = Response(
                     {'error': 'No homepage found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error getting homepage: {e}", exc_info=True)
-                return Response(
+                response = Response(
                     {'error': 'No homepage found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
+                add_cors_headers(response, request)
+                return response
         
-        return Response(
+        response = Response(
             {'error': 'Aucun tenant associé à votre compte'},
             status=status.HTTP_400_BAD_REQUEST
         )
+        add_cors_headers(response, request)
+        return response

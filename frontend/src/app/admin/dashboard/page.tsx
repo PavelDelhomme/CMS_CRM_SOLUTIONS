@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import api from '@/lib/api'
 import AdminLayout from '@/components/AdminLayout'
+import PageLoader from '@/components/PageLoader'
 
 interface DashboardStats {
   total_tenants: number
@@ -115,7 +116,11 @@ export default function AdminDashboard() {
   }
 
   if (loading) {
-    return <div className="p-8">Chargement...</div>
+    return (
+      <AdminLayout title="Tableau de bord" subtitle="Vue d'ensemble de la plateforme">
+        <PageLoader text="Chargement du tableau de bord..." />
+      </AdminLayout>
+    )
   }
 
   return (

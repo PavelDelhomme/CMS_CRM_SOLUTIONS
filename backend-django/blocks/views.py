@@ -6,29 +6,155 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import BlockType, BlockTemplate
-from .serializers import BlockTypeSerializer, BlockTemplateSerializer
+from api.mixins import CORSMixin
+from api.utils import add_cors_headers
+import logging
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
+
+try:
+    from .models import BlockType, BlockTemplate
+    from .serializers import BlockTypeSerializer, BlockTemplateSerializer
+    BLOCKS_MODELS_AVAILABLE = True
+except Exception as e:
+    logger.error(f"Error importing blocks models/serializers: {e}", exc_info=True)
+    BLOCKS_MODELS_AVAILABLE = False
+    BlockType = None
+    BlockTemplate = None
+    BlockTypeSerializer = None
+    BlockTemplateSerializer = None
 
 
-class BlockTypeViewSet(viewsets.ReadOnlyModelViewSet):
+class BlockTypeViewSet(CORSMixin, viewsets.ModelViewSet):
     """
-    ViewSet for BlockType (read-only for now)
-    Only active block types are returned
+    ViewSet for BlockType - Full CRUD operations
+    Super admin can manage all block types, others see only active ones
     """
-    queryset = BlockType.objects.filter(is_active=True)
     serializer_class = BlockTypeSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None  # Disable pagination - return all block types at once
 
     def get_queryset(self):
-        """Filter by category if provided"""
-        queryset = super().get_queryset()
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category)
-        return queryset.order_by('category', 'order', 'label')
+        """Get queryset with error handling"""
+        try:
+            if not BLOCKS_MODELS_AVAILABLE or BlockType is None:
+                logger.error("BlockType model is not available")
+                return BlockType.objects.none() if BlockType else []
+            
+            user = self.request.user
+            
+            # Super admin sees all block types (including inactive)
+            if hasattr(user, 'is_super_admin') and user.is_super_admin():
+                queryset = BlockType.objects.all()
+            else:
+                # Others see only active block types
+                queryset = BlockType.objects.filter(is_active=True)
+            
+            # Filter by category if provided
+            category = self.request.query_params.get('category')
+            if category:
+                queryset = queryset.filter(category=category)
+            
+            return queryset.order_by('category', 'order', 'label')
+        except Exception as e:
+            logger.error(f"Error in BlockTypeViewSet.get_queryset: {e}", exc_info=True)
+            return BlockType.objects.none() if BlockType else []
+
+    def perform_create(self, serializer):
+        """Only super admin can create block types"""
+        try:
+            user = self.request.user
+            if not (hasattr(user, 'is_super_admin') and user.is_super_admin()):
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("Only super admin can create block types")
+            serializer.save()
+        except Exception as e:
+            logger.error(f"Error in BlockTypeViewSet.perform_create: {e}", exc_info=True)
+            raise
+
+    def perform_update(self, serializer):
+        """Only super admin can update block types"""
+        try:
+            user = self.request.user
+            if not (hasattr(user, 'is_super_admin') and user.is_super_admin()):
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("Only super admin can update block types")
+            serializer.save()
+        except Exception as e:
+            logger.error(f"Error in BlockTypeViewSet.perform_update: {e}", exc_info=True)
+            raise
+
+    def perform_destroy(self, instance):
+        """Only super admin can delete block types"""
+        try:
+            user = self.request.user
+            if not (hasattr(user, 'is_super_admin') and user.is_super_admin()):
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("Only super admin can delete block types")
+            instance.delete()
+        except Exception as e:
+            logger.error(f"Error in BlockTypeViewSet.perform_destroy: {e}", exc_info=True)
+            raise
+
+    def list(self, request, *args, **kwargs):
+        """List block types with comprehensive error handling"""
+        try:
+            if not BLOCKS_MODELS_AVAILABLE or BlockType is None:
+                error_response = Response({
+                    'error': 'Block types are not available',
+                    'message': 'The blocks app is not properly configured'
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                add_cors_headers(error_response, request)
+                return error_response
+            
+            # Get queryset
+            queryset = self.get_queryset()
+            
+            # Pagination
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                response = self.get_paginated_response(serializer.data)
+            else:
+                serializer = self.get_serializer(queryset, many=True)
+                response = Response(serializer.data)
+            
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in BlockTypeViewSet.list: {e}", exc_info=True, stack_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching block types',
+                'message': str(e) if settings.DEBUG else 'Unable to load block types'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
+
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve a single block type with error handling"""
+        try:
+            if not BLOCKS_MODELS_AVAILABLE:
+                error_response = Response({
+                    'error': 'Block types are not available'
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                add_cors_headers(error_response, request)
+                return error_response
+            
+            response = super().retrieve(request, *args, **kwargs)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in BlockTypeViewSet.retrieve: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching the block type',
+                'message': str(e) if settings.DEBUG else 'Unable to load block type'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
 
-class BlockTemplateViewSet(viewsets.ModelViewSet):
+class BlockTemplateViewSet(CORSMixin, viewsets.ModelViewSet):
     """
     ViewSet for BlockTemplate
     """

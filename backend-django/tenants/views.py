@@ -83,6 +83,23 @@ class TenantViewSet(viewsets.ModelViewSet):
                     raise Http404("Tenant not found")
             raise
 
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve a tenant with error handling and CORS headers"""
+        try:
+            tenant = self.get_object()
+            serializer = self.get_serializer(tenant)
+            response = Response(serializer.data)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error retrieving tenant: {e}", exc_info=True)
+            response = Response(
+                {'error': f'Erreur lors de la récupération du tenant: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            add_cors_headers(response, request)
+            return response
+
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
         """Activate a tenant"""

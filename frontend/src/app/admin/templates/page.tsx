@@ -7,6 +7,7 @@ import AdminLayout from '@/components/AdminLayout'
 import templateService, { Template } from '@/services/template.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import toast from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
 
 export default function AdminTemplatesPage() {
   const router = useRouter()
@@ -235,12 +236,7 @@ export default function AdminTemplatesPage() {
   if (loading) {
     return (
       <AdminLayout title="Gestion des Templates">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement des templates..." />
       </AdminLayout>
     )
   }

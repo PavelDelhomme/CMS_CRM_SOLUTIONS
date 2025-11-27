@@ -7,6 +7,7 @@ import TenantLayout from '@/components/TenantLayout'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import userService, { User } from '@/services/user.service'
 import toast from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
 
 export default function TenantUsersPage() {
   const router = useRouter()
@@ -121,12 +122,7 @@ export default function TenantUsersPage() {
   if (loading) {
     return (
       <TenantLayout title="Utilisateurs">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement des utilisateurs..." />
       </TenantLayout>
     )
   }

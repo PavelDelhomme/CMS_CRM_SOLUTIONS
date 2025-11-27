@@ -136,28 +136,28 @@ export default function VisualPageEditor() {
         </div>
       }
     >
-      <div className="h-[calc(100vh-200px)] bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col">
-        {/* Page Title */}
-        <div className="border-b border-gray-200 p-4 bg-gray-50 dark:bg-gray-900">
+      <div className="fixed inset-0 top-[64px] lg:top-[73px] left-0 lg:left-64 right-0 bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden">
+        {/* Page Title - Responsive */}
+        <div className="border-b border-gray-200 p-3 sm:p-4 lg:p-5 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xl font-bold"
+            className="w-full px-3 sm:px-4 py-2 text-base sm:text-xl border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-bold"
             placeholder="Titre de la page"
           />
         </div>
 
-        {/* Block Editor */}
-        <div className="flex-1 overflow-hidden">
+        {/* Block Editor - Full Width */}
+        <div className="flex-1 overflow-hidden w-full">
           <BlockEditor blocks={blocks} onChange={setBlocks} />
         </div>
 
-        {/* SEO Panel (Collapsible) */}
-        <div className="border-t border-gray-200 p-4 bg-gray-50 dark:bg-gray-900">
+        {/* SEO Panel (Collapsible) - Responsive */}
+        <div className="border-t border-gray-200 p-3 sm:p-4 lg:p-5 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
           <details className="cursor-pointer">
-            <summary className="text-sm font-semibold text-gray-700 dark:text-gray-300">Réglages SEO et page</summary>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <summary className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Réglages SEO et page</summary>
+            <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Titre SEO</label>
                 <input

@@ -42,9 +42,18 @@ class BlocksService {
     try {
       const params = category ? { category } : {};
       const response = await api.get('/blocks/types/', { params });
-      return response.data || [];
+      // Handle paginated response
+      if (response.data && response.data.results) {
+        return response.data.results;
+      }
+      // Handle direct array response
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
     } catch (error: any) {
       console.error('Error fetching block types:', error);
+      // Don't throw, return empty array to prevent breaking the editor
       return [];
     }
   }

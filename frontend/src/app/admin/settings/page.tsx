@@ -6,6 +6,7 @@ import authService from '@/services/auth.service'
 import AdminLayout from '@/components/AdminLayout'
 import settingsService, { SystemSettings } from '@/services/settings.service'
 import toast from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -105,12 +106,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <AdminLayout title="Paramètres">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement des paramètres...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement des paramètres..." />
       </AdminLayout>
     )
   }

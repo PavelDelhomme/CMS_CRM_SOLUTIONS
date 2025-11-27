@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import AdminLayout from '@/components/AdminLayout'
 import api from '@/lib/api'
+import PageLoader from '@/components/PageLoader'
 
 interface DetailedStats {
   overview: {
@@ -165,13 +166,8 @@ export default function StatsPage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Statistiques Détaillées" subtitle="Chargement...">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement des statistiques...</p>
-          </div>
-        </div>
+      <AdminLayout title="Statistiques Détaillées" subtitle="Analyse complète de la plateforme">
+        <PageLoader text="Chargement des statistiques..." />
       </AdminLayout>
     )
   }

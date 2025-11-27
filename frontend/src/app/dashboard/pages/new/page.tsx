@@ -287,60 +287,56 @@ export default function NewPage() {
       )}
 
       {!showTemplateSelector && (
-        <>
-
-          {/* SEO Panel (Collapsible) */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">
-            <details className="cursor-pointer">
-              <summary className="text-sm font-semibold text-gray-700 dark:text-gray-300">Réglages SEO et page</summary>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Titre SEO</label>
-                  <input
-                    type="text"
-                    value={metaTitle}
-                    onChange={(e) => setMetaTitle(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                    placeholder="Titre pour les moteurs de recherche"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Description SEO</label>
-                  <input
-                    type="text"
-                    value={metaDescription}
-                    onChange={(e) => setMetaDescription(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                    placeholder="Description pour les moteurs de recherche"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as 'draft' | 'published' | 'scheduled')}
-                    className="w-full px-3 py-2 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                  >
-                    <option value="draft">Brouillon</option>
-                    <option value="published">Publié</option>
-                    <option value="scheduled">Programmé</option>
-                  </select>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="is_homepage"
-                    checked={isHomepage}
-                    onChange={(e) => setIsHomepage(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
-                  />
-                  <label htmlFor="is_homepage" className="ml-2 block text-xs text-gray-900 dark:text-gray-100">
-                    Définir comme page d'accueil
-                  </label>
-                </div>
+        <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">
+          <details className="cursor-pointer">
+            <summary className="text-sm font-semibold text-gray-700 dark:text-gray-300">Réglages SEO et page</summary>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Titre SEO</label>
+                <input
+                  type="text"
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+                  placeholder="Titre pour les moteurs de recherche"
+                />
               </div>
-            </details>
-          </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Description SEO</label>
+                <input
+                  type="text"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+                  placeholder="Description pour les moteurs de recherche"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as 'draft' | 'published' | 'scheduled')}
+                  className="w-full px-3 py-2 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+                >
+                  <option value="draft">Brouillon</option>
+                  <option value="published">Publié</option>
+                  <option value="scheduled">Programmé</option>
+                </select>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_homepage"
+                  checked={isHomepage}
+                  onChange={(e) => setIsHomepage(e.target.checked)}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
+                />
+                <label htmlFor="is_homepage" className="ml-2 block text-xs text-gray-900 dark:text-gray-100">
+                  Définir comme page d'accueil
+                </label>
+              </div>
+            </div>
+          </details>
         </div>
       )}
     </TenantLayout>

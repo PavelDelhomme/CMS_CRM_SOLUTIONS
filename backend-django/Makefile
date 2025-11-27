@@ -1,4 +1,4 @@
-.PHONY: help install setup start stop restart build logs clean migrate superuser shell test lint format up
+.PHONY: help install setup start stop restart build logs clean migrate superuser shell test lint format up test-subscriptions-internal test-payments-internal test-invoices-internal test-pricing-plans-internal test-trial-status test-trial-create test-trial-activate test-trial-expire test-trial-advance
 
 # Variables
 DOCKER_COMPOSE = docker-compose -f ../docker-compose.simple.yml
@@ -66,6 +66,69 @@ demo-tenant: ## Créer un tenant de démonstration
 	@$(DOCKER_COMPOSE) up -d postgres redis backend
 	@sleep 5
 	@./create-demo-simple.sh
+
+##@ Tests Billing (Trials, Abonnements)
+
+test-trial-status: ## Afficher le statut de tous les abonnements trial
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📊 Statut des Abonnements Trial$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py test_trial --action=status
+
+test-trial-create: ## Créer un abonnement trial (usage: make test-trial-create TENANT_ID=1 PLAN_ID=1 DAYS=14)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🧪 Création d'un Abonnement Trial$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@if [ -z "$(TENANT_ID)" ] || [ -z "$(PLAN_ID)" ]; then \
+		echo "$(RED)❌ Usage: make test-trial-create TENANT_ID=1 PLAN_ID=1 DAYS=14$(NC)"; \
+		echo "$(YELLOW)💡 List tenants: make test-trial-status$(NC)"; \
+	else \
+		docker exec $(BACKEND_CONTAINER) python manage.py test_trial --action=create \
+			--tenant-id=$(TENANT_ID) --plan-id=$(PLAN_ID) --trial-days=$(or $(DAYS),14); \
+	fi
+
+test-trial-activate: ## Activer un abonnement trial (usage: make test-trial-activate TENANT_ID=1)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🔄 Activation d'un Abonnement Trial$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@if [ -z "$(TENANT_ID)" ]; then \
+		echo "$(RED)❌ Usage: make test-trial-activate TENANT_ID=1$(NC)"; \
+		echo "$(YELLOW)💡 Ou utilisez --all pour tous activer$(NC)"; \
+	else \
+		docker exec $(BACKEND_CONTAINER) python manage.py test_trial --action=activate --tenant-id=$(TENANT_ID); \
+	fi
+
+test-trial-expire: ## Expirer un abonnement trial (usage: make test-trial-expire TENANT_ID=1)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)⏰ Expiration d'un Abonnement Trial$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@if [ -z "$(TENANT_ID)" ]; then \
+		echo "$(RED)❌ Usage: make test-trial-expire TENANT_ID=1$(NC)"; \
+		echo "$(YELLOW)💡 Ou utilisez --all pour tous expirer$(NC)"; \
+	else \
+		docker exec $(BACKEND_CONTAINER) python manage.py test_trial --action=expire --tenant-id=$(TENANT_ID); \
+	fi
+
+test-trial-advance: ## Avancer le temps pour simuler l'expiration (usage: make test-trial-advance DAYS=15)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)⏰ Simulation de l'Avancement du Temps$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@if [ -z "$(DAYS)" ]; then \
+		echo "$(RED)❌ Usage: make test-trial-advance DAYS=15$(NC)"; \
+		echo "$(YELLOW)💡 Cela avance le temps de X jours pour simuler l'expiration$(NC)"; \
+	else \
+		docker exec $(BACKEND_CONTAINER) python manage.py test_trial --action=advance-time --days-advance=$(DAYS); \
+	fi
 
 ##@ Gestion des Services
 
@@ -159,6 +222,28 @@ test: ## Exécuter les tests avec pytest
 	@sleep 5
 	@docker exec $(BACKEND_CONTAINER) pytest --verbose --tb=short -v
 	@echo "$(GREEN)✅ Tests terminés !$(NC)"
+
+##@ Tests Billing spécifiques
+
+test-subscriptions-internal: ## Tester les abonnements (interne)
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) pytest billing/tests/test_models.py::TestSubscription billing/tests/test_views.py::TestSubscriptionViewSet -v --tb=short
+
+test-payments-internal: ## Tester les paiements (interne)
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) pytest billing/tests/test_models.py::TestPayment -v --tb=short
+
+test-invoices-internal: ## Tester les factures (interne)
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) pytest billing/tests/test_models.py::TestInvoice -v --tb=short
+
+test-pricing-plans-internal: ## Tester les plans tarifaires (interne)
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) pytest billing/tests/test_models.py::TestPricingPlan billing/tests/test_views.py::TestPricingPlanViewSet -v --tb=short
 
 test-coverage: ## Exécuter les tests avec couverture
 	@echo "$(GREEN)📊 Exécution des tests avec couverture...$(NC)"

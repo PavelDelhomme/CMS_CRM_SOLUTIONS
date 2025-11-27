@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import TenantLayout from '@/components/TenantLayout'
+import PageLoader from '@/components/PageLoader'
 
 export default function TenantDashboard() {
   const router = useRouter()
@@ -21,12 +22,7 @@ export default function TenantDashboard() {
   if (!user) {
     return (
       <TenantLayout title="Dashboard">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement du dashboard..." />
       </TenantLayout>
     )
   }

@@ -7,6 +7,8 @@ import AdminLayout from '@/components/AdminLayout'
 import userService, { User } from '@/services/user.service'
 import tenantService from '@/services/tenant.service'
 import { toast } from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function EditUserPage() {
   const router = useRouter()
@@ -179,13 +181,8 @@ export default function EditUserPage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Édition Utilisateur" subtitle="Chargement...">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
-          </div>
-        </div>
+      <AdminLayout title="Édition Utilisateur" subtitle="Modifier les informations de l'utilisateur">
+        <PageLoader text="Chargement de l'utilisateur..." />
       </AdminLayout>
     )
   }
@@ -336,8 +333,10 @@ export default function EditUserPage() {
                     }
                   }}
                   disabled={formData.role === 'super-admin'}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    formData.role === 'super-admin' ? 'bg-gray-100 dark:bg-gray-900 cursor-not-allowed' : ''
+                  className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formData.role === 'super-admin' 
+                      ? 'bg-gray-100 dark:bg-gray-900 dark:text-gray-400 cursor-not-allowed' 
+                      : 'dark:bg-gray-700 dark:text-gray-100'
                   }`}
                 >
                   <option value="">Aucun tenant</option>

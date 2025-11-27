@@ -566,6 +566,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ Protection contre les erreurs undefined/null
 - ✅ **Service Stripe frontend (2025-11-27)** - Composant StripeCheckout créé
 - ✅ **Service blocs frontend (2025-11-27)** - blocks.service.ts pour gestion BlockType/BlockTemplate
+- ✅ **Éditeur visuel WordPress amélioré (2025-01-XX)** - Design moderne, prévisualisation interactive, drag & drop, système de colonnes, responsive complet, largeur pleine écran
 
 #### Configuration
 - ✅ Ports remappés sur 9494+ (frontend: 9494, backend: 9495)
@@ -845,7 +846,7 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 - **Backend** : ~90% ✅ (améliorations gestion erreurs, templates HTML/CSS)
 - **Frontend Super Admin** : ~95% ✅ (stats, templates, settings fonctionnels)
-- **Frontend Tenant Admin** : ~75% ✅ (améliorations UX)
+- **Frontend Tenant Admin** : ~85% ✅ (éditeur WordPress amélioré, design moderne, responsive complet)
 - **Frontend Public** : ~10% ⏳
 - **Routing Multi-Tenant** : ~30% ⏳
 - **Documentation** : ~98% ✅ (STATUS.md à jour, tests documentés)
@@ -856,7 +857,7 @@ cd frontend && npm install  # Installer Jest et dépendances
 ## 🔄 Dernière Mise à Jour
 
 **Date** : 2025-01-XX  
-**Focus Actuel** : Améliorations interface admin, création de pages et système de blocs
+**Focus Actuel** : Améliorations éditeur de site public - Design moderne et fonctionnalités WordPress-like
 
 **Statut actuel** :
 - ✅ Toutes les corrections CORS et 500 sont terminées (dashboard, tenants, users, billing, templates, settings)
@@ -866,6 +867,10 @@ cd frontend && npm install  # Installer Jest et dépendances
 - ✅ Création d'abonnement corrigée (erreur 500 résolue)
 - ✅ Système de création de pages amélioré avec sélection de templates
 - ✅ Nouveaux types de blocs ajoutés (galerie, liste, citation, accordéon, etc.)
+- ✅ **Éditeur de site public complètement amélioré** - Design moderne, prévisualisation interactive, système de colonnes
+- ✅ **Design visuel modernisé** - Gradients, ombres, icônes SVG, messages colorés
+- ✅ **Responsive complet** - Drawers sur mobile, adaptation tablette/desktop
+- ✅ **Largeur pleine écran** - Éditeur utilise toute la largeur disponible
 - ✅ Gestion erreurs ERR_BLOCKED_BY_CLIENT (bloqueurs de publicité) avec avertissements console
 - ✅ CORS headers garantis sur tous les endpoints MediaViewSet même en cas d'erreur
 - ⏳ **Tests complets de l'interface en cours** - Voir checklist ci-dessus
@@ -1033,6 +1038,23 @@ cd frontend && npm install  # Installer Jest et dépendances
      - CORS headers garantis même en cas d'exception dans tous les endpoints MediaViewSet
      - Correction d'indentation dans les blocs `except` pour assurer l'appel de `add_cors_headers`
      - Logging amélioré des erreurs pour débogage
+2. ✅ **Amélioration Systématique CORS - Utilitaires Globaux**
+   - **Fonction Utilitaire Globale (`backend-django/api/utils.py`)** :
+     - Création de `add_cors_headers(response, request)` comme fonction utilitaire centralisée
+     - Utilisable dans tous les ViewSets et views de l'application
+   - **Mixin CORS (`backend-django/api/mixins.py`)** :
+     - Création du mixin `CORSMixin` qui surcharge `finalize_response()` pour ajouter automatiquement les headers CORS à toutes les réponses
+     - Appliqué aux ViewSets suivants :
+       - ✅ `PageViewSet` (`backend-django/pages/views.py`)
+       - ✅ `ServiceViewSet` (`backend-django/services/views.py`)
+       - ✅ `BookingViewSet` (`backend-django/bookings/views.py`)
+       - ✅ `BlockTypeViewSet` (`backend-django/blocks/views.py`)
+       - ✅ `BlockTemplateViewSet` (`backend-django/blocks/views.py`)
+   - **Avantages** :
+     - Headers CORS automatiquement appliqués à toutes les réponses (succès et erreurs)
+     - Code plus propre et maintenable
+     - Réduction du code dupliqué
+     - Protection contre les erreurs CORS même si un endpoint oublie d'ajouter les headers manuellement
 
 ### 📝 Modifications Récentes (2025-11-27)
 

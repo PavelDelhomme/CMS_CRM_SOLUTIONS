@@ -12,6 +12,7 @@ import toast from 'react-hot-toast'
 import PublicHeader from '@/components/PublicHeader'
 import PublicFooter from '@/components/PublicFooter'
 import { isTenantSubdomain } from '@/lib/tenant-utils'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const registerSchema = z.object({
   tenant_name: z.string().min(3, 'Le nom de votre entreprise doit contenir au moins 3 caractères'),
@@ -31,6 +32,7 @@ type RegisterForm = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { resolvedTheme } = useTheme()
   const [loading, setLoading] = useState(false)
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null)
@@ -130,9 +132,25 @@ export default function RegisterPage() {
 
   const selectedPlanSlug = watch('plan_slug')
 
+  // Get plan from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const planSlug = params.get('plan')
+    if (planSlug && pricingPlans.length > 0) {
+      const plan = pricingPlans.find(p => p.slug === planSlug)
+      if (plan) {
+        handlePlanSelect(plan)
+      }
+    }
+  }, [pricingPlans])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <PublicHeader />
+    <div className={`min-h-screen transition-colors duration-300 ${
+      resolvedTheme === 'dark' 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+        : 'bg-gradient-to-br from-gray-50 to-gray-100'
+    }`}>
+      <PublicHeader showThemeToggle={true} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
@@ -146,7 +164,9 @@ export default function RegisterPage() {
 
         {/* Billing Cycle Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-1 shadow-md inline-flex">
+          <div className={`rounded-lg p-1 shadow-md inline-flex ${
+            resolvedTheme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          }`}>
             <button
               type="button"
               onClick={() => {
@@ -156,7 +176,9 @@ export default function RegisterPage() {
               className={`px-6 py-2 rounded-md font-medium transition-colors ${
                 billingCycle === 'monthly'
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 dark:text-gray-300 hover:text-gray-900'
+                  : resolvedTheme === 'dark'
+                  ? 'text-gray-300 hover:text-white'
+                  : 'text-gray-700 hover:text-gray-900'
               }`}
             >
               Mensuel
@@ -170,11 +192,17 @@ export default function RegisterPage() {
               className={`px-6 py-2 rounded-md font-medium transition-colors ${
                 billingCycle === 'yearly'
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 dark:text-gray-300 hover:text-gray-900'
+                  : resolvedTheme === 'dark'
+                  ? 'text-gray-300 hover:text-white'
+                  : 'text-gray-700 hover:text-gray-900'
               }`}
             >
               Annuel
-              <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">
+              <span className={`ml-2 text-xs px-2 py-0.5 rounded ${
+                resolvedTheme === 'dark'
+                  ? 'bg-green-900 text-green-200'
+                  : 'bg-green-100 text-green-800'
+              }`}>
                 -20%
               </span>
             </button>
@@ -196,12 +224,14 @@ export default function RegisterPage() {
                   <div
                     key={plan.id}
                     onClick={() => handlePlanSelect(plan)}
-                    className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 cursor-pointer transition-all border-2 ${
+                    className={`rounded-xl shadow-lg p-6 cursor-pointer transition-all border-2 ${
+                      resolvedTheme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                    } ${
                       isSelected
-                        ? 'border-blue-500 ring-2 ring-blue-200'
+                        ? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800'
                         : plan.is_featured
-                        ? 'border-blue-300'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? resolvedTheme === 'dark' ? 'border-blue-600' : 'border-blue-300'
+                        : resolvedTheme === 'dark' ? 'border-gray-700 hover:border-gray-600' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     {plan.is_featured && (
@@ -249,7 +279,11 @@ export default function RegisterPage() {
                     </ul>
 
                     {isSelected && (
-                      <div className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium text-center">
+                      <div className={`px-3 py-2 rounded-lg text-sm font-medium text-center ${
+                        resolvedTheme === 'dark'
+                          ? 'bg-blue-900/50 text-blue-200'
+                          : 'bg-blue-50 text-blue-700'
+                      }`}>
                         ✓ Plan sélectionné
                       </div>
                     )}
@@ -259,12 +293,20 @@ export default function RegisterPage() {
             </div>
 
             {selectedPlan && (
-              <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className={`mt-6 rounded-lg p-4 border ${
+                resolvedTheme === 'dark'
+                  ? 'bg-blue-900/30 border-blue-800'
+                  : 'bg-blue-50 border-blue-200'
+              }`}>
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`h-5 w-5 mr-2 ${
+                    resolvedTheme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+                  }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-sm text-blue-800">
+                  <p className={`text-sm ${
+                    resolvedTheme === 'dark' ? 'text-blue-200' : 'text-blue-800'
+                  }`}>
                     <strong>Essai gratuit de 14 jours</strong> - Aucune carte bancaire requise. Vous pouvez annuler à tout moment.
                   </p>
                 </div>
@@ -285,7 +327,11 @@ export default function RegisterPage() {
                   <input
                     {...register('tenant_name')}
                     type="text"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      resolvedTheme === 'dark'
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'border-gray-300 bg-white text-gray-900'
+                    }`}
                     placeholder="Ma Société VTC"
                   />
                   {errors.tenant_name && (
@@ -300,7 +346,11 @@ export default function RegisterPage() {
                   <input
                     {...register('email')}
                     type="email"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      resolvedTheme === 'dark'
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'border-gray-300 bg-white text-gray-900'
+                    }`}
                     placeholder="votre@email.com"
                   />
                   {errors.email && (
@@ -316,7 +366,11 @@ export default function RegisterPage() {
                     <input
                       {...register('first_name')}
                       type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        resolvedTheme === 'dark'
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                          : 'border-gray-300 bg-white text-gray-900'
+                      }`}
                     />
                   </div>
                   <div>
@@ -326,7 +380,11 @@ export default function RegisterPage() {
                     <input
                       {...register('last_name')}
                       type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        resolvedTheme === 'dark'
+                          ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                          : 'border-gray-300 bg-white text-gray-900'
+                      }`}
                     />
                   </div>
                 </div>
@@ -338,7 +396,11 @@ export default function RegisterPage() {
                   <input
                     {...register('password')}
                     type="password"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      resolvedTheme === 'dark'
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'border-gray-300 bg-white text-gray-900'
+                    }`}
                     placeholder="••••••••"
                   />
                   {errors.password && (
@@ -353,7 +415,11 @@ export default function RegisterPage() {
                   <input
                     {...register('password_confirm')}
                     type="password"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      resolvedTheme === 'dark'
+                        ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
+                        : 'border-gray-300 bg-white text-gray-900'
+                    }`}
                     placeholder="••••••••"
                   />
                   {errors.password_confirm && (
@@ -362,15 +428,21 @@ export default function RegisterPage() {
                 </div>
 
                 {errors.plan_slug && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-sm text-red-600">{errors.plan_slug.message}</p>
+                  <div className={`border rounded-lg p-3 ${
+                    resolvedTheme === 'dark'
+                      ? 'bg-red-900/30 border-red-800'
+                      : 'bg-red-50 border-red-200'
+                  }`}>
+                    <p className={`text-sm ${
+                      resolvedTheme === 'dark' ? 'text-red-300' : 'text-red-600'
+                    }`}>{errors.plan_slug.message}</p>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading || !selectedPlan}
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                 >
                   {loading ? 'Création en cours...' : '🚀 Démarrer mon essai gratuit'}
                 </button>

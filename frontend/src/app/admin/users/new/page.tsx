@@ -280,8 +280,10 @@ export default function NewUserPage() {
                 disabled={formData.role === 'super-admin'}
                 value={formData.tenant_id || ''}
                 onChange={(e) => setFormData({ ...formData, tenant_id: e.target.value ? parseInt(e.target.value) : null })}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  formData.role === 'super-admin' ? 'bg-gray-100 dark:bg-gray-900 cursor-not-allowed' : ''
+                className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  formData.role === 'super-admin' 
+                    ? 'bg-gray-100 dark:bg-gray-900 dark:text-gray-400 cursor-not-allowed' 
+                    : 'dark:bg-gray-700 dark:text-gray-100'
                 }`}
               >
                 <option value="">Sélectionner un tenant</option>

@@ -11,6 +11,8 @@ import toast from 'react-hot-toast'
 import TenantBillingTab from './TenantBillingTab'
 import TenantSiteTab from './TenantSiteTab'
 import TenantSettingsTab from './TenantSettingsTab'
+import PageLoader from '@/components/PageLoader'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 function AdminDebugSection({ tenantId }: { tenantId: number }) {
   const [adminInfo, setAdminInfo] = useState<any>(null)
@@ -58,7 +60,7 @@ function AdminDebugSection({ tenantId }: { tenantId: number }) {
   if (loading) {
     return (
       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
-        <p className="text-yellow-800 dark:text-yellow-200">Chargement des informations admin...</p>
+        <LoadingSpinner size="sm" text="Chargement des informations admin..." />
       </div>
     )
   }
@@ -291,12 +293,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
   if (loading) {
     return (
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement des utilisateurs...</p>
-          </div>
-        </div>
+        <PageLoader text="Chargement des utilisateurs..." />
       </div>
     )
   }
@@ -500,11 +497,9 @@ export default function TenantDetailPage() {
     return (
       <AdminLayout
         title="Détails du Tenant"
-        subtitle="Chargement..."
+        subtitle="Informations du tenant"
       >
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
+        <PageLoader text="Chargement des détails du tenant..." />
       </AdminLayout>
     )
   }

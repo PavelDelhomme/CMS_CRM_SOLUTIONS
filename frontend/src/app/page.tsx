@@ -9,6 +9,9 @@ import PublicHeader from '@/components/PublicHeader'
 import PublicFooter from '@/components/PublicFooter'
 import { isTenantSubdomain } from '@/lib/tenant-utils'
 import pageService, { Page } from '@/services/page.service'
+import settingsService, { SystemSettings } from '@/services/settings.service'
+import MaintenancePage from '@/components/MaintenancePage'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function HomePage() {
   const router = useRouter()
@@ -16,17 +19,41 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [isTenantDomain, setIsTenantDomain] = useState(false)
   const [tenantPage, setTenantPage] = useState<Page | null>(null)
+  const [systemSettings, setSystemSettings] = useState<SystemSettings | null>(null)
+  const [checkingMaintenance, setCheckingMaintenance] = useState(true)
 
   useEffect(() => {
-    // Check if we're on a tenant subdomain
-    if (isTenantSubdomain()) {
+    // Check maintenance mode first (only for public homepage, not tenant domains)
+    if (!isTenantSubdomain()) {
+      checkMaintenanceMode()
+    } else {
       setIsTenantDomain(true)
       loadTenantHomePage()
-    } else {
-      // Load pricing plans for VTCBuilder landing page
-      loadPricingPlans()
     }
   }, [])
+
+  const checkMaintenanceMode = async () => {
+    try {
+      const settings = await settingsService.getSettings()
+      setSystemSettings(settings)
+      
+      // If maintenance mode is enabled, don't load other content
+      if (settings.maintenance_mode) {
+        setLoading(false)
+        setCheckingMaintenance(false)
+        return
+      }
+      
+      // If not in maintenance, load pricing plans
+      loadPricingPlans()
+    } catch (error) {
+      console.error('Erreur vérification mode maintenance:', error)
+      // Continue loading if error
+      loadPricingPlans()
+    } finally {
+      setCheckingMaintenance(false)
+    }
+  }
 
   const loadTenantHomePage = async () => {
     try {
@@ -56,6 +83,33 @@ export default function HomePage() {
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
+  }
+
+  // Show loading while checking maintenance mode
+  if (!isTenantDomain && checkingMaintenance) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Chargement...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Check maintenance mode before showing landing page
+  // Allow admins to bypass maintenance mode
+  const isAdmin = authService.isSuperAdmin()
+  const isMaintenanceMode = systemSettings?.maintenance_mode && !isAdmin
+
+  // Show maintenance page if maintenance mode is enabled (and user is not admin)
+  if (!isTenantDomain && isMaintenanceMode) {
+    return (
+      <MaintenancePage
+        message={systemSettings?.maintenance_message || 'Le site est actuellement en maintenance. Nous serons de retour très bientôt !'}
+        siteName={systemSettings?.site_name || 'VTCBuilder'}
+      />
+    )
   }
 
   // If on tenant subdomain, show tenant public site
@@ -188,14 +242,30 @@ export default function HomePage() {
   }
 
   // VTCBuilder landing page (for localhost:9494)
+  return <PublicHomePageContent pricingPlans={pricingPlans} loading={loading} />
+}
+
+function PublicHomePageContent({ pricingPlans, loading }: { pricingPlans: PricingPlan[]; loading: boolean }) {
+  const { resolvedTheme, toggleTheme } = useTheme()
+  
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      resolvedTheme === 'dark' 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+        : 'bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500'
+    }`}>
       {/* Header */}
-      <PublicHeader />
+      <PublicHeader showThemeToggle={true} />
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6">
+        <h1 className={`text-4xl md:text-6xl font-extrabold mb-6 ${
+          resolvedTheme === 'dark' ? 'text-white' : 'text-white'
+        }`}>
           Le WordPress des Chauffeurs VTC
         </h1>
         <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
@@ -204,13 +274,21 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/register"
-            className="bg-white dark:bg-gray-800 text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-colors shadow-xl"
+            className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
+              resolvedTheme === 'dark'
+                ? 'bg-white text-gray-900 hover:bg-gray-100'
+                : 'bg-white text-blue-600 hover:bg-blue-50'
+            }`}
           >
             🚀 Démarrer gratuitement
           </Link>
           <Link
             href="#pricing"
-            className="bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white/30 transition-colors border border-white/30"
+            className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors ${
+              resolvedTheme === 'dark'
+                ? 'bg-gray-800/80 backdrop-blur-md text-white hover:bg-gray-800 border border-gray-700'
+                : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30'
+            }`}
           >
             Voir les tarifs
           </Link>
@@ -340,8 +418,8 @@ export default function HomePage() {
                     href={`/register?plan=${plan.slug}`}
                     className={`block w-full text-center py-3 rounded-lg font-bold transition-colors ${
                       plan.is_featured
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-200 text-gray-900 dark:text-gray-100 hover:bg-gray-300'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
                     }`}
                   >
                     Choisir {plan.name}
@@ -364,7 +442,11 @@ export default function HomePage() {
           </p>
           <Link
             href="/register"
-            className="inline-block bg-white dark:bg-gray-800 text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-colors shadow-xl"
+            className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
+              resolvedTheme === 'dark'
+                ? 'bg-white text-gray-900 hover:bg-gray-100'
+                : 'bg-white text-blue-600 hover:bg-blue-50'
+            }`}
           >
             🚀 Créer mon compte gratuitement
           </Link>

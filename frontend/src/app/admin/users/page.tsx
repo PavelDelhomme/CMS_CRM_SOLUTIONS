@@ -7,6 +7,8 @@ import AdminLayout from '@/components/AdminLayout'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import userService, { User } from '@/services/user.service'
 import toast from 'react-hot-toast'
+import PageLoader from '@/components/PageLoader'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 
 export default function UsersPage() {
@@ -14,6 +16,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [actionLoading, setActionLoading] = useState<{ [key: number]: string }>({})
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -36,48 +39,60 @@ export default function UsersPage() {
   }
 
   const handleActivate = async (id: number) => {
+    setActionLoading({ ...actionLoading, [id]: 'activate' })
     try {
       await userService.activate(id)
       toast.success('Utilisateur activé')
-      loadUsers()
+      await loadUsers()
     } catch (error) {
       console.error('Erreur activation:', error)
       toast.error('Erreur lors de l\'activation')
+    } finally {
+      setActionLoading({ ...actionLoading, [id]: '' })
     }
   }
 
   const handleDeactivate = async (id: number) => {
     if (!confirm('Êtes-vous sûr de vouloir désactiver cet utilisateur ?')) return
+    setActionLoading({ ...actionLoading, [id]: 'deactivate' })
     try {
       await userService.deactivate(id)
       toast.success('Utilisateur désactivé')
-      loadUsers()
+      await loadUsers()
     } catch (error) {
       console.error('Erreur désactivation:', error)
       toast.error('Erreur lors de la désactivation')
+    } finally {
+      setActionLoading({ ...actionLoading, [id]: '' })
     }
   }
 
   const handleSuspend = async (id: number) => {
     if (!confirm('Êtes-vous sûr de vouloir suspendre cet utilisateur ?')) return
+    setActionLoading({ ...actionLoading, [id]: 'suspend' })
     try {
       await userService.suspend(id)
       toast.success('Utilisateur suspendu')
-      loadUsers()
+      await loadUsers()
     } catch (error) {
       console.error('Erreur suspension:', error)
       toast.error('Erreur lors de la suspension')
+    } finally {
+      setActionLoading({ ...actionLoading, [id]: '' })
     }
   }
 
   const handlePasswordReset = async (id: number, email: string) => {
     if (!confirm(`Envoyer un email de réinitialisation de mot de passe à ${email} ?`)) return
+    setActionLoading({ ...actionLoading, [id]: 'password-reset' })
     try {
       const result = await userService.sendPasswordReset(id)
       toast.success(result.message || 'Email de réinitialisation envoyé avec succès !')
     } catch (error: any) {
       console.error('Erreur envoi reset password:', error)
       toast.error(error.response?.data?.error || 'Erreur lors de l\'envoi de l\'email')
+    } finally {
+      setActionLoading({ ...actionLoading, [id]: '' })
     }
   }
 
@@ -86,6 +101,7 @@ export default function UsersPage() {
       return
     }
     
+    setActionLoading({ ...actionLoading, [id]: 'impersonate' })
     try {
       const result = await userService.impersonate(id)
       
@@ -110,6 +126,7 @@ export default function UsersPage() {
     } catch (error: any) {
       console.error('Erreur impersonnification:', error)
       toast.error(error.response?.data?.error || 'Erreur lors de l\'impersonnification')
+      setActionLoading({ ...actionLoading, [id]: '' })
     }
   }
 
@@ -127,13 +144,16 @@ export default function UsersPage() {
       return
     }
     
+    setActionLoading({ ...actionLoading, [id]: 'delete' })
     try {
       await userService.delete(id)
       toast.success('Utilisateur supprimé avec succès')
-      loadUsers()
+      await loadUsers()
     } catch (error: any) {
       console.error('Erreur suppression:', error)
       toast.error(error.response?.data?.error || 'Erreur lors de la suppression. Impossible de supprimer un super-admin.')
+    } finally {
+      setActionLoading({ ...actionLoading, [id]: '' })
     }
   }
 
@@ -168,8 +188,8 @@ export default function UsersPage() {
 
   if (loading) {
     return (
-      <AdminLayout title="Gestion des Utilisateurs" subtitle="Chargement...">
-        <p>Chargement...</p>
+      <AdminLayout title="Gestion des Utilisateurs" subtitle="Gérez tous les utilisateurs de la plateforme">
+        <PageLoader text="Chargement des utilisateurs..." />
       </AdminLayout>
     )
   }

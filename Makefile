@@ -1,4 +1,4 @@
-.PHONY: help install setup start stop restart build logs clean migrate migrations migrate-fresh superuser shell dbshell collectstatic test lint format logs-backend logs-db logs-redis npm-install npm-build npm-dev npm bash-backend bash-frontend db-cli
+.PHONY: help install setup start stop restart build logs clean migrate migrations migrate-fresh superuser shell dbshell collectstatic test lint format logs-backend logs-db logs-redis npm-install npm-build npm-dev npm bash-backend bash-frontend db-cli test-billing test-subscriptions test-payments test-invoices test-pricing-plans test-trial-status test-trial-create test-trial-activate test-trial-expire test-trial-advance
 
 # Variables
 DOCKER_COMPOSE = docker-compose
@@ -177,6 +177,56 @@ test-coverage: ## Exécuter les tests avec couverture de code
 	@cd backend-django && $(MAKE) test-coverage
 	@cd frontend && npm test -- --coverage --passWithNoTests
 	@echo "$(GREEN)✅ Rapports de couverture générés !$(NC)"
+
+##@ Tests Billing (Abonnements, Paiements, Factures)
+
+test-billing: test-subscriptions test-payments test-invoices ## Exécuter tous les tests de facturation
+	@echo "$(GREEN)✅ Tous les tests de facturation terminés !$(NC)"
+
+test-subscriptions: ## Tester les abonnements (subscriptions)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🧪 Tests des Abonnements (Subscriptions)$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@cd backend-django && $(MAKE) test-subscriptions-internal
+	@echo "$(GREEN)✅ Tests des abonnements terminés !$(NC)"
+
+test-payments: ## Tester les paiements (payments)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🧪 Tests des Paiements (Payments)$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@cd backend-django && $(MAKE) test-payments-internal
+	@echo "$(GREEN)✅ Tests des paiements terminés !$(NC)"
+
+test-invoices: ## Tester les factures (invoices)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🧪 Tests des Factures (Invoices)$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@cd backend-django && $(MAKE) test-invoices-internal
+	@echo "$(GREEN)✅ Tests des factures terminés !$(NC)"
+
+test-pricing-plans: ## Tester les plans tarifaires (pricing plans)
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)🧪 Tests des Plans Tarifaires (Pricing Plans)$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@cd backend-django && $(MAKE) test-pricing-plans-internal
+	@echo "$(GREEN)✅ Tests des plans tarifaires terminés !$(NC)"
+
+##@ Tests Trial (Abonnements d'essai)
+
+test-trial-status: ## Afficher le statut de tous les abonnements trial
+	@cd backend-django && $(MAKE) test-trial-status
+
+test-trial-create: ## Créer un abonnement trial (usage: make test-trial-create TENANT_ID=1 PLAN_ID=1 DAYS=14)
+	@cd backend-django && $(MAKE) test-trial-create TENANT_ID=$(TENANT_ID) PLAN_ID=$(PLAN_ID) DAYS=$(DAYS)
+
+test-trial-activate: ## Activer un abonnement trial (usage: make test-trial-activate TENANT_ID=1)
+	@cd backend-django && $(MAKE) test-trial-activate TENANT_ID=$(TENANT_ID)
+
+test-trial-expire: ## Expirer un abonnement trial (usage: make test-trial-expire TENANT_ID=1)
+	@cd backend-django && $(MAKE) test-trial-expire TENANT_ID=$(TENANT_ID)
+
+test-trial-advance: ## Avancer le temps pour simuler l'expiration (usage: make test-trial-advance DAYS=15)
+	@cd backend-django && $(MAKE) test-trial-advance DAYS=$(DAYS)
 
 lint: ## Vérification du code avec flake8
 	@cd backend-django && $(MAKE) lint

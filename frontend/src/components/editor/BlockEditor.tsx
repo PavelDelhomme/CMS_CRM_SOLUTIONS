@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import blocksService, { BlockType } from '@/services/blocks.service'
+import BlockPreview from './BlockPreview'
 
 export interface Block {
   id: string
@@ -12,7 +13,11 @@ export interface Block {
   data: Record<string, any>
   styles?: Record<string, any>
   children?: Block[]
+  layout?: 'full' | 'half' | 'third' | 'two-thirds' | 'quarter' | 'three-quarters'
+  container?: 'container' | 'container-fluid' | 'none'
 }
+
+type ViewMode = 'editor' | 'preview'
 
 interface BlockEditorProps {
   blocks: Block[]
@@ -23,6 +28,9 @@ interface BlockEditorProps {
 export default function BlockEditor({ blocks, onChange, availableBlockTypes }: BlockEditorProps) {
   const [blockTypes, setBlockTypes] = useState<BlockType[]>([])
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<ViewMode>('editor')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [propertiesOpen, setPropertiesOpen] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -62,6 +70,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       type: blockType.name,
       data: {},
       styles: blockType.default_styles || {},
+      layout: 'full',
+      container: 'container',
     }
     onChange([...blocks, newBlock])
   }
@@ -78,15 +88,103 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     )
   }
 
+
   return (
-    <div className="flex h-full">
-      {/* Sidebar - Block Palette with Categories */}
-      <div className="w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 overflow-y-auto">
+    <div className="flex h-full w-full flex-col relative">
+      {/* View Mode Toggle - Modern Design */}
+      <div className="flex items-center justify-between px-3 sm:px-5 py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-b-2 border-gray-200 dark:border-gray-700 shadow-sm flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 flex-1 overflow-x-auto">
+          {/* Mobile: Menu button */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg"
+            aria-label="Menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          
+          {/* View mode buttons - Enhanced */}
+          <button
+            onClick={() => setViewMode('editor')}
+            className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
+              viewMode === 'editor'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg ring-2 ring-blue-200 dark:ring-blue-800'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span>Éditeur</span>
+          </button>
+          <button
+            onClick={() => setViewMode('preview')}
+            className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
+              viewMode === 'preview'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg ring-2 ring-blue-200 dark:ring-blue-800'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span>Prévisualisation</span>
+          </button>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+          </svg>
+          <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            {blocks.length} bloc{blocks.length > 1 ? 's' : ''}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden relative w-full">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar - Block Palette with Categories - Modern Design */}
+        <div className={`
+          ${viewMode === 'preview' ? 'hidden' : ''}
+          ${sidebarOpen ? 'fixed left-0 top-0 h-full z-50' : 'hidden'}
+          lg:static lg:block
+          w-64 lg:w-72 xl:w-80
+          bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800
+          border-r border-gray-200 dark:border-gray-700 
+          p-4 sm:p-5 
+          overflow-y-auto 
+          transition-transform duration-300 ease-in-out
+          shadow-lg lg:shadow-none
+          flex-shrink-0
+        `}>
+          {/* Mobile: Close button */}
+          <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Blocs disponibles</h3>
         
         {/* Group by category */}
         {['content', 'layout', 'media', 'custom'].map((category) => {
-          const categoryBlocks = blockTypes.filter(bt => bt.category === category)
+          const categoryBlocks = blockTypes.filter((bt: BlockType) => bt.category === category)
           if (categoryBlocks.length === 0) return null
           
           const categoryLabels: { [key: string]: string } = {
@@ -98,23 +196,31 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           
           return (
             <div key={category} className="mb-6">
-              <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
+              <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-md inline-block">
                 {categoryLabels[category] || category}
               </h4>
-              <div className="space-y-2">
-                {categoryBlocks.map((blockType) => (
+              <div className="space-y-2.5">
+                {categoryBlocks.map((blockType: BlockType) => (
                   <button
                     key={blockType.id}
-                    onClick={() => addBlock(blockType)}
-                    className="w-full px-3 py-2 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 hover:border-blue-500 transition flex items-center gap-2"
+                    onClick={() => {
+                      addBlock(blockType)
+                      setSidebarOpen(false) // Close sidebar on mobile after adding
+                    }}
+                    className="w-full px-3 sm:px-4 py-3 text-left bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md transition-all duration-200 flex items-center gap-3 group"
                   >
-                    <span className="text-xl">{blockType.icon || '📦'}</span>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{blockType.label}</div>
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-600 group-hover:from-blue-100 group-hover:to-blue-200 dark:group-hover:from-blue-900/30 dark:group-hover:to-blue-800/30 transition-all">
+                      <span className="text-xl sm:text-2xl">{blockType.icon || '📦'}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{blockType.label}</div>
                       {blockType.description && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{blockType.description}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 hidden sm:block mt-0.5">{blockType.description}</div>
                       )}
                     </div>
+                    <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
                   </button>
                 ))}
               </div>
@@ -125,7 +231,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         {/* Fallback if no categories */}
         {blockTypes.length > 0 && !blockTypes.some(bt => bt.category) && (
           <div className="space-y-2">
-            {blockTypes.map((blockType) => (
+            {blockTypes.map((blockType: BlockType) => (
               <button
                 key={blockType.id}
                 onClick={() => addBlock(blockType)}
@@ -144,51 +250,125 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         )}
       </div>
 
-      {/* Main Editor Area */}
-      <div className="flex-1 flex flex-col">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
-            <div className="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-              {blocks.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">Aucun bloc ajouté</p>
-                  <p className="text-sm text-gray-400">
-                    Cliquez sur un bloc dans la palette pour commencer
-                  </p>
-                </div>
-              ) : (
-                blocks.map((block) => (
-                  <SortableBlock
-                    key={block.id}
-                    block={block}
-                    blockTypes={blockTypes}
-                    isSelected={selectedBlock === block.id}
-                    onSelect={() => setSelectedBlock(block.id)}
-                    onUpdate={(updates) => updateBlock(block.id, updates)}
-                    onDelete={() => removeBlock(block.id)}
-                  />
-                ))
-              )}
+        {/* Main Editor Area - Responsive - Full Width */}
+        <div className="flex-1 flex flex-col min-w-0 w-full h-full">
+          {/* Editor Panel - Only show editing fields, no preview */}
+          {viewMode !== 'preview' && (
+            <div className="flex-1 flex flex-col min-w-0 w-full h-full">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                  <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
+                    {blocks.length === 0 ? (
+                      <div className="text-center py-12">
+                        <p className="text-gray-500 dark:text-gray-400 mb-4">Aucun bloc ajouté</p>
+                        <p className="text-sm text-gray-400">
+                          Cliquez sur un bloc dans la palette pour commencer
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-4">
+                        {blocks.map((block) => (
+                          <SortableBlock
+                            key={block.id}
+                            block={block}
+                            blockTypes={blockTypes}
+                            isSelected={selectedBlock === block.id}
+                            onSelect={() => setSelectedBlock(block.id)}
+                            onUpdate={(updates) => updateBlock(block.id, updates)}
+                            onDelete={() => removeBlock(block.id)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </div>
-          </SortableContext>
-        </DndContext>
-      </div>
+          )}
 
-      {/* Properties Panel */}
-      {selectedBlock && (
-        <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-300 p-4 overflow-y-auto">
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Propriétés du bloc</h3>
-          <BlockPropertiesPanel
-            block={blocks.find(b => b.id === selectedBlock)!}
-            blockType={blockTypes.find(bt => bt.name === blocks.find(b => b.id === selectedBlock)!.type)}
-            onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-          />
+          {/* Preview Panel - Only in preview mode */}
+          {viewMode === 'preview' && (
+            <div className="flex-1 w-full flex flex-col min-w-0 h-full">
+              <BlockPreview
+                blocks={blocks}
+                blockTypes={blockTypes}
+                onBlocksChange={onChange}
+                onBlockSelect={(id) => {
+                  setSelectedBlock(id)
+                  if (id && window.innerWidth >= 1024) setPropertiesOpen(true)
+                }}
+                selectedBlockId={selectedBlock}
+                isInteractive={true}
+              />
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Properties Panel - Responsive (Drawer on mobile, sidebar on desktop) */}
+        {selectedBlock && viewMode !== 'preview' && (
+          <>
+            {/* Mobile Overlay */}
+            {propertiesOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                onClick={() => {
+                  setPropertiesOpen(false)
+                  setSelectedBlock(null)
+                }}
+              />
+            )}
+
+            {/* Properties Panel - Wider on desktop */}
+            <div className={`
+              ${propertiesOpen ? 'fixed right-0 top-0 h-full z-50' : 'hidden'}
+              lg:static lg:block
+              w-full sm:w-80 lg:w-96 xl:w-[28rem]
+              bg-white dark:bg-gray-800 
+              border-l border-gray-300 dark:border-gray-700 
+              p-3 sm:p-4 lg:p-6
+              overflow-y-auto
+              shadow-lg lg:shadow-none
+              transition-transform duration-300 ease-in-out
+              flex-shrink-0
+            `}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propriétés du bloc</h3>
+                <button
+                  onClick={() => {
+                    setSelectedBlock(null)
+                    setPropertiesOpen(false)
+                  }}
+                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  ✕
+                </button>
+              </div>
+              <BlockPropertiesPanel
+                block={blocks.find(b => b.id === selectedBlock)!}
+                blockType={blockTypes.find(bt => bt.name === blocks.find(b => b.id === selectedBlock)!.type)}
+                onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Mobile: Floating action button to open properties */}
+        {selectedBlock && viewMode !== 'preview' && !propertiesOpen && (
+          <button
+            onClick={() => setPropertiesOpen(true)}
+            className="lg:hidden fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-30"
+            aria-label="Ouvrir les propriétés"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   )
 }
@@ -226,48 +406,116 @@ function SortableBlock({
 
   const blockType = blockTypes.find(bt => bt.name === block.type)
 
+  // Calculate width based on layout
+  const layoutWidth = block.layout === 'full' ? 'w-full' :
+    block.layout === 'three-quarters' ? 'w-3/4' :
+    block.layout === 'two-thirds' ? 'w-2/3' :
+    block.layout === 'half' ? 'w-1/2' :
+    block.layout === 'third' ? 'w-1/3' :
+    block.layout === 'quarter' ? 'w-1/4' : 'w-full'
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`mb-4 bg-white dark:bg-gray-800 rounded-lg border-2 ${isSelected ? 'border-blue-500' : 'border-gray-200'} shadow-sm hover:shadow-md transition`}
+      className={`${layoutWidth} mb-4 bg-white dark:bg-gray-800 rounded-xl border-2 ${isSelected ? 'border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800' : 'border-gray-200 dark:border-gray-700'} shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden`}
     >
-      {/* Block Header */}
+      {/* Block Header - Modern Design */}
       <div
-        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 cursor-move"
+        className={`flex items-center justify-between p-3 sm:p-4 cursor-move transition-colors ${
+          isSelected 
+            ? 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-b border-blue-200 dark:border-blue-700' 
+            : 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700 hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-800'
+        }`}
         {...attributes}
         {...listeners}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-lg">{blockType?.icon || '📦'}</span>
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{blockType?.label || block.type}</span>
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-gray-200 dark:border-gray-700">
+            <span className="text-lg sm:text-xl">{blockType?.icon || '📦'}</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 truncate block">{blockType?.label || block.type}</span>
+            {blockType?.description && (
+              <span className="text-xs text-gray-500 dark:text-gray-400 truncate block hidden sm:block">{blockType.description}</span>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           <button
             onClick={(e) => {
               e.stopPropagation()
               onSelect()
             }}
-            className="p-1 text-gray-500 dark:text-gray-400 hover:text-blue-600"
+            className={`p-2 rounded-lg transition-all ${
+              isSelected 
+                ? 'bg-blue-500 text-white shadow-md' 
+                : 'text-gray-500 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400'
+            }`}
             title="Sélectionner"
           >
-            ⚙️
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation()
               onDelete()
             }}
-            className="p-1 text-gray-500 dark:text-gray-400 hover:text-red-600"
+            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all"
             title="Supprimer"
           >
-            🗑️
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
           </button>
         </div>
       </div>
 
-      {/* Block Content */}
-      <div className="p-4">
+      {/* Block Content - Modern Design */}
+      <div className="p-4 sm:p-6 bg-white dark:bg-gray-800">
+        {/* Layout Controls - Enhanced */}
+        <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+              </svg>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Largeur:</span>
+              <select
+                value={block.layout || 'full'}
+                onChange={(e) => onUpdate({ layout: e.target.value as Block['layout'] })}
+                className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <option value="full">100%</option>
+                <option value="three-quarters">75%</option>
+                <option value="two-thirds">66%</option>
+                <option value="half">50%</option>
+                <option value="third">33%</option>
+                <option value="quarter">25%</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Conteneur:</span>
+              <select
+                value={block.container || 'container'}
+                onChange={(e) => onUpdate({ container: e.target.value as Block['container'] })}
+                className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <option value="container">Conteneur</option>
+                <option value="container-fluid">Fluide</option>
+                <option value="none">Aucun</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <BlockRenderer block={block} blockType={blockType} onUpdate={onUpdate} />
       </div>
     </div>
@@ -291,9 +539,9 @@ function BlockRenderer({
         <textarea
           value={block.data.content || ''}
           onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
-          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
           placeholder="Entrez votre texte..."
-          rows={6}
+          rows={4}
         />
       )
     case 'heading':
@@ -305,7 +553,7 @@ function BlockRenderer({
             type="text"
             value={block.data.text || ''}
             onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded text-2xl font-bold focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 sm:p-3 border border-gray-300 rounded text-lg sm:text-2xl font-bold focus:ring-2 focus:ring-blue-500"
             placeholder="Titre..."
           />
           <select
@@ -338,15 +586,14 @@ function BlockRenderer({
             placeholder="Texte alternatif (alt)..."
           />
           {block.data.src && (
-            <div className="mt-2">
-              <img 
-                src={block.data.src} 
-                alt={block.data.alt || ''} 
-                className="w-full max-h-64 object-contain rounded border border-gray-200"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none'
-                }}
-              />
+            <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 flex items-center gap-2">
+              <svg className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-green-800 dark:text-green-300">Image configurée</p>
+                <p className="text-xs text-green-600 dark:text-green-400 truncate">{block.data.src.substring(0, 50)}...</p>
+              </div>
             </div>
           )}
         </div>
@@ -377,16 +624,11 @@ function BlockRenderer({
             <option value="secondary">Secondaire</option>
             <option value="outline">Outline</option>
           </select>
-          <div className="mt-2">
-            <button
-              className={`px-4 py-2 rounded ${
-                block.data.style === 'primary' ? 'bg-blue-600 text-white' :
-                block.data.style === 'secondary' ? 'bg-gray-600 text-white' :
-                'border-2 border-blue-600 text-blue-600'
-              }`}
-            >
-              {block.data.text || 'Bouton'}
-            </button>
+          <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <p className="text-xs font-medium text-blue-800 dark:text-blue-300">Bouton configuré - Voir la prévisualisation à droite</p>
           </div>
         </div>
       )
@@ -401,8 +643,14 @@ function BlockRenderer({
             placeholder="URL de la vidéo (YouTube, Vimeo)..."
           />
           {block.data.url && (
-            <div className="mt-2 aspect-video bg-gray-100 dark:bg-gray-900 rounded border border-gray-200 flex items-center justify-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Aperçu vidéo: {block.data.url}</p>
+            <div className="mt-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border border-purple-200 dark:border-purple-800 flex items-center gap-2">
+              <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-purple-800 dark:text-purple-300">Vidéo configurée</p>
+                <p className="text-xs text-purple-600 dark:text-purple-400 truncate">{block.data.url.substring(0, 50)}...</p>
+              </div>
             </div>
           )}
         </div>
@@ -419,13 +667,11 @@ function BlockRenderer({
             min={10}
             max={200}
           />
-          <div 
-            className="bg-gray-200 border-2 border-dashed border-gray-300 rounded"
-            style={{ height: `${block.data.height || 40}px` }}
-          >
-            <div className="h-full flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
-              Espaceur: {(block.data.height || 40)}px
-            </div>
+          <div className="p-3 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-lg border border-amber-200 dark:border-amber-800 flex items-center gap-2">
+            <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            <p className="text-xs font-medium text-amber-800 dark:text-amber-300">Espaceur de {(block.data.height || 40)}px - Voir la prévisualisation à droite</p>
           </div>
         </div>
       )
@@ -441,20 +687,31 @@ function BlockRenderer({
             <option value="dashed">Tirets</option>
             <option value="dotted">Pointillés</option>
           </select>
-          <div className={`border-t-2 ${
-            block.data.style === 'solid' ? 'border-solid' :
-            block.data.style === 'dashed' ? 'border-dashed' :
-            'border-dotted'
-          } border-gray-400`}></div>
+          <div className="p-3 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center gap-2">
+            <svg className="w-5 h-5 text-slate-600 dark:text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+            <p className="text-xs font-medium text-slate-800 dark:text-slate-300">Séparateur {block.data.style || 'solid'} - Voir la prévisualisation à droite</p>
+          </div>
         </div>
       )
     default:
       return (
-        <div className="text-gray-500 dark:text-gray-400 text-sm space-y-2">
-          <p>Bloc {block.type} - Configuration à venir</p>
-          {blockType?.description && (
-            <p className="text-xs text-gray-400">{blockType.description}</p>
-          )}
+        <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Bloc {block.type}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Configuration à venir</p>
+              {blockType?.description && (
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{blockType.description}</p>
+              )}
+            </div>
+          </div>
         </div>
       )
   }

@@ -5,11 +5,12 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from api.mixins import CORSMixin
 from .models import Service
 from .serializers import ServiceSerializer, ServiceListSerializer, ServicePriceSerializer
 
 
-class ServiceViewSet(viewsets.ModelViewSet):
+class ServiceViewSet(CORSMixin, viewsets.ModelViewSet):
     """ViewSet for managing services"""
     permission_classes = [IsAuthenticated]
 

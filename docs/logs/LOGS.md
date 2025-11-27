@@ -20,6 +20,50 @@
 
 ## 📅 Modifications Récentes
 
+### 2025-01-XX - Améliorations Éditeur de Site Public
+
+#### ✅ Amélioration Complète de l'Éditeur Visuel WordPress
+- **Fichiers modifiés** :
+  - `frontend/src/components/editor/BlockEditor.tsx` - Éditeur principal
+  - `frontend/src/components/editor/BlockPreview.tsx` - Prévisualisation interactive
+  - `frontend/src/app/dashboard/pages/[id]/edit-visual/page.tsx` - Page d'édition
+  - `frontend/src/components/TenantLayout.tsx` - Layout tenant
+
+- **Améliorations visuelles majeures** :
+  - ✅ Design moderne avec gradients, ombres et bordures arrondies
+  - ✅ Blocs avec headers colorés et icônes dans conteneurs arrondis
+  - ✅ Messages de confirmation colorés (vert, bleu, violet, ambre) avec icônes SVG
+  - ✅ Sidebar des blocs avec design moderne et effets hover
+  - ✅ Boutons de vue améliorés avec icônes SVG et gradients
+  - ✅ Messages "non disponible" avec design centré et icônes
+
+- **Fonctionnalités ajoutées** :
+  - ✅ Prévisualisation interactive avec drag & drop (comme WordPress)
+  - ✅ Système de colonnes/layout pour placer les blocs côte à côte (100%, 75%, 66%, 50%, 33%, 25%)
+  - ✅ Options de conteneur (Conteneur, Fluide, Aucun)
+  - ✅ Nouveaux types de blocs : Galerie, Témoignages, Formulaires, Plans tarifaires, Accordéon, Onglets
+  - ✅ Suppression du mode Split (double prévisualisation)
+  - ✅ Deux modes uniquement : Éditeur et Prévisualisation
+
+- **Améliorations responsive** :
+  - ✅ Sidebar en drawer sur mobile avec overlay
+  - ✅ Panneau de propriétés en drawer sur mobile
+  - ✅ Boutons adaptatifs avec texte réduit sur mobile
+  - ✅ Padding et espacements optimisés pour mobile
+  - ✅ Vue split désactivée automatiquement sur mobile
+
+- **Améliorations largeur** :
+  - ✅ Éditeur utilise toute la largeur de l'écran (positionnement fixe plein écran)
+  - ✅ Sidebar élargie (64 → 72 → 80 sur desktop)
+  - ✅ Panneau de propriétés élargi (80 → 96 → 28rem sur desktop)
+  - ✅ Padding augmenté dans l'éditeur (p-4 → p-6 → p-8)
+  - ✅ Suppression des contraintes max-width
+
+- **Corrections** :
+  - ✅ Suppression de la double prévisualisation (prévisualisation uniquement dans le panneau de droite)
+  - ✅ L'éditeur n'affiche plus que les champs de saisie (pas de prévisualisation)
+  - ✅ Messages informatifs au lieu de prévisualisations dans l'éditeur
+
 ### 2024 - Corrections Erreurs ERR_BLOCKED_BY_CLIENT & CORS
 
 #### ✅ Gestion Erreurs Bloqueur de Publicité (ERR_BLOCKED_BY_CLIENT)
@@ -45,6 +89,24 @@
     - `by_collection()` - Médias par collection
   - ✅ Correction d'indentation dans les blocs `except` pour assurer l'appel de `add_cors_headers`
   - ✅ Logging amélioré des erreurs pour débogage
+
+#### ✅ Amélioration Systématique CORS - Utilitaires Globaux
+- **Nouveau Fichier**: `backend-django/api/utils.py`
+  - ✅ Création de la fonction utilitaire globale `add_cors_headers(response, request)`
+  - ✅ Centralisation de la logique CORS pour une utilisation cohérente dans toute l'application
+- **Nouveau Fichier**: `backend-django/api/mixins.py`
+  - ✅ Création du mixin `CORSMixin` qui surcharge `finalize_response()` pour ajouter automatiquement les headers CORS
+  - ✅ Garantit que toutes les réponses (succès et erreurs) ont les headers CORS appropriés
+- **Fichiers Modifiés - Application du Mixin**:
+  - ✅ `backend-django/pages/views.py` - `PageViewSet` hérite maintenant de `CORSMixin`
+  - ✅ `backend-django/services/views.py` - `ServiceViewSet` hérite maintenant de `CORSMixin`
+  - ✅ `backend-django/bookings/views.py` - `BookingViewSet` hérite maintenant de `CORSMixin`
+  - ✅ `backend-django/blocks/views.py` - `BlockTypeViewSet` et `BlockTemplateViewSet` héritent maintenant de `CORSMixin`
+- **Avantages**:
+  - ✅ Headers CORS automatiquement appliqués à toutes les réponses
+  - ✅ Code plus propre et maintenable
+  - ✅ Réduction significative du code dupliqué
+  - ✅ Protection contre les erreurs CORS même si un endpoint oublie d'ajouter les headers manuellement
 
 ---
 

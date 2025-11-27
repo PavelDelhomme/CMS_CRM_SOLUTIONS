@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.utils import timezone
+from api.mixins import CORSMixin
 from .models import Booking
 from .serializers import (
     BookingSerializer, BookingCreateSerializer,
@@ -13,7 +14,7 @@ from .serializers import (
 )
 
 
-class BookingViewSet(viewsets.ModelViewSet):
+class BookingViewSet(CORSMixin, viewsets.ModelViewSet):
     """ViewSet for managing bookings"""
     permission_classes = [IsAuthenticated]
 
