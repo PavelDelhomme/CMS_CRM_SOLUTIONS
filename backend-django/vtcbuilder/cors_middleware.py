@@ -14,35 +14,6 @@ class CORSAlwaysMiddleware(MiddlewareMixin):
     même si une exception est levée avant que corsheaders ne puisse les ajouter
     """
     
-    def process_response(self, request, response):
-        """Ajouter les headers CORS à toutes les réponses"""
-        origin = request.META.get('HTTP_ORIGIN')
-        
-        # Si pas d'origin, pas besoin de CORS
-        if not origin:
-            return response
-        
-        # Vérifier si l'origin est autorisé
-        allowed = False
-        
-        if settings.DEBUG:
-            # En développement, autoriser tous les localhost
-            if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
-                allowed = True
-        else:
-            # En production, vérifier les origines autorisées
-            if hasattr(settings, 'CORS_ALLOWED_ORIGINS'):
-                allowed = origin in settings.CORS_ALLOWED_ORIGINS
-        
-        if allowed:
-            # Ajouter les headers CORS
-            response['Access-Control-Allow-Origin'] = origin
-            response['Access-Control-Allow-Credentials'] = 'true'
-            response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
-            response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
-        
-        return response
-    
     def _add_cors_headers(self, response, request):
         """Ajouter les headers CORS à une réponse"""
         origin = request.META.get('HTTP_ORIGIN')
@@ -91,4 +62,3 @@ class CORSAlwaysMiddleware(MiddlewareMixin):
         }, status=500)
         
         return self._add_cors_headers(error_response, request)
-
