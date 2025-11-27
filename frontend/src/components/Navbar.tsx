@@ -18,14 +18,14 @@ export default function Navbar({ title, subtitle }: NavbarProps) {
     <header className="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100">{title}</h1>
-          {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{subtitle}</p>}
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+          {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>}
         </div>
         <div className="flex items-center space-x-4">
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
-            className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
+            className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
             aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
             title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
           >
@@ -39,7 +39,7 @@ export default function Navbar({ title, subtitle }: NavbarProps) {
               </svg>
             )}
           </button>
-          <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300">{user?.name}</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">{user?.name}</span>
           <button
             onClick={() => {
               authService.logout()

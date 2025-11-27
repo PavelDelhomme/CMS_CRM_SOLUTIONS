@@ -133,8 +133,8 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Total Tenants</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats?.total_tenants || 0}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tenants</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.total_tenants || 0}</p>
               </div>
             </div>
           </div>
@@ -147,8 +147,8 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Tenants Actifs</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats?.active_tenants || 0}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Tenants Actifs</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.active_tenants || 0}</p>
               </div>
             </div>
           </div>
@@ -161,8 +161,8 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">En Trial</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats?.trial_tenants || 0}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">En Trial</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.trial_tenants || 0}</p>
               </div>
             </div>
           </div>
@@ -175,8 +175,8 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Total Utilisateurs</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats?.total_users || 0}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Utilisateurs</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.total_users || 0}</p>
               </div>
             </div>
           </div>
@@ -189,8 +189,8 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Réservations</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats?.total_bookings || 0}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Réservations</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.total_bookings || 0}</p>
               </div>
             </div>
           </div>
@@ -203,8 +203,8 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Revenus Mensuels</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats?.monthly_revenue || 0}€</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Revenus Mensuels</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.monthly_revenue || 0}€</p>
               </div>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
         {detailedStats && (
           <div className="mt-6 lg:mt-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">Résumé des Statistiques</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Résumé des Statistiques</h2>
               <button
                 onClick={() => router.push('/admin/stats')}
                 className="text-sm text-blue-600 hover:text-blue-800 font-medium"
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
             {detailedStats.alerts && detailedStats.alerts.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-red-500">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 flex items-center">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                     <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -328,11 +328,11 @@ export default function AdminDashboard() {
                       }`}>
                         {alert.title}
                       </span>
-                      <span className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{alert.count}</span>
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">{alert.count}</span>
                     </div>
                   ))}
                   {detailedStats.alerts.length > 3 && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 italic">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 italic">
                       + {detailedStats.alerts.length - 3} autre(s) alerte(s)
                     </p>
                   )}
@@ -344,7 +344,7 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="mt-6 lg:mt-8">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Actions Rapides</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Actions Rapides</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button
               onClick={() => router.push('/admin/tenants')}
@@ -357,8 +357,8 @@ export default function AdminDashboard() {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">Gérer les Tenants</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Voir tous les clients</p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Gérer les Tenants</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Voir tous les clients</p>
                 </div>
               </div>
             </button>
@@ -374,8 +374,8 @@ export default function AdminDashboard() {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">Nouveau Tenant</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Créer un client</p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Nouveau Tenant</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Créer un client</p>
                 </div>
               </div>
             </button>
@@ -391,8 +391,8 @@ export default function AdminDashboard() {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">Statistiques</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Voir les analytics</p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Statistiques</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Voir les analytics</p>
                 </div>
               </div>
             </button>
@@ -408,8 +408,8 @@ export default function AdminDashboard() {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">Page d'Accueil</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Personnaliser le site public</p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Page d'Accueil</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Personnaliser le site public</p>
                 </div>
               </div>
             </button>

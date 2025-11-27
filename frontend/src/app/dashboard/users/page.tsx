@@ -124,7 +124,7 @@ export default function TenantUsersPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -154,7 +154,7 @@ export default function TenantUsersPage() {
           <h2 className="text-lg lg:text-xl font-semibold mb-4">Ajouter un utilisateur</h2>
           <form onSubmit={handleAddUser} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email *
                   </label>
                   <input
@@ -166,7 +166,7 @@ export default function TenantUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Mot de passe temporaire *
                   </label>
                   <input
@@ -179,7 +179,7 @@ export default function TenantUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Prénom
                   </label>
                   <input
@@ -190,7 +190,7 @@ export default function TenantUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom
                   </label>
                   <input
@@ -201,7 +201,7 @@ export default function TenantUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Rôle
                   </label>
                   <select
@@ -244,7 +244,7 @@ export default function TenantUsersPage() {
       >
         {filteredUsers.length === 0 ? (
           <tr>
-            <td colSpan={4} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
+            <td colSpan={4} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
               {search ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur pour le moment'}
             </td>
           </tr>
@@ -252,8 +252,8 @@ export default function TenantUsersPage() {
           filteredUsers.map((user) => (
           <tr key={user.id} className="hover:bg-gray-50 dark:bg-gray-900">
             <td className="px-4 sm:px-6 py-4">
-              <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{user.name || user.email}</div>
-              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{user.email}</div>
+              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name || user.email}</div>
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
             </td>
             <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
               <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadge(user.role)}`}>

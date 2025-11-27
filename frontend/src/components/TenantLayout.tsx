@@ -26,7 +26,7 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100"
+            className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100"
             aria-label="Ouvrir le menu"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -35,14 +35,14 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
           </button>
           
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100 truncate px-2">{title}</h1>
-            {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 truncate px-2">{subtitle}</p>}
+            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate px-2">{title}</h1>
+            {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 truncate px-2">{subtitle}</p>}
           </div>
           
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
-            className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
+            className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
             aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
             title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
           >
@@ -75,14 +75,14 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
             <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100">{title}</h1>
-                  {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{subtitle}</p>}
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+                  {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>}
                 </div>
                 <div className="flex items-center gap-4">
                   {/* Dark Mode Toggle */}
                   <button
                     onClick={toggleTheme}
-                    className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
                     aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                     title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                   >

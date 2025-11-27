@@ -206,7 +206,7 @@ export default function UsersPage() {
           >
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <td colSpan={6} className="px-4 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                       {search ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur pour le moment'}
                     </td>
                   </tr>
@@ -216,8 +216,8 @@ export default function UsersPage() {
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{user.name || user.email}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{user.email}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name || user.email}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
                           </div>
                         </div>
                       </td>
@@ -226,7 +226,7 @@ export default function UsersPage() {
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {user.tenant_name || user.tenant?.name || '-'}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
@@ -234,7 +234,7 @@ export default function UsersPage() {
                           {user.status}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {new Date(user.created_at).toLocaleDateString('fr-FR')}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

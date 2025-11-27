@@ -85,7 +85,7 @@ export default function ServicesPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -116,10 +116,10 @@ export default function ServicesPage() {
             <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
               {search ? 'Aucun service trouvé' : 'Aucun service'}
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
               {search ? 'Essayez une autre recherche' : 'Créez votre premier service VTC'}
             </p>
             {!search && (
@@ -145,13 +145,13 @@ export default function ServicesPage() {
                         <span className="text-2xl mr-3">{service.icon}</span>
                       )}
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{service.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">/{service.slug}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{service.name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">/{service.slug}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-4">
-                    <div className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100 max-w-xs truncate">
+                    <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate">
                       {service.description || '-'}
                     </div>
                   </td>
@@ -167,7 +167,7 @@ export default function ServicesPage() {
                     </div>
                   </td>
                   <td className="px-4 py-4">
-                    <div className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
                       👤 {service.max_passengers}
                       {service.max_luggage > 0 && ` • 🧳 ${service.max_luggage}`}
                     </div>

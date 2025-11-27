@@ -104,7 +104,7 @@ export default function SetupPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Vérification de l'invitation...</p>
+          <p className="text-gray-600 dark:text-gray-400">Vérification de l'invitation...</p>
         </div>
       </div>
     )
@@ -119,8 +119,8 @@ export default function SetupPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Compte configuré avec succès !</h1>
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-6">Votre compte est maintenant actif. Redirection vers votre dashboard...</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Compte configuré avec succès !</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Votre compte est maintenant actif. Redirection vers votre dashboard...</p>
         </div>
       </div>
     )
@@ -135,8 +135,8 @@ export default function SetupPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Lien invalide</h1>
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-6">{error || 'Ce lien d\'invitation est invalide ou a expiré.'}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Lien invalide</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'Ce lien d\'invitation est invalide ou a expiré.'}</p>
           <button
             onClick={() => router.push('/login')}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
@@ -152,13 +152,13 @@ export default function SetupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Configurer votre compte</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Configurer votre compte</h1>
           {tenant && (
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400">
               Bienvenue sur <strong>{tenant.name}</strong>
             </p>
           )}
-          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-2">Définissez votre mot de passe pour commencer</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Définissez votre mot de passe pour commencer</p>
         </div>
 
         {error && (
@@ -170,7 +170,7 @@ export default function SetupPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Prénom
               </label>
               <input
@@ -182,7 +182,7 @@ export default function SetupPage() {
               />
             </div>
             <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Nom
               </label>
               <input
@@ -196,7 +196,7 @@ export default function SetupPage() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email
             </label>
             <input
@@ -204,12 +204,12 @@ export default function SetupPage() {
               type="email"
               value={email}
               disabled
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 dark:text-gray-400"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Nouveau mot de passe
             </label>
             <input
@@ -225,7 +225,7 @@ export default function SetupPage() {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Confirmer le mot de passe
             </label>
             <input
@@ -249,7 +249,7 @@ export default function SetupPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>Ce lien est valable pendant 7 jours</p>
         </div>
       </div>

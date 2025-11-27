@@ -42,7 +42,7 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
                     aria-label="Toggle menu"
                     title={sidebarOpen ? "Fermer le menu" : "Ouvrir le menu"}
                   >
@@ -51,15 +51,15 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
                     </svg>
                   </button>
                   <div>
-                    <h1 className="text-2xl xl:text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100">{title}</h1>
-                    {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{subtitle}</p>}
+                    <h1 className="text-2xl xl:text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+                    {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   {/* Dark Mode Toggle */}
                   <button
                     onClick={toggleTheme}
-                    className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
                     aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                     title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                   >

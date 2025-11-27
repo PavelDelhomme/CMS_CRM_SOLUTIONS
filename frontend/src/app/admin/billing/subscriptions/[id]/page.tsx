@@ -95,7 +95,7 @@ export default function SubscriptionDetailPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </AdminLayout>
@@ -121,7 +121,7 @@ export default function SubscriptionDetailPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 flex items-center"
+          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 flex items-center"
         >
           <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -131,14 +131,14 @@ export default function SubscriptionDetailPage() {
 
         {/* Subscription Overview */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Informations de l'Abonnement</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Informations de l'Abonnement</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Tenant Info */}
             <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">Tenant</h3>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{subscription.tenant?.name || '-'}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">{subscription.tenant?.email || '-'}</p>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Tenant</h3>
+              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{subscription.tenant?.name || '-'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{subscription.tenant?.email || '-'}</p>
               <button
                 onClick={() => router.push(`/admin/tenants/${subscription.tenant?.id}`)}
                 className="text-blue-600 hover:text-blue-800 text-sm mt-2"
@@ -149,10 +149,10 @@ export default function SubscriptionDetailPage() {
 
             {/* Plan Info */}
             <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">Plan & Niveau de Service</h3>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{subscription.plan?.name || '-'}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">{subscription.plan?.description || '-'}</p>
-              <div className="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Plan & Niveau de Service</h3>
+              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{subscription.plan?.name || '-'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{subscription.plan?.description || '-'}</p>
+              <div className="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400">
                 <p>• {subscription.plan?.max_sites || 0} site{subscription.plan?.max_sites !== 1 ? 's' : ''}</p>
                 <p>• {subscription.plan?.max_users || 0} utilisateur{subscription.plan?.max_users !== 1 ? 's' : ''}</p>
                 <p>• {subscription.plan?.max_storage_gb || 0} Go de stockage</p>
@@ -161,7 +161,7 @@ export default function SubscriptionDetailPage() {
 
             {/* Status & Cycle */}
             <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">Statut & Cycle</h3>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Statut & Cycle</h3>
               <span className={`inline-block px-3 py-1 text-sm font-semibold rounded-full mb-2 ${getStatusBadge(subscription.status)}`}>
                 {subscription.status === 'active' ? 'Actif' : 
                  subscription.status === 'trial' ? 'En trial' : 
@@ -169,10 +169,10 @@ export default function SubscriptionDetailPage() {
                  subscription.status === 'cancelled' ? 'Annulé' : 
                  subscription.status}
               </span>
-              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                 Facturation: {subscription.billing_cycle === 'monthly' ? 'Mensuelle' : 'Annuelle'}
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Prix: {subscription.billing_cycle === 'monthly' 
                   ? formatCurrency(subscription.plan?.price_monthly || 0) + '/mois'
                   : formatCurrency(subscription.plan?.price_yearly || subscription.plan?.price_monthly * 12 || 0) + '/an'}
@@ -181,17 +181,17 @@ export default function SubscriptionDetailPage() {
 
             {/* Period Dates */}
             <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">Période Actuelle</h3>
-              <p className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Période Actuelle</h3>
+              <p className="text-sm text-gray-900 dark:text-gray-100">
                 Du {new Date(subscription.current_period_start).toLocaleDateString('fr-FR')}
               </p>
-              <p className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
+              <p className="text-sm text-gray-900 dark:text-gray-100">
                 Au {new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}
               </p>
               {subscription.trial_start && subscription.trial_end && (
                 <div className="mt-2 pt-2 border-t border-gray-200">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Trial:</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Trial:</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
                     {new Date(subscription.trial_start).toLocaleDateString('fr-FR')} - {new Date(subscription.trial_end).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
@@ -201,18 +201,18 @@ export default function SubscriptionDetailPage() {
             {/* Financial Summary */}
             {summary && (
               <div>
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">Résumé Financier</h3>
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Résumé Financier</h3>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Total facturé:</span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{formatCurrency(summary.total_invoiced || 0)}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Total facturé:</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(summary.total_invoiced || 0)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Total payé:</span>
+                    <span className="text-gray-600 dark:text-gray-400">Total payé:</span>
                     <span className="font-semibold text-green-600">{formatCurrency(summary.total_paid || 0)}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-gray-200">
-                    <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Impayé:</span>
+                    <span className="text-gray-600 dark:text-gray-400">Impayé:</span>
                     <span className="font-semibold text-red-600">{formatCurrency(summary.unpaid_amount || 0)}</span>
                   </div>
                 </div>
@@ -221,18 +221,18 @@ export default function SubscriptionDetailPage() {
 
             {/* Invoices & Payments Count */}
             <div>
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">Factures & Paiements</h3>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Factures & Paiements</h3>
               <div className="space-y-1 text-sm">
-                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400">
                   <span className="font-semibold">{summary?.invoices_count || 0}</span> facture{summary?.invoices_count !== 1 ? 's' : ''}
                 </p>
-                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400">
                   <span className="font-semibold text-green-600">{summary?.paid_invoices_count || 0}</span> payée{summary?.paid_invoices_count !== 1 ? 's' : ''}
                 </p>
-                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400">
                   <span className="font-semibold text-red-600">{summary?.unpaid_invoices_count || 0}</span> impayée{summary?.unpaid_invoices_count !== 1 ? 's' : ''}
                 </p>
-                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-2">
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
                   <span className="font-semibold">{payments.length}</span> paiement{payments.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -277,7 +277,7 @@ export default function SubscriptionDetailPage() {
         {/* Invoices */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Factures ({invoices.length})</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Factures ({invoices.length})</h2>
           </div>
           <ResponsiveTable
             headers={['N° Facture', 'Date', 'Montant', 'Statut', 'Échéance', 'Actions']}
@@ -285,7 +285,7 @@ export default function SubscriptionDetailPage() {
           >
             {invoices.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                   Aucune facture pour cet abonnement
                 </td>
               </tr>
@@ -297,13 +297,13 @@ export default function SubscriptionDetailPage() {
                 
                 return (
                   <tr key={invoice.id} className={isOverdue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       {invoice.invoice_number}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {formatCurrency(invoice.total)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -313,7 +313,7 @@ export default function SubscriptionDetailPage() {
                          invoice.status === 'draft' ? 'Brouillon' : invoice.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {dueDate.toLocaleDateString('fr-FR')}
                       {isOverdue && (
                         <span className="block text-xs text-red-600 font-medium">
@@ -384,7 +384,7 @@ export default function SubscriptionDetailPage() {
         {payments.length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paiements ({payments.length})</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Paiements ({payments.length})</h2>
             </div>
             <ResponsiveTable
               headers={['Date', 'Montant', 'Méthode', 'Statut', 'Facture']}
@@ -392,13 +392,13 @@ export default function SubscriptionDetailPage() {
             >
               {payments.map((payment) => (
                 <tr key={payment.id} className="hover:bg-gray-50 dark:bg-gray-900">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {payment.paid_at ? new Date(payment.paid_at).toLocaleDateString('fr-FR') : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {formatCurrency(payment.amount)} {payment.currency}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 capitalize">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
                     {payment.method === 'card' ? 'Carte bancaire' : 
                      payment.method === 'bank_transfer' ? 'Virement' : 
                      payment.method}
@@ -410,7 +410,7 @@ export default function SubscriptionDetailPage() {
                        payment.status === 'failed' ? 'Échoué' : payment.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {payment.invoice?.invoice_number || '-'}
                   </td>
                 </tr>

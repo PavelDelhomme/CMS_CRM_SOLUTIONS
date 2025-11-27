@@ -78,8 +78,8 @@ export default function TemplatesPage() {
           </div>
         ) : filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 text-lg">Aucun template disponible pour le moment.</p>
-            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-2">Revenez bientôt pour découvrir nos nouveaux designs !</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Aucun template disponible pour le moment.</p>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">Revenez bientôt pour découvrir nos nouveaux designs !</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -101,16 +101,16 @@ export default function TemplatesPage() {
                 )}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{template.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{template.name}</h3>
                     {template.is_premium && (
                       <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold">
                         Premium
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4">{template.description}</p>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">{template.description}</p>
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       {template.category && (
                         <span className="bg-gray-100 dark:bg-gray-900 px-3 py-1 rounded-full">
                           {template.category}
@@ -118,7 +118,7 @@ export default function TemplatesPage() {
                       )}
                     </div>
                     {template.usage_count !== undefined && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {template.usage_count} utilisations
                       </div>
                     )}
@@ -137,17 +137,17 @@ export default function TemplatesPage() {
 
         {/* Info Section */}
         <div className="mt-20 bg-blue-50 rounded-xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Comment choisir votre template ?</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Comment choisir votre template ?</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Templates Gratuits</h4>
-              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Templates Gratuits</h4>
+              <p className="text-gray-600 dark:text-gray-400">
                 Parfaits pour démarrer. Tous les templates de base sont disponibles gratuitement avec tous les plans.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Templates Premium</h4>
-              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Templates Premium</h4>
+              <p className="text-gray-600 dark:text-gray-400">
                 Designs professionnels avancés avec plus d'options de personnalisation. Disponibles avec les plans Business et Enterprise.
               </p>
             </div>

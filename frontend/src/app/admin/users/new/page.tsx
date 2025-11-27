@@ -146,7 +146,7 @@ export default function NewUserPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </AdminLayout>
@@ -160,7 +160,7 @@ export default function NewUserPage() {
       headerActions={
         <button
           onClick={() => router.push('/admin/users')}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
         >
           Annuler
         </button>
@@ -178,7 +178,7 @@ export default function NewUserPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Email *
               </label>
               <input
@@ -193,7 +193,7 @@ export default function NewUserPage() {
 
             {/* Username */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Nom d'utilisateur
               </label>
               <input
@@ -207,7 +207,7 @@ export default function NewUserPage() {
 
             {/* Prénom */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Prénom
               </label>
               <input
@@ -220,7 +220,7 @@ export default function NewUserPage() {
 
             {/* Nom */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Nom
               </label>
               <input
@@ -233,7 +233,7 @@ export default function NewUserPage() {
 
             {/* Téléphone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Téléphone
               </label>
               <input
@@ -246,7 +246,7 @@ export default function NewUserPage() {
 
             {/* Rôle */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Rôle *
               </label>
               <select
@@ -272,7 +272,7 @@ export default function NewUserPage() {
 
             {/* Tenant */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Tenant {formData.role !== 'super-admin' ? '*' : ''}
               </label>
               <select
@@ -292,7 +292,7 @@ export default function NewUserPage() {
                 ))}
               </select>
               {formData.role === 'super-admin' && (
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Les super-administrateurs ne sont pas associés à un tenant
                 </p>
               )}
@@ -300,7 +300,7 @@ export default function NewUserPage() {
 
             {/* Statut */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Statut *
               </label>
               <select
@@ -318,7 +318,7 @@ export default function NewUserPage() {
 
             {/* Mot de passe */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Mot de passe *
               </label>
               <input
@@ -334,7 +334,7 @@ export default function NewUserPage() {
 
             {/* Confirmation mot de passe */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Confirmer le mot de passe *
               </label>
               <input
@@ -354,7 +354,7 @@ export default function NewUserPage() {
             <button
               type="button"
               onClick={() => router.push('/admin/users')}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
               disabled={saving}
             >
               Annuler

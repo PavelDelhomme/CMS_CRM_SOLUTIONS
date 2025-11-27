@@ -136,10 +136,10 @@ export default function RegisterPage() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-100 mb-4">
             Créez votre site VTC en quelques minutes
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Choisissez votre plan et démarrez votre essai gratuit de 14 jours. Aucune carte bancaire requise.
           </p>
         </div>
@@ -184,7 +184,7 @@ export default function RegisterPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Pricing Plans */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Choisissez votre plan</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Choisissez votre plan</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {pricingPlans.map((plan) => {
                 const price = billingCycle === 'yearly' && plan.price_yearly 
@@ -212,22 +212,22 @@ export default function RegisterPage() {
                       </div>
                     )}
                     
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{plan.name}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4 text-sm">{plan.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{plan.name}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">{plan.description}</p>
                     
                     <div className="mb-6">
-                      <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                      <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
                         {formatPrice(price)}
                       </span>
-                      <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">/mois</span>
+                      <span className="text-gray-600 dark:text-gray-400">/mois</span>
                       {billingCycle === 'yearly' && plan.price_yearly && (
-                        <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                           Facturé {formatPrice(plan.price_yearly)}/an
                         </div>
                       )}
                     </div>
 
-                    <ul className="space-y-2 mb-6 text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">
+                    <ul className="space-y-2 mb-6 text-sm text-gray-700 dark:text-gray-300">
                       <li className="flex items-center">
                         <span className="text-green-500 mr-2">✓</span>
                         {plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}
@@ -275,11 +275,11 @@ export default function RegisterPage() {
           {/* Registration Form */}
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Créez votre compte</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Créez votre compte</h2>
               
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Nom de votre entreprise *
                   </label>
                   <input
@@ -294,7 +294,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Email *
                   </label>
                   <input
@@ -310,7 +310,7 @@ export default function RegisterPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Prénom
                     </label>
                     <input
@@ -320,7 +320,7 @@ export default function RegisterPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Nom
                     </label>
                     <input
@@ -332,7 +332,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Mot de passe *
                   </label>
                   <input
@@ -347,7 +347,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Confirmer le mot de passe *
                   </label>
                   <input
@@ -375,7 +375,7 @@ export default function RegisterPage() {
                   {loading ? 'Création en cours...' : '🚀 Démarrer mon essai gratuit'}
                 </button>
 
-                <p className="text-xs text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                <p className="text-xs text-center text-gray-500 dark:text-gray-400">
                   En vous inscrivant, vous acceptez nos{' '}
                   <Link href="/legal/terms" className="text-blue-600 hover:underline">
                     Conditions d'utilisation
@@ -387,7 +387,7 @@ export default function RegisterPage() {
                 </p>
 
                 <div className="text-center pt-4 border-t">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Déjà un compte ?{' '}
                     <Link href="/login" className="text-blue-600 hover:underline font-medium">
                       Se connecter

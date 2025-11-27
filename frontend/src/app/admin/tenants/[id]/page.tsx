@@ -294,7 +294,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement des utilisateurs...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement des utilisateurs...</p>
           </div>
         </div>
       </div>
@@ -306,7 +306,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h2 className="text-xl font-semibold">Utilisateurs de {tenantName}</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {users.length} utilisateur{users.length > 1 ? 's' : ''} au total
           </p>
         </div>
@@ -323,11 +323,11 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
 
       {filteredUsers.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {search ? 'Aucun utilisateur trouvé pour cette recherche' : 'Aucun utilisateur trouvé pour ce tenant'}
           </p>
           {!search && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               L'utilisateur admin devrait normalement apparaître ici. Vérifiez que le tenant a bien un admin.
             </p>
           )}
@@ -342,16 +342,16 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
               <td className="px-4 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {user.first_name?.[0] || user.last_name?.[0] || user.email?.[0]?.toUpperCase() || '?'}
                     </span>
                   </div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {user.name || user.email || 'Sans nom'}
                     </div>
                     {user.first_name || user.last_name ? (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {user.first_name} {user.last_name}
                       </div>
                     ) : null}
@@ -359,7 +359,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
                 </div>
               </td>
               <td className="px-4 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100 font-mono">{user.email}</div>
+                <div className="text-sm text-gray-900 dark:text-gray-100 font-mono">{user.email}</div>
               </td>
               <td className="px-4 py-4 whitespace-nowrap">
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadge(user.role)}`}>
@@ -371,7 +371,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
                   {user.status === 'active' ? 'Actif' : user.status === 'pending' ? 'En attente' : user.status}
                 </span>
               </td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                 {user.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '-'}
               </td>
               <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -530,15 +530,15 @@ export default function TenantDetailPage() {
               <div>
                 <button
                   onClick={() => router.push('/admin/tenants')}
-                  className="text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2 flex items-center"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 mb-2 flex items-center"
                 >
                   <svg className="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                   Retour aux tenants
                 </button>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{tenant.name}</h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">{tenant.email}</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{tenant.name}</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{tenant.email}</p>
               </div>
               <div className="flex items-center space-x-3">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -590,28 +590,28 @@ export default function TenantDetailPage() {
                 <h2 className="text-xl font-semibold mb-4">Informations du Tenant</h2>
                 <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Nom</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">{tenant.name}</dd>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Nom</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">{tenant.name}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Email</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">{tenant.email}</dd>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">{tenant.email}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Slug</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">/{tenant.slug}</dd>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Slug</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">/{tenant.slug}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Plan</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100 capitalize">{tenant.plan}</dd>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Plan</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 capitalize">{tenant.plan}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Statut</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100 capitalize">{tenant.status}</dd>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Statut</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 capitalize">{tenant.status}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400">Créé le</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Créé le</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
                     </dd>
                   </div>

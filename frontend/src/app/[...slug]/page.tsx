@@ -50,8 +50,8 @@ export default function TenantPublicPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Page non trouvée</h1>
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Cette page n'existe pas.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Page non trouvée</h1>
+          <p className="text-gray-600 dark:text-gray-400">Cette page n'existe pas.</p>
         </div>
       </div>
     )
@@ -62,7 +62,7 @@ export default function TenantPublicPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+          <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
         </div>
       </div>
     )
@@ -72,8 +72,8 @@ export default function TenantPublicPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Page non trouvée</h1>
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Cette page n'existe pas sur ce site.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Page non trouvée</h1>
+          <p className="text-gray-600 dark:text-gray-400">Cette page n'existe pas sur ce site.</p>
         </div>
       </div>
     )
@@ -85,11 +85,11 @@ export default function TenantPublicPage() {
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">Ma Société VTC</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ma Société VTC</h1>
             <nav className="flex items-center space-x-6">
-              <a href="/" className="text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100">Accueil</a>
-              <a href="/book" className="text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100">Réserver</a>
-              <a href="/contact" className="text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100">Contact</a>
+              <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Accueil</a>
+              <a href="/book" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Réserver</a>
+              <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Contact</a>
             </nav>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function TenantPublicPage() {
       {/* Page content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <article>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">{page.title}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">{page.title}</h1>
           {page.content && (
             <div 
               className="prose prose-lg max-w-none"

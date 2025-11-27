@@ -169,7 +169,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement des données de facturation...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement des données de facturation...</p>
           </div>
         </div>
       </div>
@@ -194,7 +194,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
               <span className="mr-2">{tab.icon}</span>
               {tab.name}
               {tab.count > 0 && (
-                <span className="ml-2 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 dark:text-gray-400 py-0.5 px-2 rounded-full text-xs">
+                <span className="ml-2 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-0.5 px-2 rounded-full text-xs">
                   {tab.count}
                 </span>
               )}
@@ -209,7 +209,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-lg font-semibold">Abonnements</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Gérez les abonnements de {tenantName}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Gérez les abonnements de {tenantName}</p>
             </div>
             <button
               onClick={() => setShowNewSubscriptionModal(true)}
@@ -221,7 +221,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
 
           {subscriptions.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4">Aucun abonnement trouvé pour ce tenant</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">Aucun abonnement trouvé pour ce tenant</p>
               <button
                 onClick={() => setShowNewSubscriptionModal(true)}
                 className="text-blue-600 hover:text-blue-800 font-medium"
@@ -237,10 +237,10 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
               {subscriptions.map((subscription) => (
                 <tr key={subscription.id} className="hover:bg-gray-50 dark:bg-gray-900">
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {subscription.plan?.name || 'N/A'}
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       {subscription.plan && formatPrice(subscription.plan.price_monthly)}/mois
                     </div>
                   </td>
@@ -253,14 +253,14 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                        subscription.status === 'expired' ? 'Expiré' : subscription.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 capitalize">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
                     {subscription.billing_cycle === 'monthly' ? 'Mensuel' : 'Annuel'}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <div>Du {formatDate(subscription.current_period_start)}</div>
                     <div>Au {formatDate(subscription.current_period_end)}</div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {formatDate(subscription.current_period_start)}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -297,12 +297,12 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
         <div>
           <div className="mb-6">
             <h3 className="text-lg font-semibold">Factures</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Toutes les factures de {tenantName}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Toutes les factures de {tenantName}</p>
           </div>
 
           {invoices.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Aucune facture trouvée pour ce tenant</p>
+              <p className="text-gray-600 dark:text-gray-400">Aucune facture trouvée pour ce tenant</p>
             </div>
           ) : (
             <ResponsiveTable
@@ -312,19 +312,19 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
               {invoices.map((invoice) => (
                 <tr key={invoice.id} className="hover:bg-gray-50 dark:bg-gray-900">
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 font-mono">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 font-mono">
                       {invoice.invoice_number}
                     </div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {invoice.subscription?.plan?.name || 'N/A'}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {formatPrice(invoice.total, invoice.currency)}
                     </div>
                     {invoice.tax > 0 && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         HT: {formatPrice(invoice.subtotal, invoice.currency)} + TVA: {formatPrice(invoice.tax, invoice.currency)}
                       </div>
                     )}
@@ -338,10 +338,10 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                        invoice.status === 'uncollectible' ? 'Impayable' : invoice.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {formatDate(invoice.issue_date)}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {formatDate(invoice.due_date)}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -378,12 +378,12 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
         <div>
           <div className="mb-6">
             <h3 className="text-lg font-semibold">Paiements</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Historique des paiements de {tenantName}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Historique des paiements de {tenantName}</p>
           </div>
 
           {payments.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Aucun paiement trouvé pour ce tenant</p>
+              <p className="text-gray-600 dark:text-gray-400">Aucun paiement trouvé pour ce tenant</p>
             </div>
           ) : (
             <ResponsiveTable
@@ -393,11 +393,11 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
               {payments.map((payment) => (
                 <tr key={payment.id} className="hover:bg-gray-50 dark:bg-gray-900">
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {formatPrice(payment.amount, payment.currency)}
                     </div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 capitalize">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
                     {payment.method === 'card' ? 'Carte bancaire' :
                      payment.method === 'bank_transfer' ? 'Virement' :
                      payment.method === 'paypal' ? 'PayPal' :
@@ -412,13 +412,13 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                        payment.status === 'refunded' ? 'Remboursé' : payment.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 font-mono">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">
                     {payment.invoice?.invoice_number || 'N/A'}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {payment.paid_at ? formatDate(payment.paid_at) : '-'}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 font-mono text-xs">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono text-xs">
                     {payment.stripe_payment_intent_id || '-'}
                   </td>
                 </tr>
@@ -436,7 +436,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Plan tarifaire *
                 </label>
                 <select
@@ -454,7 +454,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Cycle de facturation
                 </label>
                 <select
@@ -475,7 +475,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                   onChange={(e) => setNewSubscriptionData({ ...newSubscriptionData, start_trial: e.target.checked })}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="start_trial" className="ml-2 block text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">
+                <label htmlFor="start_trial" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                   Démarrer en période d'essai
                 </label>
               </div>
@@ -487,7 +487,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                   setShowNewSubscriptionModal(false)
                   setNewSubscriptionData({ plan_id: '', billing_cycle: 'monthly', start_trial: false })
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
               >
                 Annuler
               </button>

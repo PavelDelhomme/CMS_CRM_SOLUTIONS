@@ -24,7 +24,7 @@ export default function TenantDashboard() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -47,8 +47,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Pages</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Gérer le contenu</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Pages</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Gérer le contenu</p>
               </div>
             </div>
           </button>
@@ -65,8 +65,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Services VTC</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Mes prestations</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Services VTC</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Mes prestations</p>
               </div>
             </div>
           </button>
@@ -83,8 +83,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Réservations</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Mes courses</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Réservations</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Mes courses</p>
               </div>
             </div>
           </button>
@@ -101,8 +101,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Médias</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Images & fichiers</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Médias</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Images & fichiers</p>
               </div>
             </div>
           </button>
@@ -119,8 +119,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Templates</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Design du site</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Templates</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Design du site</p>
               </div>
             </div>
           </button>
@@ -137,8 +137,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Utilisateurs</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Gérer l'équipe</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Utilisateurs</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Gérer l'équipe</p>
               </div>
             </div>
           </button>
@@ -155,8 +155,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Facturation</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Abonnements & paiements</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Facturation</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Abonnements & paiements</p>
               </div>
             </div>
           </button>
@@ -174,8 +174,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Configuration</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Paramètres</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Configuration</p>
               </div>
             </div>
         </button>

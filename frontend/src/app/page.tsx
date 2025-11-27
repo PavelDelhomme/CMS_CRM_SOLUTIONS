@@ -65,7 +65,7 @@ export default function HomePage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement du site...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement du site...</p>
           </div>
         </div>
       )
@@ -102,15 +102,15 @@ export default function HomePage() {
               </div>
               
               {/* Title */}
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-3">
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                 Site en Construction
               </h1>
               
               {/* Description */}
-              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2 text-lg">
+              <p className="text-gray-600 dark:text-gray-400 mb-2 text-lg">
                 Notre site est actuellement en cours de développement.
               </p>
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-8 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 mb-8 text-sm">
                 Revenez bientôt pour découvrir notre nouveau site web !
               </p>
               
@@ -127,7 +127,7 @@ export default function HomePage() {
                 </a>
                 <a
                   href="/admin"
-                  className="block w-full bg-white dark:bg-gray-800 border-2 border-gray-300 text-gray-700 dark:text-gray-300 dark:text-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 dark:bg-gray-900 transition-colors"
+                  className="block w-full bg-white dark:bg-gray-800 border-2 border-gray-300 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 dark:bg-gray-900 transition-colors"
                 >
                   Accéder à l'administration (si connecté)
                 </a>
@@ -154,11 +154,11 @@ export default function HomePage() {
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{tenantPage.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tenantPage.title}</h1>
               <nav className="hidden md:flex items-center space-x-6">
-                <a href="/" className="text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100">Accueil</a>
-                <a href="/book" className="text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100">Réserver</a>
-                <a href="/contact" className="text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100">Contact</a>
+                <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Accueil</a>
+                <a href="/book" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Réserver</a>
+                <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Contact</a>
                 <a href="/admin" className="text-blue-600 hover:text-blue-800 font-medium">Administration</a>
               </nav>
             </div>
@@ -220,7 +220,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="bg-white dark:bg-gray-800 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
             Tout ce dont vous avez besoin
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -258,8 +258,8 @@ export default function HomePage() {
             ].map((feature, index) => (
               <div key={index} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
                 <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">{feature.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -269,10 +269,10 @@ export default function HomePage() {
       {/* Pricing Section */}
       <section id="pricing" className="bg-gray-50 dark:bg-gray-900 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-4">
             Tarifs Transparents
           </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
             Choisissez le plan adapté à vos besoins. Pas d'engagement, changez de plan à tout moment.
           </p>
 
@@ -300,16 +300,16 @@ export default function HomePage() {
                     </div>
                   )}
                   
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-6">{plan.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">{plan.description}</p>
                   
                   <div className="mb-6">
-                    <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
                       {formatPrice(plan.price_monthly)}
                     </span>
-                    <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">/mois</span>
+                    <span className="text-gray-600 dark:text-gray-400">/mois</span>
                     {plan.price_yearly && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         ou {formatPrice(plan.price_yearly)}/an (-{Math.round((1 - (plan.price_yearly / (plan.price_monthly * 12))) * 100)}%)
                       </div>
                     )}
@@ -318,20 +318,20 @@ export default function HomePage() {
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-center">
                       <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</span>
                     </li>
                     <li className="flex items-center">
                       <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''} max</span>
+                      <span className="text-gray-700 dark:text-gray-300">{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''} max</span>
                     </li>
                     <li className="flex items-center">
                       <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.max_storage_gb} GB de stockage</span>
+                      <span className="text-gray-700 dark:text-gray-300">{plan.max_storage_gb} GB de stockage</span>
                     </li>
                     {plan.features && plan.features.map((feature: string, idx: number) => (
                       <li key={idx} className="flex items-center">
                         <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{feature}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                       </li>
                     ))}
                   </ul>

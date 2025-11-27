@@ -187,12 +187,12 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">VTCBuilder</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">Le WordPress des VTC</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Le WordPress des VTC</p>
           </div>
           {/* Close button for mobile */}
           <button
             onClick={handleClose}
-            className="lg:hidden text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:hover:text-gray-200"
+            className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
             aria-label="Fermer le menu"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -233,10 +233,10 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
               className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
             >
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:text-gray-300">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
                 {resolvedTheme === 'dark' ? '🌙 Mode sombre' : '☀️ Mode clair'}
               </span>
-              <svg className="h-5 w-5 text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {resolvedTheme === 'dark' ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 ) : (
@@ -248,10 +248,10 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
             {/* User Info & Logout */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100" suppressHydrationWarning>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100" suppressHydrationWarning>
                   {user?.name || 'Utilisateur'}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 truncate max-w-[180px]" suppressHydrationWarning>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]" suppressHydrationWarning>
                   {user?.email || ''}
                 </p>
               </div>
@@ -260,7 +260,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
                   authService.logout()
                   router.push('/login')
                 }}
-                className="text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:hover:text-gray-300"
+                className="text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
                 title="Déconnexion"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>

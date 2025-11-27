@@ -20,7 +20,7 @@ export default function MobileHeader({ title, subtitle, onMenuClick }: MobileHea
       <div className="flex items-center justify-between px-4 py-3">
         <button
           onClick={onMenuClick}
-          className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700"
+          className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700"
           aria-label="Ouvrir le menu"
         >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -29,14 +29,14 @@ export default function MobileHeader({ title, subtitle, onMenuClick }: MobileHea
         </button>
         
         <div className="flex-1 text-center">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100">{title}</h1>
-          {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{subtitle}</p>}
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+          {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400">{subtitle}</p>}
         </div>
         
         {/* Dark Mode Toggle */}
         <button
           onClick={toggleTheme}
-          className="text-gray-600 dark:text-gray-400 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
+          className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
           aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
           title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
         >

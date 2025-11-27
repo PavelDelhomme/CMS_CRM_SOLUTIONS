@@ -142,13 +142,13 @@ export default function FAQPage() {
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:bg-gray-900 transition-colors"
               >
-                <span className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 pr-8">{faq.question}</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100 pr-8">{faq.question}</span>
                 <span className="text-blue-600 text-xl flex-shrink-0">
                   {openIndex === index ? '−' : '+'}
                 </span>
               </button>
               {openIndex === index && (
-                <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 dark:text-gray-400 border-t border-gray-100">
+                <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 border-t border-gray-100">
                   <p className="pt-4">{faq.answer}</p>
                 </div>
               )}

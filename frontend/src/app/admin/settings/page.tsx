@@ -106,7 +106,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement des paramètres...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement des paramètres...</p>
           </div>
         </div>
       </AdminLayout>
@@ -117,7 +117,7 @@ export default function SettingsPage() {
     return (
       <AdminLayout title="Paramètres">
         <div className="text-center py-12">
-          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Impossible de charger les paramètres</p>
+          <p className="text-gray-600 dark:text-gray-400">Impossible de charger les paramètres</p>
         </div>
       </AdminLayout>
     )
@@ -184,11 +184,11 @@ export default function SettingsPage() {
         {/* General Tab */}
         {activeTab === 'general' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres Généraux</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Paramètres Généraux</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nom du site
                 </label>
                 <input
@@ -200,7 +200,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   URL du site
                 </label>
                 <input
@@ -212,7 +212,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email de contact
                 </label>
                 <input
@@ -224,7 +224,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email de support
                 </label>
                 <input
@@ -241,7 +241,7 @@ export default function SettingsPage() {
         {/* Email Tab */}
         {activeTab === 'email' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Configuration Email</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Configuration Email</h2>
             
             {/* Info Box - Configuration simplifiée */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -269,8 +269,8 @@ export default function SettingsPage() {
 
             {/* Test Email Section */}
             <div className="border border-gray-200 rounded-lg p-6 bg-gray-50 dark:bg-gray-900">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Tester l'envoi d'email</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tester l'envoi d'email</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Entrez une adresse email pour recevoir un email de test et vérifier que la configuration fonctionne correctement.
               </p>
               
@@ -292,7 +292,7 @@ export default function SettingsPage() {
               </div>
               
               {testEmailRecipient && (
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                   Un email de test sera envoyé à <strong>{testEmailRecipient}</strong>
                 </p>
               )}
@@ -303,11 +303,11 @@ export default function SettingsPage() {
         {/* Security Tab */}
         {activeTab === 'security' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres de Sécurité</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Paramètres de Sécurité</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Longueur minimale du mot de passe
                 </label>
                 <input
@@ -320,7 +320,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Durée de session (minutes)
                 </label>
                 <input
@@ -333,7 +333,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nombre maximum de tentatives de connexion
                 </label>
                 <input
@@ -346,7 +346,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Durée de verrouillage (minutes)
                 </label>
                 <input
@@ -367,7 +367,7 @@ export default function SettingsPage() {
                   onChange={(e) => updateSetting('require_email_verification', e.target.checked)}
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Exiger la vérification de l'email</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Exiger la vérification de l'email</span>
               </label>
             </div>
           </div>
@@ -376,11 +376,11 @@ export default function SettingsPage() {
         {/* Billing Tab */}
         {activeTab === 'billing' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres de Facturation</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Paramètres de Facturation</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Devise par défaut
                 </label>
                 <select
@@ -395,7 +395,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Taux de TVA (%)
                 </label>
                 <input
@@ -410,7 +410,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Préfixe facture
                 </label>
                 <input
@@ -423,7 +423,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Délai de paiement (jours)
                 </label>
                 <input
@@ -441,11 +441,11 @@ export default function SettingsPage() {
         {/* Storage Tab */}
         {activeTab === 'storage' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres de Stockage</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Paramètres de Stockage</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Taille maximale de fichier (MB)
                 </label>
                 <input
@@ -463,7 +463,7 @@ export default function SettingsPage() {
         {/* Notifications Tab */}
         {activeTab === 'notifications' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres de Notifications</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Paramètres de Notifications</h2>
             
             <div className="space-y-4">
               <label className="flex items-center">
@@ -473,7 +473,7 @@ export default function SettingsPage() {
                   onChange={(e) => updateSetting('enable_email_notifications', e.target.checked)}
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Activer les notifications par email</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer les notifications par email</span>
               </label>
 
               <label className="flex items-center">
@@ -483,7 +483,7 @@ export default function SettingsPage() {
                   onChange={(e) => updateSetting('notify_on_new_tenant', e.target.checked)}
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Notifier lors de la création d'un nouveau tenant</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notifier lors de la création d'un nouveau tenant</span>
               </label>
 
               <label className="flex items-center">
@@ -493,7 +493,7 @@ export default function SettingsPage() {
                   onChange={(e) => updateSetting('notify_on_payment_failed', e.target.checked)}
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Notifier lors d'un échec de paiement</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notifier lors d'un échec de paiement</span>
               </label>
 
               <label className="flex items-center">
@@ -503,7 +503,7 @@ export default function SettingsPage() {
                   onChange={(e) => updateSetting('notify_on_subscription_expiring', e.target.checked)}
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Notifier lors de l'expiration d'un abonnement</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notifier lors de l'expiration d'un abonnement</span>
               </label>
             </div>
           </div>
@@ -512,7 +512,7 @@ export default function SettingsPage() {
         {/* Maintenance Tab */}
         {activeTab === 'maintenance' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Mode Maintenance</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Mode Maintenance</h2>
             
             <div className="space-y-4">
               <label className="flex items-center">
@@ -522,11 +522,11 @@ export default function SettingsPage() {
                   onChange={(e) => updateSetting('maintenance_mode', e.target.checked)}
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Activer le mode maintenance</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer le mode maintenance</span>
               </label>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Message de maintenance
                 </label>
                 <textarea
@@ -544,7 +544,7 @@ export default function SettingsPage() {
         {/* Trial Settings */}
         {activeTab === 'general' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres d'Essai</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Paramètres d'Essai</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -555,12 +555,12 @@ export default function SettingsPage() {
                     onChange={(e) => updateSetting('enable_trial', e.target.checked)}
                     className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Activer la période d'essai</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer la période d'essai</span>
                 </label>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Durée de l'essai (jours)
                 </label>
                 <input

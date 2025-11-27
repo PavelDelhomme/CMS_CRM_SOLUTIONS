@@ -70,7 +70,7 @@ export default function HomepageEditorPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </AdminLayout>
@@ -85,7 +85,7 @@ export default function HomepageEditorPage() {
         <div className="flex gap-2">
           <button
             onClick={() => window.open('/', '_blank')}
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -117,10 +117,10 @@ export default function HomepageEditorPage() {
       <div className="flex flex-col lg:flex-row gap-6 h-full">
         {/* Left Sidebar for SEO Settings */}
         <div className="lg:w-1/4 bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6 overflow-y-auto">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Paramètres SEO</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Paramètres SEO</h2>
 
           <div>
-            <label htmlFor="meta_title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+            <label htmlFor="meta_title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Titre SEO
             </label>
             <input
@@ -134,7 +134,7 @@ export default function HomepageEditorPage() {
           </div>
 
           <div>
-            <label htmlFor="meta_description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+            <label htmlFor="meta_description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description SEO
             </label>
             <textarea
@@ -148,11 +148,11 @@ export default function HomepageEditorPage() {
           </div>
 
           <div className="border-t pt-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               💡 <strong>Astuce :</strong> Utilisez l'éditeur de blocs à droite pour créer votre page d'accueil. 
               Les mêmes outils que vos utilisateurs utilisent pour leurs sites.
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               La page d'accueil publique sera visible sur <code className="bg-gray-100 dark:bg-gray-900 px-1 rounded">localhost:9494/</code>
             </p>
           </div>

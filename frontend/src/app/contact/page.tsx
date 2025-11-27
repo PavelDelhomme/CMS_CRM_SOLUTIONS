@@ -42,10 +42,10 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Envoyez-nous un message</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Envoyez-nous un message</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nom complet *
                 </label>
                 <input
@@ -59,7 +59,7 @@ export default function ContactPage() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email *
                 </label>
                 <input
@@ -73,7 +73,7 @@ export default function ContactPage() {
                 />
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Sujet *
                 </label>
                 <select
@@ -93,7 +93,7 @@ export default function ContactPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Message *
                 </label>
                 <textarea
@@ -119,14 +119,14 @@ export default function ContactPage() {
           {/* Contact Info */}
           <div className="space-y-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Nos coordonnées</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Nos coordonnées</h2>
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 bg-blue-100 rounded-lg p-3">
                     <span className="text-2xl">📧</span>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-1">Email</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Email</h3>
                     <a href="mailto:support@vtcbuilder.com" className="text-blue-600 hover:underline">
                       support@vtcbuilder.com
                     </a>
@@ -137,7 +137,7 @@ export default function ContactPage() {
                     <span className="text-2xl">📞</span>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-1">Téléphone</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Téléphone</h3>
                     <a href="tel:+33123456789" className="text-blue-600 hover:underline">
                       +33 1 23 45 67 89
                     </a>
@@ -148,8 +148,8 @@ export default function ContactPage() {
                     <span className="text-2xl">📍</span>
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-1">Adresse</h3>
-                    <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Adresse</h3>
+                    <p className="text-gray-600 dark:text-gray-400">
                       123 Avenue des Exemples<br />
                       75000 PARIS<br />
                       France
@@ -160,8 +160,8 @@ export default function ContactPage() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Horaires de support</h2>
-              <div className="space-y-2 text-gray-600 dark:text-gray-400 dark:text-gray-400">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Horaires de support</h2>
+              <div className="space-y-2 text-gray-600 dark:text-gray-400">
                 <div className="flex justify-between">
                   <span>Lundi - Vendredi</span>
                   <span className="font-semibold">9h - 18h</span>
@@ -178,8 +178,8 @@ export default function ContactPage() {
             </div>
 
             <div className="bg-blue-50 rounded-xl p-6">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">💡 Conseil</h3>
-              <p className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">💡 Conseil</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
                 Pour une réponse plus rapide, consultez d'abord notre <a href="/faq" className="text-blue-600 hover:underline">FAQ</a> ou notre <a href="/docs" className="text-blue-600 hover:underline">documentation</a>.
               </p>
             </div>

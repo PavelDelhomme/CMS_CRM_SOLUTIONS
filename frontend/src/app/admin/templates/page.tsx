@@ -238,7 +238,7 @@ export default function AdminTemplatesPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </AdminLayout>
@@ -329,7 +329,7 @@ export default function AdminTemplatesPage() {
             {activeTab === 'info' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nom *
                 </label>
                 <input
@@ -341,7 +341,7 @@ export default function AdminTemplatesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Slug *
                 </label>
                 <input
@@ -354,7 +354,7 @@ export default function AdminTemplatesPage() {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
@@ -365,7 +365,7 @@ export default function AdminTemplatesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Catégorie *
                 </label>
                 <select
@@ -382,7 +382,7 @@ export default function AdminTemplatesPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   URL de prévisualisation
                 </label>
                 <input
@@ -394,7 +394,7 @@ export default function AdminTemplatesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Premium
                 </label>
                 <label className="flex items-center">
@@ -404,12 +404,12 @@ export default function AdminTemplatesPage() {
                     onChange={(e) => setFormData({ ...formData, is_premium: e.target.checked })}
                     className="mr-2"
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Template premium</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Template premium</span>
                 </label>
               </div>
               {formData.is_premium && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Prix (€)
                   </label>
                   <input
@@ -423,7 +423,7 @@ export default function AdminTemplatesPage() {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Statut
                 </label>
                 <label className="flex items-center">
@@ -433,7 +433,7 @@ export default function AdminTemplatesPage() {
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                     className="mr-2"
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Actif</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Actif</span>
                 </label>
               </div>
             </div>
@@ -444,10 +444,10 @@ export default function AdminTemplatesPage() {
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Contenu HTML
                     </label>
-                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer w-full sm:w-auto">
+                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer w-full sm:w-auto">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
@@ -461,7 +461,7 @@ export default function AdminTemplatesPage() {
                     </label>
                   </div>
                   {htmlFile && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Fichier: {htmlFile.name}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Fichier: {htmlFile.name}</p>
                   )}
                   <textarea
                     value={formData.html_content}
@@ -474,7 +474,7 @@ export default function AdminTemplatesPage() {
                     className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-xs sm:text-sm"
                     placeholder="<!-- Entrez votre code HTML ici -->"
                   />
-                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     💡 Utilisez {'{{variable_name}}'} pour créer des variables dynamiques
                   </p>
                 </div>
@@ -517,12 +517,12 @@ export default function AdminTemplatesPage() {
 
                     return (
                       <div key={varName} className="border border-gray-200 rounded-lg p-4">
-                        <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-3">
+                        <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
                           Variable: <code className="bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded">{'{' + '{' + varName + '}' + '}'}</code>
                         </h5>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               Type
                             </label>
                             <select
@@ -550,7 +550,7 @@ export default function AdminTemplatesPage() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               Valeur par défaut
                             </label>
                             <input
@@ -573,7 +573,7 @@ export default function AdminTemplatesPage() {
                             />
                           </div>
                           <div className="md:col-span-2">
-                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                               Description
                             </label>
                             <textarea
@@ -603,17 +603,17 @@ export default function AdminTemplatesPage() {
 
                 {detectedVariables.length === 0 && (
                   <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 rounded-lg p-6 text-center">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                       Aucune variable détectée dans votre template.
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Pour ajouter des variables, utilisez la syntaxe <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded border">{'{{nom_variable}}'}</code> dans votre HTML ou CSS.
                     </p>
                     <div className="mt-4 text-left bg-white dark:bg-gray-800 border border-gray-200 rounded p-3 text-xs font-mono">
-                      <p className="text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Exemples:</p>
-                      <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">{'<h1>{{company_name}}</h1>'}</p>
-                      <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">{'<img src="{{logo_url}}" alt="Logo">'}</p>
-                      <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">{'color: {{primary_color}};'}</p>
+                      <p className="text-gray-700 dark:text-gray-300 mb-1">Exemples:</p>
+                      <p className="text-gray-600 dark:text-gray-400">{'<h1>{{company_name}}</h1>'}</p>
+                      <p className="text-gray-600 dark:text-gray-400">{'<img src="{{logo_url}}" alt="Logo">'}</p>
+                      <p className="text-gray-600 dark:text-gray-400">{'color: {{primary_color}};'}</p>
                     </div>
                   </div>
                 )}
@@ -625,10 +625,10 @@ export default function AdminTemplatesPage() {
               <div className="space-y-4">
                 <div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Contenu CSS
                     </label>
-                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer w-full sm:w-auto">
+                    <label className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer w-full sm:w-auto">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
@@ -642,7 +642,7 @@ export default function AdminTemplatesPage() {
                     </label>
                   </div>
                   {cssFile && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Fichier: {cssFile.name}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Fichier: {cssFile.name}</p>
                   )}
                   <textarea
                     value={formData.css_content}
@@ -655,7 +655,7 @@ export default function AdminTemplatesPage() {
                     className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-xs sm:text-sm"
                     placeholder="/* Entrez votre code CSS ici */"
                   />
-                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     💡 Utilisez {'{{variable_name}}'} pour créer des variables dynamiques (couleurs, tailles, etc.)
                   </p>
                 </div>
@@ -670,7 +670,7 @@ export default function AdminTemplatesPage() {
                   setEditingTemplate(null)
                   resetForm()
                 }}
-                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
               >
                 Annuler
               </button>
@@ -693,7 +693,7 @@ export default function AdminTemplatesPage() {
         >
           {templates.length === 0 ? (
             <tr>
-              <td colSpan={8} className="px-3 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
+              <td colSpan={8} className="px-3 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                 Aucun template pour le moment. Créez-en un nouveau !
               </td>
             </tr>
@@ -701,13 +701,13 @@ export default function AdminTemplatesPage() {
             templates.map((template) => (
               <tr key={template.id} className="hover:bg-gray-50 dark:bg-gray-900">
                 <td className="px-3 sm:px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 break-words">{template.name}</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">{template.name}</div>
                   {template.description && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1 line-clamp-2">{template.description}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{template.description}</div>
                   )}
                 </td>
                 <td className="px-3 sm:px-6 py-4">
-                  <code className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded break-all">{template.slug}</code>
+                  <code className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded break-all">{template.slug}</code>
                 </td>
                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getCategoryBadge(template.category)}`}>
@@ -725,7 +725,7 @@ export default function AdminTemplatesPage() {
                     </span>
                   )}
                 </td>
-                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {template.is_premium ? `${template.price}€` : '-'}
                 </td>
                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
@@ -740,7 +740,7 @@ export default function AdminTemplatesPage() {
                     {template.is_active ? 'Actif' : 'Inactif'}
                   </button>
                 </td>
-                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {template.usage_count || 0}
                 </td>
                 <td className="px-3 sm:px-6 py-4 text-right text-sm font-medium">
