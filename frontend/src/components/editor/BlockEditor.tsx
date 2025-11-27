@@ -499,6 +499,119 @@ function SortableBlock({
 
   const blockType = blockTypes.find(bt => bt.name === block.type)
 
+  // Déterminer la taille du texte selon la largeur du bloc
+  const getTextSize = () => {
+    switch (block.layout) {
+      case 'quarter':
+        return 'text-xs'
+      case 'third':
+        return 'text-xs sm:text-sm'
+      case 'half':
+        return 'text-xs sm:text-sm'
+      case 'two-thirds':
+        return 'text-sm'
+      case 'three-quarters':
+        return 'text-sm sm:text-base'
+      case 'full':
+      default:
+        return 'text-sm sm:text-base'
+    }
+  }
+
+  // Déterminer la taille de l'icône selon la largeur du bloc
+  const getIconSize = () => {
+    switch (block.layout) {
+      case 'quarter':
+        return 'text-sm'
+      case 'third':
+        return 'text-base sm:text-lg'
+      case 'half':
+        return 'text-base sm:text-lg'
+      case 'two-thirds':
+        return 'text-lg sm:text-xl'
+      case 'three-quarters':
+        return 'text-lg sm:text-xl'
+      case 'full':
+      default:
+        return 'text-lg sm:text-xl'
+    }
+  }
+
+  // Déterminer le padding selon la largeur du bloc
+  const getPadding = () => {
+    switch (block.layout) {
+      case 'quarter':
+        return 'p-2'
+      case 'third':
+        return 'p-2 sm:p-3'
+      case 'half':
+        return 'p-2 sm:p-3'
+      case 'two-thirds':
+        return 'p-3 sm:p-4'
+      case 'three-quarters':
+        return 'p-3 sm:p-4'
+      case 'full':
+      default:
+        return 'p-3 sm:p-4'
+    }
+  }
+
+  // Déterminer la taille de l'icône container
+  const getIconContainerSize = () => {
+    switch (block.layout) {
+      case 'quarter':
+        return 'w-6 h-6 sm:w-7 sm:h-7'
+      case 'third':
+        return 'w-7 h-7 sm:w-8 sm:h-8'
+      case 'half':
+        return 'w-7 h-7 sm:w-8 sm:h-8'
+      case 'two-thirds':
+        return 'w-8 h-8 sm:w-10 sm:h-10'
+      case 'three-quarters':
+        return 'w-8 h-8 sm:w-10 sm:h-10'
+      case 'full':
+      default:
+        return 'w-8 h-8 sm:w-10 sm:h-10'
+    }
+  }
+
+  // Déterminer la taille des boutons
+  const getButtonSize = () => {
+    switch (block.layout) {
+      case 'quarter':
+        return 'p-1.5'
+      case 'third':
+        return 'p-1.5 sm:p-2'
+      case 'half':
+        return 'p-1.5 sm:p-2'
+      case 'two-thirds':
+        return 'p-2'
+      case 'three-quarters':
+        return 'p-2'
+      case 'full':
+      default:
+        return 'p-2'
+    }
+  }
+
+  const getButtonIconSize = () => {
+    switch (block.layout) {
+      case 'quarter':
+        return 'w-3 h-3 sm:w-4 sm:h-4'
+      case 'third':
+        return 'w-3.5 h-3.5 sm:w-4 sm:h-4'
+      case 'half':
+        return 'w-3.5 h-3.5 sm:w-4 sm:h-4'
+      case 'two-thirds':
+        return 'w-4 h-4 sm:w-5 sm:h-5'
+      case 'three-quarters':
+        return 'w-4 h-4 sm:w-5 sm:h-5'
+      case 'full':
+      default:
+        return 'w-4 h-4 sm:w-5 sm:h-5'
+    }
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -507,7 +620,7 @@ function SortableBlock({
     >
       {/* Block Header - Modern Design */}
       <div
-        className={`flex items-center justify-between p-3 sm:p-4 cursor-move transition-colors ${
+        className={`flex items-center justify-between ${getPadding()} cursor-move transition-colors ${
           isSelected 
             ? 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-b border-blue-200 dark:border-blue-700' 
             : 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700 hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-800'
@@ -515,31 +628,31 @@ function SortableBlock({
         {...attributes}
         {...listeners}
       >
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-          <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-gray-200 dark:border-gray-700">
-            <span className="text-lg sm:text-xl">{blockType?.icon || '📦'}</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+          <div className={`flex-shrink-0 ${getIconContainerSize()} rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-gray-200 dark:border-gray-700`}>
+            <span className={getIconSize()}>{blockType?.icon || '📦'}</span>
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 truncate block">{blockType?.label || block.type}</span>
-            {blockType?.description && (
+            <span className={`${getTextSize()} font-semibold text-gray-900 dark:text-gray-100 truncate block`}>{blockType?.label || block.type}</span>
+            {blockType?.description && block.layout !== 'quarter' && block.layout !== 'third' && (
               <span className="text-xs text-gray-500 dark:text-gray-400 truncate block hidden sm:block">{blockType.description}</span>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={(e) => {
               e.stopPropagation()
               onSelect()
             }}
-            className={`p-2 rounded-lg transition-all ${
+            className={`${getButtonSize()} rounded-lg transition-all ${
               isSelected 
                 ? 'bg-blue-500 text-white shadow-md' 
                 : 'text-gray-500 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
             title="Sélectionner"
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -549,10 +662,10 @@ function SortableBlock({
               e.stopPropagation()
               onDelete()
             }}
-            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all"
+            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all`}
             title="Supprimer"
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
@@ -560,10 +673,10 @@ function SortableBlock({
       </div>
 
       {/* Block Content - Modern Design */}
-      <div className="p-4 sm:p-6 bg-white dark:bg-gray-800">
+      <div className={`${block.layout === 'quarter' || block.layout === 'third' ? 'p-2 sm:p-3' : 'p-4 sm:p-6'} bg-white dark:bg-gray-800`}>
         {/* Layout Controls - Enhanced */}
-        <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3 flex-wrap">
+        <div className={`mb-4 ${block.layout === 'quarter' || block.layout === 'third' ? 'p-2' : 'p-3'} bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700`}>
+          <div className={`flex items-center ${block.layout === 'quarter' || block.layout === 'third' ? 'gap-1.5 flex-wrap' : 'gap-3 flex-wrap'}`}>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
