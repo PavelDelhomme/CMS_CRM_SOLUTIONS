@@ -116,7 +116,7 @@ export default function BlockPreview({
                   <SortablePreviewBlock
                     key={block.id}
                     block={block}
-                    blockType={blockTypes.find(bt => bt.name === block.type)}
+                    blockType={blockTypes.find((bt: BlockType) => bt.name === block.type)}
                     isSelected={selectedBlockId === block.id}
                     isInteractive={isInteractive}
                     onClick={() => handleBlockClick(block.id)}
