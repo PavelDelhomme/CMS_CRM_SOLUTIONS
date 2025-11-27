@@ -121,9 +121,19 @@ rebuild: ## Tout reconstruire et redémarrer
 	@cd backend-django && $(MAKE) rebuild
 	@echo "$(GREEN)✅ Reconstruction terminée !$(NC)"
 
-status: ## Afficher le statut des services
-	@echo "$(BLUE)📊 Statut des services Django :$(NC)"
-	@cd backend-django && $(MAKE) status
+status: ## Afficher le statut des services VTCBuilder
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📊 Statut des conteneurs VTCBuilder :$(NC)"
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@docker ps --filter "name=vtcbuilder" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || true
+	@echo ""
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)📈 Résumé :$(NC)"
+	@RUNNING=$$(docker ps --filter "name=vtcbuilder" --format "{{.Names}}" | wc -l); \
+	 STOPPED=$$(docker ps -a --filter "name=vtcbuilder" --filter "status=exited" --format "{{.Names}}" | wc -l); \
+	 echo "  $(GREEN)●$(NC) En cours d'exécution : $$RUNNING"; \
+	 if [ $$STOPPED -gt 0 ]; then echo "  $(RED)●$(NC) Arrêtés : $$STOPPED"; fi
+	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 
 ##@ Backend Django (backend-django/)
 
