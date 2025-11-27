@@ -669,6 +669,183 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         </div>
       )
 
+    case 'rows':
+      const rowCount = block.data.rows_count || 2
+      return (
+        <div style={blockStyles} className="mb-6 space-y-4">
+          {Array.from({ length: rowCount }).map((_, i) => (
+            <div key={i} className="bg-gray-50 dark:bg-gray-800 p-4 rounded border border-gray-200 dark:border-gray-700">
+              Ligne {i + 1} - Les colonnes peuvent être ajoutées ici
+            </div>
+          ))}
+        </div>
+      )
+
+    case 'table':
+      const tableRows = block.data.rows || 3
+      const tableCols = block.data.columns || 3
+      const tableData = block.data.table_data || Array(tableRows).fill(null).map(() => Array(tableCols).fill(''))
+      const hasHeader = block.data.has_header || false
+      const bordered = block.data.bordered !== false
+      
+      return (
+        <div style={blockStyles} className="mb-6 overflow-x-auto">
+          <table className={`w-full ${bordered ? 'border border-gray-300 dark:border-gray-600' : ''}`}>
+            {hasHeader && tableData.length > 0 && (
+              <thead>
+                <tr className="bg-gray-100 dark:bg-gray-800">
+                  {tableData[0].map((cell: string, colIndex: number) => (
+                    <th key={colIndex} className={`px-4 py-2 text-left font-semibold text-gray-900 dark:text-gray-100 ${bordered ? 'border border-gray-300 dark:border-gray-600' : ''}`}>
+                      {cell || `En-tête ${colIndex + 1}`}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+            )}
+            <tbody>
+              {(hasHeader ? tableData.slice(1) : tableData).map((row: string[], rowIndex: number) => (
+                <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  {row.map((cell: string, colIndex: number) => (
+                    <td key={colIndex} className={`px-4 py-2 text-gray-700 dark:text-gray-300 ${bordered ? 'border border-gray-300 dark:border-gray-600' : ''}`}>
+                      {cell || `Cellule ${rowIndex + 1},${colIndex + 1}`}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+
+    case 'paragraph':
+      return (
+        <div style={blockStyles} className="mb-6">
+          <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+            {block.data.content || 'Paragraphe vide'}
+          </p>
+        </div>
+      )
+
+    case 'line':
+      return (
+        <div style={blockStyles} className="mb-6">
+          <span className="text-base text-gray-700 dark:text-gray-300">
+            {block.data.text || 'Texte sur une ligne'}
+          </span>
+        </div>
+      )
+
+    case 'form-newsletter':
+      return (
+        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          {block.data.title && (
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              {block.data.title}
+            </h3>
+          )}
+          {block.data.description && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              {block.data.description}
+            </p>
+          )}
+          <form className="flex gap-2">
+            <input
+              type="email"
+              placeholder="Votre email"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              {block.data.button_text || 'S\'inscrire'}
+            </button>
+          </form>
+        </div>
+      )
+
+    case 'form-search':
+      return (
+        <div style={blockStyles} className="mb-6">
+          <form className="flex gap-2">
+            <input
+              type="search"
+              placeholder={block.data.placeholder || 'Rechercher...'}
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              {block.data.button_text || 'Rechercher'}
+            </button>
+          </form>
+        </div>
+      )
+
+    case 'form-inscription':
+      return (
+        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          {block.data.title && (
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              {block.data.title}
+            </h3>
+          )}
+          <form className="space-y-4">
+            {block.data.show_name !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Nom complet
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+            {block.data.show_email !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+            {block.data.show_password !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Mot de passe
+                </label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+            {block.data.show_phone && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            )}
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              {block.data.button_text || 'S\'inscrire'}
+            </button>
+          </form>
+        </div>
+      )
+
     case 'gallery':
       const images = block.data.images || []
       const galleryColumns = block.data.columns || 3
