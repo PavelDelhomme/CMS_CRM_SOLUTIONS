@@ -43,7 +43,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         queryset=Tenant.objects.all(),
         source='tenant',
         write_only=True,
-        required=False
+        required=False,
+        allow_null=True
     )
     # Include related invoices count and summary
     invoices_count = serializers.SerializerMethodField()

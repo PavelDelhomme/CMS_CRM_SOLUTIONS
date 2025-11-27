@@ -129,29 +129,54 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """Create a new subscription with automatic date handling"""
-        # Only super admin can create subscriptions
-        if not request.user.is_super_admin():
+        user = request.user
+        
+        # Remove tenant from request.data if present (will be set from user context or validated)
+        data = request.data.copy()
+        
+        # Determine tenant based on user role
+        tenant = None
+        
+        if user.is_super_admin():
+            # Super admin can create subscription for any tenant (must specify tenant_id)
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            
+            tenant_id = serializer.validated_data.get('tenant') or serializer.validated_data.get('tenant_id')
+            if isinstance(tenant_id, dict):
+                tenant_id = tenant_id.get('id')
+            elif hasattr(tenant_id, 'id'):
+                tenant_id = tenant_id.id
+            
+            if not tenant_id:
+                return Response(
+                    {'error': 'tenant_id is required for super admin'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            try:
+                tenant = Tenant.objects.get(id=tenant_id)
+            except Tenant.DoesNotExist:
+                return Response(
+                    {'error': 'Tenant not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        elif user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
+            # Tenant admin can create subscription for their own tenant
+            tenant = user.tenant
+            
+            # Remove tenant_id from data (will use user's tenant)
+            if 'tenant' in data:
+                del data['tenant']
+            if 'tenant_id' in data:
+                del data['tenant_id']
+            
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+        else:
             return Response(
-                {'error': 'Only super admin can create subscriptions'},
+                {'error': 'Vous devez être admin d\'un tenant pour créer un abonnement'},
                 status=status.HTTP_403_FORBIDDEN
-            )
-        
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        tenant_id = serializer.validated_data.get('tenant')
-        if isinstance(tenant_id, dict):
-            tenant_id = tenant_id.get('id')
-        elif hasattr(tenant_id, 'id'):
-            tenant_id = tenant_id.id
-        
-        # Get tenant object
-        try:
-            tenant = Tenant.objects.get(id=tenant_id)
-        except Tenant.DoesNotExist:
-            return Response(
-                {'error': 'Tenant not found'},
-                status=status.HTTP_404_NOT_FOUND
             )
         
         # Check if tenant already has a subscription
