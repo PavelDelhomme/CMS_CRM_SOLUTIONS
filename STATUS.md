@@ -856,6 +856,26 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 ### 📝 Modifications Récentes (2025-11-27)
 
+#### Corrections Bugs Interface Graphique
+1. ✅ **Création Service VTC** (`/dashboard/services/new`)
+   - Erreur 400 corrigée
+   - `tenant` rendu read_only dans serializer
+   - Tenant automatiquement assigné depuis `user.tenant`
+
+2. ✅ **Upload Média** (`/dashboard/media`)
+   - Erreur 400 corrigée
+   - Implémentation complète upload fichier
+   - Sauvegarde fichier avec `default_storage`
+   - Génération path avec tenant prefix + timestamp
+   - Détection automatique collection depuis `mime_type`
+
+3. ✅ **Création Abonnement** (`/dashboard/billing`)
+   - Erreur 403 corrigée
+   - Tenant admin peut maintenant créer abonnement pour son tenant
+   - Auto-détection tenant depuis `user.tenant`
+   - Update plan si abonnement existe déjà (au lieu d'erreur)
+   - Réactivation automatique si abonnement était cancelled
+
 #### Système de Suspension/Désactivation Utilisateurs
 1. ✅ **Actions admin suspend/activate/deactivate** 
    - Endpoints API créés et fonctionnels
