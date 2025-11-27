@@ -647,6 +647,182 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         </div>
       )
 
+    case 'features-grid':
+      const features = block.data.features || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.length > 0 ? (
+              features.map((feature: any, i: number) => (
+                <div key={i} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                  <div className="text-5xl mb-4">{feature.icon || '✨'}</div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    {feature.title || `Fonctionnalité ${i + 1}`}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {feature.description || 'Description...'}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucune fonctionnalité
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'cta-section':
+      return (
+        <div
+          style={{
+            ...blockStyles,
+            background: block.data.background_gradient || 'linear-gradient(to right, #2563eb, #9333ea)',
+            padding: block.styles?.padding || '5rem 2rem',
+          }}
+          className="mb-6 rounded-lg"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            {block.data.title && (
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                {block.data.title}
+              </h2>
+            )}
+            {block.data.description && (
+              <p className="text-xl text-white/90 mb-8">
+                {block.data.description}
+              </p>
+            )}
+            {block.data.button_text && block.data.button_url && (
+              <a
+                href={block.data.button_url}
+                className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
+                  block.data.button_style === 'dark'
+                    ? 'bg-white text-gray-900 hover:bg-gray-100'
+                    : 'bg-white text-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                {block.data.button_text}
+              </a>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'contact-form':
+      return (
+        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+              {block.data.title}
+            </h2>
+          )}
+          <form className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Nom complet *
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email *
+              </label>
+              <input
+                type="email"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                required
+              />
+            </div>
+            {block.data.show_subject !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Sujet *
+                </label>
+                <select className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100">
+                  <option>Sélectionnez un sujet</option>
+                  <option>Support technique</option>
+                  <option>Question commerciale</option>
+                  <option>Question de facturation</option>
+                  <option>Suggestion de fonctionnalité</option>
+                  <option>Autre</option>
+                </select>
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Message *
+              </label>
+              <textarea
+                rows={6}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              {block.data.submit_text || 'Envoyer le message'}
+            </button>
+          </form>
+        </div>
+      )
+
+    case 'faq-section':
+      const faqItems = block.data.items || []
+      const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="space-y-4 max-w-4xl mx-auto">
+            {faqItems.length > 0 ? (
+              faqItems.map((item: any, i: number) => (
+                <div
+                  key={i}
+                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
+                    className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:bg-gray-900 transition-colors"
+                  >
+                    <span className="font-semibold text-gray-900 dark:text-gray-100 pr-8">
+                      {item.question || `Question ${i + 1}`}
+                    </span>
+                    <span className="text-blue-600 text-xl flex-shrink-0">
+                      {openFaqIndex === i ? '−' : '+'}
+                    </span>
+                  </button>
+                  {openFaqIndex === i && (
+                    <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 border-t border-gray-100">
+                      <p className="pt-4">{item.answer || 'Réponse...'}</p>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucune question FAQ
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
     default:
       return (
         <div style={blockStyles} className="mb-6 p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
