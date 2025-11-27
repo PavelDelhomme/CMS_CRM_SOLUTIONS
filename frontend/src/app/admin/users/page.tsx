@@ -37,10 +37,11 @@ export default function UsersPage() {
   const handleActivate = async (id: number) => {
     try {
       await userService.activate(id)
+      toast.success('Utilisateur activé')
       loadUsers()
     } catch (error) {
       console.error('Erreur activation:', error)
-      alert('Erreur lors de l\'activation')
+      toast.error('Erreur lors de l\'activation')
     }
   }
 
@@ -48,10 +49,11 @@ export default function UsersPage() {
     if (!confirm('Êtes-vous sûr de vouloir désactiver cet utilisateur ?')) return
     try {
       await userService.deactivate(id)
+      toast.success('Utilisateur désactivé')
       loadUsers()
     } catch (error) {
       console.error('Erreur désactivation:', error)
-      alert('Erreur lors de la désactivation')
+      toast.error('Erreur lors de la désactivation')
     }
   }
 
@@ -59,10 +61,11 @@ export default function UsersPage() {
     if (!confirm('Êtes-vous sûr de vouloir suspendre cet utilisateur ?')) return
     try {
       await userService.suspend(id)
+      toast.success('Utilisateur suspendu')
       loadUsers()
     } catch (error) {
       console.error('Erreur suspension:', error)
-      alert('Erreur lors de la suspension')
+      toast.error('Erreur lors de la suspension')
     }
   }
 
@@ -70,10 +73,10 @@ export default function UsersPage() {
     if (!confirm(`Envoyer un email de réinitialisation de mot de passe à ${email} ?`)) return
     try {
       const result = await userService.sendPasswordReset(id)
-      alert(result.message || 'Email de réinitialisation envoyé avec succès !')
+      toast.success(result.message || 'Email de réinitialisation envoyé avec succès !')
     } catch (error: any) {
       console.error('Erreur envoi reset password:', error)
-      alert(error.response?.data?.error || 'Erreur lors de l\'envoi de l\'email')
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'envoi de l\'email')
     }
   }
 
@@ -92,7 +95,7 @@ export default function UsersPage() {
         localStorage.setItem('user', JSON.stringify(result.target_user))
       }
       
-      alert(result.message || 'Impersonnification démarrée')
+      toast.success(result.message || 'Impersonnification démarrée')
       
       // Redirect to appropriate dashboard
       if (result.target_user?.role === 'tenant-admin') {
@@ -105,14 +108,14 @@ export default function UsersPage() {
       window.location.reload()
     } catch (error: any) {
       console.error('Erreur impersonnification:', error)
-      alert(error.response?.data?.error || 'Erreur lors de l\'impersonnification')
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'impersonnification')
     }
   }
 
   const handleDelete = async (id: number, email: string, userName: string, role: string) => {
     // Prevent deletion of super-admin
     if (role === 'super-admin') {
-      alert('Impossible de supprimer un super-admin')
+      toast.error('Impossible de supprimer un super-admin')
       return
     }
 
@@ -125,11 +128,11 @@ export default function UsersPage() {
     
     try {
       await userService.delete(id)
-      alert('Utilisateur supprimé avec succès')
+      toast.success('Utilisateur supprimé avec succès')
       loadUsers()
     } catch (error: any) {
       console.error('Erreur suppression:', error)
-      alert(error.response?.data?.error || 'Erreur lors de la suppression. Impossible de supprimer un super-admin.')
+      toast.error(error.response?.data?.error || 'Erreur lors de la suppression. Impossible de supprimer un super-admin.')
     }
   }
 
@@ -174,6 +177,17 @@ export default function UsersPage() {
     <AdminLayout
       title="Gestion des Utilisateurs"
       subtitle="Gérez tous les utilisateurs de la plateforme"
+      headerActions={
+        <button
+          onClick={() => router.push('/admin/users/new')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Nouvel utilisateur
+        </button>
+      }
     >
           <div className="mb-6">
             <input
