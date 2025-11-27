@@ -123,7 +123,7 @@ export default function FAQPage() {
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 filter === category.id
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-200 text-gray-700 dark:text-gray-300 hover:bg-gray-300'
               }`}
             >
               {category.label}
@@ -136,19 +136,19 @@ export default function FAQPage() {
           {filteredFaqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl shadow-lg overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:bg-gray-900 transition-colors"
               >
-                <span className="font-semibold text-gray-900 pr-8">{faq.question}</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 pr-8">{faq.question}</span>
                 <span className="text-blue-600 text-xl flex-shrink-0">
                   {openIndex === index ? '−' : '+'}
                 </span>
               </button>
               {openIndex === index && (
-                <div className="px-6 pb-5 text-gray-600 border-t border-gray-100">
+                <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 dark:text-gray-400 border-t border-gray-100">
                   <p className="pt-4">{faq.answer}</p>
                 </div>
               )}
@@ -164,7 +164,7 @@ export default function FAQPage() {
           </p>
           <a
             href="/contact"
-            className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+            className="inline-block bg-white dark:bg-gray-800 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
           >
             Nous contacter →
           </a>

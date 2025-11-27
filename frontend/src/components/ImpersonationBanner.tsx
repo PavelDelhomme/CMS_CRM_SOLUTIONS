@@ -90,7 +90,7 @@ export default function ImpersonationBanner() {
         </div>
         <button
           onClick={handleStopImpersonating}
-          className="bg-white text-yellow-600 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-50 transition-colors text-sm"
+          className="bg-white dark:bg-gray-800 text-yellow-600 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-50 transition-colors text-sm"
         >
           Arrêter l'impersonnification
         </button>

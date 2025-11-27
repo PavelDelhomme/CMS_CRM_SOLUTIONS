@@ -81,20 +81,20 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   return (
     <div className="flex h-full">
       {/* Sidebar - Block Palette */}
-      <div className="w-64 bg-gray-100 border-r border-gray-300 p-4 overflow-y-auto">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">Blocs disponibles</h3>
+      <div className="w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 p-4 overflow-y-auto">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-4">Blocs disponibles</h3>
         <div className="space-y-2">
           {blockTypes.map((blockType) => (
             <button
               key={blockType.id}
               onClick={() => addBlock(blockType)}
-              className="w-full px-3 py-2 text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition flex items-center gap-2"
+              className="w-full px-3 py-2 text-left bg-white dark:bg-gray-800 border border-gray-200 rounded-lg hover:bg-gray-50 dark:bg-gray-900 hover:border-blue-500 transition flex items-center gap-2"
             >
               <span className="text-xl">{blockType.icon || '📦'}</span>
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">{blockType.label}</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{blockType.label}</div>
                 {blockType.description && (
-                  <div className="text-xs text-gray-500">{blockType.description}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{blockType.description}</div>
                 )}
               </div>
             </button>
@@ -110,10 +110,10 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
-            <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
+            <div className="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
               {blocks.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-gray-500 mb-4">Aucun bloc ajouté</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-4">Aucun bloc ajouté</p>
                   <p className="text-sm text-gray-400">
                     Cliquez sur un bloc dans la palette pour commencer
                   </p>
@@ -138,8 +138,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
       {/* Properties Panel */}
       {selectedBlock && (
-        <div className="w-80 bg-white border-l border-gray-300 p-4 overflow-y-auto">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Propriétés du bloc</h3>
+        <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-300 p-4 overflow-y-auto">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-4">Propriétés du bloc</h3>
           <BlockPropertiesPanel
             block={blocks.find(b => b.id === selectedBlock)!}
             blockType={blockTypes.find(bt => bt.name === blocks.find(b => b.id === selectedBlock)!.type)}
@@ -188,17 +188,17 @@ function SortableBlock({
     <div
       ref={setNodeRef}
       style={style}
-      className={`mb-4 bg-white rounded-lg border-2 ${isSelected ? 'border-blue-500' : 'border-gray-200'} shadow-sm hover:shadow-md transition`}
+      className={`mb-4 bg-white dark:bg-gray-800 rounded-lg border-2 ${isSelected ? 'border-blue-500' : 'border-gray-200'} shadow-sm hover:shadow-md transition`}
     >
       {/* Block Header */}
       <div
-        className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200 cursor-move"
+        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 cursor-move"
         {...attributes}
         {...listeners}
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">{blockType?.icon || '📦'}</span>
-          <span className="text-sm font-medium text-gray-700">{blockType?.label || block.type}</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">{blockType?.label || block.type}</span>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -206,7 +206,7 @@ function SortableBlock({
               e.stopPropagation()
               onSelect()
             }}
-            className="p-1 text-gray-500 hover:text-blue-600"
+            className="p-1 text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:text-blue-600"
             title="Sélectionner"
           >
             ⚙️
@@ -216,7 +216,7 @@ function SortableBlock({
               e.stopPropagation()
               onDelete()
             }}
-            className="p-1 text-gray-500 hover:text-red-600"
+            className="p-1 text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:text-red-600"
             title="Supprimer"
           >
             🗑️
@@ -359,8 +359,8 @@ function BlockRenderer({
             placeholder="URL de la vidéo (YouTube, Vimeo)..."
           />
           {block.data.url && (
-            <div className="mt-2 aspect-video bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-              <p className="text-sm text-gray-500">Aperçu vidéo: {block.data.url}</p>
+            <div className="mt-2 aspect-video bg-gray-100 dark:bg-gray-900 rounded border border-gray-200 flex items-center justify-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Aperçu vidéo: {block.data.url}</p>
             </div>
           )}
         </div>
@@ -381,7 +381,7 @@ function BlockRenderer({
             className="bg-gray-200 border-2 border-dashed border-gray-300 rounded"
             style={{ height: `${block.data.height || 40}px` }}
           >
-            <div className="h-full flex items-center justify-center text-xs text-gray-500">
+            <div className="h-full flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
               Espaceur: {(block.data.height || 40)}px
             </div>
           </div>
@@ -408,7 +408,7 @@ function BlockRenderer({
       )
     default:
       return (
-        <div className="text-gray-500 text-sm space-y-2">
+        <div className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm space-y-2">
           <p>Bloc {block.type} - Configuration à venir</p>
           {blockType?.description && (
             <p className="text-xs text-gray-400">{blockType.description}</p>
@@ -429,14 +429,14 @@ function BlockPropertiesPanel({
   onUpdate: (updates: Partial<Block>) => void
 }) {
   if (!blockType) {
-    return <div className="text-sm text-gray-500">Type de bloc non trouvé</div>
+    return <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Type de bloc non trouvé</div>
   }
 
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Type</label>
-        <div className="text-sm text-gray-900">{blockType.label}</div>
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Type</label>
+        <div className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">{blockType.label}</div>
       </div>
 
       {/* Render properties based on block schema */}
@@ -444,7 +444,7 @@ function BlockPropertiesPanel({
         <div className="space-y-3">
           {Object.entries(blockType.schema).map(([key, schema]: [string, any]) => (
             <div key={key}>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
                 {schema.label || key}
               </label>
               {schema.type === 'text' && (

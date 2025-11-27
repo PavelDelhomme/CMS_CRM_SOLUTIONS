@@ -41,14 +41,14 @@ export default function PublicHeader() {
                 {isSuperAdmin ? (
                   <Link
                     href="/admin/dashboard"
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                    className="bg-white dark:bg-gray-800 text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
                   >
                     Administration
                   </Link>
                 ) : (
                   <Link
                     href="/dashboard"
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                    className="bg-white dark:bg-gray-800 text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
                   >
                     Mon Dashboard
                   </Link>
@@ -64,7 +64,7 @@ export default function PublicHeader() {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                  className="bg-white dark:bg-gray-800 text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
                 >
                   Créer un compte
                 </Link>

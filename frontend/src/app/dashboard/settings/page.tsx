@@ -64,7 +64,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -78,12 +78,12 @@ export default function SettingsPage() {
     >
       <div className="space-y-6">
         {/* General Settings */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Informations générales</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Informations générales</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                 Nom de votre société
               </label>
               <input
@@ -98,7 +98,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                 Email de contact
               </label>
               <input
@@ -114,7 +114,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="primary_color" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="primary_color" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Couleur primaire
                 </label>
                 <div className="flex items-center gap-3">
@@ -136,7 +136,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label htmlFor="secondary_color" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="secondary_color" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Couleur secondaire
                 </label>
                 <div className="flex items-center gap-3">

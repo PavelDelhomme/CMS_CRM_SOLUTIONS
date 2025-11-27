@@ -24,7 +24,7 @@ export default function PublicLayout({ children, title, description }: PublicLay
             </div>
           </div>
         )}
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-800">
           {children}
         </div>
       </main>

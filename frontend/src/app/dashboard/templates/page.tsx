@@ -56,10 +56,10 @@ export default function TemplatesPage() {
       vtc: 'bg-blue-100 text-blue-800',
       business: 'bg-purple-100 text-purple-800',
       classic: 'bg-green-100 text-green-800',
-      minimal: 'bg-gray-100 text-gray-800',
+      minimal: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
       modern: 'bg-indigo-100 text-indigo-800',
     }
-    return badges[category] || 'bg-gray-100 text-gray-800'
+    return badges[category] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   const formatPrice = (price: number) => {
@@ -72,7 +72,7 @@ export default function TemplatesPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -86,14 +86,14 @@ export default function TemplatesPage() {
     >
       <div className="space-y-6">
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 filter === 'all'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
               }`}
             >
               Tous
@@ -103,7 +103,7 @@ export default function TemplatesPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 filter === 'free'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
               }`}
             >
               Gratuits
@@ -113,7 +113,7 @@ export default function TemplatesPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium ${
                 filter === 'premium'
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
               }`}
             >
               Premium
@@ -125,7 +125,7 @@ export default function TemplatesPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${
                   filter === cat
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
                 }`}
               >
                 {cat}
@@ -136,19 +136,19 @@ export default function TemplatesPage() {
 
         {/* Templates Grid */}
         {templates.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
             <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun template disponible</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Aucun template disponible</h3>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">
               {filter !== 'all' ? 'Essayez de modifier vos filtres' : 'Aucun template trouvé'}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {templates.map((template) => (
-              <div key={template.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={template.id} className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
                 {/* Preview Image */}
                 <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
                   {template.thumbnail ? (
@@ -178,10 +178,10 @@ export default function TemplatesPage() {
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">
                     {template.name}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 min-h-[40px]">
+                  <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 text-sm mb-4 min-h-[40px]">
                     {template.description || 'Aucune description'}
                   </p>
 
@@ -198,7 +198,7 @@ export default function TemplatesPage() {
                         href={template.preview_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center justify-center"
+                        className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-lg hover:bg-gray-200 flex items-center justify-center"
                         title="Aperçu"
                       >
                         👁️

@@ -183,7 +183,7 @@ export default function EditUserPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </AdminLayout>
@@ -226,14 +226,14 @@ export default function EditUserPage() {
         )}
 
         {/* Formulaire principal */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Informations de l'utilisateur</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Informations de l'utilisateur</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Email *
                 </label>
                 <input
@@ -248,7 +248,7 @@ export default function EditUserPage() {
 
               {/* Username */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Nom d'utilisateur *
                 </label>
                 <input
@@ -263,7 +263,7 @@ export default function EditUserPage() {
 
               {/* Prénom */}
               <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Prénom
                 </label>
                 <input
@@ -277,7 +277,7 @@ export default function EditUserPage() {
 
               {/* Nom */}
               <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Nom
                 </label>
                 <input
@@ -291,7 +291,7 @@ export default function EditUserPage() {
 
               {/* Téléphone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Téléphone
                 </label>
                 <input
@@ -305,7 +305,7 @@ export default function EditUserPage() {
 
               {/* Rôle */}
               <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Rôle *
                 </label>
                 <select
@@ -324,7 +324,7 @@ export default function EditUserPage() {
 
               {/* Tenant */}
               <div>
-                <label htmlFor="tenant_id" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="tenant_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Tenant
                 </label>
                 <select
@@ -337,7 +337,7 @@ export default function EditUserPage() {
                   }}
                   disabled={formData.role === 'super-admin'}
                   className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    formData.role === 'super-admin' ? 'bg-gray-100 cursor-not-allowed' : ''
+                    formData.role === 'super-admin' ? 'bg-gray-100 dark:bg-gray-900 cursor-not-allowed' : ''
                   }`}
                 >
                   <option value="">Aucun tenant</option>
@@ -348,13 +348,13 @@ export default function EditUserPage() {
                   ))}
                 </select>
                 {formData.role === 'super-admin' && (
-                  <p className="mt-1 text-sm text-gray-500">Les super admins n'ont pas de tenant</p>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Les super admins n'ont pas de tenant</p>
                 )}
               </div>
 
               {/* Status */}
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Statut *
                 </label>
                 <select
@@ -376,7 +376,7 @@ export default function EditUserPage() {
               <button
                 type="button"
                 onClick={() => router.push('/admin/users')}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
               >
                 Annuler
               </button>
@@ -392,13 +392,13 @@ export default function EditUserPage() {
         </div>
 
         {/* Changement de mot de passe */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Changer le mot de passe</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Changer le mot de passe</h2>
           
           <form onSubmit={handlePasswordChange} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Nouveau mot de passe *
                 </label>
                 <input
@@ -409,11 +409,11 @@ export default function EditUserPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   minLength={8}
                 />
-                <p className="mt-1 text-sm text-gray-500">Minimum 8 caractères</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Minimum 8 caractères</p>
               </div>
 
               <div>
-                <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Confirmer le mot de passe *
                 </label>
                 <input

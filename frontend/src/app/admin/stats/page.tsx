@@ -169,7 +169,7 @@ export default function StatsPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement des statistiques...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement des statistiques...</p>
           </div>
         </div>
       </AdminLayout>
@@ -236,8 +236,8 @@ export default function StatsPage() {
       <div className="space-y-6">
         {/* Alertes et Problèmes */}
         {stats.alerts && stats.alerts.length > 0 && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4 flex items-center">
               <svg className="h-6 w-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -285,36 +285,36 @@ export default function StatsPage() {
 
         {/* Activité Récente */}
         {stats && stats.activity && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Activité Récente</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Activité Récente</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <p className="text-2xl font-bold text-blue-600">{stats.activity.users_today}</p>
-                <p className="text-xs text-gray-600 mt-1">Utilisateurs<br />Aujourd'hui</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Utilisateurs<br />Aujourd'hui</p>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">{stats.activity.users_this_week}</p>
-                <p className="text-xs text-gray-600 mt-1">Utilisateurs<br />Cette semaine</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Utilisateurs<br />Cette semaine</p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <p className="text-2xl font-bold text-purple-600">{stats.activity.users_this_month}</p>
-                <p className="text-xs text-gray-600 mt-1">Utilisateurs<br />Ce mois</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Utilisateurs<br />Ce mois</p>
               </div>
               <div className="text-center p-4 bg-indigo-50 rounded-lg">
                 <p className="text-2xl font-bold text-indigo-600">{stats.activity.tenants_today}</p>
-                <p className="text-xs text-gray-600 mt-1">Tenants<br />Aujourd'hui</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Tenants<br />Aujourd'hui</p>
               </div>
               <div className="text-center p-4 bg-pink-50 rounded-lg">
                 <p className="text-2xl font-bold text-pink-600">{stats.activity.tenants_this_week}</p>
-                <p className="text-xs text-gray-600 mt-1">Tenants<br />Cette semaine</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Tenants<br />Cette semaine</p>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
                 <p className="text-2xl font-bold text-yellow-600">{stats.activity.tenants_this_month}</p>
-                <p className="text-xs text-gray-600 mt-1">Tenants<br />Ce mois</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Tenants<br />Ce mois</p>
               </div>
               <div className="text-center p-4 bg-orange-50 rounded-lg">
                 <p className="text-2xl font-bold text-orange-600">{stats.activity.password_resets_last_week}</p>
-                <p className="text-xs text-gray-600 mt-1">Reset mot de passe<br />7 derniers jours</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Reset mot de passe<br />7 derniers jours</p>
               </div>
             </div>
           </div>
@@ -322,21 +322,21 @@ export default function StatsPage() {
 
         {/* Demandes d'inscription */}
         {stats && stats.registrations && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Demandes d'Inscription</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Demandes d'Inscription</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <p className="text-2xl font-bold text-blue-600">{stats.registrations.pending_invitations}</p>
-                <p className="text-sm text-gray-600 mt-1">Invitations en attente</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Invitations en attente</p>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-2xl font-bold text-gray-600">{stats.registrations.expired_invitations}</p>
-                <p className="text-sm text-gray-600 mt-1">Invitations expirées</p>
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <p className="text-2xl font-bold text-gray-600 dark:text-gray-400 dark:text-gray-400">{stats.registrations.expired_invitations}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Invitations expirées</p>
               </div>
               {stats.activity.recently_suspended_users > 0 && (
                 <div className="text-center p-4 bg-red-50 rounded-lg">
                   <p className="text-2xl font-bold text-red-600">{stats.activity.recently_suspended_users}</p>
-                  <p className="text-sm text-gray-600 mt-1">Utilisateurs suspendus (7j)</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">Utilisateurs suspendus (7j)</p>
                 </div>
               )}
             </div>
@@ -344,18 +344,18 @@ export default function StatsPage() {
             {stats.registrations && stats.registrations.users_by_day && stats.registrations.tenants_by_day && 
              (stats.registrations.users_by_day.length > 0 || stats.registrations.tenants_by_day.length > 0) && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Inscriptions par jour (7 derniers jours)</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Inscriptions par jour (7 derniers jours)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Utilisateurs par jour */}
                   {stats.registrations.users_by_day.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Utilisateurs</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">Utilisateurs</h4>
                       <div className="space-y-2">
                         {stats.registrations.users_by_day.map((item) => (
                           <div key={item.day}>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs text-gray-600">{formatDay(item.day)}</span>
-                              <span className="text-sm font-semibold text-gray-900">{item.count}</span>
+                              <span className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400">{formatDay(item.day)}</span>
+                              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{item.count}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                               <div
@@ -373,13 +373,13 @@ export default function StatsPage() {
                   {/* Tenants par jour */}
                   {stats.registrations.tenants_by_day.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Tenants</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">Tenants</h4>
                       <div className="space-y-2">
                         {stats.registrations.tenants_by_day.map((item) => (
                           <div key={item.day}>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs text-gray-600">{formatDay(item.day)}</span>
-                              <span className="text-sm font-semibold text-gray-900">{item.count}</span>
+                              <span className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400">{formatDay(item.day)}</span>
+                              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{item.count}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                               <div
@@ -402,11 +402,11 @@ export default function StatsPage() {
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Tenants</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{formatNumber(stats.overview.total_tenants)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-400">Total Tenants</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mt-2">{formatNumber(stats.overview.total_tenants)}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
                 <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -421,11 +421,11 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Utilisateurs</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{formatNumber(stats.overview.total_users)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-400">Total Utilisateurs</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mt-2">{formatNumber(stats.overview.total_users)}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -435,11 +435,11 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Revenu Mensuel</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{formatCurrency(stats.revenue.monthly)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-400">Revenu Mensuel</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mt-2">{formatCurrency(stats.revenue.monthly)}</p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
                 <svg className="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,15 +448,15 @@ export default function StatsPage() {
               </div>
             </div>
             <div className="mt-4">
-              <p className="text-sm text-gray-600">Total: {formatCurrency(stats.revenue.total)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Total: {formatCurrency(stats.revenue.total)}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Abonnements</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{formatNumber(stats.overview.active_subscriptions)}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-400">Abonnements</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mt-2">{formatNumber(stats.overview.active_subscriptions)}</p>
               </div>
               <div className="p-3 bg-indigo-100 rounded-full">
                 <svg className="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -465,7 +465,7 @@ export default function StatsPage() {
               </div>
             </div>
             <div className="mt-4 space-y-1">
-              <p className="text-sm text-gray-600">{stats.overview.trial_subscriptions} en trial</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">{stats.overview.trial_subscriptions} en trial</p>
               {stats.overview.past_due_subscriptions > 0 && (
                 <p className="text-sm text-red-600 font-medium">
                   ⚠️ {stats.overview.past_due_subscriptions} en retard
@@ -532,15 +532,15 @@ export default function StatsPage() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Tenants by Plan */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Tenants par Plan</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Tenants par Plan</h3>
             <div className="space-y-4">
               {stats.tenants_by_plan && stats.tenants_by_plan.length > 0 ? (
                 stats.tenants_by_plan.map((item) => (
                   <div key={item.plan}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700 capitalize">{item.plan}</span>
-                      <span className="text-sm font-bold text-gray-900">{item.count}</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 capitalize">{item.plan}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{item.count}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -553,21 +553,21 @@ export default function StatsPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">Aucun plan trouvé</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Aucun plan trouvé</p>
               )}
             </div>
           </div>
 
           {/* Users by Role */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Utilisateurs par Rôle</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Utilisateurs par Rôle</h3>
             <div className="space-y-4">
               {stats.users_by_role && stats.users_by_role.length > 0 ? (
                 stats.users_by_role.map((item) => (
                   <div key={item.role}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">{item.role}</span>
-                      <span className="text-sm font-bold text-gray-900">{item.count}</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">{item.role}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{item.count}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -580,26 +580,26 @@ export default function StatsPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">Aucun utilisateur trouvé</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Aucun utilisateur trouvé</p>
               )}
             </div>
           </div>
 
           {/* Users by Status */}
           {stats.users_by_status && stats.users_by_status.length > 0 && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Utilisateurs par Statut</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Utilisateurs par Statut</h3>
               <div className="space-y-4">
                 {stats.users_by_status.map((item) => (
                   <div key={item.status}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700 capitalize">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 capitalize">
                         {item.status === 'active' ? 'Actif' : 
                          item.status === 'inactive' ? 'Inactif' : 
                          item.status === 'suspended' ? 'Suspendu' : 
                          item.status === 'pending' ? 'En attente' : item.status}
                       </span>
-                      <span className="text-sm font-bold text-gray-900">{item.count}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{item.count}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -622,19 +622,19 @@ export default function StatsPage() {
 
           {/* Tenants by Status */}
           {stats.tenants_by_status && stats.tenants_by_status.length > 0 && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Tenants par Statut</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Tenants par Statut</h3>
               <div className="space-y-4">
                 {stats.tenants_by_status.map((item) => (
                   <div key={item.status}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700 capitalize">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 capitalize">
                         {item.status === 'active' ? 'Actif' : 
                          item.status === 'trial' ? 'En trial' : 
                          item.status === 'suspended' ? 'Suspendu' : 
                          item.status === 'cancelled' ? 'Annulé' : item.status}
                       </span>
-                      <span className="text-sm font-bold text-gray-900">{item.count}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{item.count}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -660,14 +660,14 @@ export default function StatsPage() {
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Tenants */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Tenants Récemment Créés</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Tenants Récemment Créés</h3>
             <div className="space-y-4">
               {stats.recent_tenants.map((tenant) => (
                 <div key={tenant.id} className="flex items-center justify-between pb-4 border-b border-gray-200 last:border-0">
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{tenant.name}</p>
-                    <p className="text-xs text-gray-500">{tenant.email}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{tenant.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{tenant.email}</p>
                     <p className="text-xs text-gray-400 mt-1">
                       {formatDate(tenant.created_at)}
                     </p>
@@ -676,7 +676,7 @@ export default function StatsPage() {
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       tenant.status === 'active' ? 'bg-green-100 text-green-800' :
                       tenant.status === 'trial' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
+                      'bg-gray-100 dark:bg-gray-900 text-gray-800'
                     }`}>
                       {tenant.status}
                     </span>
@@ -690,15 +690,15 @@ export default function StatsPage() {
           </div>
 
           {/* Recent Users */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Utilisateurs Récemment Inscrits</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Utilisateurs Récemment Inscrits</h3>
             <div className="space-y-4">
               {stats.recent_users && stats.recent_users.length > 0 ? (
                 stats.recent_users.map((user) => (
                   <div key={user.id} className="flex items-center justify-between pb-4 border-b border-gray-200 last:border-0">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{user.name || user.email}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{user.name || user.email}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{user.email}</p>
                       {user.tenant_name && (
                         <p className="text-xs text-gray-400 mt-1">{user.tenant_name}</p>
                       )}
@@ -708,7 +708,7 @@ export default function StatsPage() {
                             user.status === 'active' ? 'bg-green-100 text-green-800' :
                             user.status === 'suspended' ? 'bg-red-100 text-red-800' :
                             user.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
+                            'bg-gray-100 dark:bg-gray-900 text-gray-800'
                           }`}>
                             {user.status === 'active' ? 'Actif' : 
                              user.status === 'suspended' ? 'Suspendu' : 
@@ -727,7 +727,7 @@ export default function StatsPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">Aucun utilisateur récent</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Aucun utilisateur récent</p>
               )}
             </div>
           </div>
@@ -735,14 +735,14 @@ export default function StatsPage() {
 
         {/* Revenue Chart */}
         {stats.revenue.by_month.length > 0 && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenu par Mois (12 derniers mois)</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Revenu par Mois (12 derniers mois)</h3>
             <div className="space-y-4">
               {stats.revenue.by_month.map((item) => (
                 <div key={item.month}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700">{formatDate(item.month)}</span>
-                    <span className="text-sm font-bold text-gray-900">{formatCurrency(item.total)}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">{formatDate(item.month)}</span>
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{formatCurrency(item.total)}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
                     <div

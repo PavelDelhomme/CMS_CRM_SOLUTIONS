@@ -165,19 +165,19 @@ export default function TenantBillingPage() {
       trial: 'bg-blue-100 text-blue-800',
       cancelled: 'bg-red-100 text-red-800',
       past_due: 'bg-yellow-100 text-yellow-800',
-      expired: 'bg-gray-100 text-gray-800',
+      expired: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
     }
-    return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[status as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   const getInvoiceStatusBadge = (status: string) => {
     const badges = {
       paid: 'bg-green-100 text-green-800',
       open: 'bg-yellow-100 text-yellow-800',
-      draft: 'bg-gray-100 text-gray-800',
+      draft: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
       void: 'bg-red-100 text-red-800',
     }
-    return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[status as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   if (loading) {
@@ -186,7 +186,7 @@ export default function TenantBillingPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -206,7 +206,7 @@ export default function TenantBillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'subscription'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Mon Abonnement
@@ -216,7 +216,7 @@ export default function TenantBillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'invoices'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Factures ({invoices.length})
@@ -226,7 +226,7 @@ export default function TenantBillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'payments'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Paiements ({payments.length})
@@ -236,7 +236,7 @@ export default function TenantBillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'plans'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Plans Disponibles
@@ -248,11 +248,11 @@ export default function TenantBillingPage() {
       {activeTab === 'subscription' && (
         <div className="space-y-6">
           {subscription ? (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">{subscription.plan.name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{subscription.plan.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{subscription.plan.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">{subscription.plan.description}</p>
                 </div>
                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadge(subscription.status)}`}>
                   {subscription.status}
@@ -261,8 +261,8 @@ export default function TenantBillingPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div>
-                  <p className="text-sm text-gray-600">Prix</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Prix</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     {subscription.billing_cycle === 'monthly' 
                       ? `${subscription.plan.price_monthly}€/mois`
                       : `${subscription.plan.price_yearly}€/an`
@@ -270,14 +270,14 @@ export default function TenantBillingPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Période actuelle</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Période actuelle</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     {new Date(subscription.current_period_start).toLocaleDateString('fr-FR')} - {new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Cycle de facturation</p>
-                  <p className="text-lg font-semibold text-gray-900 capitalize">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Cycle de facturation</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 capitalize">
                     {subscription.billing_cycle === 'monthly' ? 'Mensuel' : 'Annuel'}
                   </p>
                 </div>
@@ -312,7 +312,7 @@ export default function TenantBillingPage() {
       {activeTab === 'invoices' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">Mes Factures</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Mes Factures</h2>
             {subscription && subscription.status === 'active' && (
               <button
                 onClick={handleGenerateInvoice}
@@ -326,30 +326,30 @@ export default function TenantBillingPage() {
             )}
           </div>
 
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <ResponsiveTable
               headers={['N° Facture', 'Date d\'émission', 'Date d\'échéance', 'Montant', 'Statut', 'Actions']}
               emptyMessage="Aucune facture pour le moment"
             >
               {invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     Aucune facture pour le moment
                   </td>
                 </tr>
               ) : (
                 invoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <tr key={invoice.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                       {invoice.invoice_number}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                       {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                       {new Date(invoice.due_date).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                       {invoice.total.toFixed(2)} {invoice.currency}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -390,27 +390,27 @@ export default function TenantBillingPage() {
 
       {/* Payments Tab */}
       {activeTab === 'payments' && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <ResponsiveTable
             headers={['Date', 'Montant', 'Méthode', 'Statut']}
             emptyMessage="Aucun paiement pour le moment"
           >
             {payments.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={4} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   Aucun paiement pour le moment
                 </td>
               </tr>
             ) : (
               payments.map((payment) => (
-                <tr key={payment.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <tr key={payment.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     {payment.paid_at ? new Date(payment.paid_at).toLocaleDateString('fr-FR') : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     {payment.amount} {payment.currency}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 capitalize">
                     {payment.method === 'card' ? 'Carte bancaire' : payment.method}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -431,7 +431,7 @@ export default function TenantBillingPage() {
           {pricingPlans.map((plan) => (
             <div
               key={plan.id}
-              className={`bg-white rounded-lg shadow-lg p-6 ${
+              className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 ${
                 plan.is_featured ? 'ring-2 ring-blue-500' : ''
               }`}
             >
@@ -443,14 +443,14 @@ export default function TenantBillingPage() {
                 </div>
               )}
               
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-              <p className="text-gray-600 mb-4 text-sm">{plan.description}</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{plan.name}</h3>
+              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4 text-sm">{plan.description}</p>
               
               <div className="mb-6">
-                <span className="text-4xl font-bold text-gray-900">{plan.price_monthly}€</span>
-                <span className="text-gray-600">/mois</span>
+                <span className="text-4xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{plan.price_monthly}€</span>
+                <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">/mois</span>
                 {plan.price_yearly && (
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
                     ou {plan.price_yearly}€/an (économisez {((plan.price_monthly * 12) - plan.price_yearly).toFixed(2)}€)
                   </p>
                 )}
@@ -459,7 +459,7 @@ export default function TenantBillingPage() {
               <ul className="space-y-2 mb-6">
                 {plan.features && plan.features.length > 0 ? (
                   plan.features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start text-sm text-gray-600">
+                    <li key={index} className="flex items-start text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
                       <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -468,19 +468,19 @@ export default function TenantBillingPage() {
                   ))
                 ) : (
                   <>
-                    <li className="flex items-center text-sm text-gray-600">
+                    <li className="flex items-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
                       <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       {plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}
                     </li>
-                    <li className="flex items-center text-sm text-gray-600">
+                    <li className="flex items-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
                       <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       {plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''}
                     </li>
-                    <li className="flex items-center text-sm text-gray-600">
+                    <li className="flex items-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
                       <svg className="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -495,7 +495,7 @@ export default function TenantBillingPage() {
                 className={`w-full py-2 px-4 rounded-lg font-medium transition ${
                   plan.is_featured
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 hover:bg-gray-200'
                 }`}
               >
                 {subscription?.plan.id === plan.id ? 'Plan actuel' : 'Choisir ce plan'}
@@ -510,14 +510,14 @@ export default function TenantBillingPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Paiement</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 dark:text-gray-100">Paiement</h2>
               <button
                 onClick={() => {
                   setShowCheckout(false)
                   setClientSecret(null)
                   setCheckoutPlanId(null)
                 }}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:text-gray-300 dark:hover:text-gray-200"
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

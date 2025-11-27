@@ -87,9 +87,9 @@ export default function TenantsPage() {
       active: 'bg-green-100 text-green-800',
       suspended: 'bg-red-100 text-red-800',
       trial: 'bg-yellow-100 text-yellow-800',
-      cancelled: 'bg-gray-100 text-gray-800',
+      cancelled: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
     }
-    return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[status as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   const getPlanBadge = (plan: string) => {
@@ -98,7 +98,7 @@ export default function TenantsPage() {
       business: 'bg-purple-100 text-purple-800',
       enterprise: 'bg-indigo-100 text-indigo-800',
     }
-    return badges[plan as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[plan as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   const filteredTenants = tenants.filter(tenant =>
@@ -145,46 +145,46 @@ export default function TenantsPage() {
           </div>
 
           {/* Tenants List */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     Tenant
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     Plan
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     Créé le
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                 {filteredTenants.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                       {search ? 'Aucun tenant trouvé' : 'Aucun tenant pour le moment'}
                     </td>
                   </tr>
                 ) : (
                   filteredTenants.map((tenant) => (
-                    <tr key={tenant.id} className="hover:bg-gray-50">
+                    <tr key={tenant.id} className="hover:bg-gray-50 dark:bg-gray-900">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{tenant.name}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{tenant.name}</div>
                             {tenant.slug && (
-                              <div className="text-sm text-gray-500">/{tenant.slug}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">/{tenant.slug}</div>
                             )}
                           </div>
                         </div>
@@ -199,10 +199,10 @@ export default function TenantsPage() {
                           {tenant.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                         {tenant.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                         {new Date(tenant.created_at).toLocaleDateString('fr-FR')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

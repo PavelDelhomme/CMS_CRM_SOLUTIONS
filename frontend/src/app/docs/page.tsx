@@ -85,7 +85,7 @@ export default function DocsPage() {
           </p>
           <Link
             href="/register"
-            className="inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+            className="inline-block bg-white dark:bg-gray-800 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
           >
             Créer mon compte →
           </Link>
@@ -94,20 +94,20 @@ export default function DocsPage() {
         {/* Documentation Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {sections.map((section, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-lg p-6">
+            <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
               <div className="flex items-center mb-4">
                 <span className="text-3xl mr-3">{section.icon}</span>
-                <h3 className="text-xl font-bold text-gray-900">{section.title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{section.title}</h3>
               </div>
               <ul className="space-y-3">
                 {section.items.map((item, idx) => (
                   <li key={idx}>
                     <Link
                       href={item.href}
-                      className="block p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="block p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors"
                     >
-                      <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
-                      <p className="text-sm text-gray-600">{item.description}</p>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-1">{item.title}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">{item.description}</p>
                     </Link>
                   </li>
                 ))}
@@ -117,32 +117,32 @@ export default function DocsPage() {
         </div>
 
         {/* Help Section */}
-        <div className="mt-20 bg-gray-50 rounded-xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Besoin d'aide ?</h3>
+        <div className="mt-20 bg-gray-50 dark:bg-gray-900 rounded-xl p-8">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Besoin d'aide ?</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link
               href="/faq"
-              className="bg-white rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
             >
               <div className="text-4xl mb-3">❓</div>
-              <h4 className="font-semibold text-gray-900 mb-2">FAQ</h4>
-              <p className="text-sm text-gray-600">Consultez nos questions fréquentes</p>
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">FAQ</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Consultez nos questions fréquentes</p>
             </Link>
             <Link
               href="/contact"
-              className="bg-white rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
             >
               <div className="text-4xl mb-3">💬</div>
-              <h4 className="font-semibold text-gray-900 mb-2">Contact</h4>
-              <p className="text-sm text-gray-600">Contactez notre support</p>
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Contact</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Contactez notre support</p>
             </Link>
             <a
               href="mailto:support@vtcbuilder.com"
-              className="bg-white rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
             >
               <div className="text-4xl mb-3">📧</div>
-              <h4 className="font-semibold text-gray-900 mb-2">Email</h4>
-              <p className="text-sm text-gray-600">support@vtcbuilder.com</p>
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">Email</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">support@vtcbuilder.com</p>
             </a>
           </div>
         </div>

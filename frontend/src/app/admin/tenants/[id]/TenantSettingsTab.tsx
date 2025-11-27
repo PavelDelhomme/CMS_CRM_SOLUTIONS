@@ -237,11 +237,11 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
 
   if (loading) {
     return (
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement des paramètres...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement des paramètres...</p>
           </div>
         </div>
       </div>
@@ -251,12 +251,12 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
   return (
     <div className="space-y-6">
       {/* General Settings */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Paramètres généraux</h2>
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-6">Paramètres généraux</h2>
         
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Nom du tenant
             </label>
             <input
@@ -269,7 +269,7 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Email de contact
             </label>
             <input
@@ -283,7 +283,7 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                 Couleur primaire
               </label>
               <div className="flex items-center gap-3">
@@ -304,7 +304,7 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                 Couleur secondaire
               </label>
               <div className="flex items-center gap-3">
@@ -338,11 +338,11 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
       </div>
 
       {/* Features Management */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Gestion des Fonctionnalités</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Gestion des Fonctionnalités</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mt-1">
               Activez ou désactivez les fonctionnalités disponibles pour {tenantName}
             </p>
           </div>
@@ -360,10 +360,10 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
             <div key={category} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">{CATEGORIES[category as keyof typeof CATEGORIES].icon}</span>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                   {CATEGORIES[category as keyof typeof CATEGORIES].name}
                 </h3>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   ({features.filter(f => enabledFeatures.has(f.id)).length}/{features.length} activées)
                 </span>
               </div>
@@ -377,14 +377,14 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
                       className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                         isEnabled
                           ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                          : 'border-gray-200 bg-gray-50 dark:bg-gray-900 hover:border-gray-300'
                       }`}
                       onClick={() => toggleFeature(feature.id)}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span className="text-2xl">{feature.icon}</span>
-                          <h4 className="font-semibold text-gray-900">{feature.name}</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">{feature.name}</h4>
                         </div>
                         <div
                           className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
@@ -392,13 +392,13 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
                           }`}
                         >
                           <span
-                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-800 shadow ring-0 transition duration-200 ease-in-out ${
                               isEnabled ? 'translate-x-5' : 'translate-x-0'
                             }`}
                           />
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">{feature.description}</p>
                     </div>
                   )
                 })}
@@ -424,24 +424,24 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
       </div>
 
       {/* Tenant Info */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations techniques</h3>
+      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Informations techniques</h3>
         <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="font-medium text-gray-700">Slug</dt>
-            <dd className="mt-1 text-gray-900 font-mono">{tenant?.slug}</dd>
+            <dt className="font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Slug</dt>
+            <dd className="mt-1 text-gray-900 dark:text-gray-100 dark:text-gray-100 font-mono">{tenant?.slug}</dd>
           </div>
           <div>
-            <dt className="font-medium text-gray-700">Plan</dt>
-            <dd className="mt-1 text-gray-900 capitalize">{tenant?.plan}</dd>
+            <dt className="font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Plan</dt>
+            <dd className="mt-1 text-gray-900 dark:text-gray-100 dark:text-gray-100 capitalize">{tenant?.plan}</dd>
           </div>
           <div>
-            <dt className="font-medium text-gray-700">Statut</dt>
-            <dd className="mt-1 text-gray-900 capitalize">{tenant?.status}</dd>
+            <dt className="font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Statut</dt>
+            <dd className="mt-1 text-gray-900 dark:text-gray-100 dark:text-gray-100 capitalize">{tenant?.status}</dd>
           </div>
           <div>
-            <dt className="font-medium text-gray-700">Créé le</dt>
-            <dd className="mt-1 text-gray-900">
+            <dt className="font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">Créé le</dt>
+            <dd className="mt-1 text-gray-900 dark:text-gray-100 dark:text-gray-100">
               {tenant?.created_at ? new Date(tenant.created_at).toLocaleDateString('fr-FR') : '-'}
             </dd>
           </div>

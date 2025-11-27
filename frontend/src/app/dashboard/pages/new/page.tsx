@@ -85,7 +85,7 @@ export default function NewPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -100,7 +100,7 @@ export default function NewPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/dashboard/pages')}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
           >
             Annuler
           </button>
@@ -114,9 +114,9 @@ export default function NewPage() {
         </div>
       }
     >
-      <div className="h-[calc(100vh-200px)] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+      <div className="h-[calc(100vh-200px)] bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col">
         {/* Page Title */}
-        <div className="border-b border-gray-200 p-4 bg-gray-50">
+        <div className="border-b border-gray-200 p-4 bg-gray-50 dark:bg-gray-900">
           <input
             type="text"
             value={title}
@@ -133,12 +133,12 @@ export default function NewPage() {
         </div>
 
         {/* SEO Panel (Collapsible) */}
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
+        <div className="border-t border-gray-200 p-4 bg-gray-50 dark:bg-gray-900">
           <details className="cursor-pointer">
-            <summary className="text-sm font-semibold text-gray-700">Réglages SEO et page</summary>
+            <summary className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300">Réglages SEO et page</summary>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Titre SEO</label>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Titre SEO</label>
                 <input
                   type="text"
                   value={metaTitle}
@@ -148,7 +148,7 @@ export default function NewPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Description SEO</label>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Description SEO</label>
                 <input
                   type="text"
                   value={metaDescription}
@@ -158,7 +158,7 @@ export default function NewPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Statut</label>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Statut</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as 'draft' | 'published' | 'scheduled')}
@@ -177,7 +177,7 @@ export default function NewPage() {
                   onChange={(e) => setIsHomepage(e.target.checked)}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="is_homepage" className="ml-2 block text-xs text-gray-900">
+                <label htmlFor="is_homepage" className="ml-2 block text-xs text-gray-900 dark:text-gray-100 dark:text-gray-100">
                   Définir comme page d'accueil
                 </label>
               </div>

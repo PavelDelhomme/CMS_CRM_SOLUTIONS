@@ -84,12 +84,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-10 rounded-xl shadow-2xl">
         <div>
-          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900 dark:text-gray-100 dark:text-gray-100">
             VTCBuilder
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">
             Le WordPress des Chauffeurs VTC
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
                 Email
               </label>
               <input
@@ -113,7 +113,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
                 Mot de passe
               </label>
               <input
@@ -157,19 +157,19 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
+              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 dark:text-gray-400">
                 Comptes de test
               </span>
             </div>
           </div>
           
-          <div className="mt-4 text-xs text-gray-600 space-y-2">
-            <p className="font-semibold text-gray-700 mb-1">Comptes de test :</p>
-            <div className="bg-gray-50 rounded p-3 space-y-1">
+          <div className="mt-4 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-400 space-y-2">
+            <p className="font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Comptes de test :</p>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 space-y-1">
               <p><strong>Super Admin:</strong> <code className="text-blue-600">admin@vtcbuilder.com</code> / <code className="text-blue-600">admin123</code></p>
               <p><strong>Tenant Test:</strong> <code className="text-blue-600">test@delhomme.ovh</code> / <code className="text-blue-600">admin123</code></p>
             </div>
-            <p className="text-xs text-gray-500 mt-2">Le tenant de test est <strong>ma-societe-vtc</strong> (Ma Société VTC)</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-2">Le tenant de test est <strong>ma-societe-vtc</strong> (Ma Société VTC)</p>
           </div>
         </div>
       </div>

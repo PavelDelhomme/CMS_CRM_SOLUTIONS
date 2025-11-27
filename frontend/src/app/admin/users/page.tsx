@@ -140,11 +140,11 @@ export default function UsersPage() {
   const getStatusBadge = (status: string) => {
     const badges = {
       active: 'bg-green-100 text-green-800',
-      inactive: 'bg-gray-100 text-gray-800',
+      inactive: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
       suspended: 'bg-red-100 text-red-800',
       pending: 'bg-yellow-100 text-yellow-800',
     }
-    return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[status as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   const getRoleBadge = (role: string) => {
@@ -152,9 +152,9 @@ export default function UsersPage() {
       'super-admin': 'bg-purple-100 text-purple-800',
       'tenant-admin': 'bg-blue-100 text-blue-800',
       'driver': 'bg-green-100 text-green-800',
-      'operator': 'bg-gray-100 text-gray-800',
+      'operator': 'bg-gray-100 dark:bg-gray-900 text-gray-800',
     }
-    return badges[role as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[role as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   const filteredUsers = users.filter(user => {
@@ -206,18 +206,18 @@ export default function UsersPage() {
           >
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 sm:px-6 py-12 text-center text-gray-500">
+                    <td colSpan={6} className="px-4 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                       {search ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur pour le moment'}
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover:bg-gray-50 dark:bg-gray-900">
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{user.name || user.email}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{user.name || user.email}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{user.email}</div>
                           </div>
                         </div>
                       </td>
@@ -226,7 +226,7 @@ export default function UsersPage() {
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                         {user.tenant_name || user.tenant?.name || '-'}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
@@ -234,7 +234,7 @@ export default function UsersPage() {
                           {user.status}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                         {new Date(user.created_at).toLocaleDateString('fr-FR')}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

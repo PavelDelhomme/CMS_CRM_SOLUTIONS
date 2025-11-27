@@ -24,7 +24,7 @@ export default function TenantDashboard() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -38,7 +38,7 @@ export default function TenantDashboard() {
         {/* Pages */}
         <button
           onClick={() => router.push('/dashboard/pages')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-blue-500 rounded-lg p-3">
@@ -47,8 +47,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Pages</h3>
-                <p className="text-sm text-gray-600">Gérer le contenu</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Pages</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Gérer le contenu</p>
               </div>
             </div>
           </button>
@@ -56,7 +56,7 @@ export default function TenantDashboard() {
         {/* Services */}
         <button
           onClick={() => router.push('/dashboard/services')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-green-500 rounded-lg p-3">
@@ -65,8 +65,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Services VTC</h3>
-                <p className="text-sm text-gray-600">Mes prestations</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Services VTC</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Mes prestations</p>
               </div>
             </div>
           </button>
@@ -74,7 +74,7 @@ export default function TenantDashboard() {
         {/* Réservations */}
         <button
           onClick={() => router.push('/dashboard/bookings')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-purple-500 rounded-lg p-3">
@@ -83,8 +83,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Réservations</h3>
-                <p className="text-sm text-gray-600">Mes courses</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Réservations</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Mes courses</p>
               </div>
             </div>
           </button>
@@ -92,7 +92,7 @@ export default function TenantDashboard() {
         {/* Médias */}
         <button
           onClick={() => router.push('/dashboard/media')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-yellow-500 rounded-lg p-3">
@@ -101,8 +101,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Médias</h3>
-                <p className="text-sm text-gray-600">Images & fichiers</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Médias</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Images & fichiers</p>
               </div>
             </div>
           </button>
@@ -110,7 +110,7 @@ export default function TenantDashboard() {
         {/* Templates */}
         <button
           onClick={() => router.push('/dashboard/templates')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-indigo-500 rounded-lg p-3">
@@ -119,8 +119,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Templates</h3>
-                <p className="text-sm text-gray-600">Design du site</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Templates</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Design du site</p>
               </div>
             </div>
           </button>
@@ -128,7 +128,7 @@ export default function TenantDashboard() {
         {/* Utilisateurs */}
         <button
           onClick={() => router.push('/dashboard/users')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-pink-500 rounded-lg p-3">
@@ -137,8 +137,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Utilisateurs</h3>
-                <p className="text-sm text-gray-600">Gérer l'équipe</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Utilisateurs</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Gérer l'équipe</p>
               </div>
             </div>
           </button>
@@ -146,7 +146,7 @@ export default function TenantDashboard() {
         {/* Facturation */}
         <button
           onClick={() => router.push('/dashboard/billing')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-emerald-500 rounded-lg p-3">
@@ -155,8 +155,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Facturation</h3>
-                <p className="text-sm text-gray-600">Abonnements & paiements</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Facturation</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Abonnements & paiements</p>
               </div>
             </div>
           </button>
@@ -164,7 +164,7 @@ export default function TenantDashboard() {
         {/* Paramètres */}
         <button
           onClick={() => router.push('/dashboard/settings')}
-          className="bg-white rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6 hover:shadow-lg transition-all duration-200 cursor-pointer text-left"
         >
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-gray-500 rounded-lg p-3">
@@ -174,8 +174,8 @@ export default function TenantDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Paramètres</h3>
-                <p className="text-sm text-gray-600">Configuration</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Paramètres</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">Configuration</p>
               </div>
             </div>
         </button>
@@ -189,7 +189,7 @@ export default function TenantDashboard() {
         </p>
         <button
           onClick={() => router.push('/dashboard/pages')}
-          className="bg-white text-blue-600 px-4 lg:px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm lg:text-base"
+          className="bg-white dark:bg-gray-800 text-blue-600 px-4 lg:px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors text-sm lg:text-base"
         >
           Commencer →
         </button>

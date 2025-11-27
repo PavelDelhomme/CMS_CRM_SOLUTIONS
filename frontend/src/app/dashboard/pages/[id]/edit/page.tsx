@@ -88,7 +88,7 @@ export default function EditPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </TenantLayout>
@@ -99,7 +99,7 @@ export default function EditPage() {
     return (
       <TenantLayout title="Page non trouvée">
         <div className="text-center py-12">
-          <p className="text-gray-600">Page non trouvée</p>
+          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Page non trouvée</p>
         </div>
       </TenantLayout>
     )
@@ -113,7 +113,7 @@ export default function EditPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/dashboard/pages')}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
           >
             Retour
           </button>
@@ -141,9 +141,9 @@ export default function EditPage() {
         </div>
       }
     >
-      <div className="bg-white rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         {/* Editor Toolbar */}
-        <div className="border-b border-gray-200 p-4 bg-gray-50">
+        <div className="border-b border-gray-200 p-4 bg-gray-50 dark:bg-gray-900">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2 flex-wrap">
               <button
@@ -219,7 +219,7 @@ export default function EditPage() {
                 🔗
               </button>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
               {status === 'published' ? '✅ Publié' : '📝 Brouillon'}
             </div>
           </div>
@@ -228,7 +228,7 @@ export default function EditPage() {
         <div className="p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Titre de la page *
             </label>
             <input
@@ -242,7 +242,7 @@ export default function EditPage() {
 
           {/* Content Editor */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Contenu
             </label>
             <div
@@ -255,17 +255,17 @@ export default function EditPage() {
               }}
               dangerouslySetInnerHTML={{ __html: content }}
             />
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
               Utilisez la barre d'outils ci-dessus pour formater votre contenu
             </p>
           </div>
 
           {/* SEO Settings */}
           <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Réglages SEO</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Réglages SEO</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Titre SEO
                 </label>
                 <input
@@ -277,7 +277,7 @@ export default function EditPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Description SEO
                 </label>
                 <textarea
@@ -293,10 +293,10 @@ export default function EditPage() {
 
           {/* Page Settings */}
           <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Réglages de la page</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-4">Réglages de la page</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
                   Statut
                 </label>
                 <select
@@ -317,11 +317,11 @@ export default function EditPage() {
                   onChange={(e) => setIsHomepage(e.target.checked)}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="is_homepage" className="ml-2 block text-sm text-gray-900">
+                <label htmlFor="is_homepage" className="ml-2 block text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
                   Définir comme page d'accueil
                 </label>
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                 Slug: <span className="font-mono">/{page.slug}</span>
               </div>
             </div>

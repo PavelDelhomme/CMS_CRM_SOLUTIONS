@@ -96,11 +96,11 @@ function SubscriptionRow({
   }
 
   return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+    <tr className="hover:bg-gray-50 dark:bg-gray-900">
+      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
         {subscription.tenant?.name || '-'}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
         {subscription.plan.name}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
@@ -108,10 +108,10 @@ function SubscriptionRow({
           {getStatusLabel(subscription.status)}
         </span>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 capitalize">
         {subscription.billing_cycle === 'monthly' ? 'Mensuel' : 'Annuel'}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
         {new Date(subscription.current_period_start).toLocaleDateString('fr-FR')} - {new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -119,7 +119,7 @@ function SubscriptionRow({
           <div>
             <span className="font-semibold text-red-600">{subscription.unpaid_amount.toFixed(2)}€</span>
             {subscription.unpaid_invoices_count && subscription.unpaid_invoices_count > 0 && (
-              <span className="block text-xs text-gray-500 mt-1">
+              <span className="block text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
                 {subscription.unpaid_invoices_count} facture{subscription.unpaid_invoices_count > 1 ? 's' : ''}
               </span>
             )}
@@ -144,11 +144,11 @@ function SubscriptionRow({
             <button
               onClick={() => setShowMenu(!showMenu)}
             disabled={!!actionLoading}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
             {actionLoading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600 dark:text-gray-400 dark:text-gray-400" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -173,7 +173,7 @@ function SubscriptionRow({
                 className="fixed inset-0 z-10"
                 onClick={() => setShowMenu(false)}
               />
-              <div className="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 max-h-96 overflow-y-auto">
+              <div className="absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-20 max-h-96 overflow-y-auto">
                 <div className="py-1" role="menu">
                   {subscription.status === 'cancelled' && (
                     <button
@@ -236,7 +236,7 @@ function SubscriptionRow({
                   {pricingPlans.length > 0 && (
                     <>
                       <div className="border-t border-gray-100 my-1" />
-                      <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Changer de plan</div>
+                      <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-400 uppercase">Changer de plan</div>
                       {pricingPlans
                         .filter(plan => plan.id !== subscription.plan.id)
                         .map((plan) => (
@@ -248,7 +248,7 @@ function SubscriptionRow({
                                 handleAction('update_plan', plan.id)
                               }
                             }}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
                             role="menuitem"
                           >
                             🔄 {plan.name} ({plan.price_monthly}€/mois)
@@ -259,7 +259,7 @@ function SubscriptionRow({
 
                   <button
                     onClick={() => handleAction('update_status')}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
                     role="menuitem"
                   >
                     ⚙️ Modifier le statut
@@ -382,15 +382,15 @@ export default function BillingPage() {
       trial: 'bg-blue-100 text-blue-800',
       cancelled: 'bg-red-100 text-red-800',
       past_due: 'bg-yellow-100 text-yellow-800',
-      expired: 'bg-gray-100 text-gray-800',
+      expired: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
       paid: 'bg-green-100 text-green-800',
       open: 'bg-yellow-100 text-yellow-800',
-      draft: 'bg-gray-100 text-gray-800',
+      draft: 'bg-gray-100 dark:bg-gray-900 text-gray-800',
       succeeded: 'bg-green-100 text-green-800',
       pending: 'bg-yellow-100 text-yellow-800',
       failed: 'bg-red-100 text-red-800',
     }
-    return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[status as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
   if (loading) {
@@ -399,7 +399,7 @@ export default function BillingPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement...</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement...</p>
           </div>
         </div>
       </AdminLayout>
@@ -429,7 +429,7 @@ export default function BillingPage() {
                   })
               }
             }}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 dark:text-gray-100"
           >
             <option value="overview">Vue d'ensemble</option>
             <option value="subscriptions">Abonnements ({subscriptions.length})</option>
@@ -448,7 +448,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'overview'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Vue d'ensemble
@@ -458,7 +458,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'subscriptions'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Abonnements ({subscriptions.length})
@@ -468,7 +468,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'invoices'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Factures ({invoices.length})
@@ -478,7 +478,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'payments'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Paiements ({payments.length})
@@ -488,7 +488,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'plans'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Plans Tarifaires ({pricingPlans.length})
@@ -498,7 +498,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'payment-methods'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             Modes de Paiement ({paymentMethods.length})
@@ -511,7 +511,7 @@ export default function BillingPage() {
             className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'unpaid'
                 ? 'border-red-500 text-red-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             ⚠️ Impayés
@@ -527,20 +527,20 @@ export default function BillingPage() {
       {/* Overview Tab */}
       {activeTab === 'overview' && stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-2">Revenus Totaux</p>
-            <p className="text-3xl font-bold text-gray-900">{stats.total_revenue?.toFixed(2) || '0.00'}€</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Revenus Totaux</p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats.total_revenue?.toFixed(2) || '0.00'}€</p>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-2">Revenus Mensuels</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Revenus Mensuels</p>
             <p className="text-3xl font-bold text-green-600">{stats.monthly_revenue?.toFixed(2) || '0.00'}€</p>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-2">Abonnements Actifs</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Abonnements Actifs</p>
             <p className="text-3xl font-bold text-blue-600">{stats.active_subscriptions || 0}</p>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-2">Factures Impayées</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Factures Impayées</p>
             <p className="text-3xl font-bold text-red-600">{stats.unpaid_invoices || 0}</p>
           </div>
         </div>
@@ -548,9 +548,9 @@ export default function BillingPage() {
 
       {/* Subscriptions Tab */}
       {activeTab === 'subscriptions' && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 className="text-lg font-semibold text-gray-900">Gestion des Abonnements</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Gestion des Abonnements</h2>
             <button
               onClick={() => alert('Fonctionnalité à venir : Créer un nouvel abonnement')}
               className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm whitespace-nowrap"
@@ -564,7 +564,7 @@ export default function BillingPage() {
           >
             {subscriptions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   Aucun abonnement
                 </td>
               </tr>
@@ -587,30 +587,30 @@ export default function BillingPage() {
 
       {/* Invoices Tab */}
       {activeTab === 'invoices' && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <ResponsiveTable
             headers={['N° Facture', 'Tenant', 'Date', 'Montant', 'Statut', 'Actions']}
             emptyMessage="Aucune facture"
           >
             {invoices.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   Aucune facture
                 </td>
               </tr>
             ) : (
               invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={invoice.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     {invoice.invoice_number}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     {invoice.tenant?.name || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     {invoice.total} {invoice.currency}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -670,7 +670,7 @@ export default function BillingPage() {
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Chargement des impayés...</p>
+                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">Chargement des impayés...</p>
               </div>
             </div>
           ) : unpaidItems && unpaidItems.stats ? (
@@ -699,23 +699,23 @@ export default function BillingPage() {
 
               {/* Past Due Subscriptions */}
               {unpaidItems.past_due_subscriptions && unpaidItems.past_due_subscriptions.length > 0 && (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">Abonnements en Retard de Paiement</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Abonnements en Retard de Paiement</h2>
                   </div>
                   <ResponsiveTable
                     headers={['Tenant', 'Plan', 'Statut', 'Montant Impayé', 'Actions']}
                     emptyMessage="Aucun abonnement en retard"
                   >
                     {unpaidItems.past_due_subscriptions.map((sub: Subscription) => (
-                      <tr key={sub.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={sub.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                           <div>
                             <div>{sub.tenant?.name || '-'}</div>
-                            <div className="text-xs text-gray-500">{sub.tenant?.email || '-'}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{sub.tenant?.email || '-'}</div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                           {sub.plan?.name || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -726,7 +726,7 @@ export default function BillingPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-600">
                           {sub.unpaid_amount?.toFixed(2) || '0.00'}€
                           {sub.unpaid_invoices_count > 0 && (
-                            <span className="block text-xs text-gray-500 mt-1">
+                            <span className="block text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
                               ({sub.unpaid_invoices_count} facture{sub.unpaid_invoices_count > 1 ? 's' : ''})
                             </span>
                           )}
@@ -771,7 +771,7 @@ export default function BillingPage() {
 
               {/* Overdue Invoices */}
               {unpaidItems.overdue_invoices && unpaidItems.overdue_invoices.length > 0 && (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-red-900">⚠️ Factures en Retard ({unpaidItems.overdue_invoices.length})</h2>
                   </div>
@@ -786,22 +786,22 @@ export default function BillingPage() {
                       
                       return (
                         <tr key={invoice.id} className="hover:bg-red-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                             {invoice.invoice_number}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                             <div>
                               <div>{invoice.tenant?.name || '-'}</div>
                               <div className="text-xs text-gray-400">{invoice.tenant?.email || '-'}</div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                             {invoice.subscription?.plan?.name || '-'}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                             {invoice.total} {invoice.currency}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                             {dueDate.toLocaleDateString('fr-FR')}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -857,32 +857,32 @@ export default function BillingPage() {
 
               {/* All Unpaid Invoices */}
               {unpaidItems.unpaid_invoices && unpaidItems.unpaid_invoices.length > 0 && (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">Toutes les Factures Impayées</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Toutes les Factures Impayées</h2>
                   </div>
                   <ResponsiveTable
                     headers={['N° Facture', 'Tenant', 'Plan', 'Montant', 'Date', 'Échéance', 'Actions']}
                     emptyMessage="Aucune facture impayée"
                   >
                     {unpaidItems.unpaid_invoices.map((invoice: Invoice) => (
-                      <tr key={invoice.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={invoice.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                           {invoice.invoice_number}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                           {invoice.tenant?.name || '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                           {invoice.subscription?.plan?.name || '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                           {invoice.total} {invoice.currency}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                           {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                           {new Date(invoice.due_date).toLocaleDateString('fr-FR')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
@@ -921,8 +921,8 @@ export default function BillingPage() {
               )}
             </>
           ) : (
-            <div className="bg-white rounded-lg shadow p-12 text-center">
-              <p className="text-gray-500 text-lg mb-2">Aucun élément impayé pour le moment</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-lg mb-2">Aucun élément impayé pour le moment</p>
               <p className="text-gray-400 text-sm">Les abonnements en retard et factures impayées apparaîtront ici</p>
             </div>
           )}
@@ -1054,7 +1054,7 @@ function PricingPlansTab({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">Gestion des Plans Tarifaires</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Gestion des Plans Tarifaires</h2>
         <button
           onClick={handleCreate}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -1064,7 +1064,7 @@ function PricingPlansTab({
       </div>
 
       {(showCreate || editing) && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">
             {editing ? 'Modifier le Plan Tarifaire' : 'Nouveau Plan Tarifaire'}
           </h3>
@@ -1084,37 +1084,37 @@ function PricingPlansTab({
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <ResponsiveTable
           headers={['Ordre', 'Nom', 'Prix', 'Statut', 'Caractéristiques', 'Actions']}
           emptyMessage="Aucun plan tarifaire"
         >
           {sortedPlans.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+              <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                 Aucun plan tarifaire configuré
               </td>
             </tr>
           ) : (
             sortedPlans.map((plan, index) => (
-              <tr key={plan.id} className="hover:bg-gray-50">
+              <tr key={plan.id} className="hover:bg-gray-50 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex flex-col items-center gap-1">
                     <button
                       onClick={() => handleMoveUp(plan.id)}
                       disabled={index === 0}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Monter"
                     >
                       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                       </svg>
                     </button>
-                    <span className="text-sm font-medium text-gray-700">{plan.order ?? index}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.order ?? index}</span>
                     <button
                       onClick={() => handleMoveDown(plan.id)}
                       disabled={index === sortedPlans.length - 1}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Descendre"
                     >
                       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1125,18 +1125,18 @@ function PricingPlansTab({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{plan.name}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{plan.name}</div>
                     {plan.description && (
-                      <div className="text-xs text-gray-500 truncate max-w-xs">{plan.description}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 truncate max-w-xs">{plan.description}</div>
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
                   <div>
                     <span className="font-bold">{plan.price_monthly}€</span>
-                    <span className="text-gray-500">/mois</span>
+                    <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">/mois</span>
                     {plan.price_yearly && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
                         {plan.price_yearly}€/an
                       </div>
                     )}
@@ -1156,7 +1156,7 @@ function PricingPlansTab({
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
+                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   <div className="space-y-1">
                     <div>{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</div>
                     <div>{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''}</div>
@@ -1192,13 +1192,13 @@ function PricingPlansTab({
 
       {/* Preview des plans */}
       {sortedPlans.filter(p => p.is_active).length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Aperçu de l'affichage sur le site public</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {sortedPlans.filter(p => p.is_active).map((plan) => (
               <div
                 key={plan.id}
-                className={`bg-white rounded-xl shadow-lg p-8 relative border-2 ${
+                className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 relative border-2 ${
                   plan.is_featured ? 'border-blue-500 scale-105' : 'border-gray-200'
                 }`}
               >
@@ -1210,16 +1210,16 @@ function PricingPlansTab({
                   </div>
                 )}
                 
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <p className="text-gray-600 mb-6 text-sm">{plan.description}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{plan.name}</h3>
+                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-6 text-sm">{plan.description}</p>
                 
                 <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-gray-900">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     {plan.price_monthly}€
                   </span>
-                  <span className="text-gray-600">/mois</span>
+                  <span className="text-gray-600 dark:text-gray-400 dark:text-gray-400">/mois</span>
                   {plan.price_yearly && (
-                    <div className="text-sm text-gray-500 mt-1">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
                       ou {plan.price_yearly}€/an
                     </div>
                   )}
@@ -1228,20 +1228,20 @@ function PricingPlansTab({
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <span className="text-green-500 mr-2">✓</span>
-                    <span className="text-gray-700">{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</span>
+                    <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</span>
                   </li>
                   <li className="flex items-center">
                     <span className="text-green-500 mr-2">✓</span>
-                    <span className="text-gray-700">{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''} max</span>
+                    <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''} max</span>
                   </li>
                   <li className="flex items-center">
                     <span className="text-green-500 mr-2">✓</span>
-                    <span className="text-gray-700">{plan.max_storage_gb} GB de stockage</span>
+                    <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{plan.max_storage_gb} GB de stockage</span>
                   </li>
                   {plan.features && plan.features.map((feature: string, idx: number) => (
                     <li key={idx} className="flex items-center">
                       <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-gray-700 dark:text-gray-300 dark:text-gray-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -1274,7 +1274,7 @@ function PricingPlanForm({
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Nom *</label>
           <input
             type="text"
             value={formData.name || ''}
@@ -1298,7 +1298,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Slug *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Slug *</label>
           <input
             type="text"
             value={formData.slug || ''}
@@ -1310,7 +1310,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Prix mensuel (€) *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Prix mensuel (€) *</label>
           <input
             type="number"
             step="0.01"
@@ -1322,7 +1322,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Prix annuel (€)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Prix annuel (€)</label>
           <input
             type="number"
             step="0.01"
@@ -1334,7 +1334,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de sites *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Nombre de sites *</label>
           <input
             type="number"
             value={formData.max_sites || 1}
@@ -1346,7 +1346,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre d'utilisateurs *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Nombre d'utilisateurs *</label>
           <input
             type="number"
             value={formData.max_users || 1}
@@ -1358,7 +1358,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Stockage (GB) *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Stockage (GB) *</label>
           <input
             type="number"
             value={formData.max_storage_gb || 1}
@@ -1370,7 +1370,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ordre d'affichage *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Ordre d'affichage *</label>
           <input
             type="number"
             value={formData.order || 0}
@@ -1378,12 +1378,12 @@ function PricingPlanForm({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             required
           />
-          <p className="text-xs text-gray-500 mt-1">Plus petit = affiché en premier</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">Plus petit = affiché en premier</p>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Description</label>
         <textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -1394,7 +1394,7 @@ function PricingPlanForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">
           Fonctionnalités (une par ligne)
         </label>
         <textarea
@@ -1404,7 +1404,7 @@ function PricingPlanForm({
           rows={5}
           placeholder="Support prioritaire&#10;API complète&#10;Analytics avancés"
         />
-        <p className="text-xs text-gray-500 mt-1">Séparez chaque fonctionnalité par un saut de ligne</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">Séparez chaque fonctionnalité par un saut de ligne</p>
       </div>
 
       <div className="flex items-center gap-6">
@@ -1415,7 +1415,7 @@ function PricingPlanForm({
             onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
             className="mr-2"
           />
-          <span className="text-sm text-gray-700">Plan actif</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">Plan actif</span>
         </label>
 
         <label className="flex items-center">
@@ -1425,14 +1425,14 @@ function PricingPlanForm({
             onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
             className="mr-2"
           />
-          <span className="text-sm text-gray-700">Marquer comme "Populaire"</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">Marquer comme "Populaire"</span>
         </label>
       </div>
 
       <div className="flex justify-end gap-3 pt-4 border-t">
         <button
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
         >
           Annuler
         </button>
@@ -1518,31 +1518,31 @@ function PaymentsHistoryTab({
     <div className="space-y-6">
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-2">Total Paiements</p>
-          <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Total Paiements</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-2">Montant Total</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Montant Total</p>
           <p className="text-3xl font-bold text-green-600">
             {stats.totalAmount.toFixed(2)}€
           </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-2">Réussis</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Réussis</p>
           <p className="text-3xl font-bold text-blue-600">{stats.succeeded}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-2">Échoués</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-2">Échoués</p>
           <p className="text-3xl font-bold text-red-600">{stats.failed}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Statut
             </label>
             <select
@@ -1559,7 +1559,7 @@ function PaymentsHistoryTab({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Méthode
             </label>
             <select
@@ -1575,7 +1575,7 @@ function PaymentsHistoryTab({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Trier par
             </label>
             <select
@@ -1588,7 +1588,7 @@ function PaymentsHistoryTab({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2">
               Ordre
             </label>
             <select
@@ -1604,21 +1604,21 @@ function PaymentsHistoryTab({
       </div>
 
       {/* Payments Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <ResponsiveTable
           headers={['Date', 'Tenant', 'Facture', 'Montant', 'Méthode', 'Statut', 'Détails']}
           emptyMessage="Aucun paiement"
         >
           {filteredPayments.length === 0 ? (
             <tr>
-              <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+              <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                 Aucun paiement trouvé
               </td>
             </tr>
           ) : (
             filteredPayments.map((payment) => (
-              <tr key={payment.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <tr key={payment.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   {payment.paid_at
                     ? new Date(payment.paid_at).toLocaleDateString('fr-FR', {
                         day: '2-digit',
@@ -1637,16 +1637,16 @@ function PaymentsHistoryTab({
                       })
                     : '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                   {payment.tenant?.name || '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   {payment.invoice?.invoice_number || '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">
                   {parseFloat(payment.amount.toString()).toFixed(2)} {payment.currency}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   {getMethodLabel(payment.method)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -1660,7 +1660,7 @@ function PaymentsHistoryTab({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {payment.stripe_payment_intent_id && (
-                    <span className="text-xs text-gray-500" title={payment.stripe_payment_intent_id}>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400" title={payment.stripe_payment_intent_id}>
                       Stripe: {payment.stripe_payment_intent_id.slice(-8)}
                     </span>
                   )}
@@ -1765,7 +1765,7 @@ function PaymentMethodsTab({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">Gestion des Modes de Paiement</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Gestion des Modes de Paiement</h2>
         <button
           onClick={handleCreate}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -1775,7 +1775,7 @@ function PaymentMethodsTab({
       </div>
 
       {showCreate && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Nouveau Mode de Paiement</h3>
           <PaymentMethodForm
             formData={formData}
@@ -1789,32 +1789,32 @@ function PaymentMethodsTab({
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <ResponsiveTable
           headers={['Nom', 'Type', 'Statut', 'Commission', 'Limites', 'Actions']}
           emptyMessage="Aucun mode de paiement"
         >
           {paymentMethods.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+              <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 dark:text-gray-400">
                 Aucun mode de paiement configuré
               </td>
             </tr>
           ) : (
             paymentMethods.map((method) => (
-              <tr key={method.id} className="hover:bg-gray-50">
+              <tr key={method.id} className="hover:bg-gray-50 dark:bg-gray-900">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     {method.icon && <span className="mr-2 text-xl">{method.icon}</span>}
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{method.name}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{method.name}</div>
                       {method.description && (
-                        <div className="text-xs text-gray-500">{method.description}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{method.description}</div>
                       )}
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   {methodTypeLabels[method.method_type] || method.method_type}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -1825,7 +1825,7 @@ function PaymentMethodsTab({
                       {method.is_active ? 'Actif' : 'Inactif'}
                     </span>
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                      method.is_enabled ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                      method.is_enabled ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 dark:bg-gray-900 text-gray-800'
                     }`}>
                       {method.is_enabled ? 'Disponible' : 'Masqué'}
                     </span>
@@ -1836,13 +1836,13 @@ function PaymentMethodsTab({
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   {method.fee_percentage > 0 && `${method.fee_percentage}%`}
                   {method.fee_percentage > 0 && method.fee_fixed > 0 && ' + '}
                   {method.fee_fixed > 0 && `${method.fee_fixed}€`}
                   {method.fee_percentage === 0 && method.fee_fixed === 0 && 'Aucune'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                   {method.min_amount && `Min: ${method.min_amount}€`}
                   {method.min_amount && method.max_amount && ' / '}
                   {method.max_amount && `Max: ${method.max_amount}€`}
@@ -1866,7 +1866,7 @@ function PaymentMethodsTab({
                           onClick={() => handleToggleEnabled(method.id)}
                           className={`px-3 py-1 text-xs rounded ${
                             method.is_enabled
-                              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              ? 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
                               : 'bg-green-100 text-green-700 hover:bg-green-200'
                           }`}
                           title={method.is_enabled ? 'Désactiver' : 'Activer'}
@@ -1916,7 +1916,7 @@ function PaymentMethodForm({
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Nom *</label>
           <input
             type="text"
             value={formData.name || ''}
@@ -1927,7 +1927,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Type *</label>
           <select
             value={formData.method_type || 'card'}
             onChange={(e) => setFormData({ ...formData, method_type: e.target.value as any })}
@@ -1944,7 +1944,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Icône (emoji)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Icône (emoji)</label>
           <input
             type="text"
             value={formData.icon || ''}
@@ -1955,7 +1955,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ordre d'affichage</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Ordre d'affichage</label>
           <input
             type="number"
             value={formData.order || 0}
@@ -1966,7 +1966,7 @@ function PaymentMethodForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Description</label>
         <textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -1985,7 +1985,7 @@ function PaymentMethodForm({
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               className="mr-2"
             />
-            <span className="text-sm text-gray-700">Actif</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">Actif</span>
           </label>
         </div>
 
@@ -1997,7 +1997,7 @@ function PaymentMethodForm({
               onChange={(e) => setFormData({ ...formData, is_enabled: e.target.checked })}
               className="mr-2"
             />
-            <span className="text-sm text-gray-700">Disponible</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">Disponible</span>
           </label>
         </div>
 
@@ -2009,14 +2009,14 @@ function PaymentMethodForm({
               onChange={(e) => setFormData({ ...formData, requires_validation: e.target.checked })}
               className="mr-2"
             />
-            <span className="text-sm text-gray-700">Validation requise</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">Validation requise</span>
           </label>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Commission (%)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Commission (%)</label>
           <input
             type="number"
             step="0.01"
@@ -2027,7 +2027,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Commission fixe (€)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Commission fixe (€)</label>
           <input
             type="number"
             step="0.01"
@@ -2038,7 +2038,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Montant minimum (€)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Montant minimum (€)</label>
           <input
             type="number"
             step="0.01"
@@ -2049,7 +2049,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Montant maximum (€)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1">Montant maximum (€)</label>
           <input
             type="number"
             step="0.01"
@@ -2063,7 +2063,7 @@ function PaymentMethodForm({
       <div className="flex justify-end gap-3 pt-4 border-t">
         <button
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
         >
           Annuler
         </button>

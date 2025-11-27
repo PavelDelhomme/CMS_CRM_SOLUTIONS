@@ -84,13 +84,13 @@ export default function FeaturesPage() {
               features: ['Éditeur avancé', 'Bibliothèque de médias', 'Thèmes personnalisables', 'Widgets et modules']
             }
           ].map((feature, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
               <div className="text-5xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-              <p className="text-gray-600 mb-4">{feature.description}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{feature.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400 mb-4">{feature.description}</p>
               <ul className="space-y-2">
                 {feature.features.map((item, idx) => (
-                  <li key={idx} className="flex items-center text-sm text-gray-700">
+                  <li key={idx} className="flex items-center text-sm text-gray-700 dark:text-gray-300 dark:text-gray-300">
                     <span className="text-green-500 mr-2">✓</span>
                     {item}
                   </li>
@@ -110,7 +110,7 @@ export default function FeaturesPage() {
           </p>
           <a
             href="/register"
-            className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-colors shadow-xl"
+            className="inline-block bg-white dark:bg-gray-800 text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-colors shadow-xl"
           >
             🚀 Démarrer gratuitement
           </a>
