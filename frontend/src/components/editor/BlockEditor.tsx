@@ -142,8 +142,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     }
 
     // Utiliser un timeout pour éviter les doubles clics
-    deleteTimeoutRef.current = setTimeout(() => {
-      const newBlocks = history.state.filter(b => b.id !== blockId)
+    deleteTimeoutRef.current = window.setTimeout(() => {
+      const newBlocks = history.state.filter((b: Block) => b.id !== blockId)
       history.set(newBlocks, true)
       
       // Désélectionner le bloc si c'était celui sélectionné
@@ -357,7 +357,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext items={history.state.map(b => b.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext items={history.state.map((b: Block) => b.id)} strategy={verticalListSortingStrategy}>
                 <div className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
                   {history.state.length === 0 ? (
                     <div className="text-center py-12 lg:py-20">

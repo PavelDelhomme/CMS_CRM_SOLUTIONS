@@ -303,33 +303,39 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
           }}>
             {block.data.text || 'Titre'}
           </h1>}
-          {HeadingTag === 'h2' && <h2 className="font-bold" style={{
-            fontSize: block.styles?.font_size || '2rem',
-            fontWeight: block.styles?.font_weight || 'bold',
-            marginBottom: block.styles?.margin_bottom || '1rem',
-            textAlign: block.data.align || 'left',
-            color: block.data.color || block.styles?.color || undefined
-          }}>
-            {block.data.text || 'Titre'}
-          </h2>}
-          {HeadingTag === 'h3' && <h3 className="font-bold" style={{
-            fontSize: block.styles?.font_size || '2rem',
-            fontWeight: block.styles?.font_weight || 'bold',
-            marginBottom: block.styles?.margin_bottom || '1rem',
-            textAlign: block.data.align || 'left',
-            color: block.data.color || block.styles?.color || undefined
-          }}>
-            {block.data.text || 'Titre'}
-          </h3>}
-          {HeadingTag === 'h4' && <h4 className="font-bold" style={{ 
-            fontSize: block.styles?.font_size || '2rem',
-            fontWeight: block.styles?.font_weight || 'bold',
-            marginBottom: block.styles?.margin_bottom || '1rem',
-            textAlign: block.data.align || 'left',
-            color: block.data.color || block.styles?.color || undefined
-          }}>
-            {block.data.text || 'Titre'}
-          </h4>}
+          {HeadingTag === 'h2' && (
+            <h2 className="font-bold" style={{
+              fontSize: block.styles?.font_size || '2rem',
+              fontWeight: block.styles?.font_weight || 'bold',
+              marginBottom: block.styles?.margin_bottom || '1rem',
+              textAlign: block.data.align || 'left',
+              color: block.data.color || block.styles?.color || undefined
+            }}>
+              {block.data.text || 'Titre'}
+            </h2>
+          )}
+          {HeadingTag === 'h3' && (
+            <h3 className="font-bold" style={{
+              fontSize: block.styles?.font_size || '2rem',
+              fontWeight: block.styles?.font_weight || 'bold',
+              marginBottom: block.styles?.margin_bottom || '1rem',
+              textAlign: block.data.align || 'left',
+              color: block.data.color || block.styles?.color || undefined
+            }}>
+              {block.data.text || 'Titre'}
+            </h3>
+          )}
+          {HeadingTag === 'h4' && (
+            <h4 className="font-bold" style={{
+              fontSize: block.styles?.font_size || '2rem',
+              fontWeight: block.styles?.font_weight || 'bold',
+              marginBottom: block.styles?.margin_bottom || '1rem',
+              textAlign: block.data.align || 'left',
+              color: block.data.color || block.styles?.color || undefined
+            }}>
+              {block.data.text || 'Titre'}
+            </h4>
+          )}
         </div>
       )
 
