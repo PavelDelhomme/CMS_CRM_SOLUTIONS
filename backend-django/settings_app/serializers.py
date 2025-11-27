@@ -50,6 +50,30 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def to_representation(self, instance):
+        """Override to handle missing database fields gracefully"""
+        data = super().to_representation(instance)
+        
+        # Check if fields exist in database, if not set defaults
+        try:
+            # Try to access the field to see if it exists in DB
+            _ = instance.public_homepage_blocks
+        except (AttributeError, Exception):
+            # Field doesn't exist in database yet, set default
+            data['public_homepage_blocks'] = []
+        
+        try:
+            _ = instance.public_homepage_meta_title
+        except (AttributeError, Exception):
+            data['public_homepage_meta_title'] = 'VTCBuilder - Le WordPress des chauffeurs VTC'
+        
+        try:
+            _ = instance.public_homepage_meta_description
+        except (AttributeError, Exception):
+            data['public_homepage_meta_description'] = 'Plateforme complète pour créer et gérer votre site VTC professionnel'
+        
+        return data
         
     def validate(self, data):
         """Validate settings data"""

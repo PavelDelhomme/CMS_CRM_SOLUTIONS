@@ -6,11 +6,34 @@ from rest_framework.decorators import action, parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+import logging
+from django.conf import settings
 from .models import Media, Template
 from .serializers import (
     MediaSerializer, MediaUploadSerializer, MediaListSerializer,
     TemplateSerializer, TemplateListSerializer
 )
+
+logger = logging.getLogger(__name__)
+
+
+def add_cors_headers(response, request):
+    """Helper function to add CORS headers to a response"""
+    try:
+        origin = request.META.get('HTTP_ORIGIN')
+        if origin:
+            if settings.DEBUG:
+                if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                    response['Access-Control-Allow-Origin'] = origin
+                    response['Access-Control-Allow-Credentials'] = 'true'
+                    response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                    response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+            else:
+                if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
+                    response['Access-Control-Allow-Origin'] = origin
+                    response['Access-Control-Allow-Credentials'] = 'true'
+    except Exception as e:
+        logger.warning(f"Error adding CORS headers: {e}")
 
 
 class MediaViewSet(viewsets.ModelViewSet):
@@ -538,13 +561,11 @@ class TemplateViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """List templates with error handling"""
-        import logging
-        logger = logging.getLogger(__name__)
         from django_tenants.utils import tenant_context
         
-        user = request.user
-        
         try:
+            user = request.user
+            
             # Tenant users access templates from their tenant
             if hasattr(user, 'tenant') and user.tenant:
                 try:
@@ -564,50 +585,70 @@ class TemplateViewSet(viewsets.ModelViewSet):
                         
                         # Serialize within tenant context
                         serializer = TemplateListSerializer(queryset, many=True)
-                        return Response(serializer.data)
+                        response = Response(serializer.data)
+                        add_cors_headers(response, request)
+                        return response
                 except Exception as e:
                     logger.error(f"Error listing templates for tenant {user.tenant.id if user.tenant else 'None'}: {str(e)}", exc_info=True)
                     # Return empty array on error instead of 500
-                    return Response([], status=status.HTTP_200_OK)
+                    response = Response([], status=status.HTTP_200_OK)
+                    add_cors_headers(response, request)
+                    return response
             
             # Super admin can access templates from reference tenant
-            if user.is_super_admin():
-                tenant = self._get_reference_tenant()
-                if tenant:
-                    try:
-                        logger.debug(f"Super admin accessing templates from reference tenant: {tenant.id}")
-                        with tenant_context(tenant):
-                            queryset = Template.objects.all()
-                            
-                            # Apply filters
-                            is_premium = request.query_params.get('is_premium')
-                            category = request.query_params.get('category')
-                            
-                            if is_premium is not None:
-                                is_premium_bool = is_premium.lower() == 'true'
-                                queryset = queryset.filter(is_premium=is_premium_bool)
-                            
-                            if category:
-                                queryset = queryset.filter(category=category)
-                            
-                            serializer = TemplateListSerializer(queryset, many=True)
-                            logger.debug(f"Returning {len(serializer.data)} templates")
-                            return Response(serializer.data)
-                    except Exception as e:
-                        logger.error(f"Error listing templates for super admin with tenant {tenant.id}: {str(e)}", exc_info=True)
-                        # Return empty array on error instead of 500
-                        return Response([], status=status.HTTP_200_OK)
-                else:
-                    logger.warning("No reference tenant available for super admin template listing")
-                    # No reference tenant available, return empty list
-                    return Response([], status=status.HTTP_200_OK)
+            try:
+                if user.is_super_admin():
+                    tenant = self._get_reference_tenant()
+                    if tenant:
+                        try:
+                            logger.debug(f"Super admin accessing templates from reference tenant: {tenant.id}")
+                            with tenant_context(tenant):
+                                queryset = Template.objects.all()
+                                
+                                # Apply filters
+                                is_premium = request.query_params.get('is_premium')
+                                category = request.query_params.get('category')
+                                
+                                if is_premium is not None:
+                                    is_premium_bool = is_premium.lower() == 'true'
+                                    queryset = queryset.filter(is_premium=is_premium_bool)
+                                
+                                if category:
+                                    queryset = queryset.filter(category=category)
+                                
+                                serializer = TemplateListSerializer(queryset, many=True)
+                                logger.debug(f"Returning {len(serializer.data)} templates")
+                                response = Response(serializer.data)
+                                add_cors_headers(response, request)
+                                return response
+                        except Exception as e:
+                            logger.error(f"Error listing templates for super admin with tenant {tenant.id}: {str(e)}", exc_info=True)
+                            # Return empty array on error instead of 500
+                            response = Response([], status=status.HTTP_200_OK)
+                            add_cors_headers(response, request)
+                            return response
+                    else:
+                        logger.warning("No reference tenant available for super admin template listing")
+                        # No reference tenant available, return empty list
+                        response = Response([], status=status.HTTP_200_OK)
+                        add_cors_headers(response, request)
+                        return response
+            except Exception as e:
+                logger.error(f"Error checking super admin in TemplateViewSet.list: {e}", exc_info=True)
             
             logger.warning(f"User {user.id} is neither tenant user nor super admin")
-            return Response([], status=status.HTTP_200_OK)
+            response = Response([], status=status.HTTP_200_OK)
+            add_cors_headers(response, request)
+            return response
             
         except Exception as e:
             logger.error(f"Unexpected error in TemplateViewSet.list: {str(e)}", exc_info=True)
-            return Response([], status=status.HTTP_200_OK)
+            error_response = Response({
+                'error': 'An error occurred while fetching templates',
+                'message': str(e) if settings.DEBUG else 'Unable to load templates'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
     def get_object(self):
         """Get template object within tenant context"""

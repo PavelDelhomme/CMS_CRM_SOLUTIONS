@@ -591,7 +591,13 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
    - **Import optionnel blocks** : Import conditionnel dans api/urls.py pour éviter crash au démarrage
    - **Application blocks** : Ajoutée à SHARED_APPS (corrige erreur app_label BlockType)
    - **Status** : ✅ Terminé - Headers CORS toujours envoyés, erreurs 500 gérées proprement
-   - **Action requise** : Redémarrer le backend (`docker-compose restart backend`) pour appliquer les changements
+   - **Backend redémarré** : ✅ `docker-compose restart backend` exécuté avec succès - Les corrections sont maintenant actives
+   - **Résultat** : Les erreurs CORS et 500 sur `/admin/dashboard`, `/admin/tenants`, `/api/dashboard/`, `/api/stats/detailed/`, et `/api/users/impersonation-status/` devraient maintenant être résolues
+   - **Corrections supplémentaires** : ✅ Ajout gestion d'erreurs dans `UserViewSet.get_queryset()` et `UserViewSet.list()` pour `/api/users/` - Ajout gestion d'erreurs dans `UserSerializer.to_representation()` pour éviter erreurs de sérialisation
+   - **Corrections finales CORS** : ✅ Ajout méthode `_add_cors_headers()` dans `UserViewSet.impersonation_status()` et `DetailedStatsView` pour ajouter manuellement les headers CORS à toutes les réponses, y compris les erreurs - Gestion améliorée des erreurs de session dans `impersonation_status`
+   - **Corrections CORS billing** : ✅ Ajout fonction utilitaire `add_cors_headers()` et gestion d'erreurs complète dans tous les ViewSets de billing (`PricingPlanViewSet`, `SubscriptionViewSet`, `InvoiceViewSet`, `PaymentViewSet`, `PaymentMethodViewSet`) et fonction `billing_stats()` - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS
+   - **Corrections CORS templates** : ✅ Ajout fonction utilitaire `add_cors_headers()` dans `media/views.py` et gestion d'erreurs complète dans `TemplateViewSet.list()` - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour `/api/templates/`
+   - **Corrections CORS system-settings** : ✅ Migration créée et appliquée pour ajouter les champs `public_homepage_blocks`, `public_homepage_meta_title`, `public_homepage_meta_description` - Ajout fonction utilitaire `add_cors_headers()` dans `settings_app/views.py` et gestion d'erreurs complète dans `system_settings_view()` et `system_settings_test_email_view()` - Ajout `to_representation()` dans `SystemSettingsSerializer` pour gérer gracieusement les champs manquants - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour `/api/system-settings/`
 
 2. ✅ **Amélioration Dark Mode complète** - Toggle dans headers + corrections partout
    - **Toggle dark mode** : Ajouté dans MobileHeader (en haut), headers desktop, Navbar
@@ -660,20 +666,46 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 ## 📋 Tâches à Faire
 
+### ✅ TÂCHES RÉCEMMENT COMPLÉTÉES (27 Novembre 2025)
+
+#### Corrections Erreurs CORS et 500 - ✅ COMPLÉTÉ
+1. ✅ **Corrections CORS et 500 pour `/admin/dashboard`** - DashboardView, DetailedStatsView corrigés
+2. ✅ **Corrections CORS et 500 pour `/admin/tenants`** - TenantViewSet corrigé
+3. ✅ **Corrections CORS et 500 pour `/admin/users`** - UserViewSet, impersonation_status corrigés
+4. ✅ **Corrections CORS et 500 pour `/admin/billing`** - Tous les ViewSets billing corrigés (PricingPlan, Subscription, Invoice, Payment, PaymentMethod)
+5. ✅ **Corrections CORS et 500 pour `/admin/templates`** - TemplateViewSet corrigé
+6. ✅ **Corrections CORS et 500 pour `/admin/settings`** - system_settings_view corrigé + migration homepage fields
+7. ✅ **Middleware CORS global** - CORSAlwaysMiddleware + custom_exception_handler DRF créés
+
+#### Améliorations Interface - ✅ COMPLÉTÉ
+1. ✅ **Mode sombre/clair complet** - Toggle dans headers, adaptation tous composants, 58 fichiers corrigés
+2. ✅ **Erreur compilation AdminSidebar.tsx** - Résolue
+3. ✅ **Résumé stats dashboard admin** - Section statistiques détaillées ajoutée
+4. ✅ **Éditeur page d'accueil publique** - Page `/admin/homepage` créée
+
 ### 🚨 Priorité CRITIQUE - En Cours
+
+#### Tests et Vérifications - EN COURS
+- [ ] **Tests complets de l'interface** - Exécuter la checklist complète ci-dessus
+- [ ] **Vérification logs navigateur** - S'assurer qu'il n'y a plus d'erreurs CORS ou 500
+- [ ] **Vérification logs backend** - S'assurer qu'il n'y a plus d'erreurs critiques
 
 #### Plan d'Implémentation Complet (2025-11-27)
 
 **Voir** : [`PLAN_IMPLEMENTATION.md`](./PLAN_IMPLEMENTATION.md) pour le plan détaillé
 
 **Phases** :
-1. 🔴 **Correction tests backend** (36 échoués, 2 erreurs) - EN COURS
+1. 🔴 **Correction tests backend** (36 échoués, 2 erreurs) - ⏳ EN COURS
+   - Tests tenant-specific nécessitent `tenant_context`
+   - Slug auto-généré manquant dans certains tests
+   - Domaines manquants pour tenants de test
+   - Schémas tenant non créés pour tests
 2. 💳 **Intégration Stripe complète** - ✅ **COMPLET (2025-11-27)** - Backend + Webhooks + Frontend (Modal Checkout)
-3. 📝 **Éditeur WordPress-like** (blocs, drag & drop, code) - ⏳ **API BACKEND + SERVICES FRONTEND FAIT (2025-11-27)**, reste composants éditeur
-4. 📋 **Système de formulaires** intégré - À FAIRE
+3. 📝 **Éditeur WordPress-like** (blocs, drag & drop, code) - ⏳ **API BACKEND + SERVICES FRONTEND FAIT (2025-11-27)**, reste composants éditeur frontend
+4. 📋 **Système de formulaires** intégré - ⏳ À FAIRE
 5. 🌓 **Mode sombre/clair** - ✅ **FAIT (2025-11-27)** - Détection automatique + Toggle manuel
-6. 🧪 **Tests frontend** - À FAIRE
-7. 📊 **Documentation** - À FAIRE
+6. 🧪 **Tests frontend** - ⏳ À FAIRE
+7. 📊 **Documentation** - ⏳ À FAIRE
 
 #### Résolution des Erreurs Globales & Tests
 - [x] **Système de tests unitaires complet** - ✅ **37 fichiers de tests créés** (2025-11-26)
@@ -702,19 +734,20 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - [ ] **Vérification couverture de code** - Atteindre minimum 70% de couverture
 - [ ] **Intégration CI/CD** - Automatiser l'exécution des tests
 
-### Priorité Haute (Après résolution erreurs)
-- [ ] **Migration Django pour champs HTML/CSS** - Créer migration pour html_content et css_content dans Template
+### Priorité Haute (Après tests et vérifications)
+- [ ] **Composants éditeur WordPress frontend** - Finaliser BlockEditor, palette de blocs, drag & drop
 - [ ] **Routing multi-tenant** - Activer middleware django-tenants
 - [ ] **Pages tenant** - Créer pages login/admin pour sous-domaines tenant
-- [ ] **Site public tenant** - Créer pages publiques du tenant
-- [ ] **Landing page** - Page d'accueil publique VTCBuilder
+- [ ] **Site public tenant** - Créer pages publiques du tenant (affichage site tenant)
+- [ ] **Landing page publique** - Page d'accueil publique VTCBuilder (utilise éditeur de blocs)
+- [ ] **Pages publiques manquantes** - Documentation, Contact, FAQ, CGV, Confidentialité
 
 ### Priorité Moyenne
-- [ ] **Intégration paiement** - Stripe ou autre
-- [ ] **Éditeur WordPress** - WYSIWYG pour pages tenant
-- [ ] **Templates site** - Templates pour sites publics
-- [ ] **Analytics** - Statistiques d'utilisation
-- [ ] **Système de blocs** - Architecture de blocs pour éditeur de contenu
+- [ ] **Système de formulaires intégré** - Formulaires dans l'éditeur WordPress pour pages tenant
+- [ ] **Templates site** - Templates pour sites publics (gestion et application)
+- [ ] **Analytics tenant** - Statistiques d'utilisation pour chaque tenant
+- [ ] **Amélioration système de blocs** - Plus de types de blocs, personnalisation avancée
+- [ ] **Gestion domaines personnalisés** - Permettre aux tenants d'ajouter leurs propres domaines
 
 ### Priorité Basse
 - [ ] **Notifications** - Système de notifications

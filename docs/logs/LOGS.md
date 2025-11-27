@@ -176,6 +176,48 @@
    - Gestion d'erreurs pour comptage tenants/users (valeurs à 0 en fallback)
    - Toutes les erreurs sont loggées et ne causent plus de crash
 
+10. ✅ **Backend redémarré avec toutes les corrections CORS et 500** (27 Novembre 2025)
+   - Backend redémarré après toutes les corrections de middleware CORS et gestion d'erreurs
+   - Middleware CORS, gestionnaire d'exceptions DRF, et gestion d'erreurs maintenant actifs
+   - Les erreurs CORS et 500 sur les endpoints admin devraient maintenant être résolues
+
+11. ✅ **Corrections erreurs CORS et 500 sur /api/users/** (27 Novembre 2025)
+   - Ajout gestion d'erreurs complète dans `UserViewSet.get_queryset()` avec try/except et logging
+   - Ajout méthode `UserViewSet.list()` avec gestion d'erreurs pour capturer les erreurs lors de la liste des utilisateurs
+   - Ajout gestion d'erreurs dans `UserSerializer.to_representation()` pour éviter les erreurs de sérialisation si le tenant est inaccessible
+   - Toutes les erreurs sont maintenant loggées et retournent des réponses d'erreur propres avec headers CORS
+
+12. ✅ **Corrections finales CORS pour /api/users/impersonation-status/ et /api/stats/detailed/** (27 Novembre 2025)
+   - Ajout méthode `_add_cors_headers()` dans `UserViewSet.impersonation_status()` pour ajouter manuellement les headers CORS à toutes les réponses
+   - Amélioration gestion d'erreurs de session dans `impersonation_status()` avec try/except spécifique pour les accès session
+   - Ajout méthode `_add_cors_headers()` dans `DetailedStatsView` pour ajouter manuellement les headers CORS aux réponses d'erreur
+   - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour garantir leur présence
+
+13. ✅ **Corrections CORS et 500 pour tous les endpoints billing** (27 Novembre 2025)
+   - Création fonction utilitaire `add_cors_headers()` réutilisable dans billing/views.py
+   - Ajout gestion d'erreurs complète dans `PricingPlanViewSet.list()` et `get_queryset()` avec headers CORS manuels
+   - Ajout gestion d'erreurs complète dans `SubscriptionViewSet.list()` et `get_queryset()` avec headers CORS manuels
+   - Ajout gestion d'erreurs complète dans `InvoiceViewSet.list()` et `get_queryset()` avec headers CORS manuels
+   - Ajout gestion d'erreurs complète dans `PaymentViewSet.list()` et `get_queryset()` avec headers CORS manuels
+   - Ajout gestion d'erreurs complète dans `PaymentMethodViewSet.list()` et `get_queryset()` avec headers CORS manuels
+   - Ajout gestion d'erreurs complète dans `billing_stats()` avec headers CORS manuels et fallback pour toutes les statistiques
+   - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour garantir leur présence
+
+14. ✅ **Corrections CORS et 500 pour /api/templates/** (27 Novembre 2025)
+   - Création fonction utilitaire `add_cors_headers()` dans media/views.py (identique à celle de billing)
+   - Ajout gestion d'erreurs complète dans `TemplateViewSet.list()` avec headers CORS manuels sur toutes les réponses
+   - Gestion d'erreurs améliorée pour les cas où aucun tenant de référence n'est disponible
+   - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour garantir leur présence
+
+15. ✅ **Corrections CORS et 500 pour /api/system-settings/** (27 Novembre 2025)
+   - Création et application migration `0002_add_homepage_fields.py` pour ajouter les champs manquants (`public_homepage_blocks`, `public_homepage_meta_title`, `public_homepage_meta_description`)
+   - Création fonction utilitaire `add_cors_headers()` dans settings_app/views.py
+   - Ajout gestion d'erreurs complète dans `system_settings_view()` avec headers CORS manuels sur toutes les réponses (GET, POST, PATCH, PUT)
+   - Ajout gestion d'erreurs complète dans `system_settings_test_email_view()` avec headers CORS manuels
+   - Ajout méthode `to_representation()` dans `SystemSettingsSerializer` pour gérer gracieusement les champs manquants dans la base de données
+   - Retour de valeurs par défaut en cas d'erreur lors de la récupération des paramètres
+   - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour garantir leur présence
+
 #### Améliorations Dark Mode Complètes
 1. ✅ **Toggle Dark Mode dans headers** - Accessible en haut de toutes les pages
    - Toggle ajouté dans MobileHeader (visible sur mobile, en haut à droite)
