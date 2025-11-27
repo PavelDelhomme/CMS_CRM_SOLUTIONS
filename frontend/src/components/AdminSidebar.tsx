@@ -115,7 +115,7 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
   }
 
   return (
-    <div>
+    <div className="contents">
       {/* Overlay - visible quand sidebar est ouverte sur mobile ou desktop */}
       {sidebarOpen && (
         <div
