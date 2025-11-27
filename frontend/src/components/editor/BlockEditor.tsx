@@ -37,7 +37,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   // Historique avec undo/redo
   const history = useHistory<Block[]>(blocks, 50)
   const isHistoryUpdate = useRef(false)
-  const deleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const deleteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -72,28 +72,31 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         if (history.canUndo) {
-          handleUndo()
+          isHistoryUpdate.current = true
+          history.undo()
         }
       }
       // Ctrl+Shift+Z ou Cmd+Shift+Z pour redo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
         e.preventDefault()
         if (history.canRedo) {
-          handleRedo()
+          isHistoryUpdate.current = true
+          history.redo()
         }
       }
       // Ctrl+Y pour redo (alternative)
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
         e.preventDefault()
         if (history.canRedo) {
-          handleRedo()
+          isHistoryUpdate.current = true
+          history.redo()
         }
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [history.canUndo, history.canRedo, handleUndo, handleRedo])
+  }, [history])
 
   const loadBlockTypes = async () => {
     try {
@@ -135,7 +138,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const removeBlock = useCallback((blockId: string) => {
     // Annuler le timeout précédent s'il existe
     if (deleteTimeoutRef.current) {
-      clearTimeout(deleteTimeoutRef.current)
+      window.clearTimeout(deleteTimeoutRef.current)
     }
 
     // Utiliser un timeout pour éviter les doubles clics
@@ -154,7 +157,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   }, [history, selectedBlock])
 
   const updateBlock = useCallback((blockId: string, updates: Partial<Block>) => {
-    const newBlocks = history.state.map(block =>
+    const newBlocks = history.state.map((block: Block) =>
       block.id === blockId ? { ...block, ...updates } : block
     )
     history.set(newBlocks, true)
