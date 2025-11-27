@@ -32,6 +32,9 @@ export interface SystemSettings {
   notify_on_subscription_expiring: boolean;
   maintenance_mode: boolean;
   maintenance_message: string;
+  public_homepage_blocks?: any[];
+  public_homepage_meta_title?: string;
+  public_homepage_meta_description?: string;
   extra_settings: Record<string, any>;
   created_at: string;
   updated_at: string;

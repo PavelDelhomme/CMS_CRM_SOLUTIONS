@@ -58,6 +58,11 @@ class SystemSettings(models.Model):
     maintenance_mode = models.BooleanField(default=False)
     maintenance_message = models.TextField(blank=True, default='Le site est en maintenance.')
     
+    # Public Homepage Content (stored as blocks like WordPress)
+    public_homepage_blocks = models.JSONField(default=list, blank=True, help_text="Blocs de contenu pour la page d'accueil publique")
+    public_homepage_meta_title = models.CharField(max_length=255, blank=True, default='VTCBuilder - Le WordPress des chauffeurs VTC')
+    public_homepage_meta_description = models.TextField(blank=True, default='Plateforme complète pour créer et gérer votre site VTC professionnel')
+    
     # Additional Settings (JSON for flexibility)
     extra_settings = models.JSONField(default=dict, blank=True)
     

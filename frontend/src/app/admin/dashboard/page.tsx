@@ -15,9 +15,37 @@ interface DashboardStats {
   monthly_revenue: number
 }
 
+interface DetailedStatsSummary {
+  overview: {
+    total_tenants: number
+    active_tenants: number
+    trial_tenants: number
+    total_users: number
+    active_subscriptions: number
+    trial_subscriptions: number
+  }
+  activity: {
+    users_today: number
+    users_this_week: number
+    tenants_today: number
+    tenants_this_week: number
+  }
+  revenue: {
+    monthly: number
+    total: number
+  }
+  alerts: Array<{
+    type: 'error' | 'warning' | 'info'
+    severity: 'high' | 'medium' | 'low'
+    title: string
+    count: number
+  }>
+}
+
 export default function AdminDashboard() {
   const router = useRouter()
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [detailedStats, setDetailedStats] = useState<DetailedStatsSummary | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -31,6 +59,7 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
+      // Load basic dashboard stats
       const response = await api.get('/dashboard/')
       setStats(response.data.stats || {
         total_tenants: 0,
@@ -40,6 +69,36 @@ export default function AdminDashboard() {
         total_bookings: 0,
         monthly_revenue: 0,
       })
+
+      // Load detailed stats summary
+      try {
+        const detailedResponse = await api.get('/stats/detailed/')
+        const detailed = detailedResponse.data
+        setDetailedStats({
+          overview: detailed.overview || {
+            total_tenants: 0,
+            active_tenants: 0,
+            trial_tenants: 0,
+            total_users: 0,
+            active_subscriptions: 0,
+            trial_subscriptions: 0,
+          },
+          activity: detailed.activity || {
+            users_today: 0,
+            users_this_week: 0,
+            tenants_today: 0,
+            tenants_this_week: 0,
+          },
+          revenue: detailed.revenue || {
+            monthly: 0,
+            total: 0,
+          },
+          alerts: detailed.alerts || [],
+        })
+      } catch (error) {
+        console.warn('Erreur chargement stats détaillées:', error)
+        // Continue without detailed stats
+      }
     } catch (error) {
       console.error('Erreur chargement dashboard:', error)
       setStats({
@@ -151,6 +210,138 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Résumé Statistiques Détaillées */}
+        {detailedStats && (
+          <div className="mt-6 lg:mt-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium text-gray-900">Résumé des Statistiques</h2>
+              <button
+                onClick={() => router.push('/admin/stats')}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Voir toutes les statistiques →
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {/* Activité Aujourd'hui */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Aujourd'hui</p>
+                    <p className="text-2xl font-bold text-blue-900 mt-1">
+                      {detailedStats.activity.users_today || 0}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">Nouveaux utilisateurs</p>
+                  </div>
+                  <div className="p-2 bg-blue-200 rounded-lg">
+                    <svg className="h-6 w-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Activité Cette Semaine */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Cette Semaine</p>
+                    <p className="text-2xl font-bold text-green-900 mt-1">
+                      {detailedStats.activity.users_this_week || 0}
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">Utilisateurs</p>
+                  </div>
+                  <div className="p-2 bg-green-200 rounded-lg">
+                    <svg className="h-6 w-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Abonnements Actifs */}
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-purple-700 uppercase tracking-wide">Abonnements</p>
+                    <p className="text-2xl font-bold text-purple-900 mt-1">
+                      {detailedStats.overview.active_subscriptions || 0}
+                    </p>
+                    <p className="text-xs text-purple-600 mt-1">
+                      {detailedStats.overview.trial_subscriptions || 0} en trial
+                    </p>
+                  </div>
+                  <div className="p-2 bg-purple-200 rounded-lg">
+                    <svg className="h-6 w-6 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Revenu Total */}
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border border-indigo-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-indigo-700 uppercase tracking-wide">Revenu Total</p>
+                    <p className="text-2xl font-bold text-indigo-900 mt-1">
+                      {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(detailedStats.revenue.total || 0)}
+                    </p>
+                    <p className="text-xs text-indigo-600 mt-1">
+                      {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(detailedStats.revenue.monthly || 0)}/mois
+                    </p>
+                  </div>
+                  <div className="p-2 bg-indigo-200 rounded-lg">
+                    <svg className="h-6 w-6 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Alertes */}
+            {detailedStats.alerts && detailedStats.alerts.length > 0 && (
+              <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-gray-900 flex items-center">
+                    <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Alertes ({detailedStats.alerts.length})
+                  </h3>
+                  <button
+                    onClick={() => router.push('/admin/stats')}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    Voir détails →
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {detailedStats.alerts.slice(0, 3).map((alert, index) => (
+                    <div key={index} className="flex items-center justify-between text-sm">
+                      <span className={`${
+                        alert.severity === 'high' ? 'text-red-700' :
+                        alert.severity === 'medium' ? 'text-yellow-700' :
+                        'text-blue-700'
+                      }`}>
+                        {alert.title}
+                      </span>
+                      <span className="font-semibold text-gray-900">{alert.count}</span>
+                    </div>
+                  ))}
+                  {detailedStats.alerts.length > 3 && (
+                    <p className="text-xs text-gray-500 italic">
+                      + {detailedStats.alerts.length - 3} autre(s) alerte(s)
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div className="mt-6 lg:mt-8">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Actions Rapides</h2>
@@ -202,6 +393,23 @@ export default function AdminDashboard() {
                 <div className="ml-4">
                   <h3 className="text-lg font-medium text-gray-900">Statistiques</h3>
                   <p className="text-sm text-gray-500">Voir les analytics</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => router.push('/admin/homepage')}
+              className="card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+            >
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-8 w-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-medium text-gray-900">Page d'Accueil</h3>
+                  <p className="text-sm text-gray-500">Personnaliser le site public</p>
                 </div>
               </div>
             </button>
