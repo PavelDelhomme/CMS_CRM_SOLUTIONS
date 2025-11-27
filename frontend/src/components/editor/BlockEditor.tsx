@@ -1945,62 +1945,65 @@ function BlockPropertiesPanel({
       {/* Render properties based on block schema */}
       {blockType.schema && Object.keys(blockType.schema).length > 0 && (
         <div className="space-y-3">
-          {Object.entries(blockType.schema).map(([key, schema]: [string, any]) => (
-            <div key={key}>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {schema.label || key}
-              </label>
-              {schema.type === 'text' && (
-                <input
-                  type="text"
-                  value={block.data[key] || ''}
-                  onChange={(e) =>
-                    onUpdate({
-                      data: { ...block.data, [key]: e.target.value },
-                    })
-                  }
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                />
-              )}
-              {schema.type === 'textarea' && (
-                <textarea
-                  value={block.data[key] || ''}
-                  onChange={(e) =>
-                    onUpdate({
-                      data: { ...block.data, [key]: e.target.value },
-                    })
-                  }
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                  rows={3}
-                />
-              )}
-              {schema.type === 'number' && (
-                <input
-                  type="number"
-                  value={block.data[key] || ''}
-                  onChange={(e) =>
-                    onUpdate({
-                      data: { ...block.data, [key]: parseFloat(e.target.value) || 0 },
-                    })
-                  }
-                  className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              )}
-              {(schema.type === 'url' || 
-                (schema.type === 'text' && (key.toLowerCase().includes('url') || key.toLowerCase().includes('link') || key.toLowerCase().includes('href')))) && (
-                <UrlInputWithSuggestions
-                  value={block.data[key] || ''}
-                  onChange={(url) =>
-                    onUpdate({
-                      data: { ...block.data, [key]: url },
-                    })
-                  }
-                  placeholder={schema.placeholder || 'URL ou sélectionner une page...'}
-                  className="text-sm"
-                />
-              )}
-            </div>
-          ))}
+          {Object.entries(blockType.schema).map(([key, schema]) => {
+            const schemaObj = schema as any
+            return (
+              <div key={key}>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {schemaObj.label || key}
+                </label>
+                {schemaObj.type === 'text' && (
+                  <input
+                    type="text"
+                    value={block.data[key] || ''}
+                    onChange={(e) =>
+                      onUpdate({
+                        data: { ...block.data, [key]: e.target.value },
+                      })
+                    }
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                )}
+                {schemaObj.type === 'textarea' && (
+                  <textarea
+                    value={block.data[key] || ''}
+                    onChange={(e) =>
+                      onUpdate({
+                        data: { ...block.data, [key]: e.target.value },
+                      })
+                    }
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows={3}
+                  />
+                )}
+                {schemaObj.type === 'number' && (
+                  <input
+                    type="number"
+                    value={block.data[key] || ''}
+                    onChange={(e) =>
+                      onUpdate({
+                        data: { ...block.data, [key]: parseFloat(e.target.value) || 0 },
+                      })
+                    }
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                )}
+                {(schemaObj.type === 'url' || 
+                  (schemaObj.type === 'text' && (key.toLowerCase().includes('url') || key.toLowerCase().includes('link') || key.toLowerCase().includes('href')))) && (
+                  <UrlInputWithSuggestions
+                    value={block.data[key] || ''}
+                    onChange={(url) =>
+                      onUpdate({
+                        data: { ...block.data, [key]: url },
+                      })
+                    }
+                    placeholder={schemaObj.placeholder || 'URL ou sélectionner une page...'}
+                    className="text-sm"
+                  />
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
