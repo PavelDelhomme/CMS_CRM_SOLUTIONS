@@ -38,6 +38,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const history = useHistory<Block[]>(blocks, 50)
   const isHistoryUpdate = useRef(false)
   const deleteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  
+  // Tracking des blocs
+  const { trackBlockAction } = useBlockTracking()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -133,7 +136,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     history.set([...history.state, newBlock], true)
     setSelectedBlock(newBlock.id)
     setPropertiesOpen(true)
-  }, [history])
+    // Tracker l'ajout du bloc
+    trackBlockAction(blockType.name, 'add')
+  }, [history, trackBlockAction])
 
   const removeBlock = useCallback((blockId: string) => {
     // Annuler le timeout précédent s'il existe
@@ -143,8 +148,14 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
     // Utiliser un timeout pour éviter les doubles clics
     deleteTimeoutRef.current = window.setTimeout(() => {
+      const blockToDelete = history.state.find((b: Block) => b.id === blockId)
       const newBlocks = history.state.filter((b: Block) => b.id !== blockId)
       history.set(newBlocks, true)
+      
+      // Tracker la suppression du bloc
+      if (blockToDelete) {
+        trackBlockAction(blockToDelete.type, 'delete')
+      }
       
       // Désélectionner le bloc si c'était celui sélectionné
       if (selectedBlock === blockId) {
@@ -154,14 +165,19 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       
       deleteTimeoutRef.current = null
     }, 100)
-  }, [history, selectedBlock])
+  }, [history, selectedBlock, trackBlockAction])
 
   const updateBlock = useCallback((blockId: string, updates: Partial<Block>) => {
-    const newBlocks = history.state.map((block: Block) =>
-      block.id === blockId ? { ...block, ...updates } : block
+    const block = history.state.find((b: Block) => b.id === blockId)
+    const newBlocks = history.state.map((b: Block) =>
+      b.id === blockId ? { ...b, ...updates } : b
     )
     history.set(newBlocks, true)
-  }, [history])
+    // Tracker la modification du bloc (debounce implicite via historique)
+    if (block) {
+      trackBlockAction(block.type, 'update')
+    }
+  }, [history, trackBlockAction])
 
   const handleUndo = useCallback(() => {
     isHistoryUpdate.current = true
@@ -1604,6 +1620,496 @@ function BlockRenderer({
               onChange={(e) => onUpdate({ data: { ...block.data, button_text: e.target.value } })}
               className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
+          </div>
+        </div>
+      )
+    case 'testimonials':
+      const testimonials = block.data.testimonials || [{ name: '', role: '', content: '', avatar: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Témoignages de nos clients"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Témoignages ({testimonials.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {testimonials.map((testimonial: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={testimonial.name || ''}
+                    onChange={(e) => {
+                      const newTestimonials = [...testimonials]
+                      newTestimonials[index] = { ...testimonial, name: e.target.value }
+                      onUpdate({ data: { ...block.data, testimonials: newTestimonials } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Nom"
+                  />
+                  <input
+                    type="text"
+                    value={testimonial.role || ''}
+                    onChange={(e) => {
+                      const newTestimonials = [...testimonials]
+                      newTestimonials[index] = { ...testimonial, role: e.target.value }
+                      onUpdate({ data: { ...block.data, testimonials: newTestimonials } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Rôle/Poste"
+                  />
+                  <textarea
+                    value={testimonial.content || ''}
+                    onChange={(e) => {
+                      const newTestimonials = [...testimonials]
+                      newTestimonials[index] = { ...testimonial, content: e.target.value }
+                      onUpdate({ data: { ...block.data, testimonials: newTestimonials } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Témoignage"
+                    rows={2}
+                  />
+                  <input
+                    type="url"
+                    value={testimonial.avatar || ''}
+                    onChange={(e) => {
+                      const newTestimonials = [...testimonials]
+                      newTestimonials[index] = { ...testimonial, avatar: e.target.value }
+                      onUpdate({ data: { ...block.data, testimonials: newTestimonials } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="URL avatar (optionnel)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, testimonials: [...testimonials, { name: '', role: '', content: '', avatar: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {testimonials.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, testimonials: testimonials.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'pricing':
+      const plans = block.data.plans || [{ name: '', price: '', features: [''], button_text: '', button_url: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Nos tarifs"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Forfaits ({plans.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {plans.map((plan: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={plan.name || ''}
+                    onChange={(e) => {
+                      const newPlans = [...plans]
+                      newPlans[index] = { ...plan, name: e.target.value }
+                      onUpdate({ data: { ...block.data, plans: newPlans } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Nom du forfait"
+                  />
+                  <input
+                    type="text"
+                    value={plan.price || ''}
+                    onChange={(e) => {
+                      const newPlans = [...plans]
+                      newPlans[index] = { ...plan, price: e.target.value }
+                      onUpdate({ data: { ...block.data, plans: newPlans } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Prix (ex: 29€/mois)"
+                  />
+                  <textarea
+                    value={(plan.features || []).join('\n')}
+                    onChange={(e) => {
+                      const newPlans = [...plans]
+                      newPlans[index] = { ...plan, features: e.target.value.split('\n').filter(f => f.trim()) }
+                      onUpdate({ data: { ...block.data, plans: newPlans } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Fonctionnalités (une par ligne)"
+                    rows={3}
+                  />
+                  <div className="grid grid-cols-2 gap-1">
+                    <input
+                      type="text"
+                      value={plan.button_text || ''}
+                      onChange={(e) => {
+                        const newPlans = [...plans]
+                        newPlans[index] = { ...plan, button_text: e.target.value }
+                        onUpdate({ data: { ...block.data, plans: newPlans } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                      placeholder="Texte bouton"
+                    />
+                    <UrlInputWithSuggestions
+                      value={plan.button_url || ''}
+                      onChange={(url) => {
+                        const newPlans = [...plans]
+                        newPlans[index] = { ...plan, button_url: url }
+                        onUpdate({ data: { ...block.data, plans: newPlans } })
+                      }}
+                      placeholder="URL"
+                      className="text-xs"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, plans: [...plans, { name: '', price: '', features: [''], button_text: '', button_url: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {plans.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, plans: plans.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'timeline':
+      const events = block.data.events || [{ date: '', title: '', description: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Notre histoire"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Événements ({events.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {events.map((event: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={event.date || ''}
+                    onChange={(e) => {
+                      const newEvents = [...events]
+                      newEvents[index] = { ...event, date: e.target.value }
+                      onUpdate({ data: { ...block.data, events: newEvents } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Date (ex: 2024)"
+                  />
+                  <input
+                    type="text"
+                    value={event.title || ''}
+                    onChange={(e) => {
+                      const newEvents = [...events]
+                      newEvents[index] = { ...event, title: e.target.value }
+                      onUpdate({ data: { ...block.data, events: newEvents } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Titre"
+                  />
+                  <textarea
+                    value={event.description || ''}
+                    onChange={(e) => {
+                      const newEvents = [...events]
+                      newEvents[index] = { ...event, description: e.target.value }
+                      onUpdate({ data: { ...block.data, events: newEvents } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Description"
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, events: [...events, { date: '', title: '', description: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {events.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, events: events.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'accordion':
+      const items = block.data.items || [{ title: '', content: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Questions fréquentes"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Éléments ({items.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {items.map((item: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={item.title || ''}
+                    onChange={(e) => {
+                      const newItems = [...items]
+                      newItems[index] = { ...item, title: e.target.value }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Titre"
+                  />
+                  <textarea
+                    value={item.content || ''}
+                    onChange={(e) => {
+                      const newItems = [...items]
+                      newItems[index] = { ...item, content: e.target.value }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Contenu"
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, items: [...items, { title: '', content: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {items.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, items: items.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'stats':
+      const stats = block.data.stats || [{ label: '', value: '', icon: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Nos statistiques"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Statistiques ({stats.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {stats.map((stat: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={stat.value || ''}
+                    onChange={(e) => {
+                      const newStats = [...stats]
+                      newStats[index] = { ...stat, value: e.target.value }
+                      onUpdate({ data: { ...block.data, stats: newStats } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Valeur (ex: 1000+)"
+                  />
+                  <input
+                    type="text"
+                    value={stat.label || ''}
+                    onChange={(e) => {
+                      const newStats = [...stats]
+                      newStats[index] = { ...stat, label: e.target.value }
+                      onUpdate({ data: { ...block.data, stats: newStats } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Label (ex: Clients satisfaits)"
+                  />
+                  <input
+                    type="text"
+                    value={stat.icon || ''}
+                    onChange={(e) => {
+                      const newStats = [...stats]
+                      newStats[index] = { ...stat, icon: e.target.value }
+                      onUpdate({ data: { ...block.data, stats: newStats } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Icône emoji (ex: 👥)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, stats: [...stats, { label: '', value: '', icon: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {stats.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, stats: stats.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'social-links':
+      const links = block.data.links || [{ platform: '', url: '', icon: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Suivez-nous"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Liens sociaux ({links.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {links.map((link: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={link.platform || ''}
+                    onChange={(e) => {
+                      const newLinks = [...links]
+                      newLinks[index] = { ...link, platform: e.target.value }
+                      onUpdate({ data: { ...block.data, links: newLinks } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Plateforme (ex: Facebook)"
+                  />
+                  <UrlInputWithSuggestions
+                    value={link.url || ''}
+                    onChange={(url) => {
+                      const newLinks = [...links]
+                      newLinks[index] = { ...link, url }
+                      onUpdate({ data: { ...block.data, links: newLinks } })
+                    }}
+                    placeholder="URL"
+                    className="text-xs"
+                  />
+                  <input
+                    type="text"
+                    value={link.icon || ''}
+                    onChange={(e) => {
+                      const newLinks = [...links]
+                      newLinks[index] = { ...link, icon: e.target.value }
+                      onUpdate({ data: { ...block.data, links: newLinks } })
+                    }}
+                    className="w-full mt-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Icône emoji (ex: 📘)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, links: [...links, { platform: '', url: '', icon: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {links.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, links: links.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )

@@ -883,6 +883,201 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         </div>
       )
 
+    case 'testimonials':
+      const testimonials = block.data.testimonials || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((testimonial: any, index: number) => (
+              <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                {testimonial.avatar && (
+                  <img
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    className="w-16 h-16 rounded-full mx-auto mb-4 object-cover"
+                  />
+                )}
+                <p className="text-gray-700 dark:text-gray-300 mb-4 italic">
+                  "{testimonial.content || 'Témoignage...'}"
+                </p>
+                <div className="text-center">
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                    {testimonial.name || 'Nom'}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {testimonial.role || 'Rôle'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+
+    case 'pricing':
+      const plans = block.data.plans || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {plans.map((plan: any, index: number) => (
+              <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                  {plan.name || 'Forfait'}
+                </h3>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                    {plan.price || 'Prix'}
+                  </span>
+                </div>
+                <ul className="space-y-2 mb-6">
+                  {(plan.features || []).map((feature: string, i: number) => (
+                    <li key={i} className="flex items-start text-gray-700 dark:text-gray-300">
+                      <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                {plan.button_text && plan.button_url && (
+                  <a
+                    href={plan.button_url}
+                    className="block w-full text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    {plan.button_text}
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+
+    case 'timeline':
+      const events = block.data.events || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="relative">
+            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gray-300 dark:bg-gray-600 transform md:-translate-x-1/2"></div>
+            {events.map((event: any, index: number) => (
+              <div key={index} className="relative mb-8 md:flex md:items-center">
+                <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:pr-8 md:text-right' : 'md:pl-8 md:ml-auto'}`}>
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                    <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-1">
+                      {event.date || 'Date'}
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                      {event.title || 'Titre'}
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      {event.description || 'Description'}
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute left-4 md:left-1/2 w-8 h-8 bg-blue-600 rounded-full border-4 border-white dark:border-gray-800 transform md:-translate-x-1/2 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+                <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:pl-8' : 'md:pr-8 md:text-right'}`}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+
+    case 'accordion':
+      const accordionItems = block.data.items || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="space-y-2">
+            {accordionItems.map((item: any, index: number) => (
+              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700">
+                  {item.title || `Élément ${index + 1}`}
+                </div>
+                <div className="px-6 py-4 text-gray-700 dark:text-gray-300">
+                  {item.content || 'Contenu...'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+
+    case 'stats':
+      const stats = block.data.stats || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {stats.map((stat: any, index: number) => (
+              <div key={index} className="text-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                {stat.icon && (
+                  <div className="text-4xl mb-2">{stat.icon}</div>
+                )}
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  {stat.value || '0'}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {stat.label || 'Label'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+
+    case 'social-links':
+      const socialLinks = block.data.links || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-4">
+              {block.data.title}
+            </h2>
+          )}
+          <div className="flex flex-wrap justify-center gap-4">
+            {socialLinks.map((link: any, index: number) => (
+              <a
+                key={index}
+                href={link.url || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                {link.icon && <span className="text-xl">{link.icon}</span>}
+                <span className="text-gray-900 dark:text-gray-100 font-medium">
+                  {link.platform || 'Plateforme'}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )
+
     case 'gallery':
       const images = block.data.images || []
       const galleryColumns = block.data.columns || 3
