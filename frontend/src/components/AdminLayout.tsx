@@ -37,7 +37,7 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
         <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
           {/* Desktop Header avec hamburger pour ouvrir/fermer */}
           <header className="hidden lg:block bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
-            <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <div className="w-full py-4 px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                 <div className="flex items-center space-x-4">
                   <button
@@ -80,7 +80,7 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
           </header>
 
           {/* Content */}
-          <main className="max-w-7xl mx-auto py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
+          <main className="w-full py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
             {children}
           </main>
         </div>

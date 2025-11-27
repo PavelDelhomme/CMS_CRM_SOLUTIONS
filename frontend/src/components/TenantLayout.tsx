@@ -72,7 +72,7 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
         <div className="flex-1 lg:ml-64">
           {/* Desktop Header */}
           <header className="hidden lg:block bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
-            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div className="w-full py-6 px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
@@ -103,10 +103,8 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
           </header>
 
           {/* Content */}
-          <main className="w-full py-4 lg:py-6 px-0 sm:px-0 lg:px-0">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {children}
-            </div>
+          <main className="w-full py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
+            {children}
           </main>
         </div>
       </div>
