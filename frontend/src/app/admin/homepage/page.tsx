@@ -115,20 +115,19 @@ export default function HomepageEditorPage() {
           </button>
 
           {/* Auto-save indicator */}
-          {isAutoSaving && (
+          {isAutoSaving ? (
             <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-sm">
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 dark:border-blue-400"></div>
-              <span>Sauvegarde automatique...</span>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent"></div>
+              <span>Sauvegarde...</span>
             </div>
-          )}
-          {!isAutoSaving && lastSaved && (
+          ) : lastSaved ? (
             <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg text-sm">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <span>Sauvegardé {lastSaved.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-          )}
+          ) : null}
 
           {/* Save Button */}
           <button

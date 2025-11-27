@@ -7,33 +7,58 @@ interface UseAutoSaveOptions {
   enabled?: boolean
 }
 
+/**
+ * Hook pour sauvegarde automatique avec détection de modifications réelles
+ * Ne sauvegarde que si les données ont vraiment changé
+ */
 export function useAutoSave({ data, onSave, debounceMs = 2000, enabled = true }: UseAutoSaveOptions) {
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
-  const hasUnsavedChanges = useRef(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastSavedDataRef = useRef<any>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isInitialMount = useRef(true)
+
+  // Fonction pour comparer deux objets (comparaison profonde simplifiée)
+  const hasDataChanged = (oldData: any, newData: any): boolean => {
+    if (oldData === null || oldData === undefined) return true
+    return JSON.stringify(oldData) !== JSON.stringify(newData)
+  }
 
   useEffect(() => {
+    // Ignorer le premier rendu (montage initial)
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      lastSavedDataRef.current = data
+      return
+    }
+
     if (!enabled || !data) return
 
-    hasUnsavedChanges.current = true
+    // Vérifier si les données ont vraiment changé
+    if (!hasDataChanged(lastSavedDataRef.current, data)) {
+      return // Pas de changement, pas de sauvegarde
+    }
 
     // Clear previous timeout
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+      window.clearTimeout(timeoutRef.current)
     }
 
-    // Set new timeout
-    timeoutRef.current = setTimeout(async () => {
+    // Set new timeout (2 secondes par défaut)
+    timeoutRef.current = window.setTimeout(async () => {
+      // Vérifier une dernière fois si les données ont changé
+      if (!hasDataChanged(lastSavedDataRef.current, data)) {
+        return
+      }
+
       setIsSaving(true)
-      hasUnsavedChanges.current = false
       
       try {
         await onSave(data)
+        lastSavedDataRef.current = data
         setLastSaved(new Date())
       } catch (error) {
         console.error('Erreur sauvegarde automatique:', error)
-        hasUnsavedChanges.current = true
       } finally {
         setIsSaving(false)
       }
@@ -41,11 +66,11 @@ export function useAutoSave({ data, onSave, debounceMs = 2000, enabled = true }:
 
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+        window.clearTimeout(timeoutRef.current)
       }
     }
   }, [data, enabled, debounceMs, onSave])
 
-  return { isSaving, lastSaved, hasUnsavedChanges: hasUnsavedChanges.current }
+  return { isSaving, lastSaved }
 }
 
