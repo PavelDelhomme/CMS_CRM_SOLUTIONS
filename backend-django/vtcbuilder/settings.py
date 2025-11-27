@@ -36,6 +36,7 @@ SHARED_APPS = [
     'tenants',
     'billing',
     'settings_app',
+    'blocks',
 ]
 
 TENANT_APPS = [
