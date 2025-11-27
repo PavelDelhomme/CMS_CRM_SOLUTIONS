@@ -31,6 +31,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [propertiesOpen, setPropertiesOpen] = useState(false)
+  const [propertiesTab, setPropertiesTab] = useState<'content' | 'style'>('content')
   const { canUseBlockType } = useFeatures()
   
   // Historique avec undo/redo
@@ -440,11 +441,45 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                   ✕
                 </button>
               </div>
-              <BlockPropertiesPanel
-                block={history.state.find(b => b.id === selectedBlock)!}
-                blockType={blockTypes.find(bt => bt.name === history.state.find(b => b.id === selectedBlock)?.type)}
-                onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-              />
+              
+              {/* Tabs pour Propriétés et Style */}
+              <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPropertiesTab('content')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'content'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    Contenu
+                  </button>
+                  <button
+                    onClick={() => setPropertiesTab('style')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'style'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    🎨 Style
+                  </button>
+                </div>
+              </div>
+
+              {propertiesTab === 'content' ? (
+                <BlockPropertiesPanel
+                  block={history.state.find(b => b.id === selectedBlock)!}
+                  blockType={blockTypes.find(bt => bt.name === history.state.find(b => b.id === selectedBlock)?.type)}
+                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                />
+              ) : (
+                <BlockStylePanel
+                  block={history.state.find(b => b.id === selectedBlock)!}
+                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                />
+              )}
             </div>
           </>
         )}
