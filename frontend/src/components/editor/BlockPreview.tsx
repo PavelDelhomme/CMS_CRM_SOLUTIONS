@@ -471,6 +471,104 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         </div>
       )
 
+    case 'code':
+      const code = block.data.code || ''
+      const language = block.data.language || 'plaintext'
+      const showLineNumbers = block.data.showLineNumbers || false
+      const showCopyButton = block.data.showCopyButton !== false
+      
+      // Fonction pour copier le code
+      const handleCopyCode = () => {
+        navigator.clipboard.writeText(code).then(() => {
+          // Toast pourrait être ajouté ici si nécessaire
+        }).catch(() => {
+          // Gestion d'erreur silencieuse
+        })
+      }
+      
+      // Fonction pour obtenir le nom du langage pour affichage
+      const getLanguageLabel = (lang: string) => {
+        const labels: Record<string, string> = {
+          javascript: 'JavaScript',
+          typescript: 'TypeScript',
+          python: 'Python',
+          java: 'Java',
+          cpp: 'C++',
+          c: 'C',
+          csharp: 'C#',
+          php: 'PHP',
+          ruby: 'Ruby',
+          go: 'Go',
+          rust: 'Rust',
+          html: 'HTML',
+          css: 'CSS',
+          scss: 'SCSS',
+          json: 'JSON',
+          xml: 'XML',
+          sql: 'SQL',
+          bash: 'Bash',
+          shell: 'Shell',
+          yaml: 'YAML',
+          markdown: 'Markdown',
+          plaintext: 'Texte brut',
+        }
+        return labels[lang] || lang
+      }
+      
+      return (
+        <div style={blockStyles} className="mb-6">
+          <div className="bg-gray-900 dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-700 dark:border-gray-800">
+            {/* Header avec langage et bouton copier */}
+            <div className="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                <span className="text-xs font-medium text-gray-300 dark:text-gray-400">
+                  {getLanguageLabel(language)}
+                </span>
+              </div>
+              {showCopyButton && code && (
+                <button
+                  onClick={handleCopyCode}
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-gray-400 hover:text-white transition-colors rounded hover:bg-gray-700 dark:hover:bg-gray-800"
+                  title="Copier le code"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copier
+                </button>
+              )}
+            </div>
+            
+            {/* Code content */}
+            <div className="relative">
+              <pre className={`m-0 p-4 overflow-x-auto text-sm font-mono ${showLineNumbers ? 'pl-12' : ''}`}>
+                {code ? (
+                  <code className={`text-gray-100 dark:text-gray-200 ${showLineNumbers ? 'block' : ''}`}>
+                    {showLineNumbers ? (
+                      code.split('\n').map((line: string, index: number) => (
+                        <div key={index} className="flex">
+                          <span className="inline-block w-8 text-right pr-4 text-gray-500 dark:text-gray-600 select-none">
+                            {index + 1}
+                          </span>
+                          <span className="flex-1">{line || ' '}</span>
+                        </div>
+                      ))
+                    ) : (
+                      code
+                    )}
+                  </code>
+                ) : (
+                  <span className="text-gray-500 dark:text-gray-600 italic">Aucun code configuré</span>
+                )}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )
+
     case 'columns':
       const columnCount = block.data.columns_count || 2
       return (

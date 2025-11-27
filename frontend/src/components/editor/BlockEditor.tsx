@@ -736,6 +736,94 @@ function BlockRenderer({
           )}
         </div>
       )
+    case 'code':
+      const commonLanguages = [
+        { value: 'javascript', label: 'JavaScript' },
+        { value: 'typescript', label: 'TypeScript' },
+        { value: 'python', label: 'Python' },
+        { value: 'java', label: 'Java' },
+        { value: 'cpp', label: 'C++' },
+        { value: 'c', label: 'C' },
+        { value: 'csharp', label: 'C#' },
+        { value: 'php', label: 'PHP' },
+        { value: 'ruby', label: 'Ruby' },
+        { value: 'go', label: 'Go' },
+        { value: 'rust', label: 'Rust' },
+        { value: 'html', label: 'HTML' },
+        { value: 'css', label: 'CSS' },
+        { value: 'scss', label: 'SCSS' },
+        { value: 'json', label: 'JSON' },
+        { value: 'xml', label: 'XML' },
+        { value: 'sql', label: 'SQL' },
+        { value: 'bash', label: 'Bash' },
+        { value: 'shell', label: 'Shell' },
+        { value: 'yaml', label: 'YAML' },
+        { value: 'markdown', label: 'Markdown' },
+        { value: 'plaintext', label: 'Texte brut' },
+      ]
+      
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Langage de programmation
+            </label>
+            <select
+              value={block.data.language || 'plaintext'}
+              onChange={(e) => onUpdate({ data: { ...block.data, language: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {commonLanguages.map((lang) => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Code source
+            </label>
+            <textarea
+              value={block.data.code || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, code: e.target.value } })}
+              className="w-full p-3 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+              placeholder="Entrez votre code ici..."
+              rows={10}
+              spellCheck={false}
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`code-line-numbers-${block.id}`}
+                checked={block.data.showLineNumbers || false}
+                onChange={(e) => onUpdate({ data: { ...block.data, showLineNumbers: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`code-line-numbers-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Afficher les numéros de ligne
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`code-copy-button-${block.id}`}
+                checked={block.data.showCopyButton !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, showCopyButton: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`code-copy-button-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Bouton copier
+              </label>
+            </div>
+          </div>
+          {(!block.data.code) && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
+          )}
+        </div>
+      )
     default:
       return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
