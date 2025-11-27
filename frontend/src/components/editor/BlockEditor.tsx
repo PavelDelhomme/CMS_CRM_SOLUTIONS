@@ -441,8 +441,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                 </button>
               </div>
               <BlockPropertiesPanel
-                block={blocks.find(b => b.id === selectedBlock)!}
-                blockType={blockTypes.find(bt => bt.name === blocks.find(b => b.id === selectedBlock)!.type)}
+                block={history.state.find(b => b.id === selectedBlock)!}
+                blockType={blockTypes.find(bt => bt.name === history.state.find(b => b.id === selectedBlock)?.type)}
                 onUpdate={(updates) => updateBlock(selectedBlock, updates)}
               />
             </div>
