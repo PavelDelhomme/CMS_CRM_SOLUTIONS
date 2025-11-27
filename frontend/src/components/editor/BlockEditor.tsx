@@ -242,47 +242,177 @@ function BlockRenderer({
   blockType?: BlockType
   onUpdate: (updates: Partial<Block>) => void
 }) {
-  // Simple block rendering - can be extended
+  // Render based on block type
   switch (block.type) {
     case 'text':
       return (
         <textarea
           value={block.data.content || ''}
           onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
           placeholder="Entrez votre texte..."
-          rows={4}
+          rows={6}
         />
       )
     case 'heading':
+      const headingLevel = block.data.level || 'h2'
+      const HeadingTag = headingLevel as keyof JSX.IntrinsicElements
       return (
-        <input
-          type="text"
-          value={block.data.text || ''}
-          onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
-          className="w-full p-2 border border-gray-300 rounded text-2xl font-bold"
-          placeholder="Titre..."
-        />
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={block.data.text || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded text-2xl font-bold focus:ring-2 focus:ring-blue-500"
+            placeholder="Titre..."
+          />
+          <select
+            value={headingLevel}
+            onChange={(e) => onUpdate({ data: { ...block.data, level: e.target.value } })}
+            className="text-sm p-1 border border-gray-300 rounded"
+          >
+            <option value="h1">H1</option>
+            <option value="h2">H2</option>
+            <option value="h3">H3</option>
+            <option value="h4">H4</option>
+          </select>
+        </div>
       )
     case 'image':
       return (
-        <div>
+        <div className="space-y-2">
           <input
             type="url"
             value={block.data.src || ''}
             onChange={(e) => onUpdate({ data: { ...block.data, src: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded mb-2"
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
             placeholder="URL de l'image..."
           />
+          <input
+            type="text"
+            value={block.data.alt || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, alt: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+            placeholder="Texte alternatif (alt)..."
+          />
           {block.data.src && (
-            <img src={block.data.src} alt={block.data.alt || ''} className="w-full rounded" />
+            <div className="mt-2">
+              <img 
+                src={block.data.src} 
+                alt={block.data.alt || ''} 
+                className="w-full max-h-64 object-contain rounded border border-gray-200"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+            </div>
           )}
+        </div>
+      )
+    case 'button':
+      return (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={block.data.text || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="Texte du bouton..."
+          />
+          <input
+            type="url"
+            value={block.data.url || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, url: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="URL du lien..."
+          />
+          <select
+            value={block.data.style || 'primary'}
+            onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="primary">Primaire</option>
+            <option value="secondary">Secondaire</option>
+            <option value="outline">Outline</option>
+          </select>
+          <div className="mt-2">
+            <button
+              className={`px-4 py-2 rounded ${
+                block.data.style === 'primary' ? 'bg-blue-600 text-white' :
+                block.data.style === 'secondary' ? 'bg-gray-600 text-white' :
+                'border-2 border-blue-600 text-blue-600'
+              }`}
+            >
+              {block.data.text || 'Bouton'}
+            </button>
+          </div>
+        </div>
+      )
+    case 'video':
+      return (
+        <div className="space-y-2">
+          <input
+            type="url"
+            value={block.data.url || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, url: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="URL de la vidéo (YouTube, Vimeo)..."
+          />
+          {block.data.url && (
+            <div className="mt-2 aspect-video bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+              <p className="text-sm text-gray-500">Aperçu vidéo: {block.data.url}</p>
+            </div>
+          )}
+        </div>
+      )
+    case 'spacer':
+      return (
+        <div className="space-y-2">
+          <input
+            type="number"
+            value={block.data.height || 40}
+            onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 40 } })}
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="Hauteur en pixels..."
+            min={10}
+            max={200}
+          />
+          <div 
+            className="bg-gray-200 border-2 border-dashed border-gray-300 rounded"
+            style={{ height: `${block.data.height || 40}px` }}
+          >
+            <div className="h-full flex items-center justify-center text-xs text-gray-500">
+              Espaceur: {(block.data.height || 40)}px
+            </div>
+          </div>
+        </div>
+      )
+    case 'divider':
+      return (
+        <div className="space-y-2">
+          <select
+            value={block.data.style || 'solid'}
+            onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+            className="w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="solid">Solide</option>
+            <option value="dashed">Tirets</option>
+            <option value="dotted">Pointillés</option>
+          </select>
+          <div className={`border-t-2 ${
+            block.data.style === 'solid' ? 'border-solid' :
+            block.data.style === 'dashed' ? 'border-dashed' :
+            'border-dotted'
+          } border-gray-400`}></div>
         </div>
       )
     default:
       return (
-        <div className="text-gray-500 text-sm">
-          Bloc {block.type} - Configuration à venir
+        <div className="text-gray-500 text-sm space-y-2">
+          <p>Bloc {block.type} - Configuration à venir</p>
+          {blockType?.description && (
+            <p className="text-xs text-gray-400">{blockType.description}</p>
+          )}
         </div>
       )
   }
