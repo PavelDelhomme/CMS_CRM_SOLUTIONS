@@ -238,9 +238,38 @@ function FAQSectionPreview({ title, items, blockStyles }: { title?: string; item
 }
 
 function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: BlockType }) {
-  // Apply block styles if any
+  // Apply block styles if any - Convertir les styles personnalisés en CSS
   const blockStyles: React.CSSProperties = {
     ...(block.styles || {}),
+    // Couleur de fond
+    backgroundColor: block.styles?.background_color || block.styles?.backgroundColor,
+    // Couleur de texte
+    color: block.styles?.color,
+    // Padding
+    paddingTop: block.styles?.padding_vertical || block.styles?.padding_top || block.styles?.paddingVertical,
+    paddingBottom: block.styles?.padding_vertical || block.styles?.padding_bottom || block.styles?.paddingBottom,
+    paddingLeft: block.styles?.padding_horizontal || block.styles?.padding_left || block.styles?.paddingLeft,
+    paddingRight: block.styles?.padding_horizontal || block.styles?.padding_right || block.styles?.paddingRight,
+    // Margin
+    marginTop: block.styles?.margin_vertical || block.styles?.margin_top || block.styles?.marginTop,
+    marginBottom: block.styles?.margin_vertical || block.styles?.margin_bottom || block.styles?.marginBottom,
+    marginLeft: block.styles?.margin_horizontal || block.styles?.margin_left || block.styles?.marginLeft,
+    marginRight: block.styles?.margin_horizontal || block.styles?.margin_right || block.styles?.marginRight,
+    // Bordures
+    borderWidth: block.styles?.border_width || block.styles?.borderWidth,
+    borderStyle: block.styles?.border_style || block.styles?.borderStyle,
+    borderColor: block.styles?.border_color || block.styles?.borderColor,
+    borderRadius: block.styles?.border_radius || block.styles?.borderRadius,
+    // Ombres
+    boxShadow: block.styles?.box_shadow === 'sm' ? '0 1px 2px 0 rgb(0 0 0 / 0.05)' :
+               block.styles?.box_shadow === 'md' ? '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' :
+               block.styles?.box_shadow === 'lg' ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' :
+               block.styles?.box_shadow === 'xl' ? '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' :
+               block.styles?.box_shadow === '2xl' ? '0 25px 50px -12px rgb(0 0 0 / 0.25)' :
+               block.styles?.box_shadow === 'none' ? 'none' :
+               block.styles?.box_shadow || undefined,
+    // Alignement du texte
+    textAlign: block.styles?.text_align || block.styles?.textAlign || block.styles?.text_align,
   }
 
   // Get layout width
