@@ -191,6 +191,52 @@ function SortablePreviewBlock({
   )
 }
 
+// FAQ Section Component with state
+function FAQSectionPreview({ title, items, blockStyles }: { title?: string; items: any[]; blockStyles?: React.CSSProperties }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  
+  return (
+    <div style={blockStyles} className="mb-6">
+      {title && (
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
+          {title}
+        </h2>
+      )}
+      <div className="space-y-4 max-w-4xl mx-auto">
+        {items.length > 0 ? (
+          items.map((item: any, i: number) => (
+            <div
+              key={i}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:bg-gray-900 transition-colors"
+              >
+                <span className="font-semibold text-gray-900 dark:text-gray-100 pr-8">
+                  {item.question || `Question ${i + 1}`}
+                </span>
+                <span className="text-blue-600 text-xl flex-shrink-0">
+                  {openIndex === i ? '−' : '+'}
+                </span>
+              </button>
+              {openIndex === i && (
+                <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 border-t border-gray-100">
+                  <p className="pt-4">{item.answer || 'Réponse...'}</p>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+            Aucune question FAQ
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: BlockType }) {
   // Apply block styles if any
   const blockStyles: React.CSSProperties = {
@@ -781,46 +827,12 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
 
     case 'faq-section':
       const faqItems = block.data.items || []
-      const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
       return (
-        <div style={blockStyles} className="mb-6">
-          {block.data.title && (
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
-              {block.data.title}
-            </h2>
-          )}
-          <div className="space-y-4 max-w-4xl mx-auto">
-            {faqItems.length > 0 ? (
-              faqItems.map((item: any, i: number) => (
-                <div
-                  key={i}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
-                >
-                  <button
-                    onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
-                    className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:bg-gray-900 transition-colors"
-                  >
-                    <span className="font-semibold text-gray-900 dark:text-gray-100 pr-8">
-                      {item.question || `Question ${i + 1}`}
-                    </span>
-                    <span className="text-blue-600 text-xl flex-shrink-0">
-                      {openFaqIndex === i ? '−' : '+'}
-                    </span>
-                  </button>
-                  {openFaqIndex === i && (
-                    <div className="px-6 pb-5 text-gray-600 dark:text-gray-400 border-t border-gray-100">
-                      <p className="pt-4">{item.answer || 'Réponse...'}</p>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
-                Aucune question FAQ
-              </div>
-            )}
-          </div>
-        </div>
+        <FAQSectionPreview 
+          title={block.data.title}
+          items={faqItems}
+          blockStyles={blockStyles}
+        />
       )
 
     default:
