@@ -581,17 +581,20 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 ## 🔧 Corrections Récentes
 
 ### 27 Novembre 2025
-1. ✅ **Erreur compilation AdminSidebar.tsx** - En cours de résolution
-   - **Problème** : Erreur compilation SWC/Next.js avec fragments JSX
-   - **Symptôme** : "Expression expected", "Unexpected token div" sur ligne 117-118
-   - **Erreur 500** : `/admin/dashboard` inaccessible à cause de l'erreur de compilation
-   - **Tentatives** : Fragment `<>`, `React.Fragment`, `Fragment` importé, div wrapper
-   - **Solution appliquée** : Réécriture complète du fichier avec `React.Fragment` explicite
-   - **Status** : ⏳ En attente recompilation Next.js dans le conteneur Docker
-   - **Action requise** : Vérifier que le conteneur frontend redémarre correctement
+1. ✅ **Amélioration Dark Mode complète** - Toggle dans headers + corrections partout
+   - **Toggle dark mode** : Ajouté dans MobileHeader (en haut), headers desktop, Navbar
+   - **Corrections backgrounds** : AdminLayout dark:bg-gray-900, tous bg-white → dark:bg-gray-800
+   - **Corrections textes** : Tous text-gray-* avec variantes dark pour lisibilité
+   - **Badges & Tables** : Variantes dark mode ajoutées
+   - **Scripts automatiques** : 58 fichiers corrigés, doublons nettoyés
+   - **Status** : ✅ Terminé - Plus de fond blanc en mode sombre, interface cohérente partout
 
-2. ✅ **Résumé stats dashboard admin** - Ajout section statistiques détaillées sur `/admin/dashboard`
-3. ✅ **Éditeur page d'accueil publique** - Nouvelle page `/admin/homepage` avec BlockEditor WordPress
+2. ✅ **Erreur compilation AdminSidebar.tsx** - Résolue
+   - **Solution** : Suppression import React explicite, fragment `<>` simple
+   - **Status** : ✅ Résolu - Compilation réussie
+
+3. ✅ **Résumé stats dashboard admin** - Ajout section statistiques détaillées sur `/admin/dashboard`
+4. ✅ **Éditeur page d'accueil publique** - Nouvelle page `/admin/homepage` avec BlockEditor WordPress
 
 ### Janvier 2025
 4. ✅ **Page Stats - Erreurs corrigées** - Initialisation complète des valeurs par défaut, protection contre undefined

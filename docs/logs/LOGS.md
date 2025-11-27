@@ -128,22 +128,43 @@
 
 ### 2025-11-27
 
-#### Corrections Erreurs Compilation Next.js
-1. ✅ **Erreur compilation AdminSidebar.tsx - Fragment JSX**
-   - **Problème** : Erreur compilation SWC/Next.js avec fragment JSX `<>` ou `<React.Fragment>`
-   - **Symptôme** : "Expression expected", "Unexpected token div", erreurs 500 sur `/admin/dashboard`
-   - **Solution** : Réécriture complète du fichier avec `React.Fragment` explicite
-   - **Tentatives** : Fragment `<>`, `React.Fragment`, `Fragment` importé, div wrapper avec `contents` class
-   - **Status** : En cours de résolution - Réécriture complète effectuée, attente recompilation
+#### Améliorations Dark Mode Complètes
+1. ✅ **Toggle Dark Mode dans headers** - Accessible en haut de toutes les pages
+   - Toggle ajouté dans MobileHeader (visible sur mobile, en haut à droite)
+   - Toggle ajouté dans headers desktop (AdminLayout, TenantLayout)
+   - Toggle ajouté dans Navbar
+   - Icônes soleil/lune selon le thème actif
+   - Accessible facilement sans ouvrir la sidebar
 
-2. ✅ **Résumé stats dashboard admin**
+2. ✅ **Corrections dark mode massives** - Interface cohérente partout
+   - AdminLayout: bg-gray-100 → dark:bg-gray-900 (fond principal corrigé)
+   - Tous bg-white: dark:bg-gray-800 ajouté automatiquement (58 fichiers)
+   - Tous bg-gray-100: dark:bg-gray-900 ajouté
+   - ResponsiveTable: dark mode pour tables (headers, lignes, bordures)
+   - Badges: variantes dark mode (success, warning, danger, info)
+   - Tous text-gray-*: variantes dark ajoutées pour lisibilité
+   - Plus aucun fond blanc en mode sombre
+
+3. ✅ **Scripts automatiques de correction** - Correction massive appliquée
+   - Script pour ajouter dark mode à tous bg-white
+   - Script pour ajouter dark mode à tous text-gray-*
+   - Nettoyage automatique des doublons
+   - 58 fichiers modifiés pour cohérence complète
+
+#### Corrections Erreurs Compilation Next.js
+4. ✅ **Erreur compilation AdminSidebar.tsx - Fragment JSX (RÉSOLU)**
+   - **Problème** : Erreur compilation SWC/Next.js avec fragment JSX
+   - **Solution** : Suppression import React explicite, fragment `<>` simple
+   - **Status** : ✅ Résolu - Compilation réussie
+
+5. ✅ **Résumé stats dashboard admin**
    - Ajout section statistiques sur `/admin/dashboard`
    - Activité (aujourd'hui, cette semaine)
    - Abonnements actifs avec nombre en trial
    - Revenus (total, mensuel)
    - Alertes importantes avec liens
 
-3. ✅ **Éditeur page d'accueil publique**
+6. ✅ **Éditeur page d'accueil publique**
    - Nouvelle page `/admin/homepage` pour éditer page d'accueil publique
    - Utilise BlockEditor WordPress (même outil que les utilisateurs)
    - Stockage dans SystemSettings (public_homepage_blocks, meta_title, meta_description)
