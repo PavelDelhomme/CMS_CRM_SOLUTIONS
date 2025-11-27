@@ -136,10 +136,10 @@ export default function VisualPageEditor() {
         </div>
       }
     >
-      <div className="fixed inset-0 top-[64px] lg:top-[73px] left-0 lg:left-64 right-0 bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden">
+      <div className="fixed inset-0 top-[64px] lg:top-[73px] left-0 lg:left-64 right-0 bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden" style={{ width: 'calc(100vw - 0px)', left: '0px' }}>
         {/* Page Title & SEO - Compact Header */}
-        <div className="border-b border-gray-200 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
-          <div className="px-4 lg:px-6 xl:px-8 py-3 lg:py-4">
+        <div className="border-b border-gray-200 bg-gray-50 dark:bg-gray-900 flex-shrink-0 w-full">
+          <div className="px-4 lg:px-6 xl:px-8 py-3 lg:py-4 w-full">
             <input
               type="text"
               value={title}
@@ -150,7 +150,7 @@ export default function VisualPageEditor() {
           </div>
 
         {/* SEO Panel (Collapsible) - Compact in header */}
-        <div className="px-4 lg:px-6 xl:px-8 pb-2 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
+        <div className="px-4 lg:px-6 xl:px-8 pb-2 bg-gray-50 dark:bg-gray-900 flex-shrink-0 w-full">
           <details className="cursor-pointer">
             <summary className="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">⚙️ Réglages SEO et page</summary>
             <div className="mt-3 pb-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
@@ -203,7 +203,7 @@ export default function VisualPageEditor() {
         </div>
 
         {/* Block Editor - Full Width Split View */}
-        <div className="flex-1 overflow-hidden w-full">
+        <div className="flex-1 overflow-hidden w-full max-w-full">
           <BlockEditor blocks={blocks} onChange={setBlocks} />
         </div>
       </div>

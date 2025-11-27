@@ -103,8 +103,10 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
           </header>
 
           {/* Content */}
-          <main className="max-w-7xl mx-auto py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
-            {children}
+          <main className="w-full py-4 lg:py-6 px-0 sm:px-0 lg:px-0">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {children}
+            </div>
           </main>
         </div>
       </div>
