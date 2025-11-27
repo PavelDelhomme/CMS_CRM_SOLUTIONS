@@ -34,13 +34,13 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
         {/* Main Content */}
         <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
           {/* Desktop Header avec hamburger pour ouvrir/fermer */}
-          <header className="hidden lg:block bg-white shadow">
+          <header className="hidden lg:block bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
             <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     aria-label="Toggle menu"
                     title={sidebarOpen ? "Fermer le menu" : "Ouvrir le menu"}
                   >
@@ -49,8 +49,8 @@ export default function AdminLayout({ children, title, subtitle, headerActions }
                     </svg>
                   </button>
                   <div>
-                    <h1 className="text-2xl xl:text-3xl font-bold text-gray-900">{title}</h1>
-                    {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
+                    <h1 className="text-2xl xl:text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+                    {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>}
                   </div>
                 </div>
                 {headerActions && <div className="w-full lg:w-auto">{headerActions}</div>}

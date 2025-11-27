@@ -15,16 +15,16 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Impersonation Banner */}
       <ImpersonationBanner />
       
       {/* Mobile Header */}
-      <header className="lg:hidden bg-white shadow-sm border-b sticky top-0 z-30">
+      <header className="lg:hidden bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 sticky top-0 z-30">
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
             aria-label="Ouvrir le menu"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
@@ -33,8 +33,8 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
           </button>
           
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-bold text-gray-900 truncate px-2">{title}</h1>
-            {subtitle && <p className="text-xs text-gray-500 truncate px-2">{subtitle}</p>}
+            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate px-2">{title}</h1>
+            {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 truncate px-2">{subtitle}</p>}
           </div>
           
           <div className="w-6" /> {/* Spacer for balance */}
@@ -53,12 +53,12 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
         {/* Main Content */}
         <div className="flex-1 lg:ml-64">
           {/* Desktop Header */}
-          <header className="hidden lg:block bg-white shadow">
+          <header className="hidden lg:block bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
             <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-                  {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+                  {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>}
                 </div>
                 {headerActions && <div>{headerActions}</div>}
               </div>
