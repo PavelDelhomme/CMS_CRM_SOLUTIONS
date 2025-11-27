@@ -294,7 +294,8 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
             fontSize: block.styles?.font_size || '2rem',
             fontWeight: block.styles?.font_weight || 'bold',
             marginBottom: block.styles?.margin_bottom || '1rem',
-            textAlign: block.data.align || 'left'
+            textAlign: block.data.align || 'left',
+            color: block.data.color || block.styles?.color || undefined
           }}>
             {block.data.text || 'Titre'}
           </HeadingTag>
@@ -347,20 +348,32 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
       )
 
     case 'button':
+      const buttonSizeClass = block.data.size === 'xs' ? 'px-2 py-1 text-xs' :
+                              block.data.size === 'sm' ? 'px-3 py-1.5 text-sm' :
+                              block.data.size === 'lg' ? 'px-8 py-4 text-lg' :
+                              block.data.size === 'xl' ? 'px-10 py-5 text-xl' :
+                              'px-6 py-3'
+      
       const buttonStyleClass = block.data.style === 'primary' 
         ? 'bg-blue-600 hover:bg-blue-700 text-white' 
         : block.data.style === 'secondary'
         ? 'bg-gray-600 hover:bg-gray-700 text-white'
+        : block.data.style === 'ghost'
+        ? 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
+        : block.data.style === 'link'
+        ? 'bg-transparent text-blue-600 hover:underline'
         : 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900'
       
       return (
         <div style={{ ...blockStyles, textAlign: block.data.align || 'left' }} className="mb-6">
           <a
             href={block.data.url || '#'}
-            className={`inline-block px-6 py-3 rounded-lg font-medium transition-colors ${buttonStyleClass}`}
+            className={`${block.data.full_width ? 'w-full block text-center' : 'inline-block'} ${buttonSizeClass} rounded-lg font-medium transition-colors ${buttonStyleClass}`}
             style={{
-              padding: block.styles?.padding || '0.75rem 1.5rem',
+              padding: block.styles?.padding || undefined,
               borderRadius: block.styles?.border_radius || '0.5rem',
+              backgroundColor: block.data.bg_color || undefined,
+              color: block.data.text_color || undefined,
             }}
           >
             {block.data.text || 'Bouton'}

@@ -770,36 +770,94 @@ function BlockRenderer({
   switch (block.type) {
     case 'text':
       return (
-        <textarea
-          value={block.data.content || ''}
-          onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
-          className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-          placeholder="Entrez votre texte..."
-          rows={4}
-        />
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Contenu (éditeur simple)
+            </label>
+            <textarea
+              value={block.data.content || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
+              className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Entrez votre texte..."
+              rows={6}
+            />
+          </div>
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-xs text-blue-800 dark:text-blue-200">
+              💡 Astuce: Utilisez le bloc "Paragraphe" pour un texte long formaté ou le bloc "Ligne" pour un texte court sur une ligne.
+            </p>
+          </div>
+        </div>
       )
     case 'heading':
       const headingLevel = block.data.level || 'h2'
       const HeadingTag = headingLevel as keyof JSX.IntrinsicElements
       return (
-        <div className="space-y-2">
-          <input
-            type="text"
-            value={block.data.text || ''}
-            onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
-            className="w-full p-2 sm:p-3 border border-gray-300 rounded text-lg sm:text-2xl font-bold focus:ring-2 focus:ring-blue-500"
-            placeholder="Titre..."
-          />
-          <select
-            value={headingLevel}
-            onChange={(e) => onUpdate({ data: { ...block.data, level: e.target.value } })}
-            className="text-sm p-1 border border-gray-300 rounded"
-          >
-            <option value="h1">H1</option>
-            <option value="h2">H2</option>
-            <option value="h3">H3</option>
-            <option value="h4">H4</option>
-          </select>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du titre
+            </label>
+            <input
+              type="text"
+              value={block.data.text || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+              className="w-full p-2 sm:p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-lg sm:text-2xl font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Titre..."
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Niveau
+              </label>
+              <select
+                value={headingLevel}
+                onChange={(e) => onUpdate({ data: { ...block.data, level: e.target.value } })}
+                className="w-full text-sm p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="h1">H1 (Très grand)</option>
+                <option value="h2">H2 (Grand)</option>
+                <option value="h3">H3 (Moyen)</option>
+                <option value="h4">H4 (Petit)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Alignement
+              </label>
+              <select
+                value={block.data.align || 'left'}
+                onChange={(e) => onUpdate({ data: { ...block.data, align: e.target.value } })}
+                className="w-full text-sm p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="left">Gauche</option>
+                <option value="center">Centre</option>
+                <option value="right">Droite</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Couleur du titre
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={block.data.color || '#000000'}
+                onChange={(e) => onUpdate({ data: { ...block.data, color: e.target.value } })}
+                className="w-12 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={block.data.color || '#000000'}
+                onChange={(e) => onUpdate({ data: { ...block.data, color: e.target.value } })}
+                className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="#000000"
+              />
+            </div>
+          </div>
         </div>
       )
     case 'image':
@@ -845,15 +903,92 @@ function BlockRenderer({
               className="text-sm"
             />
           </div>
-          <select
-            value={block.data.style || 'primary'}
-            onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="primary">Primaire</option>
-            <option value="secondary">Secondaire</option>
-            <option value="outline">Outline</option>
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Style
+              </label>
+              <select
+                value={block.data.style || 'primary'}
+                onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="primary">Primaire</option>
+                <option value="secondary">Secondaire</option>
+                <option value="outline">Outline</option>
+                <option value="ghost">Ghost</option>
+                <option value="link">Lien</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Taille
+              </label>
+              <select
+                value={block.data.size || 'md'}
+                onChange={(e) => onUpdate({ data: { ...block.data, size: e.target.value } })}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="xs">Très petit</option>
+                <option value="sm">Petit</option>
+                <option value="md">Moyen</option>
+                <option value="lg">Grand</option>
+                <option value="xl">Très grand</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Couleur de fond
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={block.data.bg_color || '#3b82f6'}
+                onChange={(e) => onUpdate({ data: { ...block.data, bg_color: e.target.value } })}
+                className="w-12 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={block.data.bg_color || '#3b82f6'}
+                onChange={(e) => onUpdate({ data: { ...block.data, bg_color: e.target.value } })}
+                className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="#3b82f6"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Couleur du texte
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={block.data.text_color || '#ffffff'}
+                onChange={(e) => onUpdate({ data: { ...block.data, text_color: e.target.value } })}
+                className="w-12 h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={block.data.text_color || '#ffffff'}
+                onChange={(e) => onUpdate({ data: { ...block.data, text_color: e.target.value } })}
+                className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="#ffffff"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`button-full-width-${block.id}`}
+              checked={block.data.full_width || false}
+              onChange={(e) => onUpdate({ data: { ...block.data, full_width: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`button-full-width-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Largeur complète
+            </label>
+          </div>
           {(!block.data.text || !block.data.url) && (
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
           )}
@@ -1142,6 +1277,331 @@ function BlockRenderer({
           {(!block.data.code) && (
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
           )}
+        </div>
+      )
+    case 'table':
+      const rows = block.data.rows || 3
+      const cols = block.data.columns || 3
+      const tableData = block.data.table_data || Array(rows).fill(null).map(() => Array(cols).fill(''))
+      
+      const updateCell = (rowIndex: number, colIndex: number, value: string) => {
+        const newData = [...tableData]
+        if (!newData[rowIndex]) newData[rowIndex] = []
+        newData[rowIndex][colIndex] = value
+        onUpdate({ data: { ...block.data, table_data: newData } })
+      }
+      
+      const addRow = () => {
+        const newData = [...tableData, Array(cols).fill('')]
+        onUpdate({ data: { ...block.data, rows: rows + 1, table_data: newData } })
+      }
+      
+      const removeRow = () => {
+        if (rows > 1) {
+          const newData = tableData.slice(0, -1)
+          onUpdate({ data: { ...block.data, rows: rows - 1, table_data: newData } })
+        }
+      }
+      
+      const addColumn = () => {
+        const newData = tableData.map(row => [...row, ''])
+        onUpdate({ data: { ...block.data, columns: cols + 1, table_data: newData } })
+      }
+      
+      const removeColumn = () => {
+        if (cols > 1) {
+          const newData = tableData.map(row => row.slice(0, -1))
+          onUpdate({ data: { ...block.data, columns: cols - 1, table_data: newData } })
+        }
+      }
+      
+      return (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Lignes</label>
+              <div className="flex gap-1">
+                <input
+                  type="number"
+                  value={rows}
+                  onChange={(e) => {
+                    const newRows = parseInt(e.target.value) || 1
+                    const newData = Array(newRows).fill(null).map((_, i) => tableData[i] || Array(cols).fill(''))
+                    onUpdate({ data: { ...block.data, rows: newRows, table_data: newData } })
+                  }}
+                  className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  min={1}
+                  max={20}
+                />
+                <button onClick={addRow} className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">+</button>
+                <button onClick={removeRow} className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">-</button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Colonnes</label>
+              <div className="flex gap-1">
+                <input
+                  type="number"
+                  value={cols}
+                  onChange={(e) => {
+                    const newCols = parseInt(e.target.value) || 1
+                    const newData = tableData.map(row => [...row.slice(0, newCols), ...Array(Math.max(0, newCols - row.length)).fill('')])
+                    onUpdate({ data: { ...block.data, columns: newCols, table_data: newData } })
+                  }}
+                  className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  min={1}
+                  max={20}
+                />
+                <button onClick={addColumn} className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">+</button>
+                <button onClick={removeColumn} className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">-</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu du tableau</label>
+            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 max-h-64 overflow-auto">
+              <table className="w-full text-xs">
+                <tbody>
+                  {tableData.map((row: string[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {row.map((cell: string, colIndex: number) => (
+                        <td key={colIndex} className="p-1 border border-gray-200 dark:border-gray-700">
+                          <input
+                            type="text"
+                            value={cell}
+                            onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
+                            className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-blue-500 bg-transparent"
+                            placeholder={`Cellule ${rowIndex + 1},${colIndex + 1}`}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`table-header-${block.id}`}
+              checked={block.data.has_header || false}
+              onChange={(e) => onUpdate({ data: { ...block.data, has_header: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`table-header-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Première ligne en en-tête
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`table-bordered-${block.id}`}
+              checked={block.data.bordered !== false}
+              onChange={(e) => onUpdate({ data: { ...block.data, bordered: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`table-bordered-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Bordures visibles
+            </label>
+          </div>
+        </div>
+      )
+    case 'rows':
+      const rowCount = block.data.rows_count || 2
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nombre de lignes
+            </label>
+            <input
+              type="number"
+              value={rowCount}
+              onChange={(e) => onUpdate({ data: { ...block.data, rows_count: parseInt(e.target.value) || 2 } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              min={1}
+              max={10}
+            />
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+            Les lignes peuvent contenir des colonnes ou d'autres blocs
+          </p>
+        </div>
+      )
+    case 'paragraph':
+      return (
+        <div className="space-y-2">
+          <textarea
+            value={block.data.content || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
+            className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Entrez votre paragraphe..."
+            rows={6}
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+            Paragraphe complet avec formatage
+          </p>
+        </div>
+      )
+    case 'line':
+      return (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={block.data.text || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+            className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Texte sur une ligne..."
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+            Texte sur une seule ligne
+          </p>
+        </div>
+      )
+    case 'form-newsletter':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Inscrivez-vous à notre newsletter"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Description
+            </label>
+            <textarea
+              value={block.data.description || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, description: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              rows={2}
+              placeholder="Recevez nos dernières actualités..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du bouton
+            </label>
+            <input
+              type="text"
+              value={block.data.button_text || 'S\'inscrire'}
+              onChange={(e) => onUpdate({ data: { ...block.data, button_text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+        </div>
+      )
+    case 'form-search':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Placeholder
+            </label>
+            <input
+              type="text"
+              value={block.data.placeholder || 'Rechercher...'}
+              onChange={(e) => onUpdate({ data: { ...block.data, placeholder: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du bouton
+            </label>
+            <input
+              type="text"
+              value={block.data.button_text || 'Rechercher'}
+              onChange={(e) => onUpdate({ data: { ...block.data, button_text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+        </div>
+      )
+    case 'form-inscription':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Créer un compte"
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`form-inscription-name-${block.id}`}
+                checked={block.data.show_name !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_name: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`form-inscription-name-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Champ Nom
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`form-inscription-email-${block.id}`}
+                checked={block.data.show_email !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_email: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`form-inscription-email-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Champ Email
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`form-inscription-password-${block.id}`}
+                checked={block.data.show_password !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_password: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`form-inscription-password-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Champ Mot de passe
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`form-inscription-phone-${block.id}`}
+                checked={block.data.show_phone || false}
+                onChange={(e) => onUpdate({ data: { ...block.data, show_phone: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`form-inscription-phone-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Champ Téléphone
+              </label>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du bouton
+            </label>
+            <input
+              type="text"
+              value={block.data.button_text || 'S\'inscrire'}
+              onChange={(e) => onUpdate({ data: { ...block.data, button_text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
         </div>
       )
     default:
