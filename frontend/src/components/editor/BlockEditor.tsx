@@ -231,10 +231,20 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                 <div className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
                   {blocks.length === 0 ? (
                     <div className="text-center py-12 lg:py-20">
-                      <p className="text-gray-500 dark:text-gray-400 mb-4 text-lg">Aucun bloc ajouté</p>
-                      <p className="text-sm text-gray-400">
-                        Cliquez sur un bloc dans la palette pour commencer
-                      </p>
+                      <div className="max-w-md mx-auto">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-700 dark:text-gray-300 mb-2 text-lg font-semibold">Aucun bloc ajouté</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Cliquez sur un bloc dans la palette à gauche pour commencer
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+                          La prévisualisation s'affichera à droite →
+                        </p>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-4 lg:gap-6">

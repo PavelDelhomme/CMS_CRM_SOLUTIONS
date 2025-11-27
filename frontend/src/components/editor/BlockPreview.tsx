@@ -96,11 +96,19 @@ export default function BlockPreview({
         <div className="flex-1 overflow-y-auto w-full">
           <div className="p-4 sm:p-6 lg:p-8 w-full max-w-full">
             {blocks.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">Aucun contenu à prévisualiser</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
-                  Ajoutez des blocs dans l'éditeur pour voir la prévisualisation
-                </p>
+              <div className="text-center py-20 lg:py-32">
+                <div className="max-w-md mx-auto">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <svg className="w-10 h-10 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-400 text-lg font-medium mb-2">Aucun contenu à prévisualiser</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">
+                    Ajoutez des blocs dans l'éditeur à gauche pour voir la prévisualisation ici
+                  </p>
+                </div>
               </div>
             ) : (
               <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
