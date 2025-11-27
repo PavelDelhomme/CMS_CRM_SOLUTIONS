@@ -10,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from tenants.models import Tenant, User
 from tenants.middleware import UserStatusMiddleware
 from django.http import HttpRequest, JsonResponse
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, patch
 
 
 @pytest.mark.django_db
@@ -270,7 +270,7 @@ class TestUserStatusMiddleware:
         }
         
         # Mock JWTAuthentication
-        with pytest.mock.patch('tenants.middleware.JWTAuthentication') as mock_jwt:
+        with patch('tenants.middleware.JWTAuthentication') as mock_jwt:
             mock_auth = Mock()
             mock_auth.get_header.return_value = f'Bearer {access_token}'.encode()
             mock_auth.get_raw_token.return_value = access_token
@@ -297,7 +297,7 @@ class TestUserStatusMiddleware:
         }
         
         # Mock JWTAuthentication
-        with pytest.mock.patch('tenants.middleware.JWTAuthentication') as mock_jwt:
+        with patch('tenants.middleware.JWTAuthentication') as mock_jwt:
             mock_auth = Mock()
             mock_auth.get_header.return_value = f'Bearer {access_token}'.encode()
             mock_auth.get_raw_token.return_value = access_token
@@ -324,7 +324,7 @@ class TestUserStatusMiddleware:
         }
         
         # Mock JWTAuthentication
-        with pytest.mock.patch('tenants.middleware.JWTAuthentication') as mock_jwt:
+        with patch('tenants.middleware.JWTAuthentication') as mock_jwt:
             mock_auth = Mock()
             mock_auth.get_header.return_value = f'Bearer {access_token}'.encode()
             mock_auth.get_raw_token.return_value = access_token
@@ -360,7 +360,7 @@ class TestUserStatusMiddleware:
         }
         
         # Mock JWTAuthentication
-        with pytest.mock.patch('tenants.middleware.JWTAuthentication') as mock_jwt:
+        with patch('tenants.middleware.JWTAuthentication') as mock_jwt:
             mock_auth = Mock()
             mock_auth.get_header.return_value = f'Bearer {access_token}'.encode()
             mock_auth.get_raw_token.return_value = access_token
