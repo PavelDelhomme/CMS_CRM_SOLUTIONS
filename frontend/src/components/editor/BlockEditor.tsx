@@ -6,6 +6,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { CSS } from '@dnd-kit/utilities'
 import blocksService, { BlockType } from '@/services/blocks.service'
 import { useFeatures } from '@/contexts/FeaturesContext'
+import UrlInputWithSuggestions from './UrlInputWithSuggestions'
 
 export interface Block {
   id: string
@@ -603,20 +604,24 @@ function BlockRenderer({
             type="text"
             value={block.data.text || ''}
             onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Texte du bouton..."
           />
-          <input
-            type="url"
-            value={block.data.url || ''}
-            onChange={(e) => onUpdate({ data: { ...block.data, url: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-            placeholder="URL du lien..."
-          />
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL du lien
+            </label>
+            <UrlInputWithSuggestions
+              value={block.data.url || ''}
+              onChange={(url) => onUpdate({ data: { ...block.data, url } })}
+              placeholder="URL ou sélectionner une page..."
+              className="text-sm"
+            />
+          </div>
           <select
             value={block.data.style || 'primary'}
             onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="primary">Primaire</option>
             <option value="secondary">Secondaire</option>
@@ -756,7 +761,20 @@ function BlockPropertiesPanel({
                       data: { ...block.data, [key]: parseFloat(e.target.value) || 0 },
                     })
                   }
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              )}
+              {(schema.type === 'url' || 
+                (schema.type === 'text' && (key.toLowerCase().includes('url') || key.toLowerCase().includes('link') || key.toLowerCase().includes('href')))) && (
+                <UrlInputWithSuggestions
+                  value={block.data[key] || ''}
+                  onChange={(url) =>
+                    onUpdate({
+                      data: { ...block.data, [key]: url },
+                    })
+                  }
+                  placeholder={schema.placeholder || 'URL ou sélectionner une page...'}
+                  className="text-sm"
                 />
               )}
             </div>
