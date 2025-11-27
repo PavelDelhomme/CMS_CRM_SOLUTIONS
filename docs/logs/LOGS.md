@@ -128,6 +128,40 @@
 
 ### 2025-11-27
 
+#### Corrections Erreurs CORS et 500
+1. ✅ **Middleware CORS personnalisé** - Garantir headers CORS même en cas d'erreur 500
+   - Création de `CORSAlwaysMiddleware` dans `backend-django/vtcbuilder/cors_middleware.py`
+   - Ajout dans `MIDDLEWARE` après `corsheaders.middleware.CorsMiddleware`
+   - `process_response`: Ajoute headers CORS à toutes les réponses
+   - `process_exception`: Retourne réponse d'erreur avec headers CORS en cas d'exception
+   - Méthode `_add_cors_headers` pour réutiliser la logique
+
+2. ✅ **Gestionnaire d'exceptions DRF personnalisé** - Headers CORS sur erreurs API
+   - Création de `custom_exception_handler` dans `backend-django/api/exceptions.py`
+   - Configuration dans `REST_FRAMEWORK['EXCEPTION_HANDLER']`
+   - Garantit que toutes les erreurs DRF ont des headers CORS
+   - Crée une réponse 500 si DRF ne gère pas l'exception
+
+3. ✅ **Gestion d'erreurs DashboardView** - Try/catch avec logging
+   - Try/catch global dans `get()` avec logging détaillé
+   - Retourne stats par défaut en cas d'erreur avec status 500
+   - Gestion d'erreurs spécifiques pour super admin et tenant admin
+
+4. ✅ **Gestion d'erreurs impersonation_status** - Try/catch complet
+   - Try/catch global autour de toute la méthode
+   - Retourne réponse d'erreur avec headers CORS si exception
+   - Logging des erreurs pour debugging
+
+5. ✅ **Gestion d'erreurs TenantViewSet.get_queryset** - Try/catch pour éviter crashes
+   - Try/catch autour de la logique de filtrage
+   - Retourne queryset vide en cas d'erreur au lieu de crash
+   - Logging des erreurs
+
+6. ✅ **Application blocks ajoutée à INSTALLED_APPS**
+   - Problème: `blocks.models.BlockType` n'était pas dans INSTALLED_APPS
+   - Solution: Ajout de `'blocks'` à `SHARED_APPS`
+   - Corrige l'erreur "Model class blocks.models.BlockType doesn't declare an explicit app_label"
+
 #### Améliorations Dark Mode Complètes
 1. ✅ **Toggle Dark Mode dans headers** - Accessible en haut de toutes les pages
    - Toggle ajouté dans MobileHeader (visible sur mobile, en haut à droite)
