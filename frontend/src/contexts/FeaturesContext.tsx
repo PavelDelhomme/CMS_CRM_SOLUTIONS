@@ -42,7 +42,8 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
   const loadFeatures = async () => {
     try {
       // Pour les super admins, toutes les features sont disponibles
-      if (authService.isSuperAdmin()) {
+      const isSuperAdmin = authService.isSuperAdmin()
+      if (isSuperAdmin) {
         setFeatures({
           can_use_premium_blocks: true,
           can_use_custom_domain: true,
@@ -109,7 +110,7 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
   }
 
   const canUseBlockType = (blockType: string, requiresPremium: boolean): boolean => {
-    if (!features) return false
+    if (!features) return true // Par défaut, autoriser si features non chargées
     
     // Si le bloc nécessite premium et que l'utilisateur n'a pas accès
     if (requiresPremium && !features.can_use_premium_blocks) {

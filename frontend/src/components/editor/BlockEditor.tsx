@@ -45,11 +45,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const loadBlockTypes = async () => {
     try {
       const types = availableBlockTypes || await blocksService.getBlockTypes()
-      // Filtrer les blocs selon les features disponibles
-      const filteredTypes = types.filter((type: BlockType) => 
-        canUseBlockType(type.name, type.requires_premium)
-      )
-      setBlockTypes(filteredTypes)
+      // Ne pas filtrer ici - on affiche tous les blocs mais on les désactive selon les features
+      // Cela permet de voir ce qui est disponible avec un upgrade
+      setBlockTypes(types)
     } catch (error) {
       console.error('Error loading block types:', error)
     }
