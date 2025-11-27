@@ -131,7 +131,7 @@ export default function BlockPreview({
             <div className="opacity-50">
               <BlockPreviewRenderer
                 block={activeBlock}
-                blockType={blockTypes.find(bt => bt.name === activeBlock.type)}
+                blockType={blockTypes.find((bt: BlockType) => bt.name === activeBlock.type)}
               />
             </div>
           ) : null}
