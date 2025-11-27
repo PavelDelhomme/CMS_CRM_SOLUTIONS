@@ -57,6 +57,16 @@
   - Vérifier cartes : Tenants, Utilisateurs, Revenus, etc.
   - Vérifier graphiques (recharts)
   - Vérifier pas d'erreurs 404/500 console
+- [ ] **Résumé statistiques détaillées**
+  - Vérifier section "Résumé des Statistiques" affichée
+  - Vérifier activité aujourd'hui / cette semaine
+  - Vérifier abonnements actifs avec nombre en trial
+  - Vérifier revenu total et mensuel
+  - Vérifier alertes importantes (si présentes)
+  - Vérifier lien "Voir toutes les statistiques →"
+- [ ] **Actions rapides**
+  - Vérifier bouton "Page d'Accueil" présent
+  - Vérifier redirection vers `/admin/homepage`
 
 ---
 
@@ -215,7 +225,19 @@
 
 ---
 
-### ⚙️ 8. SUPER ADMIN - PARAMÈTRES (`/admin/settings`)
+### 🏠 8. SUPER ADMIN - PAGE D'ACCUEIL PUBLIQUE (`/admin/homepage`)
+
+- [ ] **Éditeur page d'accueil**
+  - Vérifier page accessible depuis dashboard admin
+  - Vérifier éditeur de blocs WordPress fonctionne
+  - Vérifier paramètres SEO (meta_title, meta_description)
+  - Vérifier bouton "Prévisualiser" ouvre `/` dans nouvel onglet
+  - Vérifier sauvegarde réussie (blocs stockés dans SystemSettings)
+  - Vérifier pas d'erreurs console
+
+---
+
+### ⚙️ 9. SUPER ADMIN - PARAMÈTRES (`/admin/settings`)
 
 - [ ] **Page paramètres**
   - Vérifier pas d'erreur 404 console (`/api/system-settings/`)
@@ -234,7 +256,7 @@
 
 ---
 
-### 📄 10. TENANT ADMIN - PAGES (`/dashboard/pages`)
+### 📄 11. TENANT ADMIN - PAGES (`/dashboard/pages`)
 
 #### Liste Pages
 - [ ] **Affichage pages**
