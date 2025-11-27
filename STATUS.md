@@ -247,7 +247,7 @@
 
 ---
 
-### 🏠 9. TENANT ADMIN - DASHBOARD (`/dashboard`)
+### 🏠 10. TENANT ADMIN - DASHBOARD (`/dashboard`)
 
 - [ ] **Page principale**
   - Vérifier cartes fonctionnelles (Pages, Services, Réservations, etc.)
@@ -296,7 +296,7 @@
 
 ---
 
-### 🚗 11. TENANT ADMIN - SERVICES VTC (`/dashboard/services`)
+### 🚗 12. TENANT ADMIN - SERVICES VTC (`/dashboard/services`)
 
 #### Liste Services
 - [ ] **Affichage services**
@@ -316,7 +316,7 @@
 
 ---
 
-### 📅 12. TENANT ADMIN - RÉSERVATIONS (`/dashboard/bookings`)
+### 📅 13. TENANT ADMIN - RÉSERVATIONS (`/dashboard/bookings`)
 
 #### Liste Réservations
 - [ ] **Affichage réservations**
@@ -333,7 +333,7 @@
 
 ---
 
-### 🖼️ 13. TENANT ADMIN - MÉDIAS (`/dashboard/media`)
+### 🖼️ 14. TENANT ADMIN - MÉDIAS (`/dashboard/media`)
 
 - [ ] **Liste médias**
   - Vérifier fichiers affichés
@@ -342,7 +342,7 @@
 
 ---
 
-### 🎨 14. TENANT ADMIN - TEMPLATES (`/dashboard/templates`)
+### 🎨 15. TENANT ADMIN - TEMPLATES (`/dashboard/templates`)
 
 - [ ] **Liste templates**
   - Vérifier templates disponibles
@@ -350,7 +350,7 @@
 
 ---
 
-### 👥 15. TENANT ADMIN - UTILISATEURS (`/dashboard/users`)
+### 👥 16. TENANT ADMIN - UTILISATEURS (`/dashboard/users`)
 
 - [ ] **Liste utilisateurs tenant**
   - Vérifier seulement utilisateurs du tenant
@@ -359,7 +359,7 @@
 
 ---
 
-### 💰 16. TENANT ADMIN - FACTURATION (`/dashboard/billing`)
+### 💰 17. TENANT ADMIN - FACTURATION (`/dashboard/billing`)
 
 #### Onglet Abonnement
 - [ ] **Abonnement actuel**
@@ -397,7 +397,7 @@
 
 ---
 
-### ⚙️ 17. TENANT ADMIN - PARAMÈTRES (`/dashboard/settings`)
+### ⚙️ 18. TENANT ADMIN - PARAMÈTRES (`/dashboard/settings`)
 
 - [ ] **Page paramètres tenant**
   - Vérifier formulaire
