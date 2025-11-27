@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import authService from '@/services/auth.service'
 import { useTheme } from '@/contexts/ThemeContext'
