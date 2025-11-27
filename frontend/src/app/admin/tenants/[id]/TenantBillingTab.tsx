@@ -442,7 +442,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                 <select
                   value={newSubscriptionData.plan_id}
                   onChange={(e) => setNewSubscriptionData({ ...newSubscriptionData, plan_id: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Sélectionner un plan</option>
                   {pricingPlans.map((plan) => (
@@ -460,7 +460,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                 <select
                   value={newSubscriptionData.billing_cycle}
                   onChange={(e) => setNewSubscriptionData({ ...newSubscriptionData, billing_cycle: e.target.value as 'monthly' | 'yearly' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="monthly">Mensuel</option>
                   <option value="yearly">Annuel</option>
@@ -473,7 +473,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                   id="start_trial"
                   checked={newSubscriptionData.start_trial}
                   onChange={(e) => setNewSubscriptionData({ ...newSubscriptionData, start_trial: e.target.checked })}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <label htmlFor="start_trial" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                   Démarrer en période d'essai
@@ -487,7 +487,7 @@ export default function TenantBillingTab({ tenantId, tenantName }: TenantBilling
                   setShowNewSubscriptionModal(false)
                   setNewSubscriptionData({ plan_id: '', billing_cycle: 'monthly', start_trial: false })
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
               >
                 Annuler
               </button>

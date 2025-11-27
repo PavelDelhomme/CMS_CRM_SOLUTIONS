@@ -9,12 +9,35 @@ from django.db.models import Sum, Count, Q
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
+import logging
+from django.conf import settings
 from .models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod
 from .serializers import (
     PricingPlanSerializer, SubscriptionSerializer,
     InvoiceSerializer, PaymentSerializer, PaymentMethodSerializer
 )
 from tenants.models import Tenant
+
+logger = logging.getLogger(__name__)
+
+
+def add_cors_headers(response, request):
+    """Helper function to add CORS headers to a response"""
+    try:
+        origin = request.META.get('HTTP_ORIGIN')
+        if origin:
+            if settings.DEBUG:
+                if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                    response['Access-Control-Allow-Origin'] = origin
+                    response['Access-Control-Allow-Credentials'] = 'true'
+                    response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                    response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+            else:
+                if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
+                    response['Access-Control-Allow-Origin'] = origin
+                    response['Access-Control-Allow-Credentials'] = 'true'
+    except Exception as e:
+        logger.warning(f"Error adding CORS headers: {e}")
 
 
 class PricingPlanViewSet(viewsets.ModelViewSet):
@@ -25,14 +48,36 @@ class PricingPlanViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filter plans based on user role"""
-        user = self.request.user
-        queryset = PricingPlan.objects.filter(is_active=True)
-        
-        # Super admin can see all plans (including inactive)
-        if user.is_super_admin():
-            queryset = PricingPlan.objects.all()
-        
-        return queryset.order_by('order', 'price_monthly')
+        try:
+            user = self.request.user
+            queryset = PricingPlan.objects.filter(is_active=True)
+            
+            # Super admin can see all plans (including inactive)
+            try:
+                if user.is_super_admin():
+                    queryset = PricingPlan.objects.all()
+            except Exception as e:
+                logger.error(f"Error checking super admin in PricingPlanViewSet: {e}", exc_info=True)
+            
+            return queryset.order_by('order', 'price_monthly')
+        except Exception as e:
+            logger.error(f"Error in PricingPlanViewSet.get_queryset: {e}", exc_info=True)
+            return PricingPlan.objects.none()
+    
+    def list(self, request, *args, **kwargs):
+        """List pricing plans with error handling"""
+        try:
+            response = super().list(request, *args, **kwargs)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in PricingPlanViewSet.list: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching pricing plans',
+                'message': str(e) if settings.DEBUG else 'Unable to load pricing plans'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
     def create(self, request, *args, **kwargs):
         """Only super admin can create pricing plans"""
@@ -118,154 +163,286 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filter subscriptions based on user role"""
-        user = self.request.user
-        
-        if user.is_super_admin():
-            return Subscription.objects.all()
-        elif user.is_tenant_admin() and user.tenant:
-            return Subscription.objects.filter(tenant=user.tenant)
-        
-        return Subscription.objects.none()
+        try:
+            user = self.request.user
+            
+            try:
+                if user.is_super_admin():
+                    return Subscription.objects.all()
+                elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
+                    return Subscription.objects.filter(tenant=user.tenant)
+            except Exception as e:
+                logger.error(f"Error checking user permissions in SubscriptionViewSet: {e}", exc_info=True)
+            
+            return Subscription.objects.none()
+        except Exception as e:
+            logger.error(f"Error in SubscriptionViewSet.get_queryset: {e}", exc_info=True)
+            return Subscription.objects.none()
+    
+    @action(detail=False, methods=['get'])
+    def tenants_without_subscription(self, request):
+        """Get list of tenants that don't have a subscription yet"""
+        try:
+            if not request.user.is_super_admin():
+                error_response = Response(
+                    {'error': 'Only super admin can access this endpoint'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                add_cors_headers(error_response, request)
+                return error_response
+            
+            # Get all tenants that don't have a subscription
+            tenants_with_subscription = Subscription.objects.values_list('tenant_id', flat=True)
+            tenants_without = Tenant.objects.filter(
+                deleted_at__isnull=True  # Exclude soft-deleted tenants
+            ).exclude(
+                id__in=tenants_with_subscription
+            )
+            
+            # Serialize tenants
+            from tenants.serializers import TenantSerializer
+            serializer = TenantSerializer(tenants_without, many=True)
+            
+            response = Response(serializer.data)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in tenants_without_subscription: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching tenants without subscription',
+                'message': str(e) if settings.DEBUG else 'Unable to load tenants'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
+    
+    def list(self, request, *args, **kwargs):
+        """List subscriptions with error handling"""
+        try:
+            response = super().list(request, *args, **kwargs)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in SubscriptionViewSet.list: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching subscriptions',
+                'message': str(e) if settings.DEBUG else 'Unable to load subscriptions'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
     def create(self, request, *args, **kwargs):
         """Create a new subscription with automatic date handling"""
-        user = request.user
-        
-        # Remove tenant from request.data if present (will be set from user context or validated)
-        data = request.data.copy()
-        
-        # Determine tenant based on user role
-        tenant = None
-        
-        if user.is_super_admin():
-            # Super admin can create subscription for any tenant (must specify tenant_id)
-            serializer = self.get_serializer(data=data)
-            serializer.is_valid(raise_exception=True)
+        try:
+            user = request.user
             
-            tenant_id = serializer.validated_data.get('tenant') or serializer.validated_data.get('tenant_id')
-            if isinstance(tenant_id, dict):
-                tenant_id = tenant_id.get('id')
-            elif hasattr(tenant_id, 'id'):
-                tenant_id = tenant_id.id
+            # Remove tenant from request.data if present (will be set from user context or validated)
+            data = request.data.copy()
             
-            if not tenant_id:
-                return Response(
-                    {'error': 'tenant_id is required for super admin'},
-                    status=status.HTTP_400_BAD_REQUEST
+            # Determine tenant based on user role
+            tenant = None
+            serializer = None
+            
+            if user.is_super_admin():
+                # Super admin can create subscription for any tenant (must specify tenant_id)
+                # Validate required fields
+                tenant_id = data.get('tenant_id')
+                if not tenant_id:
+                    error_response = Response(
+                        {'error': 'tenant_id is required for super admin'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    add_cors_headers(error_response, request)
+                    return error_response
+                
+                plan_id = data.get('plan_id')
+                if not plan_id:
+                    error_response = Response(
+                        {'error': 'plan_id is required'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    add_cors_headers(error_response, request)
+                    return error_response
+                
+                # Validate serializer with plan_id (will be converted to plan automatically)
+                serializer = self.get_serializer(data=data)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as e:
+                    logger.error(f"Serializer validation error: {e}")
+                    error_response = Response(
+                        {'error': 'Validation error', 'details': str(e) if settings.DEBUG else 'Invalid data'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    add_cors_headers(error_response, request)
+                    return error_response
+                
+                # Get tenant from validated data or fallback to data
+                tenant_from_validated = serializer.validated_data.get('tenant')
+                if tenant_from_validated:
+                    if isinstance(tenant_from_validated, Tenant):
+                        tenant = tenant_from_validated
+                    elif isinstance(tenant_from_validated, dict):
+                        tenant_id = tenant_from_validated.get('id')
+                        tenant = Tenant.objects.get(id=tenant_id)
+                    elif hasattr(tenant_from_validated, 'id'):
+                        tenant = Tenant.objects.get(id=tenant_from_validated.id)
+                    else:
+                        tenant = None
+                else:
+                    tenant = None
+                
+                # Fallback: get tenant from data
+                if not tenant:
+                    try:
+                        tenant_id = int(data.get('tenant_id'))
+                        tenant = Tenant.objects.get(id=tenant_id)
+                    except (ValueError, TypeError, Tenant.DoesNotExist):
+                        error_response = Response(
+                            {'error': 'Tenant not found'},
+                            status=status.HTTP_404_NOT_FOUND
+                        )
+                        add_cors_headers(error_response, request)
+                        return error_response
+                
+            elif user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
+                # Tenant admin can create subscription for their own tenant
+                tenant = user.tenant
+                
+                # Remove tenant_id from data (will use user's tenant)
+                if 'tenant' in data:
+                    del data['tenant']
+                if 'tenant_id' in data:
+                    del data['tenant_id']
+                
+                # Validate serializer with plan_id (will be converted to plan automatically)
+                serializer = self.get_serializer(data=data)
+                try:
+                    serializer.is_valid(raise_exception=True)
+                except Exception as e:
+                    logger.error(f"Serializer validation error: {e}")
+                    error_response = Response(
+                        {'error': 'Validation error', 'details': str(e) if settings.DEBUG else 'Invalid data'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    add_cors_headers(error_response, request)
+                    return error_response
+            else:
+                error_response = Response(
+                    {'error': 'Vous devez être admin d\'un tenant pour créer un abonnement'},
+                    status=status.HTTP_403_FORBIDDEN
                 )
+                add_cors_headers(error_response, request)
+                return error_response
             
-            try:
-                tenant = Tenant.objects.get(id=tenant_id)
-            except Tenant.DoesNotExist:
-                return Response(
-                    {'error': 'Tenant not found'},
-                    status=status.HTTP_404_NOT_FOUND
+            # Check if tenant already has a subscription
+            if Subscription.objects.filter(tenant=tenant).exists():
+                # If subscription exists, update it instead (change plan)
+                existing_subscription = Subscription.objects.get(tenant=tenant)
+                plan = serializer.validated_data.get('plan')
+                if not plan:
+                    error_response = Response(
+                        {'error': 'Plan is required'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    add_cors_headers(error_response, request)
+                    return error_response
+                
+                # Update existing subscription
+                existing_subscription.plan = plan
+                billing_cycle = serializer.validated_data.get('billing_cycle', existing_subscription.billing_cycle)
+                existing_subscription.billing_cycle = billing_cycle
+                
+                # Reset dates if starting new billing cycle
+                now = timezone.now()
+                if billing_cycle == 'monthly':
+                    existing_subscription.current_period_end = now + timedelta(days=30)
+                else:
+                    existing_subscription.current_period_end = now + timedelta(days=365)
+                existing_subscription.current_period_start = now
+                
+                # Reactivate if cancelled
+                if existing_subscription.status == 'cancelled':
+                    existing_subscription.status = serializer.validated_data.get('status', 'active')
+                    existing_subscription.cancelled_at = None
+                else:
+                    existing_subscription.status = serializer.validated_data.get('status', existing_subscription.status)
+                
+                existing_subscription.save()
+                
+                headers = self.get_success_headers(serializer.data)
+                response = Response(
+                    SubscriptionSerializer(existing_subscription).data,
+                    status=status.HTTP_200_OK,
+                    headers=headers
                 )
-        elif user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
-            # Tenant admin can create subscription for their own tenant
-            tenant = user.tenant
+                add_cors_headers(response, request)
+                return response
             
-            # Remove tenant_id from data (will use user's tenant)
-            if 'tenant' in data:
-                del data['tenant']
-            if 'tenant_id' in data:
-                del data['tenant_id']
-            
-            serializer = self.get_serializer(data=data)
-            serializer.is_valid(raise_exception=True)
-        else:
-            return Response(
-                {'error': 'Vous devez être admin d\'un tenant pour créer un abonnement'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        # Check if tenant already has a subscription
-        if Subscription.objects.filter(tenant=tenant).exists():
-            # If subscription exists, update it instead (change plan)
-            existing_subscription = Subscription.objects.get(tenant=tenant)
+            # Get plan from validated data
             plan = serializer.validated_data.get('plan')
             if not plan:
-                return Response(
+                error_response = Response(
                     {'error': 'Plan is required'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+                add_cors_headers(error_response, request)
+                return error_response
             
-            # Update existing subscription
-            existing_subscription.plan = plan
-            billing_cycle = serializer.validated_data.get('billing_cycle', existing_subscription.billing_cycle)
-            existing_subscription.billing_cycle = billing_cycle
-            
-            # Reset dates if starting new billing cycle
+            # Calculate dates
             now = timezone.now()
-            if billing_cycle == 'monthly':
-                existing_subscription.current_period_end = now + timedelta(days=30)
+            billing_cycle = serializer.validated_data.get('billing_cycle', 'monthly')
+            status_value = serializer.validated_data.get('status', 'active')
+            
+            # Set trial dates if status is trial
+            trial_start = None
+            trial_end = None
+            current_period_start = now
+            current_period_end = now
+            
+            if status_value == 'trial':
+                trial_start = now
+                trial_end = now + timedelta(days=14)
+                current_period_start = trial_start
+                current_period_end = trial_end
             else:
-                existing_subscription.current_period_end = now + timedelta(days=365)
-            existing_subscription.current_period_start = now
+                # Set billing period based on cycle
+                if billing_cycle == 'monthly':
+                    current_period_end = now + timedelta(days=30)
+                else:  # yearly
+                    current_period_end = now + timedelta(days=365)
             
-            # Reactivate if cancelled
-            if existing_subscription.status == 'cancelled':
-                existing_subscription.status = 'active'
-                existing_subscription.cancelled_at = None
-            
-            existing_subscription.save()
+            # Create subscription with calculated dates
+            subscription = Subscription.objects.create(
+                tenant=tenant,
+                plan=plan,
+                status=status_value,
+                billing_cycle=billing_cycle,
+                trial_start=trial_start,
+                trial_end=trial_end,
+                current_period_start=current_period_start,
+                current_period_end=current_period_end,
+            )
             
             headers = self.get_success_headers(serializer.data)
-            return Response(
-                SubscriptionSerializer(existing_subscription).data,
-                status=status.HTTP_200_OK,
+            response = Response(
+                SubscriptionSerializer(subscription).data,
+                status=status.HTTP_201_CREATED,
                 headers=headers
             )
-        
-        # Get plan
-        plan = serializer.validated_data.get('plan')
-        if not plan:
-            return Response(
-                {'error': 'Plan is required'},
-                status=status.HTTP_400_BAD_REQUEST
+            add_cors_headers(response, request)
+            return response
+            
+        except Exception as e:
+            logger.error(f"Error in SubscriptionViewSet.create: {e}", exc_info=True)
+            error_response = Response(
+                {
+                    'error': 'An error occurred while creating the subscription',
+                    'message': str(e) if settings.DEBUG else 'Unable to create subscription'
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
-        # Calculate dates
-        now = timezone.now()
-        billing_cycle = serializer.validated_data.get('billing_cycle', 'monthly')
-        status_value = serializer.validated_data.get('status', 'trial')
-        
-        # Set trial dates if status is trial
-        trial_start = None
-        trial_end = None
-        current_period_start = now
-        current_period_end = now
-        
-        if status_value == 'trial':
-            trial_start = now
-            trial_end = now + timedelta(days=14)
-            current_period_start = trial_start
-            current_period_end = trial_end
-        else:
-            # Set billing period based on cycle
-            if billing_cycle == 'monthly':
-                current_period_end = now + timedelta(days=30)
-            else:  # yearly
-                current_period_end = now + timedelta(days=365)
-        
-        # Create subscription with calculated dates
-        subscription = Subscription.objects.create(
-            tenant=tenant,
-            plan=plan,
-            status=status_value,
-            billing_cycle=billing_cycle,
-            trial_start=trial_start,
-            trial_end=trial_end,
-            current_period_start=current_period_start,
-            current_period_end=current_period_end,
-        )
-        
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            SubscriptionSerializer(subscription).data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
-        )
+            add_cors_headers(error_response, request)
+            return error_response
 
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
@@ -507,14 +684,36 @@ class InvoiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         """Filter invoices based on user role"""
-        user = self.request.user
-        
-        if user.is_super_admin():
-            return Invoice.objects.all()
-        elif user.is_tenant_admin() and user.tenant:
-            return Invoice.objects.filter(tenant=user.tenant)
-        
-        return Invoice.objects.none()
+        try:
+            user = self.request.user
+            
+            try:
+                if user.is_super_admin():
+                    return Invoice.objects.all()
+                elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
+                    return Invoice.objects.filter(tenant=user.tenant)
+            except Exception as e:
+                logger.error(f"Error checking user permissions in InvoiceViewSet: {e}", exc_info=True)
+            
+            return Invoice.objects.none()
+        except Exception as e:
+            logger.error(f"Error in InvoiceViewSet.get_queryset: {e}", exc_info=True)
+            return Invoice.objects.none()
+    
+    def list(self, request, *args, **kwargs):
+        """List invoices with error handling"""
+        try:
+            response = super().list(request, *args, **kwargs)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in InvoiceViewSet.list: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching invoices',
+                'message': str(e) if settings.DEBUG else 'Unable to load invoices'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
     @action(detail=True, methods=['post'])
     def mark_paid(self, request, pk=None):
@@ -867,14 +1066,36 @@ class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         """Filter payments based on user role"""
-        user = self.request.user
-        
-        if user.is_super_admin():
-            return Payment.objects.all()
-        elif user.is_tenant_admin() and user.tenant:
-            return Payment.objects.filter(tenant=user.tenant)
-        
-        return Payment.objects.none()
+        try:
+            user = self.request.user
+            
+            try:
+                if user.is_super_admin():
+                    return Payment.objects.all()
+                elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
+                    return Payment.objects.filter(tenant=user.tenant)
+            except Exception as e:
+                logger.error(f"Error checking user permissions in PaymentViewSet: {e}", exc_info=True)
+            
+            return Payment.objects.none()
+        except Exception as e:
+            logger.error(f"Error in PaymentViewSet.get_queryset: {e}", exc_info=True)
+            return Payment.objects.none()
+    
+    def list(self, request, *args, **kwargs):
+        """List payments with error handling"""
+        try:
+            response = super().list(request, *args, **kwargs)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in PaymentViewSet.list: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching payments',
+                'message': str(e) if settings.DEBUG else 'Unable to load payments'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
 
 class PaymentMethodViewSet(viewsets.ModelViewSet):
@@ -885,20 +1106,38 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filter payment methods based on user role"""
-        user = self.request.user
-        
-        # Super admin can see all payment methods
-        if user.is_super_admin():
-            return PaymentMethod.objects.all()
-        
-        # Tenant users see only enabled payment methods
-        return PaymentMethod.objects.filter(is_active=True, is_enabled=True)
+        try:
+            user = self.request.user
+            
+            try:
+                # Super admin can see all payment methods
+                if user.is_super_admin():
+                    return PaymentMethod.objects.all()
+            except Exception as e:
+                logger.error(f"Error checking super admin in PaymentMethodViewSet: {e}", exc_info=True)
+            
+            # Tenant users see only enabled payment methods
+            return PaymentMethod.objects.filter(is_active=True, is_enabled=True)
+        except Exception as e:
+            logger.error(f"Error in PaymentMethodViewSet.get_queryset: {e}", exc_info=True)
+            return PaymentMethod.objects.none()
     
     def list(self, request, *args, **kwargs):
         """Override list to always return empty list instead of 404"""
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            response = Response(serializer.data)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in PaymentMethodViewSet.list: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching payment methods',
+                'message': str(e) if settings.DEBUG else 'Unable to load payment methods'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
 
     def create(self, request, *args, **kwargs):
         """Only super admin can create payment methods"""
@@ -951,52 +1190,100 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 def billing_stats(request):
     """Get billing statistics (super admin only)"""
-    if not request.user.is_super_admin():
-        return Response(
-            {'error': 'Only super admin can view billing stats'},
-            status=status.HTTP_403_FORBIDDEN
-        )
-    
-    # Total revenue
-    total_revenue = Payment.objects.filter(
-        status='succeeded'
-    ).aggregate(total=Sum('amount'))['total'] or 0
-    
-    # Monthly revenue
-    this_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    monthly_revenue = Payment.objects.filter(
-        status='succeeded',
-        paid_at__gte=this_month_start
-    ).aggregate(total=Sum('amount'))['total'] or 0
-    
-    # Active subscriptions
-    active_subscriptions = Subscription.objects.filter(status='active').count()
-    
-    # Pending payments
-    pending_payments = Payment.objects.filter(status='pending').count()
-    
-    # Unpaid invoices
-    unpaid_invoices = Invoice.objects.filter(
-        status__in=['open', 'draft']
-    ).count()
-    
-    # Past due subscriptions
-    past_due_subscriptions = Subscription.objects.filter(status='past_due').count()
-    
-    # Total unpaid amount
-    unpaid_amount = Invoice.objects.filter(
-        status__in=['open', 'draft']
-    ).aggregate(total=Sum('total'))['total'] or 0
-    
-    return Response({
-        'total_revenue': float(total_revenue),
-        'monthly_revenue': float(monthly_revenue),
-        'active_subscriptions': active_subscriptions,
-        'pending_payments': pending_payments,
-        'unpaid_invoices': unpaid_invoices,
-        'past_due_subscriptions': past_due_subscriptions,
-        'unpaid_amount': float(unpaid_amount),
-    })
+    try:
+        if not request.user.is_super_admin():
+            error_response = Response(
+                {'error': 'Only super admin can view billing stats'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        # Total revenue
+        try:
+            total_revenue = Payment.objects.filter(
+                status='succeeded'
+            ).aggregate(total=Sum('amount'))['total'] or 0
+        except Exception as e:
+            logger.warning(f"Error getting total_revenue: {e}")
+            total_revenue = 0
+        
+        # Monthly revenue
+        try:
+            this_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            monthly_revenue = Payment.objects.filter(
+                status='succeeded',
+                paid_at__gte=this_month_start
+            ).aggregate(total=Sum('amount'))['total'] or 0
+        except Exception as e:
+            logger.warning(f"Error getting monthly_revenue: {e}")
+            monthly_revenue = 0
+        
+        # Active subscriptions
+        try:
+            active_subscriptions = Subscription.objects.filter(status='active').count()
+        except Exception as e:
+            logger.warning(f"Error getting active_subscriptions: {e}")
+            active_subscriptions = 0
+        
+        # Pending payments
+        try:
+            pending_payments = Payment.objects.filter(status='pending').count()
+        except Exception as e:
+            logger.warning(f"Error getting pending_payments: {e}")
+            pending_payments = 0
+        
+        # Unpaid invoices
+        try:
+            unpaid_invoices = Invoice.objects.filter(
+                status__in=['open', 'draft']
+            ).count()
+        except Exception as e:
+            logger.warning(f"Error getting unpaid_invoices: {e}")
+            unpaid_invoices = 0
+        
+        # Past due subscriptions
+        try:
+            past_due_subscriptions = Subscription.objects.filter(status='past_due').count()
+        except Exception as e:
+            logger.warning(f"Error getting past_due_subscriptions: {e}")
+            past_due_subscriptions = 0
+        
+        # Total unpaid amount
+        try:
+            unpaid_amount = Invoice.objects.filter(
+                status__in=['open', 'draft']
+            ).aggregate(total=Sum('total'))['total'] or 0
+        except Exception as e:
+            logger.warning(f"Error getting unpaid_amount: {e}")
+            unpaid_amount = 0
+        
+        response = Response({
+            'total_revenue': float(total_revenue),
+            'monthly_revenue': float(monthly_revenue),
+            'active_subscriptions': active_subscriptions,
+            'pending_payments': pending_payments,
+            'unpaid_invoices': unpaid_invoices,
+            'past_due_subscriptions': past_due_subscriptions,
+            'unpaid_amount': float(unpaid_amount),
+        })
+        add_cors_headers(response, request)
+        return response
+    except Exception as e:
+        logger.error(f"Error in billing_stats: {e}", exc_info=True)
+        error_response = Response({
+            'error': 'An error occurred while fetching billing statistics',
+            'message': str(e) if settings.DEBUG else 'Unable to load billing statistics',
+            'total_revenue': 0,
+            'monthly_revenue': 0,
+            'active_subscriptions': 0,
+            'pending_payments': 0,
+            'unpaid_invoices': 0,
+            'past_due_subscriptions': 0,
+            'unpaid_amount': 0,
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        add_cors_headers(error_response, request)
+        return error_response
 
 
 @api_view(['GET'])

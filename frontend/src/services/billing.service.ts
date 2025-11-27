@@ -149,6 +149,11 @@ class BillingService {
     return response.data;
   }
 
+  async getTenantsWithoutSubscription() {
+    const response = await api.get('/subscriptions/tenants_without_subscription/');
+    return Array.isArray(response.data) ? response.data : response.data.results || [];
+  }
+
   async createSubscription(data: Partial<Subscription>) {
     const response = await api.post('/subscriptions/', data);
     return response.data;

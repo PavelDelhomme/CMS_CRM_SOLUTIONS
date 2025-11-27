@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import AdminLayout from '@/components/AdminLayout'
 import billingService, { Subscription, Invoice, Payment, PricingPlan, PaymentMethod } from '@/services/billing.service'
+import tenantService, { Tenant } from '@/services/tenant.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
+import CreateSubscriptionModal from './CreateSubscriptionModal'
 import toast from 'react-hot-toast'
 
 function SubscriptionRow({
@@ -144,7 +146,7 @@ function SubscriptionRow({
             <button
               onClick={() => setShowMenu(!showMenu)}
             disabled={!!actionLoading}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
             {actionLoading ? (
               <>
@@ -287,6 +289,8 @@ export default function BillingPage() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [unpaidItems, setUnpaidItems] = useState<any>(null)
   const [loadingUnpaid, setLoadingUnpaid] = useState(false)
+  const [showCreateSubscriptionModal, setShowCreateSubscriptionModal] = useState(false)
+  const [showCreateSubscriptionModal, setShowCreateSubscriptionModal] = useState(false)
 
   // Charger les impayés automatiquement quand on change d'onglet
   useEffect(() => {
@@ -429,7 +433,7 @@ export default function BillingPage() {
                   })
               }
             }}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="overview">Vue d'ensemble</option>
             <option value="subscriptions">Abonnements ({subscriptions.length})</option>
@@ -552,7 +556,7 @@ export default function BillingPage() {
           <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Gestion des Abonnements</h2>
             <button
-              onClick={() => alert('Fonctionnalité à venir : Créer un nouvel abonnement')}
+              onClick={() => setShowCreateSubscriptionModal(true)}
               className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm whitespace-nowrap"
             >
               + Nouvel Abonnement
@@ -928,6 +932,21 @@ export default function BillingPage() {
           )}
         </div>
       )}
+
+      {/* Create Subscription Modal */}
+      {showCreateSubscriptionModal && (
+        <CreateSubscriptionModal
+          pricingPlans={pricingPlans}
+          billingService={billingService}
+          tenantService={tenantService}
+          onClose={() => setShowCreateSubscriptionModal(false)}
+          onSuccess={() => {
+            setShowCreateSubscriptionModal(false)
+            loadBillingData()
+            toast.success('Abonnement créé avec succès')
+          }}
+        />
+      )}
     </AdminLayout>
   )
 }
@@ -1291,7 +1310,7 @@ function PricingPlanForm({
                 setFormData({ ...formData, name: e.target.value, slug })
               }
             }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Starter"
             required
           />
@@ -1303,7 +1322,7 @@ function PricingPlanForm({
             type="text"
             value={formData.slug || ''}
             onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="starter"
             required
           />
@@ -1316,7 +1335,7 @@ function PricingPlanForm({
             step="0.01"
             value={formData.price_monthly || 0}
             onChange={(e) => setFormData({ ...formData, price_monthly: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -1328,7 +1347,7 @@ function PricingPlanForm({
             step="0.01"
             value={formData.price_yearly || ''}
             onChange={(e) => setFormData({ ...formData, price_yearly: e.target.value ? parseFloat(e.target.value) : undefined })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Optionnel"
           />
         </div>
@@ -1339,7 +1358,7 @@ function PricingPlanForm({
             type="number"
             value={formData.max_sites || 1}
             onChange={(e) => setFormData({ ...formData, max_sites: parseInt(e.target.value) || 1 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             min="1"
             required
           />
@@ -1351,7 +1370,7 @@ function PricingPlanForm({
             type="number"
             value={formData.max_users || 1}
             onChange={(e) => setFormData({ ...formData, max_users: parseInt(e.target.value) || 1 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             min="1"
             required
           />
@@ -1363,7 +1382,7 @@ function PricingPlanForm({
             type="number"
             value={formData.max_storage_gb || 1}
             onChange={(e) => setFormData({ ...formData, max_storage_gb: parseInt(e.target.value) || 1 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             min="1"
             required
           />
@@ -1375,7 +1394,7 @@ function PricingPlanForm({
             type="number"
             value={formData.order || 0}
             onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             required
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Plus petit = affiché en premier</p>
@@ -1387,7 +1406,7 @@ function PricingPlanForm({
         <textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           rows={3}
           placeholder="Description du plan..."
         />
@@ -1400,7 +1419,7 @@ function PricingPlanForm({
         <textarea
           value={featuresText}
           onChange={(e) => setFeaturesText(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           rows={5}
           placeholder="Support prioritaire&#10;API complète&#10;Analytics avancés"
         />
@@ -1432,7 +1451,7 @@ function PricingPlanForm({
       <div className="flex justify-end gap-3 pt-4 border-t">
         <button
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
         >
           Annuler
         </button>
@@ -1548,7 +1567,7 @@ function PaymentsHistoryTab({
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">Tous</option>
               <option value="pending">En attente</option>
@@ -1565,7 +1584,7 @@ function PaymentsHistoryTab({
             <select
               value={filterMethod}
               onChange={(e) => setFilterMethod(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">Toutes</option>
               <option value="card">Carte bancaire</option>
@@ -1581,7 +1600,7 @@ function PaymentsHistoryTab({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="date">Date</option>
               <option value="amount">Montant</option>
@@ -1594,7 +1613,7 @@ function PaymentsHistoryTab({
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="desc">Décroissant</option>
               <option value="asc">Croissant</option>
@@ -1921,7 +1940,7 @@ function PaymentMethodForm({
             type="text"
             value={formData.name || ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="Carte bancaire"
           />
         </div>
@@ -1930,13 +1949,21 @@ function PaymentMethodForm({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type *</label>
           <select
             value={formData.method_type || 'card'}
-            onChange={(e) => setFormData({ ...formData, method_type: e.target.value as any })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => {
+              const newType = e.target.value as any
+              setFormData({ 
+                ...formData, 
+                method_type: newType,
+                // Reset settings when changing type
+                settings: newType === 'stripe' ? (formData.settings || {}) : {}
+              })
+            }}
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="card">Carte bancaire</option>
             <option value="bank_transfer">Virement bancaire</option>
             <option value="paypal">PayPal</option>
-            <option value="stripe">Stripe</option>
+            <option value="stripe">Stripe (Carte bancaire via Stripe)</option>
             <option value="check">Chèque</option>
             <option value="cash">Espèces</option>
             <option value="other">Autre</option>
@@ -1949,7 +1976,7 @@ function PaymentMethodForm({
             type="text"
             value={formData.icon || ''}
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
             placeholder="💳"
           />
         </div>
@@ -1960,7 +1987,7 @@ function PaymentMethodForm({
             type="number"
             value={formData.order || 0}
             onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -1970,7 +1997,7 @@ function PaymentMethodForm({
         <textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           rows={2}
           placeholder="Description du mode de paiement..."
         />
@@ -2022,7 +2049,7 @@ function PaymentMethodForm({
             step="0.01"
             value={formData.fee_percentage || 0}
             onChange={(e) => setFormData({ ...formData, fee_percentage: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -2033,7 +2060,7 @@ function PaymentMethodForm({
             step="0.01"
             value={formData.fee_fixed || 0}
             onChange={(e) => setFormData({ ...formData, fee_fixed: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -2044,7 +2071,7 @@ function PaymentMethodForm({
             step="0.01"
             value={formData.min_amount || ''}
             onChange={(e) => setFormData({ ...formData, min_amount: e.target.value ? parseFloat(e.target.value) : undefined })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -2055,7 +2082,7 @@ function PaymentMethodForm({
             step="0.01"
             value={formData.max_amount || ''}
             onChange={(e) => setFormData({ ...formData, max_amount: e.target.value ? parseFloat(e.target.value) : undefined })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -2063,7 +2090,7 @@ function PaymentMethodForm({
       <div className="flex justify-end gap-3 pt-4 border-t">
         <button
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900"
         >
           Annuler
         </button>

@@ -35,6 +35,11 @@ export interface SystemSettings {
   public_homepage_blocks?: any[];
   public_homepage_meta_title?: string;
   public_homepage_meta_description?: string;
+  stripe_enabled?: boolean;
+  stripe_public_key?: string;
+  stripe_secret_key?: string;
+  stripe_webhook_secret?: string;
+  stripe_mode?: 'test' | 'live';
   extra_settings: Record<string, any>;
   created_at: string;
   updated_at: string;
@@ -113,6 +118,11 @@ class SettingsService {
 
   async testEmail(recipientEmail: string): Promise<{ status: string; message: string }> {
     const response = await api.post('/system-settings/test_email/', { email: recipientEmail });
+    return response.data;
+  }
+
+  async testStripe(secretKey?: string): Promise<{ status: string; message: string; account?: any; error?: string }> {
+    const response = await api.post('/system-settings/test_stripe/', { secret_key: secretKey });
     return response.data;
   }
 }

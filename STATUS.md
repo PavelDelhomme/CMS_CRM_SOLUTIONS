@@ -855,17 +855,86 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-11-27  
-**Focus Actuel** : Tests complets de l'interface après corrections CORS et 500
+**Date** : 2025-01-XX  
+**Focus Actuel** : Améliorations interface admin, création de pages et système de blocs
 
 **Statut actuel** :
 - ✅ Toutes les corrections CORS et 500 sont terminées (dashboard, tenants, users, billing, templates, settings)
 - ✅ Mode sombre/clair fonctionnel partout
 - ✅ Migration homepage fields appliquée
+- ✅ Page de détail tenant améliorée (mode sombre, responsivité, navigation)
+- ✅ Création d'abonnement corrigée (erreur 500 résolue)
+- ✅ Système de création de pages amélioré avec sélection de templates
+- ✅ Nouveaux types de blocs ajoutés (galerie, liste, citation, accordéon, etc.)
 - ⏳ **Tests complets de l'interface en cours** - Voir checklist ci-dessus
 - ⏳ Vérification que toutes les fonctionnalités fonctionnent sans erreurs
 
 **Modifications Récentes** :
+
+### ✅ Améliorations Interface & Création de Pages (2025-01-XX)
+
+#### Page de Détail Tenant - Améliorations Complètes
+1. ✅ **Mode sombre amélioré pour "Informations Admin (Debug)"**
+   - Toutes les couleurs jaunes adaptées avec dark: variants
+   - Inputs, textes, bordures, backgrounds adaptés au mode sombre
+   - Layout responsive (flex-col sm:flex-row)
+
+2. ✅ **Navigation restaurée et cohérente**
+   - Utilisation de `AdminLayout` au lieu du layout personnalisé
+   - Sidebar toujours accessible et cohérente avec les autres pages admin
+
+3. ✅ **Responsivité complète**
+   - Tabs : Select dropdown mobile + tabs horizontaux desktop
+   - Grid responsive pour informations tenant
+   - Padding adaptatif (p-4 sm:p-6)
+   - Break-words pour emails longs
+   - Actions utilisateur responsive
+
+4. ✅ **Badges adaptés au mode sombre**
+   - Tous les badges (status, role) ont les dark: variants
+
+#### Création d'Abonnement - Correction Erreur 500
+5. ✅ **Erreur 500 lors de la création d'abonnement corrigée**
+   - Gestion d'erreur complète avec try-except autour de toute la méthode `create()`
+   - CORS headers ajoutés à toutes les réponses
+   - Validation améliorée de `tenant_id` et `plan_id`
+   - Logging des erreurs pour débogage
+   - Récupération correcte du tenant depuis `validated_data` ou fallback
+
+#### Création de Pages - Sélection Templates & Nouveaux Blocs
+6. ✅ **Sélection de templates au démarrage**
+   - Page vide
+   - Page avec Hero
+   - Page À propos
+   - Page Contact
+   - Page Services
+   - Interface améliorée avec modal de sélection
+   - Possibilité de changer de template pendant la création
+
+7. ✅ **Nouveaux types de blocs ajoutés**
+   - Galerie d'images (grid layout)
+   - Liste (à puces ou numérotée)
+   - Citation (quote block)
+   - Accordéon (FAQ, etc.)
+   - Tableau (table de données)
+   - Alerte (messages d'information)
+   - Code (bloc de code)
+   - Intégration (iframe)
+   - Hero (section bannière avec CTA)
+   - Command à exécuter : `python manage.py create_default_block_types`
+
+8. ✅ **BlockEditor amélioré**
+   - Blocs organisés par catégories (Contenu, Mise en page, Médias, Personnalisé)
+   - Interface améliorée avec sections par catégorie
+   - Mode sombre adapté
+
+#### Configuration Stripe
+9. ✅ **Intégration Stripe complète**
+   - Champs Stripe dans SystemSettings
+   - Module `stripe_config.py` pour gestion des clés
+   - Endpoint `test_stripe/` pour tester la connexion
+   - Interface admin avec onglet "Paiement"
+   - Test de connexion en temps réel
 
 ### ✅ Corrections Majeures (2025-11-26)
 

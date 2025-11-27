@@ -80,26 +80,68 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
   return (
     <div className="flex h-full">
-      {/* Sidebar - Block Palette */}
-      <div className="w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 p-4 overflow-y-auto">
+      {/* Sidebar - Block Palette with Categories */}
+      <div className="w-64 bg-gray-100 dark:bg-gray-900 border-r border-gray-300 dark:border-gray-700 p-4 overflow-y-auto">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Blocs disponibles</h3>
-        <div className="space-y-2">
-          {blockTypes.map((blockType) => (
-            <button
-              key={blockType.id}
-              onClick={() => addBlock(blockType)}
-              className="w-full px-3 py-2 text-left bg-white dark:bg-gray-800 border border-gray-200 rounded-lg hover:bg-gray-50 dark:bg-gray-900 hover:border-blue-500 transition flex items-center gap-2"
-            >
-              <span className="text-xl">{blockType.icon || '📦'}</span>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{blockType.label}</div>
-                {blockType.description && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{blockType.description}</div>
-                )}
+        
+        {/* Group by category */}
+        {['content', 'layout', 'media', 'custom'].map((category) => {
+          const categoryBlocks = blockTypes.filter(bt => bt.category === category)
+          if (categoryBlocks.length === 0) return null
+          
+          const categoryLabels: { [key: string]: string } = {
+            content: 'Contenu',
+            layout: 'Mise en page',
+            media: 'Médias',
+            custom: 'Personnalisé'
+          }
+          
+          return (
+            <div key={category} className="mb-6">
+              <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
+                {categoryLabels[category] || category}
+              </h4>
+              <div className="space-y-2">
+                {categoryBlocks.map((blockType) => (
+                  <button
+                    key={blockType.id}
+                    onClick={() => addBlock(blockType)}
+                    className="w-full px-3 py-2 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 hover:border-blue-500 transition flex items-center gap-2"
+                  >
+                    <span className="text-xl">{blockType.icon || '📦'}</span>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{blockType.label}</div>
+                      {blockType.description && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{blockType.description}</div>
+                      )}
+                    </div>
+                  </button>
+                ))}
               </div>
-            </button>
-          ))}
-        </div>
+            </div>
+          )
+        })}
+        
+        {/* Fallback if no categories */}
+        {blockTypes.length > 0 && !blockTypes.some(bt => bt.category) && (
+          <div className="space-y-2">
+            {blockTypes.map((blockType) => (
+              <button
+                key={blockType.id}
+                onClick={() => addBlock(blockType)}
+                className="w-full px-3 py-2 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 hover:border-blue-500 transition flex items-center gap-2"
+              >
+                <span className="text-xl">{blockType.icon || '📦'}</span>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{blockType.label}</div>
+                  {blockType.description && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{blockType.description}</div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Main Editor Area */}

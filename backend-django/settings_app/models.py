@@ -44,6 +44,13 @@ class SystemSettings(models.Model):
     invoice_prefix = models.CharField(max_length=10, default='INV-')
     payment_terms_days = models.IntegerField(default=30)
     
+    # Stripe Configuration
+    stripe_enabled = models.BooleanField(default=False, help_text="Activer les paiements Stripe")
+    stripe_public_key = models.CharField(max_length=255, blank=True, help_text="Clé publique Stripe (pk_test_... ou pk_live_...)")
+    stripe_secret_key = models.CharField(max_length=255, blank=True, help_text="Clé secrète Stripe (sk_test_... ou sk_live_...)")
+    stripe_webhook_secret = models.CharField(max_length=255, blank=True, help_text="Secret du webhook Stripe (whsec_...)")
+    stripe_mode = models.CharField(max_length=10, default='test', choices=[('test', 'Test'), ('live', 'Production')], help_text="Mode Stripe")
+    
     # Storage Settings
     max_file_size_mb = models.IntegerField(default=10)
     allowed_file_types = models.JSONField(default=list, blank=True)

@@ -1171,16 +1171,15 @@ def request_password_reset_view(request):
     Request password reset by email (public endpoint)
     User enters their email and receives a reset link
     """
-    try:
-        email = request.data.get('email')
-        
-        if not email:
-            error_response = Response(
-                {'error': 'Email is required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-            add_cors_headers(error_response, request)
-            return error_response
+    email = request.data.get('email')
+    
+    if not email:
+        error_response = Response(
+            {'error': 'Email is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        add_cors_headers(error_response, request)
+        return error_response
     
     try:
         user = User.objects.get(email=email)
@@ -1247,26 +1246,42 @@ L'équipe VTCBuilder
             )
             
             # Always return success (security best practice - don't reveal if email exists)
-            return Response({
+            response = Response({
                 'status': 'success',
                 'message': 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
             })
+            add_cors_headers(response, request)
+            return response
         except Exception as e:
             import logging
             logger = logging.getLogger(__name__)
             logger.error(f"Error sending password reset email: {str(e)}")
             # Still return success for security
-            return Response({
+            response = Response({
                 'status': 'success',
                 'message': 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
             })
+            add_cors_headers(response, request)
+            return response
             
     except User.DoesNotExist:
         # Don't reveal if email exists (security best practice)
-        return Response({
+        response = Response({
             'status': 'success',
             'message': 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
         })
+        add_cors_headers(response, request)
+        return response
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in request_password_reset_view: {e}", exc_info=True)
+        response = Response({
+            'status': 'success',
+            'message': 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
+        })
+        add_cors_headers(response, request)
+        return response
 
 
 @api_view(['POST'])

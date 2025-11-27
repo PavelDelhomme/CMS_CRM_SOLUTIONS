@@ -258,6 +258,51 @@ def system_settings_test_email_view(request):
         return error_response
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def system_settings_test_stripe_view(request):
+    """Test Stripe connection with provided keys"""
+    try:
+        if not request.user.is_super_admin():
+            error_response = Response(
+                {'error': 'Only super admin can test Stripe connection'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        from .stripe_config import test_stripe_connection
+        
+        # Get keys from request or settings
+        secret_key = request.data.get('secret_key') or request.data.get('stripe_secret_key')
+        
+        # Test connection
+        result = test_stripe_connection(secret_key)
+        
+        if result['status'] == 'success':
+            response = Response(result)
+        else:
+            response = Response(
+                result,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        add_cors_headers(response, request)
+        return response
+    except Exception as e:
+        logger.error(f"Unexpected error in system_settings_test_stripe_view: {e}", exc_info=True)
+        error_response = Response(
+            {
+                'status': 'error',
+                'message': 'Une erreur inattendue est survenue',
+                'error': str(e) if settings.DEBUG else None
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+        add_cors_headers(error_response, request)
+        return error_response
+
+
 class SystemSettingsViewSet(viewsets.ModelViewSet):
     """ViewSet for managing system settings"""
     queryset = SystemSettings.objects.all()

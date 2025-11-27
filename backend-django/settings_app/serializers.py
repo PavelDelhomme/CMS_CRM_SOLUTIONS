@@ -45,6 +45,11 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             'public_homepage_blocks',
             'public_homepage_meta_title',
             'public_homepage_meta_description',
+            'stripe_enabled',
+            'stripe_public_key',
+            'stripe_secret_key',
+            'stripe_webhook_secret',
+            'stripe_mode',
             'extra_settings',
             'created_at',
             'updated_at',
@@ -72,6 +77,16 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             _ = instance.public_homepage_meta_description
         except (AttributeError, Exception):
             data['public_homepage_meta_description'] = 'Plateforme complète pour créer et gérer votre site VTC professionnel'
+        
+        # Handle Stripe fields gracefully
+        try:
+            _ = instance.stripe_enabled
+        except (AttributeError, Exception):
+            data['stripe_enabled'] = False
+            data['stripe_public_key'] = ''
+            data['stripe_secret_key'] = ''
+            data['stripe_webhook_secret'] = ''
+            data['stripe_mode'] = 'test'
         
         return data
         

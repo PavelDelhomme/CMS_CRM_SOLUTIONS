@@ -13,8 +13,10 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [testingEmail, setTestingEmail] = useState(false)
   const [testEmailRecipient, setTestEmailRecipient] = useState('')
+  const [testingStripe, setTestingStripe] = useState(false)
+  const [stripeTestResult, setStripeTestResult] = useState<{status: string; message: string; account?: any} | null>(null)
   const [settings, setSettings] = useState<SystemSettings | null>(null)
-  const [activeTab, setActiveTab] = useState<'general' | 'email' | 'security' | 'billing' | 'storage' | 'notifications' | 'maintenance'>('general')
+  const [activeTab, setActiveTab] = useState<'general' | 'email' | 'security' | 'billing' | 'storage' | 'notifications' | 'maintenance' | 'payment'>('general')
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -136,7 +138,7 @@ export default function SettingsPage() {
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value as any)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+              className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
             >
               {[
                 { id: 'general', label: 'Général', icon: '⚙️' },
@@ -146,6 +148,7 @@ export default function SettingsPage() {
                 { id: 'storage', label: 'Stockage', icon: '📦' },
                 { id: 'notifications', label: 'Notifications', icon: '🔔' },
                 { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
+                { id: 'payment', label: 'Paiement', icon: '💳' },
               ].map((tab) => (
                 <option key={tab.id} value={tab.id}>
                   {tab.icon} {tab.label}
@@ -164,6 +167,7 @@ export default function SettingsPage() {
               { id: 'storage', label: 'Stockage', icon: '📦' },
               { id: 'notifications', label: 'Notifications', icon: '🔔' },
               { id: 'maintenance', label: 'Maintenance', icon: '🔧' },
+              { id: 'payment', label: 'Paiement', icon: '💳' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -195,7 +199,7 @@ export default function SettingsPage() {
                   type="text"
                   value={settings.site_name}
                   onChange={(e) => updateSetting('site_name', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -207,7 +211,7 @@ export default function SettingsPage() {
                   type="url"
                   value={settings.site_url}
                   onChange={(e) => updateSetting('site_url', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -219,7 +223,7 @@ export default function SettingsPage() {
                   type="email"
                   value={settings.contact_email}
                   onChange={(e) => updateSetting('contact_email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -231,7 +235,7 @@ export default function SettingsPage() {
                   type="email"
                   value={settings.support_email}
                   onChange={(e) => updateSetting('support_email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
@@ -280,7 +284,7 @@ export default function SettingsPage() {
                   value={testEmailRecipient}
                   onChange={(e) => setTestEmailRecipient(e.target.value)}
                   placeholder="votre-email@exemple.com"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <button
                   onClick={handleTestEmail}
@@ -314,7 +318,7 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.password_min_length}
                   onChange={(e) => updateSetting('password_min_length', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={6}
                 />
               </div>
@@ -327,7 +331,7 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.session_timeout_minutes}
                   onChange={(e) => updateSetting('session_timeout_minutes', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={1}
                 />
               </div>
@@ -340,7 +344,7 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.max_login_attempts}
                   onChange={(e) => updateSetting('max_login_attempts', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={1}
                 />
               </div>
@@ -353,7 +357,7 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.lockout_duration_minutes}
                   onChange={(e) => updateSetting('lockout_duration_minutes', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={1}
                 />
               </div>
@@ -365,7 +369,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.require_email_verification}
                   onChange={(e) => updateSetting('require_email_verification', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Exiger la vérification de l'email</span>
               </label>
@@ -386,7 +390,7 @@ export default function SettingsPage() {
                 <select
                   value={settings.default_currency}
                   onChange={(e) => updateSetting('default_currency', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="EUR">EUR (€)</option>
                   <option value="USD">USD ($)</option>
@@ -403,7 +407,7 @@ export default function SettingsPage() {
                   step="0.01"
                   value={settings.tax_rate}
                   onChange={(e) => updateSetting('tax_rate', parseFloat(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={0}
                   max={100}
                 />
@@ -417,7 +421,7 @@ export default function SettingsPage() {
                   type="text"
                   value={settings.invoice_prefix}
                   onChange={(e) => updateSetting('invoice_prefix', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="INV-"
                 />
               </div>
@@ -430,7 +434,7 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.payment_terms_days}
                   onChange={(e) => updateSetting('payment_terms_days', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={1}
                 />
               </div>
@@ -452,7 +456,7 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.max_file_size_mb}
                   onChange={(e) => updateSetting('max_file_size_mb', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={1}
                 />
               </div>
@@ -471,7 +475,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.enable_email_notifications}
                   onChange={(e) => updateSetting('enable_email_notifications', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer les notifications par email</span>
               </label>
@@ -481,7 +485,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.notify_on_new_tenant}
                   onChange={(e) => updateSetting('notify_on_new_tenant', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notifier lors de la création d'un nouveau tenant</span>
               </label>
@@ -491,7 +495,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.notify_on_payment_failed}
                   onChange={(e) => updateSetting('notify_on_payment_failed', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notifier lors d'un échec de paiement</span>
               </label>
@@ -501,7 +505,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.notify_on_subscription_expiring}
                   onChange={(e) => updateSetting('notify_on_subscription_expiring', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notifier lors de l'expiration d'un abonnement</span>
               </label>
@@ -520,7 +524,7 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={settings.maintenance_mode}
                   onChange={(e) => updateSetting('maintenance_mode', e.target.checked)}
-                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer le mode maintenance</span>
               </label>
@@ -533,7 +537,7 @@ export default function SettingsPage() {
                   value={settings.maintenance_message}
                   onChange={(e) => updateSetting('maintenance_message', e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Le site est en maintenance. Veuillez revenir plus tard."
                 />
               </div>
@@ -553,7 +557,7 @@ export default function SettingsPage() {
                     type="checkbox"
                     checked={settings.enable_trial}
                     onChange={(e) => updateSetting('enable_trial', e.target.checked)}
-                    className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
                   />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer la période d'essai</span>
                 </label>
@@ -567,10 +571,188 @@ export default function SettingsPage() {
                   type="number"
                   value={settings.default_trial_days}
                   onChange={(e) => updateSetting('default_trial_days', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   min={0}
                   disabled={!settings.enable_trial}
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment/Stripe Tab */}
+        {activeTab === 'payment' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Configuration Stripe</h2>
+            
+            {/* Info Box */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 dark:bg-blue-900/20 dark:border-blue-800">
+              <div className="flex items-start">
+                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="text-sm text-blue-800 dark:text-blue-200">
+                  <p className="font-medium mb-1">Configuration Stripe</p>
+                  <p className="text-blue-700 dark:text-blue-300">
+                    Configurez Stripe pour activer les paiements par carte bancaire. Les clés API sont disponibles dans votre <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="underline font-semibold">tableau de bord Stripe</a>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stripe Configuration */}
+            <div className="space-y-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={settings.stripe_enabled || false}
+                  onChange={(e) => updateSetting('stripe_enabled', e.target.checked)}
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Activer Stripe</span>
+              </label>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Mode Stripe
+                  </label>
+                  <select
+                    value={settings.stripe_mode || 'test'}
+                    onChange={(e) => updateSetting('stripe_mode', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="test">Test (sk_test_... / pk_test_...)</option>
+                    <option value="live">Production (sk_live_... / pk_live_...)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Clé publique Stripe (pk_test_... ou pk_live_...)
+                  </label>
+                  <input
+                    type="password"
+                    value={settings.stripe_public_key || ''}
+                    onChange={(e) => updateSetting('stripe_public_key', e.target.value)}
+                    placeholder="pk_test_..."
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Utilisée côté frontend pour créer les Payment Intents</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Clé secrète Stripe (sk_test_... ou sk_live_...)
+                  </label>
+                  <input
+                    type="password"
+                    value={settings.stripe_secret_key || ''}
+                    onChange={(e) => updateSetting('stripe_secret_key', e.target.value)}
+                    placeholder="sk_test_..."
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">NE JAMAIS PARTAGER - Utilisée côté backend uniquement</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Secret du webhook Stripe (whsec_...)
+                  </label>
+                  <input
+                    type="password"
+                    value={settings.stripe_webhook_secret || ''}
+                    onChange={(e) => updateSetting('stripe_webhook_secret', e.target.value)}
+                    placeholder="whsec_..."
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">URL webhook: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">https://votredomaine.com/api/billing/webhooks/stripe/</code></p>
+                </div>
+              </div>
+
+              {/* Test Stripe Connection */}
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tester la connexion Stripe</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Testez la connexion avec votre clé secrète Stripe pour vérifier que la configuration est correcte.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="password"
+                    value={settings.stripe_secret_key || ''}
+                    onChange={(e) => updateSetting('stripe_secret_key', e.target.value)}
+                    placeholder="sk_test_... ou sk_live_..."
+                    className="flex-1 px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                  />
+                  <button
+                    onClick={async () => {
+                      setTestingStripe(true)
+                      setStripeTestResult(null)
+                      try {
+                        const result = await settingsService.testStripe(settings.stripe_secret_key)
+                        setStripeTestResult(result)
+                        if (result.status === 'success') {
+                          toast.success('Connexion Stripe réussie !')
+                        } else {
+                          toast.error(result.message || 'Erreur lors du test Stripe')
+                        }
+                      } catch (error: any) {
+                        console.error('Erreur test Stripe:', error)
+                        setStripeTestResult({
+                          status: 'error',
+                          message: error.response?.data?.message || 'Erreur lors du test de connexion'
+                        })
+                        toast.error('Erreur lors du test Stripe')
+                      } finally {
+                        setTestingStripe(false)
+                      }
+                    }}
+                    disabled={testingStripe || !settings.stripe_secret_key}
+                    className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {testingStripe ? 'Test en cours...' : 'Tester la connexion'}
+                  </button>
+                </div>
+                
+                {stripeTestResult && (
+                  <div className={`mt-4 p-4 rounded-lg ${
+                    stripeTestResult.status === 'success'
+                      ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                      : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                  }`}>
+                    <div className="flex items-start">
+                      {stripeTestResult.status === 'success' ? (
+                        <svg className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                      <div className="flex-1">
+                        <p className={`font-medium ${
+                          stripeTestResult.status === 'success'
+                            ? 'text-green-800 dark:text-green-200'
+                            : 'text-red-800 dark:text-red-200'
+                        }`}>
+                          {stripeTestResult.message}
+                        </p>
+                        {stripeTestResult.account && (
+                          <div className="mt-2 text-sm text-green-700 dark:text-green-300">
+                            <p><strong>ID Compte:</strong> {stripeTestResult.account.id}</p>
+                            <p><strong>Pays:</strong> {stripeTestResult.account.country}</p>
+                            <p><strong>Devise:</strong> {stripeTestResult.account.default_currency}</p>
+                            {stripeTestResult.account.email && (
+                              <p><strong>Email:</strong> {stripeTestResult.account.email}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

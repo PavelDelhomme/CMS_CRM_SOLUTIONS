@@ -215,21 +215,39 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Add tenant_id and tenant_name to representation"""
-        data = super().to_representation(instance)
-        if instance.tenant:
-            data['tenant_id'] = instance.tenant.id
-            data['tenant_name'] = instance.tenant.name
-            # Also include tenant object for compatibility
-            if 'tenant' not in data or not data.get('tenant'):
-                data['tenant'] = {
-                    'id': instance.tenant.id,
-                    'name': instance.tenant.name,
-                }
-        else:
-            data['tenant_id'] = None
-            data['tenant_name'] = None
-            data['tenant'] = None
-        return data
+        try:
+            data = super().to_representation(instance)
+            try:
+                if instance.tenant:
+                    data['tenant_id'] = instance.tenant.id
+                    data['tenant_name'] = instance.tenant.name
+                    # Also include tenant object for compatibility
+                    if 'tenant' not in data or not data.get('tenant'):
+                        data['tenant'] = {
+                            'id': instance.tenant.id,
+                            'name': instance.tenant.name,
+                        }
+                else:
+                    data['tenant_id'] = None
+                    data['tenant_name'] = None
+                    data['tenant'] = None
+            except Exception as e:
+                # If tenant access fails, set to None
+                import logging
+                logging.getLogger(__name__).warning(f"Error accessing tenant for user {instance.id}: {e}")
+                data['tenant_id'] = None
+                data['tenant_name'] = None
+                data['tenant'] = None
+            return data
+        except Exception as e:
+            # If serialization fails completely, return minimal data
+            import logging
+            logging.getLogger(__name__).error(f"Error serializing user {instance.id if instance else 'unknown'}: {e}", exc_info=True)
+            return {
+                'id': instance.id if instance else None,
+                'email': instance.email if instance and hasattr(instance, 'email') else None,
+                'error': 'Error serializing user data'
+            }
 
     def create(self, validated_data):
         """Create user with encrypted password and quota check"""

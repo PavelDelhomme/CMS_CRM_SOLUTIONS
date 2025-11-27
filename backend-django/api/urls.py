@@ -28,7 +28,7 @@ from billing.views import (
     PricingPlanViewSet, SubscriptionViewSet,
     InvoiceViewSet, PaymentViewSet, PaymentMethodViewSet, billing_stats, unpaid_items
 )
-from settings_app.views import system_settings_view, system_settings_test_email_view
+from settings_app.views import system_settings_view, system_settings_test_email_view, system_settings_test_stripe_view
 from billing.webhooks import stripe_webhook
 from .views import DashboardView, DetailedStatsView
 
@@ -73,6 +73,8 @@ urlpatterns = [
     path('system-settings', system_settings_view, name='system-settings'),
     path('system-settings/test_email/', system_settings_test_email_view, name='system-settings-test-email-slash'),
     path('system-settings/test_email', system_settings_test_email_view, name='system-settings-test-email'),
+    path('system-settings/test_stripe/', system_settings_test_stripe_view, name='system-settings-test-stripe-slash'),
+    path('system-settings/test_stripe', system_settings_test_stripe_view, name='system-settings-test-stripe'),
     
     # Authentication (support both with and without trailing slash)
     path('auth/login/', login_view, name='login-slash'),

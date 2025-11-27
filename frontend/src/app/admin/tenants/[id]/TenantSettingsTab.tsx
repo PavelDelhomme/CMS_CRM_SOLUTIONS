@@ -263,7 +263,7 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
               type="text"
               value={settings.name}
               onChange={(e) => setSettings({ ...settings, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Nom de la société"
             />
           </div>
@@ -276,7 +276,7 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
               type="email"
               value={settings.email}
               onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="contact@exemple.com"
             />
           </div>
@@ -291,13 +291,13 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
                   type="color"
                   value={settings.primary_color}
                   onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
-                  className="h-10 w-20 rounded border border-gray-300"
+                  className="h-10 w-20 rounded dark:bg-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
                 <input
                   type="text"
                   value={settings.primary_color}
                   onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="#3B82F6"
                 />
               </div>
@@ -312,13 +312,13 @@ export default function TenantSettingsTab({ tenantId, tenantName }: TenantSettin
                   type="color"
                   value={settings.secondary_color}
                   onChange={(e) => setSettings({ ...settings, secondary_color: e.target.value })}
-                  className="h-10 w-20 rounded border border-gray-300"
+                  className="h-10 w-20 rounded dark:bg-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
                 <input
                   type="text"
                   value={settings.secondary_color}
                   onChange={(e) => setSettings({ ...settings, secondary_color: e.target.value })}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="#10B981"
                 />
               </div>

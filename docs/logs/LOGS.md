@@ -18,6 +18,74 @@
 
 ---
 
+## 📅 Modifications Récentes
+
+### 2024 - Améliorations Interface Admin & Création de Pages
+
+#### ✅ Page de Détail Tenant - Améliorations Mode Sombre & Responsivité
+- **Fichier**: `frontend/src/app/admin/tenants/[id]/page.tsx`
+- **Modifications**:
+  - ✅ Mode sombre amélioré pour section "Informations Admin (Debug)" avec variants dark: pour tous les éléments
+  - ✅ Navigation restaurée : utilisation de `AdminLayout` au lieu du layout personnalisé
+  - ✅ Responsivité complète : tabs avec select dropdown mobile + tabs horizontaux desktop
+  - ✅ Badges adaptés au mode sombre (status, role)
+  - ✅ Grid responsive pour informations tenant
+  - ✅ Break-words pour emails longs
+
+#### ✅ Création d'Abonnement - Correction Erreur 500
+- **Fichier**: `backend-django/billing/views.py`
+- **Problème**: Erreur 500 lors de la création d'abonnement depuis `/admin/tenants/[id]`
+- **Solution**:
+  - ✅ Gestion d'erreur complète avec try-except autour de toute la méthode `create()`
+  - ✅ CORS headers ajoutés à toutes les réponses (succès et erreurs)
+  - ✅ Validation améliorée de `tenant_id` et `plan_id`
+  - ✅ Logging des erreurs pour débogage
+  - ✅ Récupération correcte du tenant depuis `validated_data` ou fallback vers données brutes
+
+#### ✅ Création de Pages - Sélection Templates & Nouveaux Blocs
+- **Fichier**: `frontend/src/app/dashboard/pages/new/page.tsx`
+- **Modifications**:
+  - ✅ Sélection de templates au démarrage (Page vide, Hero, À propos, Contact, Services)
+  - ✅ Possibilité de changer de template pendant la création
+  - ✅ Interface améliorée avec modal de sélection de templates
+  - ✅ Mode sombre adapté
+
+- **Fichier**: `backend-django/blocks/management/commands/create_default_block_types.py`
+- **Nouveaux types de blocs ajoutés**:
+  - ✅ Galerie d'images (grid layout)
+  - ✅ Liste (à puces ou numérotée)
+  - ✅ Citation (quote block)
+  - ✅ Accordéon (FAQ, etc.)
+  - ✅ Tableau (table de données)
+  - ✅ Alerte (messages d'information)
+  - ✅ Code (bloc de code)
+  - ✅ Intégration (iframe)
+  - ✅ Hero (section bannière avec CTA)
+
+- **Fichier**: `frontend/src/components/editor/BlockEditor.tsx`
+- **Modifications**:
+  - ✅ Blocs organisés par catégories (Contenu, Mise en page, Médias, Personnalisé)
+  - ✅ Interface améliorée avec sections par catégorie
+  - ✅ Mode sombre adapté
+
+#### ✅ Configuration Stripe - Intégration Complète
+- **Fichiers**: `backend-django/settings_app/models.py`, `settings_app/stripe_config.py`, `settings_app/views.py`
+- **Modifications**:
+  - ✅ Champs Stripe dans SystemSettings (enabled, mode, public_key, secret_key, webhook_secret)
+  - ✅ Module `stripe_config.py` pour gestion des clés et test de connexion
+  - ✅ Endpoint `test_stripe/` pour tester la connexion Stripe
+  - ✅ Migration `0003_add_stripe_config.py` appliquée
+
+- **Fichier**: `frontend/src/app/admin/settings/page.tsx`
+- **Modifications**:
+  - ✅ Onglet "Paiement" ajouté pour configuration Stripe
+  - ✅ Interface complète avec champs pour clés publiques/secrètes
+  - ✅ Sélection mode (test/live)
+  - ✅ Bouton test de connexion en temps réel
+  - ✅ Mode sombre adapté
+
+---
+
 ## 🔧 Modifications Techniques Majeures
 
 ### Backend Django

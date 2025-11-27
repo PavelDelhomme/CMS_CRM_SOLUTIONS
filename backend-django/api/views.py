@@ -547,12 +547,15 @@ class DetailedStatsView(APIView):
             ],
             }
             
-            return Response(stats)
+            response = Response(stats)
+            # Ensure CORS headers are added to successful response
+            self._add_cors_headers(response, request)
+            return response
             
         except Exception as e:
             logger.error(f"Error in DetailedStatsView: {e}", exc_info=True)
             # Return minimal stats structure on error
-            return Response({
+            error_response = Response({
                 'error': 'An error occurred while fetching statistics',
                 'message': str(e),
                 'overview': {
@@ -581,3 +584,25 @@ class DetailedStatsView(APIView):
                 'recent_tenants': [],
                 'recent_users': [],
             }, status=500)
+            # Ensure CORS headers are added to error response
+            self._add_cors_headers(error_response, request)
+            return error_response
+    
+    def _add_cors_headers(self, response, request):
+        """Helper method to add CORS headers to a response"""
+        try:
+            origin = request.META.get('HTTP_ORIGIN')
+            if origin:
+                from django.conf import settings
+                if settings.DEBUG:
+                    if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                        response['Access-Control-Allow-Origin'] = origin
+                        response['Access-Control-Allow-Credentials'] = 'true'
+                        response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                        response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+                else:
+                    if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
+                        response['Access-Control-Allow-Origin'] = origin
+                        response['Access-Control-Allow-Credentials'] = 'true'
+        except Exception as e:
+            logger.warning(f"Error adding CORS headers: {e}")
