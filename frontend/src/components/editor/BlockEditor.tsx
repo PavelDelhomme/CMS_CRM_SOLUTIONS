@@ -5,6 +5,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import blocksService, { BlockType } from '@/services/blocks.service'
+import { useFeatures } from '@/contexts/FeaturesContext'
 
 export interface Block {
   id: string
@@ -28,6 +29,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [propertiesOpen, setPropertiesOpen] = useState(false)
+  const { canUseBlockType } = useFeatures()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -43,7 +45,11 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const loadBlockTypes = async () => {
     try {
       const types = availableBlockTypes || await blocksService.getBlockTypes()
-      setBlockTypes(types)
+      // Filtrer les blocs selon les features disponibles
+      const filteredTypes = types.filter((type: BlockType) => 
+        canUseBlockType(type.name, type.requires_premium)
+      )
+      setBlockTypes(filteredTypes)
     } catch (error) {
       console.error('Error loading block types:', error)
     }

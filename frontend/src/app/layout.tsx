@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { FeaturesProvider } from '@/contexts/FeaturesContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,7 +30,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider>
-          {children}
+          <FeaturesProvider>
+            {children}
+          </FeaturesProvider>
         </ThemeProvider>
       </body>
     </html>
