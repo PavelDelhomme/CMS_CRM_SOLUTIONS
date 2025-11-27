@@ -107,6 +107,9 @@ class Template(models.Model):
     default_settings = models.JSONField(default=dict, blank=True)
     html_content = models.TextField(blank=True, null=True, help_text="HTML content of the template")
     css_content = models.TextField(blank=True, null=True, help_text="CSS content of the template")
+    
+    # Variables system - JSON structure: {"variable_name": {"type": "string|number|boolean|html", "default": "", "description": ""}}
+    variables = models.JSONField(default=dict, blank=True, help_text="Variables disponibles dans le template (ex: {{company_name}}, {{logo_url}})")
 
     # Classification
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='vtc')
@@ -139,3 +142,58 @@ class Template(models.Model):
         """Increment the usage count"""
         self.usage_count += 1
         self.save(update_fields=['usage_count'])
+    
+    def render(self, context=None):
+        """
+        Render template with variable substitution
+        context: dict of variable values to replace in template
+        Returns: rendered HTML and CSS
+        """
+        if context is None:
+            context = {}
+        
+        # Get default values from variables definition
+        defaults = {}
+        if isinstance(self.variables, dict):
+            for var_name, var_config in self.variables.items():
+                if isinstance(var_config, dict) and 'default' in var_config:
+                    defaults[var_name] = var_config['default']
+        
+        # Merge context with defaults (context takes precedence)
+        full_context = {**defaults, **context}
+        
+        html = self.html_content or ''
+        css = self.css_content or ''
+        
+        # Replace variables in format {{variable_name}}
+        import re
+        pattern = r'\{\{(\w+)\}\}'
+        
+        def replace_var(match):
+            var_name = match.group(1)
+            if var_name in full_context:
+                value = full_context[var_name]
+                # Escape HTML if not marked as safe
+                if isinstance(self.variables, dict) and var_name in self.variables:
+                    var_config = self.variables[var_name]
+                    if isinstance(var_config, dict) and var_config.get('type') == 'html':
+                        # Allow HTML for variables marked as html type
+                        return str(value)
+                # Default: escape HTML
+                from django.utils.html import escape
+                return escape(str(value))
+            return match.group(0)  # Keep original if variable not found
+        
+        html = re.sub(pattern, replace_var, html)
+        css = re.sub(pattern, replace_var, css)
+        
+        return html, css
+    
+    def get_variable_names(self):
+        """Get list of variable names used in this template"""
+        import re
+        pattern = r'\{\{(\w+)\}\}'
+        html = self.html_content or ''
+        css = self.css_content or ''
+        variables = set(re.findall(pattern, html + css))
+        return sorted(list(variables))

@@ -11,6 +11,7 @@ export interface Template {
   default_settings?: Record<string, any>;
   html_content?: string;
   css_content?: string;
+  variables?: Record<string, { type: string; default: string; description: string }>;
   category: 'vtc' | 'business' | 'minimal' | 'modern' | 'classic';
   is_premium: boolean;
   price: number;
@@ -90,6 +91,19 @@ class TemplateService {
         'Content-Type': 'multipart/form-data',
       },
     });
+    return response.data;
+  }
+
+  async render(id: number, context: Record<string, any> = {}, blocks: Record<string, string> = {}) {
+    const response = await api.post(`/templates/${id}/render/`, {
+      context,
+      blocks,
+    });
+    return response.data;
+  }
+
+  async getVariables(id: number) {
+    const response = await api.get(`/templates/${id}/variables/`);
     return response.data;
   }
 }

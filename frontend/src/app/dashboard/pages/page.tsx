@@ -144,13 +144,22 @@ export default function PagesManagement() {
                         Publier
                       </button>
                     )}
-                    <button
-                      onClick={() => router.push(`/dashboard/pages/${page.id}/edit`)}
-                      className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                      title="Éditer avec l'éditeur WordPress-style"
-                    >
-                      ✏️ Éditer
-                    </button>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => router.push(`/dashboard/pages/${page.id}/edit`)}
+                        className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                        title="Éditer en mode texte"
+                      >
+                        ✏️ Texte
+                      </button>
+                      <button
+                        onClick={() => router.push(`/dashboard/pages/${page.id}/edit-visual`)}
+                        className="px-3 py-1 text-sm bg-purple-500 text-white rounded hover:bg-purple-600"
+                        title="Éditer avec l'éditeur visuel (blocs)"
+                      >
+                        🎨 Visuel
+                      </button>
+                    </div>
                     <button
                       onClick={() => handleDuplicate(page.id)}
                       className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"

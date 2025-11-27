@@ -690,6 +690,68 @@ class TemplateViewSet(viewsets.ModelViewSet):
                 return Response([], status=status.HTTP_200_OK)
         
         return Response([], status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'])
+    def render(self, request, pk=None):
+        """
+        Render template with provided context and blocks
+        POST data: {
+            'context': {'variable_name': 'value'},
+            'blocks': {'block_name': '<html>...</html>'}
+        }
+        """
+        from .template_renderer import TemplateRenderer
+        
+        template = self.get_object()
+        context = request.data.get('context', {})
+        blocks = request.data.get('blocks', {})
+        
+        renderer = TemplateRenderer(
+            template_html=template.html_content or '',
+            template_css=template.css_content or '',
+            variables_def=template.variables or {}
+        )
+        
+        rendered_html, rendered_css = renderer.render(context=context, blocks=blocks)
+        
+        return Response({
+            'html': rendered_html,
+            'css': rendered_css,
+            'template_id': template.id,
+            'template_name': template.name
+        })
+    
+    @action(detail=True, methods=['get'])
+    def variables(self, request, pk=None):
+        """Get available variables for this template"""
+        template = self.get_object()
+        
+        # Extract variables from template content
+        from .template_renderer import TemplateRenderer
+        all_vars = TemplateRenderer.extract_variables(
+            (template.html_content or '') + (template.css_content or '')
+        )
+        
+        # Merge with defined variables
+        defined_vars = template.variables or {}
+        
+        variables_info = {}
+        for var_name in all_vars:
+            if var_name in defined_vars:
+                variables_info[var_name] = defined_vars[var_name]
+            else:
+                # Auto-detect variable type
+                variables_info[var_name] = {
+                    'type': 'string',
+                    'default': '',
+                    'description': f'Variable auto-détectée: {var_name}',
+                    'required': False
+                }
+        
+        return Response({
+            'variables': variables_info,
+            'variable_names': all_vars
+        })
 
     @action(detail=False, methods=['get'])
     def by_category(self, request):
