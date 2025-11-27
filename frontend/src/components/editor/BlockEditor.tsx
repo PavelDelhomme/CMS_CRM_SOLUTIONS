@@ -876,32 +876,125 @@ function BlockRenderer({
       )
     case 'spacer':
       return (
-        <div className="space-y-2">
-          <input
-            type="number"
-            value={block.data.height || 40}
-            onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 40 } })}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-            placeholder="Hauteur en pixels..."
-            min={10}
-            max={200}
-          />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Espaceur de {(block.data.height || 40)}px - Voir la prévisualisation à droite →</p>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Direction
+            </label>
+            <select
+              value={block.data.direction || 'vertical'}
+              onChange={(e) => onUpdate({ data: { ...block.data, direction: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="vertical">Vertical (hauteur)</option>
+              <option value="horizontal">Horizontal (largeur)</option>
+            </select>
+          </div>
+          {block.data.direction === 'horizontal' ? (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Largeur (px)
+                </label>
+                <input
+                  type="number"
+                  value={block.data.width || 40}
+                  onChange={(e) => onUpdate({ data: { ...block.data, width: parseInt(e.target.value) || 40 } })}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Largeur en pixels..."
+                  min={10}
+                  max={200}
+                />
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 italic">Espaceur horizontal de {(block.data.width || 40)}px</p>
+            </>
+          ) : (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Hauteur (px)
+                </label>
+                <input
+                  type="number"
+                  value={block.data.height || 40}
+                  onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 40 } })}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Hauteur en pixels..."
+                  min={10}
+                  max={200}
+                />
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 italic">Espaceur vertical de {(block.data.height || 40)}px</p>
+            </>
+          )}
         </div>
       )
     case 'divider':
       return (
-        <div className="space-y-2">
-          <select
-            value={block.data.style || 'solid'}
-            onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="solid">Solide</option>
-            <option value="dashed">Tirets</option>
-            <option value="dotted">Pointillés</option>
-          </select>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Séparateur {block.data.style || 'solid'} - Voir la prévisualisation à droite →</p>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Direction
+            </label>
+            <select
+              value={block.data.direction || 'horizontal'}
+              onChange={(e) => onUpdate({ data: { ...block.data, direction: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="horizontal">Horizontal (ligne)</option>
+              <option value="vertical">Vertical (colonne)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Style
+            </label>
+            <select
+              value={block.data.style || 'solid'}
+              onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="solid">Solide</option>
+              <option value="dashed">Tirets</option>
+              <option value="dotted">Pointillés</option>
+              <option value="double">Double</option>
+            </select>
+          </div>
+          {block.data.direction === 'horizontal' && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Largeur
+              </label>
+              <select
+                value={block.data.width || 'full'}
+                onChange={(e) => onUpdate({ data: { ...block.data, width: e.target.value } })}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="full">100%</option>
+                <option value="half">50%</option>
+                <option value="third">33%</option>
+              </select>
+            </div>
+          )}
+          {block.data.direction === 'vertical' && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Hauteur
+              </label>
+              <input
+                type="number"
+                value={block.data.height || 100}
+                onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 100 } })}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Hauteur en pixels..."
+                min={20}
+                max={500}
+              />
+            </div>
+          )}
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+            Séparateur {block.data.direction === 'horizontal' ? 'horizontal' : 'vertical'} {block.data.style || 'solid'}
+          </p>
         </div>
       )
     case 'alert':

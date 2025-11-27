@@ -390,6 +390,21 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
       )
 
     case 'spacer':
+      const spacerDirection = block.data.direction || 'vertical'
+      if (spacerDirection === 'horizontal') {
+        return (
+          <div 
+            style={{ 
+              ...blockStyles,
+              width: `${block.data.width || 40}px`,
+              height: '1px',
+              display: 'inline-block',
+              verticalAlign: 'middle'
+            }} 
+            className="mb-6"
+          />
+        )
+      }
       return (
         <div 
           style={{ 
@@ -402,8 +417,32 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
       )
 
     case 'divider':
-      const dividerStyle = block.data.style === 'solid' ? 'solid' : block.data.style === 'dashed' ? 'dashed' : 'dotted'
-      const dividerWidth = block.data.width === 'full' ? '100%' : block.data.width === 'half' ? '50%' : '33%'
+      const dividerDirection = block.data.direction || 'horizontal'
+      const dividerStyle = block.data.style === 'solid' ? 'solid' : 
+                          block.data.style === 'dashed' ? 'dashed' : 
+                          block.data.style === 'dotted' ? 'dotted' : 
+                          block.data.style === 'double' ? 'double' : 'solid'
+      
+      if (dividerDirection === 'vertical') {
+        const dividerHeight = block.data.height || 100
+        return (
+          <div style={blockStyles} className="mb-6 flex items-center justify-center">
+            <div 
+              className={`border-l-2 border-gray-400 dark:border-gray-600`}
+              style={{ 
+                borderStyle: dividerStyle,
+                height: `${dividerHeight}px`,
+                margin: block.styles?.margin || '0 1rem'
+              }}
+            />
+          </div>
+        )
+      }
+      
+      // Horizontal divider
+      const dividerWidth = block.data.width === 'full' ? '100%' : 
+                          block.data.width === 'half' ? '50%' : 
+                          block.data.width === 'third' ? '33%' : '100%'
       return (
         <div style={blockStyles} className="mb-6 flex justify-center">
           <div 
