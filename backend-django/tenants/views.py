@@ -623,33 +623,44 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         Check if currently impersonating a user
         """
-        impersonating_user_id = request.session.get('impersonating_user_id')
-        original_admin_id = request.session.get('original_admin_id')
+        import logging
+        logger = logging.getLogger(__name__)
         
-        if impersonating_user_id and original_admin_id:
-            try:
-                target_user = User.objects.get(id=impersonating_user_id)
-                original_admin = User.objects.get(id=original_admin_id)
-                return Response({
-                    'is_impersonating': True,
-                    'impersonating': True,  # Alias for compatibility
-                    'target_user': UserSerializer(target_user).data,
-                    'original_admin': {
-                        'id': original_admin.id,
-                        'email': original_admin.email,
-                    },
-                    'impersonated_by': original_admin.email,  # Alias for compatibility
-                })
-            except User.DoesNotExist:
-                # Clear invalid session
-                request.session.pop('impersonating_user_id', None)
-                request.session.pop('original_admin_id', None)
-                request.session.save()
-        
-        return Response({
-            'is_impersonating': False,
-            'impersonating': False,  # Alias for compatibility
-        })
+        try:
+            impersonating_user_id = request.session.get('impersonating_user_id')
+            original_admin_id = request.session.get('original_admin_id')
+            
+            if impersonating_user_id and original_admin_id:
+                try:
+                    target_user = User.objects.get(id=impersonating_user_id)
+                    original_admin = User.objects.get(id=original_admin_id)
+                    return Response({
+                        'is_impersonating': True,
+                        'impersonating': True,  # Alias for compatibility
+                        'target_user': UserSerializer(target_user).data,
+                        'original_admin': {
+                            'id': original_admin.id,
+                            'email': original_admin.email,
+                        },
+                        'impersonated_by': original_admin.email,  # Alias for compatibility
+                    })
+                except User.DoesNotExist:
+                    # Clear invalid session
+                    request.session.pop('impersonating_user_id', None)
+                    request.session.pop('original_admin_id', None)
+                    request.session.save()
+            
+            return Response({
+                'is_impersonating': False,
+                'impersonating': False,  # Alias for compatibility
+            })
+        except Exception as e:
+            logger.error(f"Error in impersonation_status: {e}", exc_info=True)
+            return Response({
+                'is_impersonating': False,
+                'impersonating': False,
+                'error': 'An error occurred while checking impersonation status'
+            }, status=500)
 
     @action(detail=True, methods=['post'])
     def send_password_reset(self, request, pk=None):

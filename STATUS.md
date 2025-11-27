@@ -581,7 +581,14 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 ## 🔧 Corrections Récentes
 
 ### 27 Novembre 2025
-1. ✅ **Amélioration Dark Mode complète** - Toggle dans headers + corrections partout
+1. ✅ **Correction erreurs CORS et 500** - Middleware CORS + gestion d'erreurs
+   - **Middleware CORS personnalisé** : `CORSAlwaysMiddleware` pour garantir headers CORS même en cas d'erreur 500
+   - **Gestion d'erreurs DashboardView** : Try/catch avec logging et réponse d'erreur propre
+   - **Gestion d'erreurs impersonation-status** : Try/catch complet avec réponse d'erreur
+   - **Gestion d'erreurs TenantViewSet** : Try/catch dans get_queryset pour éviter crashes
+   - **Status** : ✅ Terminé - Headers CORS toujours envoyés, erreurs 500 gérées proprement
+
+2. ✅ **Amélioration Dark Mode complète** - Toggle dans headers + corrections partout
    - **Toggle dark mode** : Ajouté dans MobileHeader (en haut), headers desktop, Navbar
    - **Corrections backgrounds** : AdminLayout dark:bg-gray-900, tous bg-white → dark:bg-gray-800
    - **Corrections textes** : Tous text-gray-* avec variantes dark pour lisibilité
@@ -589,12 +596,12 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
    - **Scripts automatiques** : 58 fichiers corrigés, doublons nettoyés
    - **Status** : ✅ Terminé - Plus de fond blanc en mode sombre, interface cohérente partout
 
-2. ✅ **Erreur compilation AdminSidebar.tsx** - Résolue
+3. ✅ **Erreur compilation AdminSidebar.tsx** - Résolue
    - **Solution** : Suppression import React explicite, fragment `<>` simple
    - **Status** : ✅ Résolu - Compilation réussie
 
-3. ✅ **Résumé stats dashboard admin** - Ajout section statistiques détaillées sur `/admin/dashboard`
-4. ✅ **Éditeur page d'accueil publique** - Nouvelle page `/admin/homepage` avec BlockEditor WordPress
+4. ✅ **Résumé stats dashboard admin** - Ajout section statistiques détaillées sur `/admin/dashboard`
+5. ✅ **Éditeur page d'accueil publique** - Nouvelle page `/admin/homepage` avec BlockEditor WordPress
 
 ### Janvier 2025
 4. ✅ **Page Stats - Erreurs corrigées** - Initialisation complète des valeurs par défaut, protection contre undefined

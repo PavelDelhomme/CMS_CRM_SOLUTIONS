@@ -17,52 +17,76 @@ class DashboardView(APIView):
 
     def get(self, request):
         """Get dashboard statistics"""
-        user = request.user
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        try:
+            user = request.user
 
-        # Base stats with all required fields
-        stats = {
-            'total_tenants': 0,
-            'active_tenants': 0,
-            'trial_tenants': 0,
-            'total_users': 0,
-            'total_pages': 0,
-            'total_services': 0,
-            'total_bookings': 0,
-            'monthly_revenue': 0,
-        }
+            # Base stats with all required fields
+            stats = {
+                'total_tenants': 0,
+                'active_tenants': 0,
+                'trial_tenants': 0,
+                'total_users': 0,
+                'total_pages': 0,
+                'total_services': 0,
+                'total_bookings': 0,
+                'monthly_revenue': 0,
+            }
 
-        if user.is_super_admin():
-            # Super admin sees all stats (exclude soft-deleted tenants)
-            stats.update({
-                'total_tenants': Tenant.objects.filter(deleted_at__isnull=True).count(),
-                'active_tenants': Tenant.objects.filter(status='active', deleted_at__isnull=True).count(),
-                'trial_tenants': Tenant.objects.filter(status='trial', deleted_at__isnull=True).count(),
-                'total_users': User.objects.count(),
-            })
-        elif hasattr(user, 'tenant') and user.tenant:
-            # Tenant admin sees tenant-specific stats
-            tenant = user.tenant
-
-            # Count related objects for this tenant
-            try:
-                # Switch to tenant context for counting
-                from django_tenants.utils import tenant_context
-                from pages.models import Page
-                from services.models import Service
-                from bookings.models import Booking
-                
-                with tenant_context(tenant):
+            if user.is_super_admin():
+                # Super admin sees all stats (exclude soft-deleted tenants)
+                try:
                     stats.update({
-                        'total_users': User.objects.filter(tenant=tenant).count(),
-                        'total_pages': Page.objects.count(),
-                        'total_services': Service.objects.count(),
-                        'total_bookings': Booking.objects.count(),
+                        'total_tenants': Tenant.objects.filter(deleted_at__isnull=True).count(),
+                        'active_tenants': Tenant.objects.filter(status='active', deleted_at__isnull=True).count(),
+                        'trial_tenants': Tenant.objects.filter(status='trial', deleted_at__isnull=True).count(),
+                        'total_users': User.objects.count(),
                     })
-            except Exception as e:
-                # If tenant context fails, just return base stats
-                pass
+                except Exception as e:
+                    logger.error(f"Error fetching super admin stats: {e}", exc_info=True)
 
-        return Response({'stats': stats})
+            elif hasattr(user, 'tenant') and user.tenant:
+                # Tenant admin sees tenant-specific stats
+                tenant = user.tenant
+
+                # Count related objects for this tenant
+                try:
+                    # Switch to tenant context for counting
+                    from django_tenants.utils import tenant_context
+                    from pages.models import Page
+                    from services.models import Service
+                    from bookings.models import Booking
+                    
+                    with tenant_context(tenant):
+                        stats.update({
+                            'total_users': User.objects.filter(tenant=tenant).count(),
+                            'total_pages': Page.objects.count(),
+                            'total_services': Service.objects.count(),
+                            'total_bookings': Booking.objects.count(),
+                        })
+                except Exception as e:
+                    logger.error(f"Error fetching tenant stats: {e}", exc_info=True)
+                    # If tenant context fails, just return base stats
+                    pass
+
+            return Response({'stats': stats})
+        except Exception as e:
+            logger.error(f"Error in DashboardView: {e}", exc_info=True)
+            return Response({
+                'error': 'An error occurred while fetching dashboard statistics',
+                'stats': {
+                    'total_tenants': 0,
+                    'active_tenants': 0,
+                    'trial_tenants': 0,
+                    'total_users': 0,
+                    'total_pages': 0,
+                    'total_services': 0,
+                    'total_bookings': 0,
+                    'monthly_revenue': 0,
+                }
+            }, status=500)
 
 
 class DetailedStatsView(APIView):
