@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import authService from '@/services/auth.service'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -115,7 +115,7 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       {/* Overlay - visible quand sidebar est ouverte sur mobile ou desktop */}
       {sidebarOpen && (
         <div
@@ -225,7 +225,7 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
         </div>
       </div>
     </aside>
-    </React.Fragment>
+    </Fragment>
   )
 }
 
