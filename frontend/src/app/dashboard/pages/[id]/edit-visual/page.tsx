@@ -6,6 +6,7 @@ import TenantLayout from '@/components/TenantLayout'
 import pageService, { Page } from '@/services/page.service'
 import BlockEditor, { Block } from '@/components/editor/BlockEditor'
 import toast from 'react-hot-toast'
+import { useAutoSave } from '@/hooks/useAutoSave'
 
 // Hook pour la largeur du viewport
 function useViewportWidth() {
@@ -38,6 +39,24 @@ export default function VisualPageEditor() {
   
   // Calcul de la largeur dynamique
   const editorWidth = viewportWidth >= 1024 ? viewportWidth - 256 : viewportWidth // 256px = 16rem (sidebar)
+
+  // Sauvegarde automatique
+  const { isSaving: isAutoSaving, lastSaved } = useAutoSave({
+    data: { title, blocks, metaTitle, metaDescription, status, isHomepage },
+    onSave: async (data) => {
+      if (!pageId || !data.title.trim()) return
+      await pageService.update(pageId, {
+        title: data.title,
+        blocks: data.blocks,
+        meta_title: data.metaTitle,
+        meta_description: data.metaDescription,
+        status: data.status,
+        is_homepage: data.isHomepage,
+      })
+    },
+    debounceMs: 2000,
+    enabled: !!pageId && !!title.trim(),
+  })
 
   useEffect(() => {
     if (pageId) {
@@ -136,13 +155,28 @@ export default function VisualPageEditor() {
           >
             Retour
           </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {saving ? 'Sauvegarde...' : 'Sauvegarder'}
-          </button>
+                  {/* Auto-save indicator */}
+                  {isAutoSaving && (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-sm">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                      <span>Sauvegarde automatique...</span>
+                    </div>
+                  )}
+                  {!isAutoSaving && lastSaved && (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg text-sm">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Sauvegardé {lastSaved.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || isAutoSaving}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+                  </button>
           {status !== 'published' && (
             <button
               onClick={handlePublish}

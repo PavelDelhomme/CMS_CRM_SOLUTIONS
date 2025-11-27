@@ -290,18 +290,29 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-4 lg:gap-6">
-                      {blocks.map((block) => (
-                        <SortableBlock
-                          key={block.id}
-                          block={block}
-                          blockTypes={blockTypes}
-                          isSelected={selectedBlock === block.id}
-                          onSelect={() => setSelectedBlock(block.id)}
-                          onUpdate={(updates) => updateBlock(block.id, updates)}
-                          onDelete={() => removeBlock(block.id)}
-                        />
-                      ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 lg:gap-6 auto-rows-min">
+                      {blocks.map((block) => {
+                        // Calculer le span de colonnes basé sur le layout
+                        const colSpan = block.layout === 'full' ? 'col-span-full' :
+                          block.layout === 'three-quarters' ? 'col-span-3' :
+                          block.layout === 'two-thirds' ? 'col-span-4' :
+                          block.layout === 'half' ? 'col-span-3' :
+                          block.layout === 'third' ? 'col-span-2' :
+                          block.layout === 'quarter' ? 'col-span-1' : 'col-span-full'
+                        
+                        return (
+                          <div key={block.id} className={colSpan}>
+                            <SortableBlock
+                              block={block}
+                              blockTypes={blockTypes}
+                              isSelected={selectedBlock === block.id}
+                              onSelect={() => setSelectedBlock(block.id)}
+                              onUpdate={(updates) => updateBlock(block.id, updates)}
+                              onDelete={() => removeBlock(block.id)}
+                            />
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
                 </div>
@@ -408,19 +419,11 @@ function SortableBlock({
 
   const blockType = blockTypes.find(bt => bt.name === block.type)
 
-  // Calculate width based on layout
-  const layoutWidth = block.layout === 'full' ? 'w-full' :
-    block.layout === 'three-quarters' ? 'w-3/4' :
-    block.layout === 'two-thirds' ? 'w-2/3' :
-    block.layout === 'half' ? 'w-1/2' :
-    block.layout === 'third' ? 'w-1/3' :
-    block.layout === 'quarter' ? 'w-1/4' : 'w-full'
-
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`${layoutWidth} mb-4 bg-white dark:bg-gray-800 rounded-xl border-2 ${isSelected ? 'border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800' : 'border-gray-200 dark:border-gray-700'} shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden`}
+      className={`w-full mb-4 bg-white dark:bg-gray-800 rounded-xl border-2 ${isSelected ? 'border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800' : 'border-gray-200 dark:border-gray-700'} shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden`}
     >
       {/* Block Header - Modern Design */}
       <div
@@ -485,19 +488,20 @@ function SortableBlock({
               <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
               </svg>
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Largeur:</span>
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Largeur (colonnes):</span>
               <select
                 value={block.layout || 'full'}
                 onChange={(e) => onUpdate({ layout: e.target.value as Block['layout'] })}
                 className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 onClick={(e) => e.stopPropagation()}
+                title="Nombre de colonnes dans la grille (sur 6 colonnes max)"
               >
-                <option value="full">100%</option>
-                <option value="three-quarters">75%</option>
-                <option value="two-thirds">66%</option>
-                <option value="half">50%</option>
-                <option value="third">33%</option>
-                <option value="quarter">25%</option>
+                <option value="full">6/6 (100%)</option>
+                <option value="three-quarters">5/6 (83%)</option>
+                <option value="two-thirds">4/6 (66%)</option>
+                <option value="half">3/6 (50%)</option>
+                <option value="third">2/6 (33%)</option>
+                <option value="quarter">1/6 (16%)</option>
               </select>
             </div>
             <div className="flex items-center gap-2">

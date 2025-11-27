@@ -10,6 +10,7 @@ import BlockEditor, { Block } from '@/components/editor/BlockEditor'
 import BlockPreview from '@/components/editor/BlockPreview'
 import blocksService, { BlockType } from '@/services/blocks.service'
 import PageLoader from '@/components/PageLoader'
+import { useAutoSave } from '@/hooks/useAutoSave'
 
 const PAGE_TITLES: Record<string, string> = {
   home: 'Page d\'accueil',
@@ -30,6 +31,38 @@ export default function EditPublicPage() {
   const [metaDescription, setMetaDescription] = useState('')
   const [showPreview, setShowPreview] = useState(true)
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+
+  // Sauvegarde automatique
+  const { isSaving: isAutoSaving, lastSaved } = useAutoSave({
+    data: { blocks, metaTitle, metaDescription },
+    onSave: async (data) => {
+      const settingsData: any = {}
+      
+      if (pageSlug === 'home') {
+        settingsData.public_homepage_blocks = data.blocks
+        settingsData.public_homepage_meta_title = data.metaTitle
+        settingsData.public_homepage_meta_description = data.metaDescription
+      } else {
+        const currentSettings = await api.get('/system-settings/')
+        const publicPages = currentSettings.data.public_pages || {}
+        
+        publicPages[pageSlug] = {
+          ...publicPages[pageSlug],
+          title: PAGE_TITLES[pageSlug] || pageSlug,
+          blocks: data.blocks,
+          meta_title: data.metaTitle,
+          meta_description: data.metaDescription,
+          is_active: publicPages[pageSlug]?.is_active !== false,
+        }
+        
+        settingsData.public_pages = publicPages
+      }
+      
+      await api.patch('/system-settings/', settingsData)
+    },
+    debounceMs: 2000,
+    enabled: true,
+  })
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -198,10 +231,26 @@ export default function EditPublicPage() {
             Retour
           </button>
 
+          {/* Auto-save indicator */}
+          {isAutoSaving && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-sm">
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 dark:border-blue-400"></div>
+              <span>Sauvegarde automatique...</span>
+            </div>
+          )}
+          {!isAutoSaving && lastSaved && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg text-sm">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Sauvegardé {lastSaved.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+          )}
+
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || isAutoSaving}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
           >
             {saving ? (
