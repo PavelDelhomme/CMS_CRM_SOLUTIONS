@@ -37,6 +37,7 @@ class BlockType(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
+        app_label = 'blocks'
         db_table = 'block_types'
         ordering = ['category', 'order', 'label']
         verbose_name = 'Type de Bloc'
@@ -70,6 +71,7 @@ class BlockTemplate(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
+        app_label = 'blocks'
         db_table = 'block_templates'
         ordering = ['-created_at']
         verbose_name = 'Template de Bloc'

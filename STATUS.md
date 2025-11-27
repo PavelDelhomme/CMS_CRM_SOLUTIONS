@@ -583,10 +583,15 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 ### 27 Novembre 2025
 1. ✅ **Correction erreurs CORS et 500** - Middleware CORS + gestion d'erreurs
    - **Middleware CORS personnalisé** : `CORSAlwaysMiddleware` pour garantir headers CORS même en cas d'erreur 500
+   - **Gestionnaire d'exceptions DRF** : `custom_exception_handler` pour ajouter CORS aux erreurs API
    - **Gestion d'erreurs DashboardView** : Try/catch avec logging et réponse d'erreur propre
+   - **Gestion d'erreurs DetailedStatsView** : Try/catch amélioré avec gestion d'erreurs pour filtrage tenants et comptage
    - **Gestion d'erreurs impersonation-status** : Try/catch complet avec réponse d'erreur
    - **Gestion d'erreurs TenantViewSet** : Try/catch dans get_queryset pour éviter crashes
+   - **Import optionnel blocks** : Import conditionnel dans api/urls.py pour éviter crash au démarrage
+   - **Application blocks** : Ajoutée à SHARED_APPS (corrige erreur app_label BlockType)
    - **Status** : ✅ Terminé - Headers CORS toujours envoyés, erreurs 500 gérées proprement
+   - **Action requise** : Redémarrer le backend (`docker-compose restart backend`) pour appliquer les changements
 
 2. ✅ **Amélioration Dark Mode complète** - Toggle dans headers + corrections partout
    - **Toggle dark mode** : Ajouté dans MobileHeader (en haut), headers desktop, Navbar
