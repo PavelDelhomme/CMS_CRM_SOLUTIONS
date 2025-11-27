@@ -559,16 +559,8 @@ function BlockRenderer({
             className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
             placeholder="Texte alternatif (alt)..."
           />
-          {block.data.src && (
-            <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 flex items-center gap-2">
-              <svg className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-green-800 dark:text-green-300">Image configurée</p>
-                <p className="text-xs text-green-600 dark:text-green-400 truncate">{block.data.src.substring(0, 50)}...</p>
-              </div>
-            </div>
+          {!block.data.src && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
           )}
         </div>
       )
@@ -598,12 +590,9 @@ function BlockRenderer({
             <option value="secondary">Secondaire</option>
             <option value="outline">Outline</option>
           </select>
-          <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <p className="text-xs font-medium text-blue-800 dark:text-blue-300">Bouton configuré - Voir la prévisualisation à droite</p>
-          </div>
+          {(!block.data.text || !block.data.url) && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
+          )}
         </div>
       )
     case 'video':
@@ -616,16 +605,8 @@ function BlockRenderer({
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
             placeholder="URL de la vidéo (YouTube, Vimeo)..."
           />
-          {block.data.url && (
-            <div className="mt-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border border-purple-200 dark:border-purple-800 flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-purple-800 dark:text-purple-300">Vidéo configurée</p>
-                <p className="text-xs text-purple-600 dark:text-purple-400 truncate">{block.data.url.substring(0, 50)}...</p>
-              </div>
-            </div>
+          {!block.data.url && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
           )}
         </div>
       )
@@ -641,12 +622,7 @@ function BlockRenderer({
             min={10}
             max={200}
           />
-          <div className="p-3 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-lg border border-amber-200 dark:border-amber-800 flex items-center gap-2">
-            <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            <p className="text-xs font-medium text-amber-800 dark:text-amber-300">Espaceur de {(block.data.height || 40)}px - Voir la prévisualisation à droite</p>
-          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Espaceur de {(block.data.height || 40)}px - Voir la prévisualisation à droite →</p>
         </div>
       )
     case 'divider':
@@ -661,12 +637,7 @@ function BlockRenderer({
             <option value="dashed">Tirets</option>
             <option value="dotted">Pointillés</option>
           </select>
-          <div className="p-3 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center gap-2">
-            <svg className="w-5 h-5 text-slate-600 dark:text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-            </svg>
-            <p className="text-xs font-medium text-slate-800 dark:text-slate-300">Séparateur {block.data.style || 'solid'} - Voir la prévisualisation à droite</p>
-          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Séparateur {block.data.style || 'solid'} - Voir la prévisualisation à droite →</p>
         </div>
       )
     default:
