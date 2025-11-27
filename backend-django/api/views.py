@@ -99,7 +99,14 @@ class DetailedStatsView(APIView):
         logger = logging.getLogger(__name__)
         
         try:
+            # Vérifier l'utilisateur d'abord
             user = request.user
+            
+            if not user or not hasattr(user, 'is_super_admin'):
+                return Response(
+                    {'error': 'Invalid user'},
+                    status=401
+                )
             
             if not user.is_super_admin():
                 return Response(
@@ -107,21 +114,35 @@ class DetailedStatsView(APIView):
                     status=403
                 )
             
-            # Exclude soft-deleted tenants
-            tenants_qs = Tenant.objects.filter(deleted_at__isnull=True)
+            # Exclude soft-deleted tenants avec gestion d'erreur
+            try:
+                tenants_qs = Tenant.objects.filter(deleted_at__isnull=True)
+            except Exception as e:
+                logger.error(f"Error filtering tenants: {e}", exc_info=True)
+                tenants_qs = Tenant.objects.none()
+            
             now = timezone.now()
             today = now.date()
             week_ago = now - timedelta(days=7)
             month_ago = now - timedelta(days=30)
             twelve_months_ago = now - timedelta(days=365)
             
-            # Basic counts
-            total_tenants = tenants_qs.count()
-            active_tenants = tenants_qs.filter(status='active').count()
-            trial_tenants = tenants_qs.filter(status='trial').count()
-            suspended_tenants = tenants_qs.filter(status='suspended').count()
-            cancelled_tenants = tenants_qs.filter(status='cancelled').count()
-            total_users = User.objects.count()
+            # Basic counts avec gestion d'erreur
+            try:
+                total_tenants = tenants_qs.count()
+                active_tenants = tenants_qs.filter(status='active').count()
+                trial_tenants = tenants_qs.filter(status='trial').count()
+                suspended_tenants = tenants_qs.filter(status='suspended').count()
+                cancelled_tenants = tenants_qs.filter(status='cancelled').count()
+                total_users = User.objects.count()
+            except Exception as e:
+                logger.error(f"Error counting tenants/users: {e}", exc_info=True)
+                total_tenants = 0
+                active_tenants = 0
+                trial_tenants = 0
+                suspended_tenants = 0
+                cancelled_tenants = 0
+                total_users = 0
             
             # Users by status
             try:
