@@ -18,6 +18,9 @@ export default function TenantBillingPage() {
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'subscription' | 'invoices' | 'payments' | 'plans'>('subscription')
+  const [showCheckout, setShowCheckout] = useState(false)
+  const [checkoutPlanId, setCheckoutPlanId] = useState<number | null>(null)
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
 
   useEffect(() => {
     const currentUser = authService.getStoredUser()
@@ -52,14 +55,32 @@ export default function TenantBillingPage() {
     if (!confirm('Voulez-vous vraiment changer de plan ?')) return
     
     try {
+      const selectedPlan = pricingPlans.find(p => p.id === planId)
+      if (!selectedPlan) {
+        toast.error('Plan non trouvé')
+        return
+      }
+
+      // If subscription exists and has Stripe, use Stripe checkout
+      if (subscription && subscription.stripe_customer_id) {
+        try {
+          // Create payment intent for the plan
+          const amount = selectedPlan.price_monthly * 100 // Convert to cents
+          const result = await stripeService.createPaymentIntent(subscription.id, amount)
+          setClientSecret(result.client_secret)
+          setCheckoutPlanId(planId)
+          setShowCheckout(true)
+          return
+        } catch (error: any) {
+          console.error('Erreur création payment intent:', error)
+          // Fallback to direct subscription update
+        }
+      }
+
+      // Direct subscription creation/update
       if (subscription) {
-        // Update existing subscription
-        await billingService.createSubscription({
-          plan_id: planId,
-          tenant_id: authService.getStoredUser()?.tenant_id,
-        })
+        await billingService.updateSubscriptionPlan(subscription.id, planId)
       } else {
-        // Create new subscription
         await billingService.createSubscription({
           plan_id: planId,
           tenant_id: authService.getStoredUser()?.tenant_id,
@@ -70,6 +91,35 @@ export default function TenantBillingPage() {
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erreur lors de la mise à jour du plan')
     }
+  }
+
+  const handleCheckoutSuccess = async () => {
+    if (checkoutPlanId) {
+      try {
+        if (subscription) {
+          await billingService.updateSubscriptionPlan(subscription.id, checkoutPlanId)
+        } else {
+          await billingService.createSubscription({
+            plan_id: checkoutPlanId,
+            tenant_id: authService.getStoredUser()?.tenant_id,
+          })
+        }
+        loadBillingData()
+        toast.success('Plan mis à jour avec succès !')
+      } catch (error: any) {
+        toast.error(error.response?.data?.error || 'Erreur lors de la mise à jour')
+      }
+    }
+    setShowCheckout(false)
+    setClientSecret(null)
+    setCheckoutPlanId(null)
+  }
+
+  const handleCheckoutError = (error: string) => {
+    toast.error(error)
+    setShowCheckout(false)
+    setClientSecret(null)
+    setCheckoutPlanId(null)
   }
 
   const handleCancelSubscription = async () => {
@@ -458,6 +508,34 @@ export default function TenantBillingPage() {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Stripe Checkout Modal */}
+      {showCheckout && clientSecret && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Paiement</h2>
+              <button
+                onClick={() => {
+                  setShowCheckout(false)
+                  setClientSecret(null)
+                  setCheckoutPlanId(null)
+                }}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <StripeCheckout
+              clientSecret={clientSecret}
+              onSuccess={handleCheckoutSuccess}
+              onError={handleCheckoutError}
+            />
+          </div>
         </div>
       )}
     </TenantLayout>
