@@ -668,13 +668,72 @@ function BlockRenderer({
           <select
             value={block.data.style || 'solid'}
             onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="solid">Solide</option>
             <option value="dashed">Tirets</option>
             <option value="dotted">Pointillés</option>
           </select>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Séparateur {block.data.style || 'solid'} - Voir la prévisualisation à droite →</p>
+        </div>
+      )
+    case 'alert':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Type d'alerte
+            </label>
+            <select
+              value={block.data.variant || 'info'}
+              onChange={(e) => onUpdate({ data: { ...block.data, variant: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="info">Information (Bleu)</option>
+              <option value="success">Succès (Vert)</option>
+              <option value="warning">Avertissement (Jaune)</option>
+              <option value="error">Erreur (Rouge)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre (optionnel)
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Titre de l'alerte..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Message
+            </label>
+            <textarea
+              value={block.data.message || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, message: e.target.value } })}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Message de l'alerte..."
+              rows={4}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`alert-dismissible-${block.id}`}
+              checked={block.data.dismissible || false}
+              onChange={(e) => onUpdate({ data: { ...block.data, dismissible: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`alert-dismissible-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Permettre la fermeture (bouton X)
+            </label>
+          </div>
+          {(!block.data.message) && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">Voir la prévisualisation à droite →</p>
+          )}
         </div>
       )
     default:
