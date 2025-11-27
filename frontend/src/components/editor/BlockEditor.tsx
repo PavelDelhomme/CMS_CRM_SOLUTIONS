@@ -5,7 +5,6 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import blocksService, { BlockType } from '@/services/blocks.service'
-import BlockPreview from './BlockPreview'
 
 export interface Block {
   id: string
@@ -218,10 +217,10 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         )}
       </div>
 
-        {/* Main Editor Area - Split View Permanent - Full Width */}
-        <div className="flex-1 flex flex-row min-w-0 w-full h-full">
-          {/* Editor Panel - Left Side */}
-          <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 dark:border-gray-700 h-full">
+        {/* Main Editor Area - Full Width - No Preview */}
+        <div className="flex-1 flex flex-col min-w-0 w-full h-full">
+          {/* Editor Panel - Full Width */}
+          <div className="flex-1 flex flex-col min-w-0 h-full">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -240,9 +239,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                         <p className="text-gray-700 dark:text-gray-300 mb-2 text-lg font-semibold">Aucun bloc ajouté</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           Cliquez sur un bloc dans la palette à gauche pour commencer
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
-                          La prévisualisation s'affichera à droite →
                         </p>
                       </div>
                     </div>
@@ -264,21 +260,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                 </div>
               </SortableContext>
             </DndContext>
-          </div>
-
-          {/* Preview Panel - Right Side - Always Visible */}
-          <div className="flex-1 flex flex-col min-w-0 h-full">
-            <BlockPreview
-              blocks={blocks}
-              blockTypes={blockTypes}
-              onBlocksChange={onChange}
-              onBlockSelect={(id) => {
-                setSelectedBlock(id)
-                if (id && window.innerWidth >= 1024) setPropertiesOpen(true)
-              }}
-              selectedBlockId={selectedBlock}
-              isInteractive={true}
-            />
           </div>
         </div>
 
