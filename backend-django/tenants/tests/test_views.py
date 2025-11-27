@@ -200,3 +200,195 @@ class TestLoginView:
         response = api_client.post(url, data, format='json')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
+
+@pytest.mark.django_db
+@pytest.mark.api
+class TestUserViewSet:
+    """Tests for User ViewSet"""
+
+    @pytest.fixture
+    def api_client(self):
+        """Create API client"""
+        return APIClient()
+
+    @pytest.fixture
+    def super_admin(self):
+        """Create super admin user"""
+        return User.objects.create_user(
+            username='superadmin',
+            email='admin@vtcbuilder.com',
+            password='admin123',
+            role='super-admin',
+            tenant=None
+        )
+
+    @pytest.fixture
+    def tenant_admin(self):
+        """Create tenant admin user"""
+        from tenants.models import Domain
+        
+        tenant = Tenant.objects.create(
+            name='Test Tenant',
+            email='test@tenant.com',
+            slug='test-tenant',
+            status='active'
+        )
+        Domain.objects.create(tenant=tenant, domain='test-tenant.localhost', is_primary=True)
+        
+        return User.objects.create_user(
+            username='tenantadmin',
+            email='tenant@example.com',
+            password='password123',
+            role='tenant-admin',
+            tenant=tenant,
+            status='active'
+        )
+
+    @pytest.fixture
+    def authenticated_super_admin(self, api_client, super_admin):
+        """Create authenticated API client as super admin"""
+        api_client.force_authenticate(user=super_admin)
+        return api_client
+
+    @pytest.fixture
+    def authenticated_tenant_admin(self, api_client, tenant_admin):
+        """Create authenticated API client as tenant admin"""
+        api_client.force_authenticate(user=tenant_admin)
+        return api_client
+
+    @pytest.fixture
+    def test_tenant(self):
+        """Create test tenant"""
+        from tenants.models import Domain
+        
+        tenant = Tenant.objects.create(
+            name='Test Tenant',
+            email='test@tenant.com',
+            slug='test-tenant',
+            status='active'
+        )
+        Domain.objects.create(tenant=tenant, domain='test-tenant.localhost', is_primary=True)
+        return tenant
+
+    def test_create_user_as_super_admin(self, authenticated_super_admin, test_tenant):
+        """Test creating a user as super admin"""
+        url = reverse('user-list')
+        data = {
+            'email': 'newuser@example.com',
+            'username': 'newuser',
+            'password': 'password123',
+            'role': 'operator',
+            'tenant': test_tenant.id,
+            'status': 'active',
+            'first_name': 'John',
+            'last_name': 'Doe'
+        }
+        response = authenticated_super_admin.post(url, data, format='json')
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data['email'] == 'newuser@example.com'
+        assert User.objects.filter(email='newuser@example.com').exists()
+
+    def test_create_user_as_tenant_admin(self, authenticated_tenant_admin, tenant_admin):
+        """Test creating a user as tenant admin (should work for their tenant)"""
+        url = reverse('user-list')
+        data = {
+            'email': 'newuser@example.com',
+            'username': 'newuser',
+            'password': 'password123',
+            'role': 'operator',
+            'status': 'active'
+        }
+        response = authenticated_tenant_admin.post(url, data, format='json')
+        # Tenant admin should be able to create users in their tenant
+        assert response.status_code == status.HTTP_201_CREATED
+        user = User.objects.get(email='newuser@example.com')
+        assert user.tenant == tenant_admin.tenant
+
+    def test_create_user_requires_authentication(self, api_client):
+        """Test that creating a user requires authentication"""
+        url = reverse('user-list')
+        data = {
+            'email': 'test@example.com',
+            'password': 'password123'
+        }
+        response = api_client.post(url, data, format='json')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_create_super_admin_requires_super_admin(self, authenticated_tenant_admin):
+        """Test that only super admin can create super admin users"""
+        url = reverse('user-list')
+        data = {
+            'email': 'super@example.com',
+            'username': 'super',
+            'password': 'password123',
+            'role': 'super-admin',
+            'status': 'active'
+        }
+        response = authenticated_tenant_admin.post(url, data, format='json')
+        # Tenant admin should not be able to create super admin
+        assert response.status_code in [status.HTTP_403_FORBIDDEN, status.HTTP_400_BAD_REQUEST]
+
+    def test_create_user_without_password_fails(self, authenticated_super_admin, test_tenant):
+        """Test that creating a user without password fails"""
+        url = reverse('user-list')
+        data = {
+            'email': 'test@example.com',
+            'username': 'test',
+            'role': 'operator',
+            'tenant': test_tenant.id,
+            'status': 'active'
+        }
+        response = authenticated_super_admin.post(url, data, format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_list_users_as_super_admin(self, authenticated_super_admin):
+        """Test listing users as super admin"""
+        # Create a test user
+        User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            role='operator'
+        )
+        
+        url = reverse('user-list')
+        response = authenticated_super_admin.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        # Should see all users
+        assert len(response.data.get('results', [])) >= 1
+
+    def test_list_users_as_tenant_admin(self, authenticated_tenant_admin, tenant_admin):
+        """Test that tenant admin only sees users from their tenant"""
+        # Create user in same tenant
+        User.objects.create_user(
+            username='same_tenant',
+            email='same@example.com',
+            password='password123',
+            role='operator',
+            tenant=tenant_admin.tenant
+        )
+        
+        # Create user in different tenant
+        from tenants.models import Domain
+        other_tenant = Tenant.objects.create(
+            name='Other Tenant',
+            email='other@tenant.com',
+            slug='other-tenant',
+            status='active'
+        )
+        Domain.objects.create(tenant=other_tenant, domain='other-tenant.localhost', is_primary=True)
+        User.objects.create_user(
+            username='other_tenant',
+            email='other@example.com',
+            password='password123',
+            role='operator',
+            tenant=other_tenant
+        )
+        
+        url = reverse('user-list')
+        response = authenticated_tenant_admin.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        users = response.data.get('results', [])
+        # Should only see users from their tenant
+        assert all(user['tenant'] == tenant_admin.tenant.id for user in users if user.get('tenant'))
+
