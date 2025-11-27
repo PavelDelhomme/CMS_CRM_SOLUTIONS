@@ -4,6 +4,466 @@
 
 ---
 
+## 🧪 CHECKLIST DE TEST - VÉRIFICATION INTERFACE COMPLÈTE (À FAIRE DEMAIN)
+
+> **⚠️ IMPORTANT : Surveiller les logs navigateur (F12 → Console) et logs backend (docker logs) pendant tous les tests**
+
+### 🔐 1. AUTHENTIFICATION & GESTION COMPTES
+
+#### Login / Logout
+- [ ] **Login super admin** (`admin@vtcbuilder.com` / `admin123`)
+  - Vérifier redirection vers `/admin/dashboard`
+  - Vérifier pas d'erreurs console
+  - Vérifier token stocké dans localStorage
+- [ ] **Login tenant admin** (`test@delhomme.ovh` / `tenant123`)
+  - Vérifier redirection vers `/dashboard`
+  - Vérifier pas d'erreurs console
+- [ ] **Login utilisateur suspendu**
+  - Vérifier message d'erreur : "Compte suspendu"
+  - Vérifier pas d'accès au dashboard
+  - Vérifier logs backend (403 Forbidden)
+- [ ] **Login utilisateur inactif**
+  - Vérifier message d'erreur : "Compte désactivé"
+  - Vérifier pas d'accès au dashboard
+- [ ] **Logout** (depuis sidebar)
+  - Vérifier redirection vers `/login`
+  - Vérifier suppression tokens localStorage
+
+#### Inscription & Reset Password
+- [ ] **Page `/register`**
+  - Vérifier affichage plans tarifaires
+  - Vérifier formulaire fonctionnel
+  - Vérifier création compte test
+- [ ] **Reset password** (`/forgot-password`)
+  - Vérifier envoi email (logs backend)
+  - Vérifier lien reset reçu
+  - Vérifier page `/reset-password` fonctionne
+
+#### Mode Sombre/Clair
+- [ ] **Toggle dans Sidebar (tenant)**
+  - Vérifier changement immédiat
+  - Vérifier persistance après rechargement
+  - Vérifier détection système (OS dark mode)
+- [ ] **Toggle dans AdminSidebar (admin)**
+  - Vérifier changement immédiat
+  - Vérifier adaptation tous composants
+
+---
+
+### 👤 2. SUPER ADMIN - DASHBOARD (`/admin/dashboard`)
+
+- [ ] **Page principale**
+  - Vérifier statistiques affichées (réelles, pas mockées)
+  - Vérifier cartes : Tenants, Utilisateurs, Revenus, etc.
+  - Vérifier graphiques (recharts)
+  - Vérifier pas d'erreurs 404/500 console
+
+---
+
+### 👥 3. SUPER ADMIN - GESTION UTILISATEURS (`/admin/users`)
+
+#### Liste Utilisateurs
+- [ ] **Affichage liste**
+  - Vérifier tous utilisateurs visibles
+  - Vérifier filtres (recherche)
+  - Vérifier badges statut (active, suspended, inactive)
+  - Vérifier badges rôles (super-admin, tenant-admin, etc.)
+
+#### Actions Utilisateurs
+- [ ] **Créer utilisateur** (Bouton "Nouvel utilisateur")
+  - Vérifier page `/admin/users/new`
+  - Vérifier formulaire complet
+  - Vérifier création réussie
+  - Vérifier pas d'erreurs 400/500
+- [ ] **Modifier utilisateur** (`/admin/users/[id]`)
+  - Vérifier édition email, nom, rôle, tenant
+  - Vérifier modification mot de passe directe
+  - Vérifier sauvegarde réussie
+- [ ] **SUSPENDRE utilisateur**
+  - Vérifier action réussie
+  - Vérifier badge passe à "suspended"
+  - Vérifier utilisateur ne peut plus se connecter
+  - Vérifier middleware bloque accès API (logs backend)
+- [ ] **DÉSACTIVER utilisateur**
+  - Vérifier action réussie
+  - Vérifier badge passe à "inactive"
+  - Vérifier utilisateur ne peut plus se connecter
+- [ ] **ACTIVER utilisateur**
+  - Vérifier action réussie
+  - Vérifier badge passe à "active"
+  - Vérifier utilisateur peut se connecter
+- [ ] **Réinitialiser mot de passe**
+  - Vérifier email envoyé (logs backend)
+  - Vérifier message succès
+- [ ] **Impersonner utilisateur**
+  - Vérifier connexion en tant que cet utilisateur
+  - Vérifier banner d'impersonnification
+  - Vérifier accès dashboard approprié
+- [ ] **Supprimer utilisateur**
+  - Vérifier confirmation "SUPPRIMER"
+  - Vérifier suppression réussie
+  - Vérifier pas de suppression super-admin
+
+---
+
+### 🏢 4. SUPER ADMIN - GESTION TENANTS (`/admin/tenants`)
+
+#### Liste Tenants
+- [ ] **Affichage liste**
+  - Vérifier tous tenants visibles
+  - Vérifier statuts (active, suspended, trial)
+  - Vérifier pas d'erreurs console
+
+#### Actions Tenants
+- [ ] **Créer tenant** (Bouton "Nouveau Tenant")
+  - Vérifier page `/admin/tenants/new`
+  - Vérifier formulaire complet
+  - Vérifier création réussie
+  - Vérifier utilisateur admin créé automatiquement
+- [ ] **Voir détails tenant** (`/admin/tenants/[id]`)
+  - Vérifier onglets : Informations, Utilisateurs, Facturation, Site, Paramètres
+  - Vérifier pas d'erreurs 404/500
+- [ ] **Onglet Utilisateurs**
+  - Vérifier liste utilisateurs tenant
+  - Vérifier création utilisateur
+  - Vérifier modification mot de passe
+- [ ] **Onglet Facturation**
+  - Vérifier abonnement affiché
+  - Vérifier factures affichées
+  - Vérifier actions (suspendre, annuler, etc.)
+- [ ] **Suspendre/Activer tenant**
+  - Vérifier action réussie
+  - Vérifier impact sur utilisateurs
+
+---
+
+### 💳 5. SUPER ADMIN - FACTURATION (`/admin/billing`)
+
+#### Abonnements
+- [ ] **Liste abonnements**
+  - Vérifier tous abonnements visibles
+  - Vérifier statuts affichés correctement
+  - Vérifier actions disponibles par statut
+- [ ] **Actions abonnements**
+  - Vérifier Activer (bouton/menu)
+  - Vérifier Suspendre
+  - Vérifier Annuler
+  - Vérifier Réactiver
+  - Vérifier Changer plan
+  - Vérifier Mettre à jour statut
+  - Vérifier pas d'erreurs console/logs
+
+#### Plans Tarifaires
+- [ ] **Liste plans**
+  - Vérifier tous plans affichés
+  - Vérifier badge "Populaire" sur plan featured
+- [ ] **Créer plan** (si bouton présent)
+  - Vérifier formulaire
+  - Vérifier création réussie
+- [ ] **Modifier plan**
+  - Vérifier édition
+  - Vérifier sauvegarde
+- [ ] **Réorganiser plans** (flèches haut/bas)
+  - Vérifier déplacement
+  - Vérifier sauvegarde ordre
+
+#### Méthodes de Paiement
+- [ ] **Liste méthodes**
+  - Vérifier méthodes affichées
+  - Vérifier pas d'erreur 404 console
+- [ ] **Activer/Désactiver méthode**
+  - Vérifier toggle fonctionne
+
+#### Factures Impayées
+- [ ] **Onglet "Factures impayées"**
+  - Vérifier liste factures impayées
+  - Vérifier statistiques affichées
+  - Vérifier pas d'erreur 404 console
+
+---
+
+### 📊 6. SUPER ADMIN - STATISTIQUES (`/admin/stats`)
+
+- [ ] **Statistiques détaillées**
+  - Vérifier graphiques affichés
+  - Vérifier données RÉELLES (pas mockées)
+  - Vérifier pas d'erreur 404/500 console
+  - Vérifier alertes/monitoring affichés
+  - Vérifier filtres (si présents)
+
+---
+
+### 🎨 7. SUPER ADMIN - TEMPLATES (`/admin/templates`)
+
+#### Liste Templates
+- [ ] **Affichage templates**
+  - Vérifier templates listés
+  - Vérifier pas d'erreur 500 console
+
+#### Créer/Éditer Template
+- [ ] **Créer template**
+  - Vérifier formulaire complet
+  - Vérifier onglets : Info / HTML / CSS / Variables
+  - Vérifier upload HTML/CSS
+  - Vérifier détection variables automatique ({{variable}})
+  - Vérifier définition variables (type, default, description)
+  - Vérifier création réussie
+- [ ] **Éditer template**
+  - Vérifier chargement données
+  - Vérifier modification réussie
+  - Vérifier preview/rénder fonctionne
+
+---
+
+### ⚙️ 8. SUPER ADMIN - PARAMÈTRES (`/admin/settings`)
+
+- [ ] **Page paramètres**
+  - Vérifier pas d'erreur 404 console (`/api/system-settings/`)
+  - Vérifier formulaire système
+  - Vérifier test email fonctionne
+  - Vérifier sauvegarde réussie
+
+---
+
+### 🏠 9. TENANT ADMIN - DASHBOARD (`/dashboard`)
+
+- [ ] **Page principale**
+  - Vérifier cartes fonctionnelles (Pages, Services, Réservations, etc.)
+  - Vérifier navigation vers chaque section
+  - Vérifier pas d'erreurs console
+
+---
+
+### 📄 10. TENANT ADMIN - PAGES (`/dashboard/pages`)
+
+#### Liste Pages
+- [ ] **Affichage pages**
+  - Vérifier toutes pages tenant visibles
+  - Vérifier statuts (draft, published, scheduled)
+  - Vérifier actions (publier, dupliquer, supprimer)
+
+#### Créer Page
+- [ ] **Page `/dashboard/pages/new`**
+  - Vérifier formulaire paramètres (titre, SEO, statut, homepage)
+  - Vérifier **Éditeur visuel WordPress** fonctionne
+  - Vérifier palette blocs à gauche
+  - Vérifier drag & drop blocs
+  - Vérifier panneau propriétés à droite
+  - Vérifier ajout blocs (texte, titre, image, etc.)
+  - Vérifier suppression blocs
+  - Vérifier sauvegarde réussie
+  - Vérifier pas d'erreur 400 console (POST /api/pages/)
+
+#### Éditer Page
+- [ ] **Page texte** (`/dashboard/pages/[id]/edit`)
+  - Vérifier chargement contenu
+  - Vérifier édition texte
+  - Vérifier sauvegarde
+- [ ] **Page visuel** (`/dashboard/pages/[id]/edit-visual`)
+  - Vérifier chargement blocs
+  - Vérifier édition visuelle
+  - Vérifier sauvegarde
+
+#### Actions Pages
+- [ ] **Publier page**
+  - Vérifier statut passe à "published"
+  - Vérifier page accessible publiquement
+- [ ] **Définir homepage**
+  - Vérifier action réussie
+  - Vérifier ancienne homepage désélectionnée
+
+---
+
+### 🚗 11. TENANT ADMIN - SERVICES VTC (`/dashboard/services`)
+
+#### Liste Services
+- [ ] **Affichage services**
+  - Vérifier tous services visibles
+  - Vérifier pas d'erreurs console
+
+#### Créer Service
+- [ ] **Page `/dashboard/services/new`**
+  - Vérifier formulaire complet
+  - Vérifier sauvegarde réussie
+
+#### Éditer Service
+- [ ] **Page `/dashboard/services/[id]/edit`**
+  - Vérifier chargement données
+  - Vérifier modification nom, tarifs, caractéristiques
+  - Vérifier sauvegarde réussie
+
+---
+
+### 📅 12. TENANT ADMIN - RÉSERVATIONS (`/dashboard/bookings`)
+
+#### Liste Réservations
+- [ ] **Affichage réservations**
+  - Vérifier toutes réservations visibles
+  - Vérifier statuts (pending, confirmed, completed, cancelled)
+  - Vérifier filtres fonctionnent
+
+#### Détails Réservation
+- [ ] **Page `/dashboard/bookings/[id]`**
+  - Vérifier informations client affichées
+  - Vérifier détails trajet affichés
+  - Vérifier actions (Confirmer, Terminer, Annuler)
+  - Vérifier pas d'erreurs console
+
+---
+
+### 🖼️ 13. TENANT ADMIN - MÉDIAS (`/dashboard/media`)
+
+- [ ] **Liste médias**
+  - Vérifier fichiers affichés
+  - Vérifier upload fonctionne
+  - Vérifier pas d'erreurs 404/500 console
+
+---
+
+### 🎨 14. TENANT ADMIN - TEMPLATES (`/dashboard/templates`)
+
+- [ ] **Liste templates**
+  - Vérifier templates disponibles
+  - Vérifier application template fonctionne
+
+---
+
+### 👥 15. TENANT ADMIN - UTILISATEURS (`/dashboard/users`)
+
+- [ ] **Liste utilisateurs tenant**
+  - Vérifier seulement utilisateurs du tenant
+  - Vérifier création utilisateur
+  - Vérifier modification mot de passe
+
+---
+
+### 💰 16. TENANT ADMIN - FACTURATION (`/dashboard/billing`)
+
+#### Onglet Abonnement
+- [ ] **Abonnement actuel**
+  - Vérifier plan affiché
+  - Vérifier statut affiché
+  - Vérifier période actuelle
+  - Vérifier bouton "Annuler abonnement"
+
+#### Onglet Plans
+- [ ] **Liste plans tarifaires**
+  - Vérifier tous plans affichés
+  - Vérifier badge "Populaire"
+  - Vérifier bouton "Choisir ce plan"
+
+#### Intégration Stripe
+- [ ] **Changer plan avec Stripe**
+  - Vérifier clic "Choisir ce plan"
+  - Vérifier modal StripeCheckout s'ouvre
+  - Vérifier formulaire carte affiché
+  - Vérifier soumission paiement (test mode)
+  - Vérifier plan mis à jour après paiement
+  - Vérifier pas d'erreurs console
+  - Vérifier logs backend (webhooks Stripe si configurés)
+
+#### Onglet Factures
+- [ ] **Liste factures**
+  - Vérifier factures affichées
+  - Vérifier bouton "Générer facture" (si abonnement actif)
+  - Vérifier téléchargement PDF (si disponible)
+
+#### Onglet Paiements
+- [ ] **Historique paiements**
+  - Vérifier paiements affichés
+  - Vérifier statuts (succeeded, failed, etc.)
+
+---
+
+### ⚙️ 17. TENANT ADMIN - PARAMÈTRES (`/dashboard/settings`)
+
+- [ ] **Page paramètres tenant**
+  - Vérifier formulaire
+  - Vérifier sauvegarde
+  - Vérifier pas d'erreurs console
+
+---
+
+### 🌐 18. PAGES PUBLIQUES
+
+#### Landing Page VTCBuilder
+- [ ] **Page `/` (sans sous-domaine)**
+  - Vérifier affichage landing
+  - Vérifier plans tarifaires affichés
+  - Vérifier pas d'erreurs console
+
+#### Pages Publiques (Documentation, Contact, FAQ, CGV, Confidentialité)
+- [ ] **Page `/docs`**
+  - Vérifier contenu affiché
+- [ ] **Page `/contact`**
+  - Vérifier formulaire contact
+  - Vérifier soumission (logs backend)
+- [ ] **Page `/faq`**
+  - Vérifier FAQ affichée
+- [ ] **Page `/legal/terms`** (CGV)
+  - Vérifier contenu affiché
+- [ ] **Page `/legal/privacy`** (Confidentialité)
+  - Vérifier contenu affiché
+
+---
+
+### 📱 19. RESPONSIVE & MOBILE
+
+- [ ] **Sidebar mobile**
+  - Vérifier hamburger menu ouvre/ferme
+  - Vérifier drawer fonctionne
+  - Vérifier overlay au clic
+- [ ] **Toutes pages responsives**
+  - Vérifier adaptation mobile (largeur < 768px)
+  - Vérifier tables scrollables
+  - Vérifier formulaires adaptés
+- [ ] **Mode sombre mobile**
+  - Vérifier toggle fonctionne
+  - Vérifier adaptation interface
+
+---
+
+### 🐛 20. ERREURS & LOGS
+
+#### Console Navigateur (F12)
+- [ ] **Vérifier pas d'erreurs rouges**
+  - Pas de 404 (sauf endpoints non implémentés acceptables)
+  - Pas de 500
+  - Pas d'erreurs JavaScript
+  - Pas d'erreurs React (hydration, etc.)
+- [ ] **Vérifier warnings mineurs acceptables**
+  - Warnings console.log en dev OK
+  - Warnings React DevTools OK
+
+#### Logs Backend
+- [ ] **Surveiller logs Docker**
+  ```bash
+  docker-compose -f docker-compose.simple.yml logs -f backend
+  ```
+  - Vérifier pas d'erreurs 500 répétées
+  - Vérifier requêtes API normales
+  - Vérifier emails envoyés (SMTP)
+  - Vérifier webhooks Stripe (si configurés)
+
+---
+
+### ✅ RÉCAPITULATIF
+
+**À cocher après tests :**
+- [ ] Tous les tests ci-dessus effectués
+- [ ] Logs console vérifiés (pas d'erreurs critiques)
+- [ ] Logs backend vérifiés
+- [ ] Bugs identifiés documentés ci-dessous
+- [ ] Fonctionnalités non-testables notées
+
+**Bugs identifiés :**
+- (À remplir pendant les tests)
+
+**Fonctionnalités non-testables (environnement manquant) :**
+- (Ex: Stripe en production, emails SMTP, etc.)
+
+---
+
 ## 💰 Coûts du Projet
 
 **Domaine vtcbuilder.com** : 76,09 € TTC (13/10/2025 - 13/10/2030, 5 ans)
