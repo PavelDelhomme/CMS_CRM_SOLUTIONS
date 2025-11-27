@@ -866,6 +866,8 @@ cd frontend && npm install  # Installer Jest et dépendances
 - ✅ Création d'abonnement corrigée (erreur 500 résolue)
 - ✅ Système de création de pages amélioré avec sélection de templates
 - ✅ Nouveaux types de blocs ajoutés (galerie, liste, citation, accordéon, etc.)
+- ✅ Gestion erreurs ERR_BLOCKED_BY_CLIENT (bloqueurs de publicité) avec avertissements console
+- ✅ CORS headers garantis sur tous les endpoints MediaViewSet même en cas d'erreur
 - ⏳ **Tests complets de l'interface en cours** - Voir checklist ci-dessus
 - ⏳ Vérification que toutes les fonctionnalités fonctionnent sans erreurs
 
@@ -1015,6 +1017,22 @@ cd frontend && npm install  # Installer Jest et dépendances
     - Endpoint `/api/system-settings/` pour la configuration système
     - Endpoint `/api/system-settings/test_email/` pour tester les emails
     - Gestion singleton pour les paramètres système
+
+### 📝 Modifications Récentes (2025-01-XX)
+
+#### Corrections Erreurs ERR_BLOCKED_BY_CLIENT & CORS
+1. ✅ **Gestion Erreurs Bloqueur de Publicité**
+   - **Problème** : Erreurs `ERR_BLOCKED_BY_CLIENT` lors de l'accès aux API endpoints pendant l'impersonnification
+   - **Cause** : Bloqueurs de publicité (uBlock Origin, AdBlock Plus, etc.) interfèrent avec les requêtes vers `localhost:9495`
+   - **Solution Frontend** (`frontend/src/lib/api.ts`) :
+     - Intercepteur Axios amélioré pour détecter `ERR_NETWORK` et `ERR_BLOCKED_BY_CLIENT`
+     - Message d'avertissement console guidant l'utilisateur à désactiver le bloqueur pour `localhost:9495`
+     - Gestion gracieuse des erreurs sans bloquer l'application
+   - **Solution Backend** (`backend-django/media/views.py`) :
+     - Fonction `add_cors_headers()` appelée explicitement sur toutes les réponses (succès et erreurs)
+     - CORS headers garantis même en cas d'exception dans tous les endpoints MediaViewSet
+     - Correction d'indentation dans les blocs `except` pour assurer l'appel de `add_cors_headers`
+     - Logging amélioré des erreurs pour débogage
 
 ### 📝 Modifications Récentes (2025-11-27)
 

@@ -65,12 +65,16 @@ class MediaViewSet(viewsets.ModelViewSet):
                     
                     # Serialize within tenant context
                     serializer = MediaListSerializer(queryset, many=True)
-                    return Response(serializer.data)
+                    response = Response(serializer.data)
+                    add_cors_headers(response, request)
+                    return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
                 logger.error(f"Error listing media: {e}", exc_info=True)
-                return Response([], status=status.HTTP_200_OK)
+                response = Response([], status=status.HTTP_200_OK)
+                add_cors_headers(response, request)
+                return response
         
         # Super admin with tenant_id (optional for future use)
         if user.is_super_admin():
@@ -82,14 +86,20 @@ class MediaViewSet(viewsets.ModelViewSet):
                     with tenant_context(tenant):
                         queryset = Media.objects.all()
                         serializer = MediaListSerializer(queryset, many=True)
-                        return Response(serializer.data)
+                        response = Response(serializer.data)
+                        add_cors_headers(response, request)
+                        return response
                 except Exception as e:
                     import logging
                     logger = logging.getLogger(__name__)
                     logger.error(f"Error listing media: {e}", exc_info=True)
-                    return Response([], status=status.HTTP_200_OK)
+                    response = Response([], status=status.HTTP_200_OK)
+                    add_cors_headers(response, request)
+                    return response
         
-        return Response([], status=status.HTTP_200_OK)
+        response = Response([], status=status.HTTP_200_OK)
+        add_cors_headers(response, request)
+        return response
 
     def get_object(self):
         """Get media object within tenant context"""
@@ -130,7 +140,9 @@ class MediaViewSet(viewsets.ModelViewSet):
                     validated_data['tenant'] = user.tenant
                     media = Media.objects.create(**validated_data)
                     response_serializer = MediaSerializer(media)
-                    return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+                    response = Response(response_serializer.data, status=status.HTTP_201_CREATED)
+                    add_cors_headers(response, request)
+                    return response
             except Exception as e:
                 import logging
                 logger = logging.getLogger(__name__)
@@ -252,15 +264,21 @@ class MediaViewSet(viewsets.ModelViewSet):
                     # Set tenant FK - django-tenants handles cross-schema FK
                     validated_data['tenant'] = user.tenant
                     media = serializer.save(tenant=user.tenant)
-                    return Response(MediaSerializer(media).data, status=status.HTTP_201_CREATED)
+                    response = Response(MediaSerializer(media).data, status=status.HTTP_201_CREATED)
+                    add_cors_headers(response, request)
+                    return response
             except Exception as e:
                 logger.error(f"Error uploading media: {str(e)}", exc_info=True)
                 if hasattr(e, 'detail'):
-                    return Response({'error': str(e.detail), 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                return Response(
+                    error_response = Response({'error': str(e.detail), 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                    add_cors_headers(error_response, request)
+                    return error_response
+                error_response = Response(
                     {'error': f'Erreur lors du téléversement: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+                add_cors_headers(error_response, request)
+                return error_response
         
         return Response(
             {'error': 'Aucun tenant associé à votre compte'},

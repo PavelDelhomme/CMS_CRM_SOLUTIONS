@@ -68,6 +68,12 @@ api.interceptors.response.use(
     const url = error.config?.url || '';
     const status = error.response?.status;
     
+    // ERR_BLOCKED_BY_CLIENT est généralement causé par un bloqueur de publicité
+    if (error.code === 'ERR_NETWORK' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
+      console.warn(`⚠️ Requête bloquée (probablement par un bloqueur de publicité): ${url}`);
+      console.warn('💡 Solution: Désactivez temporairement votre bloqueur de publicité pour localhost:9495');
+    }
+    
     // Ne pas logger les erreurs attendues pour certains endpoints
     const isSilentError = SILENT_ERROR_ENDPOINTS.some(endpoint => url.includes(endpoint));
     

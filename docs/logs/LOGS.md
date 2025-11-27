@@ -20,6 +20,34 @@
 
 ## 📅 Modifications Récentes
 
+### 2024 - Corrections Erreurs ERR_BLOCKED_BY_CLIENT & CORS
+
+#### ✅ Gestion Erreurs Bloqueur de Publicité (ERR_BLOCKED_BY_CLIENT)
+- **Problème**: Erreurs `ERR_BLOCKED_BY_CLIENT` lors de l'accès aux API endpoints pendant l'impersonnification, causées par des bloqueurs de publicité (uBlock Origin, AdBlock Plus, etc.)
+- **Fichier**: `frontend/src/lib/api.ts`
+- **Modifications**:
+  - ✅ Intercepteur Axios amélioré pour détecter `ERR_NETWORK` et `ERR_BLOCKED_BY_CLIENT`
+  - ✅ Message d'avertissement console guidant l'utilisateur à désactiver le bloqueur pour `localhost:9495`
+  - ✅ Gestion gracieuse des erreurs sans bloquer l'application
+
+#### ✅ Amélioration CORS Backend - Media API
+- **Fichier**: `backend-django/media/views.py`
+- **Modifications**:
+  - ✅ Fonction `add_cors_headers()` appelée explicitement sur toutes les réponses (succès et erreurs)
+  - ✅ CORS headers garantis même en cas d'exception dans tous les endpoints MediaViewSet :
+    - `list()` - Liste des médias
+    - `create()` - Création de média
+    - `upload()` - Upload de fichier
+    - `update()` - Mise à jour de média
+    - `destroy()` - Suppression de média
+    - `images()` - Liste des images
+    - `documents()` - Liste des documents
+    - `by_collection()` - Médias par collection
+  - ✅ Correction d'indentation dans les blocs `except` pour assurer l'appel de `add_cors_headers`
+  - ✅ Logging amélioré des erreurs pour débogage
+
+---
+
 ### 2024 - Améliorations Interface Admin & Création de Pages
 
 #### ✅ Page de Détail Tenant - Améliorations Mode Sombre & Responsivité
