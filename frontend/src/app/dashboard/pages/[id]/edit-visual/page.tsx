@@ -136,7 +136,16 @@ export default function VisualPageEditor() {
         </div>
       }
     >
-      <div className="fixed inset-0 top-[64px] lg:top-[73px] left-0 lg:left-64 right-0 bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden" style={{ width: 'calc(100vw - 0px)', left: '0px' }}>
+      <div 
+        className="fixed top-[64px] lg:top-[73px] bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden" 
+        style={{ 
+          width: '100vw',
+          left: '0',
+          right: '0',
+          marginLeft: '0',
+          marginRight: '0'
+        }}
+      >
         {/* Page Title & SEO - Compact Header */}
         <div className="border-b border-gray-200 bg-gray-50 dark:bg-gray-900 flex-shrink-0 w-full">
           <div className="px-4 lg:px-6 xl:px-8 py-3 lg:py-4 w-full">
