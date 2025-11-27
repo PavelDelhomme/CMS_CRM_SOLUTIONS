@@ -31,6 +31,19 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 ### ✅ Fonctionnalités Implémentées
 
+#### Backend Django - Gestion Utilisateurs & Sécurité
+- ✅ **Suspension/Désactivation utilisateurs** (2025-11-27)
+  - Actions `/api/users/{id}/suspend/` et `/api/users/{id}/deactivate/`
+  - Actions `/api/users/{id}/activate/` pour réactiver
+  - Middleware `UserStatusMiddleware` bloquant l'accès API
+  - Messages d'erreur spécifiques (suspended vs inactive)
+  - Blocage à la connexion pour utilisateurs suspendus/inactifs
+  - Super admin toujours autorisé (bypass sécurité)
+  - Tests unitaires complets (test_user_status.py)
+- ✅ **Pages manquantes tenant créées** (2025-11-27)
+  - Page édition service `/dashboard/services/[id]/edit`
+  - Page détails réservation `/dashboard/bookings/[id]`
+
 #### Backend Django
 - ✅ Architecture multi-tenant avec django-tenants
 - ✅ Authentification par email
@@ -48,6 +61,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ **Système de variables dans templates (2025-11-27)** - Variables {{variable_name}}, blocs, conditionnels, boucles
 - ✅ **Éditeur visuel type WordPress (2025-11-27)** - Drag & drop, palette de blocs, panneau propriétés
 - ✅ **Création utilisateurs dans /admin/users (2025-11-27)** - Bouton et page dédiée, validation complète, tests unitaires
+- ✅ **Système de suspension/désactivation utilisateurs (2025-11-27)** - Actions admin avec répercussions immédiates, middleware de sécurité, tests unitaires
 - ✅ Payment Methods (modes de paiement)
 - ✅ Gestion des erreurs améliorée (retour de tableaux vides au lieu de 500)
 - ✅ **Intégration Stripe complète (2025-11-27)** - Service Stripe, webhooks, actions subscription
@@ -206,7 +220,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 ## 🧪 Tests Automatisés - EN COURS
 
-**Statut** : ✅ **37 fichiers de tests créés** (2025-11-26)  
+**Statut** : ✅ **38 fichiers de tests créés** (2025-11-27)  
 **Référence** : [docs/tests/README_TESTS.md](./docs/tests/README_TESTS.md) et [docs/tests/TESTS_RAPPORTS.md](./docs/tests/TESTS_RAPPORTS.md)
 
 ### ✅ Système de Tests Complet
@@ -215,12 +229,13 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ **Services** : 10 fichiers (auth, user, tenant, billing, page, service, booking, media, template, settings)
 - ✅ **Composants** : 11 fichiers (AdminSidebar, AdminLayout, TenantLayout, Sidebar, MobileHeader, ResponsiveTable, ImpersonationBanner, Navbar, PublicHeader, PublicFooter, PublicLayout)
 
-#### Tests Backend (14 fichiers)
+#### Tests Backend (15 fichiers)
 - ✅ **Modèles** : 6 fichiers (tenants, billing, pages, services, bookings, media)
 - ✅ **Serializers** : 1 fichier (tenants)
 - ✅ **Vues/API** : 7 fichiers (tenants, billing, pages, services, bookings, media, api)
+- ✅ **Statut Utilisateurs** : 1 fichier (test_user_status.py) - Tests suspend/activate/deactivate + middleware
 
-**Total** : **~199 tests unitaires** estimés
+**Total** : **~230 tests unitaires** estimés (ajout tests statut utilisateurs)
 
 ### 📚 Documentation
 - `README_TESTS.md` - Guide complet des tests (structure, exemples, commandes)
@@ -294,8 +309,8 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-11-26  
-**Focus Actuel** : Résolution des erreurs globales et finalisation du système de tests
+**Date** : 2025-11-27  
+**Focus Actuel** : Finalisation fonctionnalités tenant + Système de sécurité utilisateurs
 
 **Modifications Récentes** :
 
@@ -378,6 +393,44 @@ cd frontend && npm install  # Installer Jest et dépendances
     - Endpoint `/api/system-settings/` pour la configuration système
     - Endpoint `/api/system-settings/test_email/` pour tester les emails
     - Gestion singleton pour les paramètres système
+
+### 📝 Modifications Récentes (2025-11-27)
+
+#### Système de Suspension/Désactivation Utilisateurs
+1. ✅ **Actions admin suspend/activate/deactivate** 
+   - Endpoints API créés et fonctionnels
+   - Interface admin avec boutons d'action
+   - Messages de confirmation avant action
+   - Tests unitaires complets (test_user_status.py)
+
+2. ✅ **Middleware UserStatusMiddleware**
+   - Vérifie statut utilisateur sur chaque requête API
+   - Bloque accès si status = 'suspended' ou 'inactive'
+   - Messages d'erreur spécifiques (403 Forbidden)
+   - Super admin toujours autorisé (bypass)
+   - Endpoints publics exclus (login, register, reset password)
+
+3. ✅ **Répercussions immédiates**
+   - Utilisateur suspendu → BLOQUÉ à la connexion + toutes les API
+   - Utilisateur désactivé → BLOQUÉ à la connexion + toutes les API
+   - Utilisateur activé → Accès restauré immédiatement
+   - Toutes les fonctionnalités tenant bloquées (services, pages, médias, etc.)
+
+4. ✅ **Tests unitaires complets**
+   - TestUserStatusActions : 9 tests (activate, deactivate, suspend, login)
+   - TestUserStatusMiddleware : 6 tests (blocage, autorisation, public paths)
+   - Couverture complète des fonctionnalités
+
+#### Pages Tenant Manquantes
+5. ✅ **Page édition service** (`/dashboard/services/[id]/edit`)
+   - Formulaire complet (nom, tarifs, caractéristiques)
+   - Validation et gestion erreurs
+   - Interface responsive
+
+6. ✅ **Page détails réservation** (`/dashboard/bookings/[id]`)
+   - Affichage complet informations client et trajet
+   - Actions (confirmer, terminer, annuler)
+   - Statistiques prix et statut
 
 ### 📝 Modifications Antérieures (2025-11-24)
 - ✅ **Boucle infinie de logs corrigée** - Suppression console.log répétitifs dans TenantUsersTab
