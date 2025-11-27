@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import blocksService, { BlockType } from '@/services/blocks.service'
 import { useFeatures } from '@/contexts/FeaturesContext'
 import UrlInputWithSuggestions from './UrlInputWithSuggestions'
+import { useHistory } from '@/hooks/useHistory'
 
 export interface Block {
   id: string
@@ -31,6 +32,11 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [propertiesOpen, setPropertiesOpen] = useState(false)
   const { canUseBlockType } = useFeatures()
+  
+  // Historique avec undo/redo
+  const history = useHistory<Block[]>(blocks, 50)
+  const isHistoryUpdate = useRef(false)
+  const deleteTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -39,9 +45,54 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     })
   )
 
+  // Synchroniser l'historique avec les blocks externes
+  useEffect(() => {
+    if (!isHistoryUpdate.current) {
+      history.reset(blocks)
+    }
+    isHistoryUpdate.current = false
+  }, [blocks])
+
+  // Synchroniser onChange avec l'historique
+  useEffect(() => {
+    if (history.state !== blocks) {
+      onChange(history.state)
+    }
+  }, [history.state])
+
   useEffect(() => {
     loadBlockTypes()
   }, [])
+
+  // Raccourcis clavier pour undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Z ou Cmd+Z pour undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        if (history.canUndo) {
+          handleUndo()
+        }
+      }
+      // Ctrl+Shift+Z ou Cmd+Shift+Z pour redo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        if (history.canRedo) {
+          handleRedo()
+        }
+      }
+      // Ctrl+Y pour redo (alternative)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault()
+        if (history.canRedo) {
+          handleRedo()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [history.canUndo, history.canRedo, handleUndo, handleRedo])
 
   const loadBlockTypes = async () => {
     try {
@@ -54,19 +105,19 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     }
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const oldIndex = blocks.findIndex(b => b.id === active.id)
-      const newIndex = blocks.findIndex(b => b.id === over.id)
+      const oldIndex = history.state.findIndex(b => b.id === active.id)
+      const newIndex = history.state.findIndex(b => b.id === over.id)
 
-      const newBlocks = arrayMove(blocks, oldIndex, newIndex)
-      onChange(newBlocks)
+      const newBlocks = arrayMove(history.state, oldIndex, newIndex)
+      history.set(newBlocks, true)
     }
-  }
+  }, [history])
 
-  const addBlock = (blockType: BlockType) => {
+  const addBlock = useCallback((blockType: BlockType) => {
     const newBlock: Block = {
       id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: blockType.name,
@@ -75,20 +126,48 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       layout: 'full',
       container: 'container',
     }
-    onChange([...blocks, newBlock])
-  }
+    history.set([...history.state, newBlock], true)
+    setSelectedBlock(newBlock.id)
+    setPropertiesOpen(true)
+  }, [history])
 
-  const removeBlock = (blockId: string) => {
-    onChange(blocks.filter(b => b.id !== blockId))
-  }
+  const removeBlock = useCallback((blockId: string) => {
+    // Annuler le timeout précédent s'il existe
+    if (deleteTimeoutRef.current) {
+      clearTimeout(deleteTimeoutRef.current)
+    }
 
-  const updateBlock = (blockId: string, updates: Partial<Block>) => {
-    onChange(
-      blocks.map(block =>
-        block.id === blockId ? { ...block, ...updates } : block
-      )
+    // Utiliser un timeout pour éviter les doubles clics
+    deleteTimeoutRef.current = setTimeout(() => {
+      const newBlocks = history.state.filter(b => b.id !== blockId)
+      history.set(newBlocks, true)
+      
+      // Désélectionner le bloc si c'était celui sélectionné
+      if (selectedBlock === blockId) {
+        setSelectedBlock(null)
+        setPropertiesOpen(false)
+      }
+      
+      deleteTimeoutRef.current = null
+    }, 100)
+  }, [history, selectedBlock])
+
+  const updateBlock = useCallback((blockId: string, updates: Partial<Block>) => {
+    const newBlocks = history.state.map(block =>
+      block.id === blockId ? { ...block, ...updates } : block
     )
-  }
+    history.set(newBlocks, true)
+  }, [history])
+
+  const handleUndo = useCallback(() => {
+    isHistoryUpdate.current = true
+    history.undo()
+  }, [history])
+
+  const handleRedo = useCallback(() => {
+    isHistoryUpdate.current = true
+    history.redo()
+  }, [history])
 
 
   return (
@@ -274,9 +353,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext items={history.state.map(b => b.id)} strategy={verticalListSortingStrategy}>
                 <div className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
-                  {blocks.length === 0 ? (
+                  {history.state.length === 0 ? (
                     <div className="text-center py-12 lg:py-20">
                       <div className="max-w-md mx-auto">
                         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -292,7 +371,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 lg:gap-6 auto-rows-min">
-                      {blocks.map((block) => {
+                      {history.state.map((block) => {
                         // Calculer le span de colonnes basé sur le layout
                         const colSpan = block.layout === 'full' ? 'col-span-full' :
                           block.layout === 'three-quarters' ? 'col-span-3' :
