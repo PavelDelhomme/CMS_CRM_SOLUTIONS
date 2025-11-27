@@ -846,7 +846,7 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 - **Backend** : ~90% ✅ (améliorations gestion erreurs, templates HTML/CSS)
 - **Frontend Super Admin** : ~95% ✅ (stats, templates, settings fonctionnels)
-- **Frontend Tenant Admin** : ~85% ✅ (éditeur WordPress amélioré, design moderne, responsive complet)
+- **Frontend Tenant Admin** : ~80% ✅ (éditeur WordPress amélioré, design moderne, responsive complet, split view permanent)
 - **Frontend Public** : ~10% ⏳
 - **Routing Multi-Tenant** : ~30% ⏳
 - **Documentation** : ~98% ✅ (STATUS.md à jour, tests documentés)

@@ -17,7 +17,6 @@ export interface Block {
   container?: 'container' | 'container-fluid' | 'none'
 }
 
-type ViewMode = 'editor' | 'preview'
 
 interface BlockEditorProps {
   blocks: Block[]
@@ -28,7 +27,6 @@ interface BlockEditorProps {
 export default function BlockEditor({ blocks, onChange, availableBlockTypes }: BlockEditorProps) {
   const [blockTypes, setBlockTypes] = useState<BlockType[]>([])
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>('editor')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [propertiesOpen, setPropertiesOpen] = useState(false)
 
@@ -91,56 +89,27 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
   return (
     <div className="flex h-full w-full flex-col relative">
-      {/* View Mode Toggle - Modern Design */}
-      <div className="flex items-center justify-between px-3 sm:px-5 py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-b-2 border-gray-200 dark:border-gray-700 shadow-sm flex-shrink-0">
-        <div className="flex items-center gap-1 sm:gap-2 flex-1 overflow-x-auto">
+      {/* Toolbar - Simplified */}
+      <div className="flex items-center justify-between px-4 lg:px-6 xl:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="flex items-center gap-3 lg:gap-4">
           {/* Mobile: Menu button */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg"
+            className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             aria-label="Menu"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          
-          {/* View mode buttons - Enhanced */}
-          <button
-            onClick={() => setViewMode('editor')}
-            className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
-              viewMode === 'editor'
-                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg ring-2 ring-blue-200 dark:ring-blue-800'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
             </svg>
-            <span>Éditeur</span>
-          </button>
-          <button
-            onClick={() => setViewMode('preview')}
-            className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
-              viewMode === 'preview'
-                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg ring-2 ring-blue-200 dark:ring-blue-800'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <span>Prévisualisation</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
-          </svg>
-          <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-            {blocks.length} bloc{blocks.length > 1 ? 's' : ''}
-          </span>
+            <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+              {blocks.length} bloc{blocks.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -155,13 +124,12 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
         {/* Sidebar - Block Palette with Categories - Modern Design */}
         <div className={`
-          ${viewMode === 'preview' ? 'hidden' : ''}
           ${sidebarOpen ? 'fixed left-0 top-0 h-full z-50' : 'hidden'}
           lg:static lg:block
-          w-64 lg:w-72 xl:w-80
+          w-64 lg:w-72 xl:w-80 2xl:w-96
           bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800
           border-r border-gray-200 dark:border-gray-700 
-          p-4 sm:p-5 
+          p-4 sm:p-5 lg:p-6
           overflow-y-auto 
           transition-transform duration-300 ease-in-out
           shadow-lg lg:shadow-none
@@ -250,66 +218,62 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         )}
       </div>
 
-        {/* Main Editor Area - Responsive - Full Width */}
-        <div className="flex-1 flex flex-col min-w-0 w-full h-full">
-          {/* Editor Panel - Only show editing fields, no preview */}
-          {viewMode !== 'preview' && (
-            <div className="flex-1 flex flex-col min-w-0 w-full h-full">
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
-                  <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
-                    {blocks.length === 0 ? (
-                      <div className="text-center py-12">
-                        <p className="text-gray-500 dark:text-gray-400 mb-4">Aucun bloc ajouté</p>
-                        <p className="text-sm text-gray-400">
-                          Cliquez sur un bloc dans la palette pour commencer
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-4">
-                        {blocks.map((block) => (
-                          <SortableBlock
-                            key={block.id}
-                            block={block}
-                            blockTypes={blockTypes}
-                            isSelected={selectedBlock === block.id}
-                            onSelect={() => setSelectedBlock(block.id)}
-                            onUpdate={(updates) => updateBlock(block.id, updates)}
-                            onDelete={() => removeBlock(block.id)}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </div>
-          )}
+        {/* Main Editor Area - Split View Permanent - Full Width */}
+        <div className="flex-1 flex flex-row min-w-0 w-full h-full">
+          {/* Editor Panel - Left Side */}
+          <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 dark:border-gray-700 h-full">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                <div className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
+                  {blocks.length === 0 ? (
+                    <div className="text-center py-12 lg:py-20">
+                      <p className="text-gray-500 dark:text-gray-400 mb-4 text-lg">Aucun bloc ajouté</p>
+                      <p className="text-sm text-gray-400">
+                        Cliquez sur un bloc dans la palette pour commencer
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-4 lg:gap-6">
+                      {blocks.map((block) => (
+                        <SortableBlock
+                          key={block.id}
+                          block={block}
+                          blockTypes={blockTypes}
+                          isSelected={selectedBlock === block.id}
+                          onSelect={() => setSelectedBlock(block.id)}
+                          onUpdate={(updates) => updateBlock(block.id, updates)}
+                          onDelete={() => removeBlock(block.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
 
-          {/* Preview Panel - Only in preview mode */}
-          {viewMode === 'preview' && (
-            <div className="flex-1 w-full flex flex-col min-w-0 h-full">
-              <BlockPreview
-                blocks={blocks}
-                blockTypes={blockTypes}
-                onBlocksChange={onChange}
-                onBlockSelect={(id) => {
-                  setSelectedBlock(id)
-                  if (id && window.innerWidth >= 1024) setPropertiesOpen(true)
-                }}
-                selectedBlockId={selectedBlock}
-                isInteractive={true}
-              />
-            </div>
-          )}
+          {/* Preview Panel - Right Side - Always Visible */}
+          <div className="flex-1 flex flex-col min-w-0 h-full">
+            <BlockPreview
+              blocks={blocks}
+              blockTypes={blockTypes}
+              onBlocksChange={onChange}
+              onBlockSelect={(id) => {
+                setSelectedBlock(id)
+                if (id && window.innerWidth >= 1024) setPropertiesOpen(true)
+              }}
+              selectedBlockId={selectedBlock}
+              isInteractive={true}
+            />
+          </div>
         </div>
 
         {/* Properties Panel - Responsive (Drawer on mobile, sidebar on desktop) */}
-        {selectedBlock && viewMode !== 'preview' && (
+        {selectedBlock && (
           <>
             {/* Mobile Overlay */}
             {propertiesOpen && (
@@ -326,10 +290,10 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             <div className={`
               ${propertiesOpen ? 'fixed right-0 top-0 h-full z-50' : 'hidden'}
               lg:static lg:block
-              w-full sm:w-80 lg:w-96 xl:w-[28rem]
+              w-full sm:w-80 lg:w-96 xl:w-[28rem] 2xl:w-[32rem]
               bg-white dark:bg-gray-800 
               border-l border-gray-300 dark:border-gray-700 
-              p-3 sm:p-4 lg:p-6
+              p-4 sm:p-5 lg:p-6 xl:p-8
               overflow-y-auto
               shadow-lg lg:shadow-none
               transition-transform duration-300 ease-in-out
@@ -357,7 +321,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         )}
 
         {/* Mobile: Floating action button to open properties */}
-        {selectedBlock && viewMode !== 'preview' && !propertiesOpen && (
+        {selectedBlock && !propertiesOpen && (
           <button
             onClick={() => setPropertiesOpen(true)}
             className="lg:hidden fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-30"

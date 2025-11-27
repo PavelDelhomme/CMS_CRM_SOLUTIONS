@@ -137,27 +137,23 @@ export default function VisualPageEditor() {
       }
     >
       <div className="fixed inset-0 top-[64px] lg:top-[73px] left-0 lg:left-64 right-0 bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden">
-        {/* Page Title - Responsive */}
-        <div className="border-b border-gray-200 p-3 sm:p-4 lg:p-5 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 sm:px-4 py-2 text-base sm:text-xl border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-bold"
-            placeholder="Titre de la page"
-          />
-        </div>
+        {/* Page Title & SEO - Compact Header */}
+        <div className="border-b border-gray-200 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
+          <div className="px-4 lg:px-6 xl:px-8 py-3 lg:py-4">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-3 sm:px-4 py-2 text-base sm:text-lg lg:text-xl border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-bold bg-white dark:bg-gray-800"
+              placeholder="Titre de la page"
+            />
+          </div>
 
-        {/* Block Editor - Full Width */}
-        <div className="flex-1 overflow-hidden w-full">
-          <BlockEditor blocks={blocks} onChange={setBlocks} />
-        </div>
-
-        {/* SEO Panel (Collapsible) - Responsive */}
-        <div className="border-t border-gray-200 p-3 sm:p-4 lg:p-5 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
+        {/* SEO Panel (Collapsible) - Compact in header */}
+        <div className="px-4 lg:px-6 xl:px-8 pb-2 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
           <details className="cursor-pointer">
-            <summary className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Réglages SEO et page</summary>
-            <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <summary className="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">⚙️ Réglages SEO et page</summary>
+            <div className="mt-3 pb-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Titre SEO</label>
                 <input
@@ -204,6 +200,11 @@ export default function VisualPageEditor() {
               </div>
             </div>
           </details>
+        </div>
+
+        {/* Block Editor - Full Width Split View */}
+        <div className="flex-1 overflow-hidden w-full">
+          <BlockEditor blocks={blocks} onChange={setBlocks} />
         </div>
       </div>
     </TenantLayout>
