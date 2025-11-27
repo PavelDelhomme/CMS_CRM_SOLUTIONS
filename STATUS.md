@@ -45,6 +45,8 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ Mise à jour partielle utilisateurs (permet modification uniquement du mot de passe)
 - ✅ Système de paramètres globaux (singleton)
 - ✅ Gestion des templates avec HTML/CSS (interface complète + tests unitaires)
+- ✅ **Système de variables dans templates (2025-11-27)** - Variables {{variable_name}}, blocs, conditionnels, boucles
+- ✅ **Éditeur visuel type WordPress (2025-11-27)** - Drag & drop, palette de blocs, panneau propriétés
 - ✅ Payment Methods (modes de paiement)
 - ✅ Gestion des erreurs améliorée (retour de tableaux vides au lieu de 500)
 - ✅ **Intégration Stripe complète (2025-11-27)** - Service Stripe, webhooks, actions subscription
