@@ -157,10 +157,10 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 **Phases** :
 1. 🔴 **Correction tests backend** (36 échoués, 2 erreurs) - EN COURS
-2. 💳 **Intégration Stripe complète** - ⏳ **BACKEND + WEBHOOKS FAIT (2025-11-27)**, reste intégration frontend complète
+2. 💳 **Intégration Stripe complète** - ✅ **COMPLET (2025-11-27)** - Backend + Webhooks + Frontend (Modal Checkout)
 3. 📝 **Éditeur WordPress-like** (blocs, drag & drop, code) - ⏳ **API BACKEND + SERVICES FRONTEND FAIT (2025-11-27)**, reste composants éditeur
 4. 📋 **Système de formulaires** intégré - À FAIRE
-5. 🌓 **Mode sombre/clair** - À FAIRE
+5. 🌓 **Mode sombre/clair** - ✅ **FAIT (2025-11-27)** - Détection automatique + Toggle manuel
 6. 🧪 **Tests frontend** - À FAIRE
 7. 📊 **Documentation** - À FAIRE
 
