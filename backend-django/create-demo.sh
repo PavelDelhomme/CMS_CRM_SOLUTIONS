@@ -9,7 +9,7 @@ echo "🏢 Création d'un tenant de démonstration..."
 
 # Étape 1: Créer le tenant dans le schéma public
 echo "📝 Création du tenant dans le schéma public..."
-docker exec vtcbuilder_backend python manage.py shell -c "
+docker exec vtcbuilder-backend python manage.py shell -c "
 from tenants.models import Tenant, User
 from django.utils.text import slugify
 

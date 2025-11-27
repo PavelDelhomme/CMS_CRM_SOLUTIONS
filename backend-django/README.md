@@ -141,7 +141,7 @@ Le système utilise `django-tenants` pour le multi-tenant :
 ### Créer un nouveau tenant
 
 ```bash
-docker exec vtcbuilder_backend python manage.py create_demo_tenant --name="Mon Entreprise VTC" --email="contact@monvtc.com"
+docker exec vtcbuilder-backend python manage.py create_demo_tenant --name="Mon Entreprise VTC" --email="contact@monvtc.com"
 ```
 
 ## 📚 API Endpoints

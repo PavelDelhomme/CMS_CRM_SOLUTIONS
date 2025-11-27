@@ -2,9 +2,9 @@
 
 # Variables
 DOCKER_COMPOSE = docker-compose -f ../docker-compose.simple.yml
-BACKEND_CONTAINER = vtcbuilder_backend
-POSTGRES_CONTAINER = vtcbuilder_postgres
-COMPOSE_PROJECT_NAME = vtcbuilder_django
+BACKEND_CONTAINER = vtcbuilder-backend
+POSTGRES_CONTAINER = vtcbuilder-postgres
+COMPOSE_PROJECT_NAME = vtcbuilder
 
 # Couleurs pour l'affichage
 BLUE = \033[0;34m

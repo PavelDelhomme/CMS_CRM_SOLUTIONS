@@ -2,10 +2,10 @@
 
 # Variables
 DOCKER_COMPOSE = docker-compose
-BACKEND_CONTAINER = vtcbuilder_backend
-FRONTEND_CONTAINER = vtcbuilder_frontend
-MYSQL_CONTAINER = vtcbuilder_mysql
-NGINX_CONTAINER = vtcbuilder_nginx
+BACKEND_CONTAINER = vtcbuilder-backend
+FRONTEND_CONTAINER = vtcbuilder-frontend
+MYSQL_CONTAINER = vtcbuilder-mysql
+NGINX_CONTAINER = vtcbuilder-nginx
 
 # Couleurs pour l'affichage
 BLUE = \033[0;34m
@@ -125,7 +125,7 @@ status: ## Afficher le statut des services VTCBuilder
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 	@echo "$(GREEN)📊 Statut des conteneurs VTCBuilder :$(NC)"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
-	@docker ps --filter "name=vtcbuilder" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || true
+	@docker ps --filter "name=vtcbuilder" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || true
 	@echo ""
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
 	@echo "$(GREEN)📈 Résumé :$(NC)"
@@ -229,7 +229,7 @@ bash-backend: ## Accéder au terminal du backend Django
 
 bash-frontend: ## Accéder au terminal du frontend
 	@echo "$(BLUE)🔧 Accès au container frontend...$(NC)"
-	@docker exec -it vtcbuilder_frontend /bin/sh
+	@docker exec -it vtcbuilder-frontend /bin/sh
 
 db-cli: ## Accéder à PostgreSQL CLI
 	@echo "$(BLUE)🗄️  Accès à PostgreSQL...$(NC)"

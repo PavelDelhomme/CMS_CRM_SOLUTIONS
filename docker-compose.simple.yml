@@ -1,5 +1,7 @@
 version: '3.8'
 
+name: vtcbuilder
+
 networks:
   vtcbuilder_network:
     driver: bridge
@@ -9,7 +11,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: vtcbuilder_postgres
+    container_name: vtcbuilder-postgres
     environment:
       POSTGRES_DB: vtcbuilder
       POSTGRES_USER: vtcbuilder_user
@@ -29,7 +31,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: vtcbuilder_redis
+    container_name: vtcbuilder-redis
     ports:
       - "9497:6379"
     volumes:
@@ -42,7 +44,8 @@ services:
     build:
       context: ./backend-django
       dockerfile: Dockerfile
-    container_name: vtcbuilder_backend
+    image: vtcbuilder-backend:latest
+    container_name: vtcbuilder-backend
     working_dir: /app
     volumes:
       - ./backend-django:/app
@@ -82,7 +85,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: vtcbuilder_frontend
+    image: vtcbuilder-frontend:latest
+    container_name: vtcbuilder-frontend
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -98,7 +102,7 @@ services:
   # PgAdmin (Development only)
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: vtcbuilder_pgadmin
+    container_name: vtcbuilder-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@vtcbuilder.com
       PGADMIN_DEFAULT_PASSWORD: admin

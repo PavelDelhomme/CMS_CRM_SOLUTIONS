@@ -9,7 +9,7 @@ echo "🏢 Création d'un tenant de démonstration..."
 
 # Étape 1: Créer le super admin d'abord
 echo "👤 Création du super admin..."
-docker exec vtcbuilder_backend python manage.py shell -c "
+docker exec vtcbuilder-backend python manage.py shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -31,7 +31,7 @@ except User.DoesNotExist:
 
 # Étape 2: Créer le tenant de démonstration
 echo "🏢 Création du tenant de démonstration..."
-docker exec vtcbuilder_backend python manage.py shell -c "
+docker exec vtcbuilder-backend python manage.py shell -c "
 from tenants.models import Tenant
 from django.utils.text import slugify
 
@@ -54,7 +54,7 @@ else:
 
 # Étape 3: Créer l'admin du tenant
 echo "👨‍💼 Création de l'admin du tenant..."
-docker exec vtcbuilder_backend python manage.py shell -c "
+docker exec vtcbuilder-backend python manage.py shell -c "
 from django.contrib.auth import get_user_model
 from tenants.models import Tenant
 User = get_user_model()
