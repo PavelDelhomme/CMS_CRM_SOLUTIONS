@@ -115,7 +115,7 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
   }
 
   return (
-    <React.Fragment>
+    <>
       {/* Overlay - visible quand sidebar est ouverte sur mobile ou desktop */}
       {sidebarOpen && (
         <div
@@ -199,15 +199,15 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
             <div className="flex items-center justify-between">
               <div>
                 {mounted ? (
-                  <React.Fragment>
+                  <>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user?.name || 'Admin'}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email || ''}</p>
-                  </React.Fragment>
+                  </>
                 ) : (
-                  <React.Fragment>
+                  <>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Admin</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">&nbsp;</p>
-                  </React.Fragment>
+                  </>
                 )}
               </div>
               <button
@@ -224,8 +224,8 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
               </button>
             </div>
           </div>
-        </div>
-      </aside>
-    </React.Fragment>
+      </div>
+    </aside>
+    </>
   )
 }

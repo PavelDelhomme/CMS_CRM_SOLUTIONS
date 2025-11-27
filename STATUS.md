@@ -580,13 +580,26 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 ## 🔧 Corrections Récentes
 
+### 27 Novembre 2025
+1. ✅ **Erreur compilation AdminSidebar.tsx** - En cours de résolution
+   - **Problème** : Erreur compilation SWC/Next.js avec fragments JSX
+   - **Symptôme** : "Expression expected", "Unexpected token div" sur ligne 117-118
+   - **Erreur 500** : `/admin/dashboard` inaccessible à cause de l'erreur de compilation
+   - **Tentatives** : Fragment `<>`, `React.Fragment`, `Fragment` importé, div wrapper
+   - **Solution appliquée** : Réécriture complète du fichier avec `React.Fragment` explicite
+   - **Status** : ⏳ En attente recompilation Next.js dans le conteneur Docker
+   - **Action requise** : Vérifier que le conteneur frontend redémarre correctement
+
+2. ✅ **Résumé stats dashboard admin** - Ajout section statistiques détaillées sur `/admin/dashboard`
+3. ✅ **Éditeur page d'accueil publique** - Nouvelle page `/admin/homepage` avec BlockEditor WordPress
+
 ### Janvier 2025
-1. ✅ **Page Stats - Erreurs corrigées** - Initialisation complète des valeurs par défaut, protection contre undefined
-2. ✅ **Page EditUserPage - Erreur tenants.map** - Gestion correcte de la réponse paginée, vérifications Array.isArray()
-3. ✅ **Templates API - Erreur 500 corrigée** - Logs détaillés, retour de tableau vide en cas d'erreur
-4. ✅ **Templates - Champs HTML/CSS** - Ajout de html_content et css_content, interface avec onglets
-5. ✅ **Payment Methods - Gestion 404** - Gestion gracieuse des erreurs, messages en développement seulement
-6. ✅ **System Settings - Endpoint créé** - Singleton pour paramètres globaux, test email intégré
+4. ✅ **Page Stats - Erreurs corrigées** - Initialisation complète des valeurs par défaut, protection contre undefined
+5. ✅ **Page EditUserPage - Erreur tenants.map** - Gestion correcte de la réponse paginée, vérifications Array.isArray()
+6. ✅ **Templates API - Erreur 500 corrigée** - Logs détaillés, retour de tableau vide en cas d'erreur
+7. ✅ **Templates - Champs HTML/CSS** - Ajout de html_content et css_content, interface avec onglets
+8. ✅ **Payment Methods - Gestion 404** - Gestion gracieuse des erreurs, messages en développement seulement
+9. ✅ **System Settings - Endpoint créé** - Singleton pour paramètres globaux, test email intégré
 
 ### Novembre 2024
 7. ✅ **Statistiques dashboard** - Exclusion tenants soft-deleted

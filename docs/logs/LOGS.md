@@ -126,6 +126,29 @@
 
 ## 🔧 Corrections Récentes
 
+### 2025-11-27
+
+#### Corrections Erreurs Compilation Next.js
+1. ✅ **Erreur compilation AdminSidebar.tsx - Fragment JSX**
+   - **Problème** : Erreur compilation SWC/Next.js avec fragment JSX `<>` ou `<React.Fragment>`
+   - **Symptôme** : "Expression expected", "Unexpected token div", erreurs 500 sur `/admin/dashboard`
+   - **Solution** : Réécriture complète du fichier avec `React.Fragment` explicite
+   - **Tentatives** : Fragment `<>`, `React.Fragment`, `Fragment` importé, div wrapper avec `contents` class
+   - **Status** : En cours de résolution - Réécriture complète effectuée, attente recompilation
+
+2. ✅ **Résumé stats dashboard admin**
+   - Ajout section statistiques sur `/admin/dashboard`
+   - Activité (aujourd'hui, cette semaine)
+   - Abonnements actifs avec nombre en trial
+   - Revenus (total, mensuel)
+   - Alertes importantes avec liens
+
+3. ✅ **Éditeur page d'accueil publique**
+   - Nouvelle page `/admin/homepage` pour éditer page d'accueil publique
+   - Utilise BlockEditor WordPress (même outil que les utilisateurs)
+   - Stockage dans SystemSettings (public_homepage_blocks, meta_title, meta_description)
+   - Bouton prévisualisation
+
 ### 2025-11-26
 
 #### Système de Tests Complet
