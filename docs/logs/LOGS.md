@@ -162,6 +162,20 @@
    - Solution: Ajout de `'blocks'` à `SHARED_APPS`
    - Corrige l'erreur "Model class blocks.models.BlockType doesn't declare an explicit app_label"
 
+7. ✅ **Import optionnel de blocks dans api/urls.py**
+   - Problème: L'import de blocks.views causait un crash au démarrage si blocks n'était pas disponible
+   - Solution: Import conditionnel avec try/except, routes enregistrées seulement si disponible
+   - Backend peut démarrer même si blocks n'est pas configuré
+
+8. ✅ **Ajout app_label explicite dans blocks.models**
+   - Ajout de `app_label = 'blocks'` dans Meta de BlockType et BlockTemplate
+   - Garantit que Django reconnaît correctement les modèles même en cas de problème d'import
+
+9. ✅ **Amélioration gestion d'erreurs DetailedStatsView**
+   - Gestion d'erreurs pour filtrage tenants (try/catch avec queryset vide en fallback)
+   - Gestion d'erreurs pour comptage tenants/users (valeurs à 0 en fallback)
+   - Toutes les erreurs sont loggées et ne causent plus de crash
+
 #### Améliorations Dark Mode Complètes
 1. ✅ **Toggle Dark Mode dans headers** - Accessible en haut de toutes les pages
    - Toggle ajouté dans MobileHeader (visible sur mobile, en haut à droite)
