@@ -548,6 +548,7 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - ✅ Gestion des erreurs améliorée (retour de tableaux vides au lieu de 500)
 - ✅ **Intégration Stripe complète (2025-11-27)** - Service Stripe, webhooks, actions subscription
 - ✅ **API Blocs pour éditeur WordPress (2025-11-27)** - BlockType, BlockTemplate ViewSets
+- ✅ **Champs page d'accueil publique dans SystemSettings (2025-11-27)** - public_homepage_blocks, public_homepage_meta_title, public_homepage_meta_description
 
 #### Frontend Next.js
 - ✅ Interface super admin complète
