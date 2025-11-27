@@ -107,9 +107,23 @@ class PageViewSet(viewsets.ModelViewSet):
         # Tenant admin creates page in their tenant
         if hasattr(user, 'tenant') and user.tenant:
             try:
+                # Prepare data - ensure blocks is always a list
+                data = request.data.copy()
+                if 'blocks' not in data or not isinstance(data.get('blocks'), list):
+                    data['blocks'] = []
+                
                 # Validate data first using serializer (without saving)
-                serializer = PageSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
+                serializer = PageSerializer(data=data)
+                
+                if not serializer.is_valid():
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Validation errors: {serializer.errors}")
+                    return Response({
+                        'error': 'Erreur de validation',
+                        'details': serializer.errors
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
                 validated_data = serializer.validated_data
                 
                 # Auto-generate slug if not provided
@@ -119,6 +133,12 @@ class PageViewSet(viewsets.ModelViewSet):
                 with tenant_context(user.tenant):
                     # Create page directly in tenant context
                     validated_data['tenant'] = user.tenant
+                    # Ensure blocks is a list
+                    if 'blocks' not in validated_data:
+                        validated_data['blocks'] = []
+                    elif not isinstance(validated_data.get('blocks'), list):
+                        validated_data['blocks'] = []
+                    
                     page = Page.objects.create(**validated_data)
                     
                     # Serialize within tenant context
