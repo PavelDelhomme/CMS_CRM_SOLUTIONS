@@ -13,11 +13,33 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from datetime import timedelta
 from django_tenants.utils import tenant_context
+import logging
 from .models import Tenant, User, PasswordResetToken, InvitationToken
 from .serializers import (
     TenantSerializer, UserSerializer, UserRegisterSerializer,
     UserProfileSerializer, DomainSerializer
 )
+
+logger = logging.getLogger(__name__)
+
+
+def add_cors_headers(response, request):
+    """Helper function to add CORS headers to a response"""
+    try:
+        origin = request.META.get('HTTP_ORIGIN')
+        if origin:
+            if settings.DEBUG:
+                if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                    response['Access-Control-Allow-Origin'] = origin
+                    response['Access-Control-Allow-Credentials'] = 'true'
+                    response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                    response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+            else:
+                if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
+                    response['Access-Control-Allow-Origin'] = origin
+                    response['Access-Control-Allow-Credentials'] = 'true'
+    except Exception as e:
+        logger.warning(f"Error adding CORS headers: {e}")
 
 
 class TenantViewSet(viewsets.ModelViewSet):
@@ -357,26 +379,55 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filter users based on tenant context"""
-        user = self.request.user
-        queryset = User.objects.all().order_by('-created_at')
+        import logging
+        logger = logging.getLogger(__name__)
         
-        # Super admin can filter by tenant_id parameter or see all users
-        if user.is_super_admin():
-            tenant_id = self.request.query_params.get('tenant_id')
-            if tenant_id:
-                try:
-                    tenant_id = int(tenant_id)
-                    # Filter by tenant_id - only users belonging to this tenant
-                    queryset = queryset.filter(tenant_id=tenant_id)
-                except (ValueError, TypeError):
-                    # Invalid tenant_id, return all users
-                    pass
-            # Return queryset (filtered or all)
-            return queryset
-        elif user.tenant:
-            # Tenant admin only sees users from their tenant
-            return queryset.filter(tenant=user.tenant)
-        return User.objects.none()
+        try:
+            user = self.request.user
+            queryset = User.objects.all().order_by('-created_at')
+            
+            # Super admin can filter by tenant_id parameter or see all users
+            try:
+                if user.is_super_admin():
+                    tenant_id = self.request.query_params.get('tenant_id')
+                    if tenant_id:
+                        try:
+                            tenant_id = int(tenant_id)
+                            # Filter by tenant_id - only users belonging to this tenant
+                            queryset = queryset.filter(tenant_id=tenant_id)
+                        except (ValueError, TypeError):
+                            # Invalid tenant_id, return all users
+                            logger.warning(f"Invalid tenant_id parameter: {tenant_id}")
+                            pass
+                    # Return queryset (filtered or all)
+                    return queryset
+                elif hasattr(user, 'tenant') and user.tenant:
+                    # Tenant admin only sees users from their tenant
+                    return queryset.filter(tenant=user.tenant)
+            except Exception as e:
+                logger.error(f"Error checking user permissions in get_queryset: {e}", exc_info=True)
+                # Return empty queryset on error
+                return User.objects.none()
+            
+            return User.objects.none()
+        except Exception as e:
+            logger.error(f"Error in UserViewSet.get_queryset: {e}", exc_info=True)
+            # Return empty queryset on error
+            return User.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        """List users with error handling"""
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        try:
+            return super().list(request, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in UserViewSet.list: {e}", exc_info=True)
+            return Response({
+                'error': 'An error occurred while fetching users',
+                'message': str(e) if settings.DEBUG else 'Unable to load users'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_serializer_class(self):
         """Return appropriate serializer based on action"""
@@ -627,14 +678,26 @@ class UserViewSet(viewsets.ModelViewSet):
         logger = logging.getLogger(__name__)
         
         try:
-            impersonating_user_id = request.session.get('impersonating_user_id')
-            original_admin_id = request.session.get('original_admin_id')
+            # Safely access session
+            try:
+                impersonating_user_id = request.session.get('impersonating_user_id')
+                original_admin_id = request.session.get('original_admin_id')
+            except Exception as session_error:
+                logger.warning(f"Error accessing session in impersonation_status: {session_error}")
+                # Return default response if session is not available
+                response = Response({
+                    'is_impersonating': False,
+                    'impersonating': False,  # Alias for compatibility
+                })
+                # Ensure CORS headers are added manually
+                self._add_cors_headers(response, request)
+                return response
             
             if impersonating_user_id and original_admin_id:
                 try:
                     target_user = User.objects.get(id=impersonating_user_id)
                     original_admin = User.objects.get(id=original_admin_id)
-                    return Response({
+                    response = Response({
                         'is_impersonating': True,
                         'impersonating': True,  # Alias for compatibility
                         'target_user': UserSerializer(target_user).data,
@@ -644,23 +707,59 @@ class UserViewSet(viewsets.ModelViewSet):
                         },
                         'impersonated_by': original_admin.email,  # Alias for compatibility
                     })
+                    # Ensure CORS headers are added
+                    self._add_cors_headers(response, request)
+                    return response
                 except User.DoesNotExist:
                     # Clear invalid session
-                    request.session.pop('impersonating_user_id', None)
-                    request.session.pop('original_admin_id', None)
-                    request.session.save()
+                    try:
+                        request.session.pop('impersonating_user_id', None)
+                        request.session.pop('original_admin_id', None)
+                        request.session.save()
+                    except Exception:
+                        pass  # Ignore session save errors
             
-            return Response({
+            response = Response({
                 'is_impersonating': False,
                 'impersonating': False,  # Alias for compatibility
             })
+            # Ensure CORS headers are added
+            self._add_cors_headers(response, request)
+            return response
         except Exception as e:
             logger.error(f"Error in impersonation_status: {e}", exc_info=True)
-            return Response({
+            response = Response({
                 'is_impersonating': False,
                 'impersonating': False,
                 'error': 'An error occurred while checking impersonation status'
             }, status=500)
+            # Ensure CORS headers are added to error response
+            self._add_cors_headers(response, request)
+            return response
+    
+    def _add_cors_headers(self, response, request=None):
+        """Helper method to add CORS headers to a response"""
+        try:
+            # Use request from parameter or self.request
+            if request is None:
+                request = getattr(self, 'request', None)
+            if request:
+                origin = request.META.get('HTTP_ORIGIN')
+                if origin:
+                    from django.conf import settings
+                    if settings.DEBUG:
+                        if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                            response['Access-Control-Allow-Origin'] = origin
+                            response['Access-Control-Allow-Credentials'] = 'true'
+                            response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                            response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+                    else:
+                        if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
+                            response['Access-Control-Allow-Origin'] = origin
+                            response['Access-Control-Allow-Credentials'] = 'true'
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Error adding CORS headers: {e}")
 
     @action(detail=True, methods=['post'])
     def send_password_reset(self, request, pk=None):
@@ -1072,13 +1171,16 @@ def request_password_reset_view(request):
     Request password reset by email (public endpoint)
     User enters their email and receives a reset link
     """
-    email = request.data.get('email')
-    
-    if not email:
-        return Response(
-            {'error': 'Email is required'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    try:
+        email = request.data.get('email')
+        
+        if not email:
+            error_response = Response(
+                {'error': 'Email is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            add_cors_headers(error_response, request)
+            return error_response
     
     try:
         user = User.objects.get(email=email)
@@ -1172,53 +1274,127 @@ L'équipe VTCBuilder
 def reset_password_view(request):
     """
     Reset password using token from email
+    Accepts either email or userId to find the user
     """
-    token = request.data.get('token')
-    email = request.data.get('email')
-    new_password = request.data.get('password')
-
-    if not token or not email or not new_password:
-        return Response(
-            {'error': 'Token, email and password are required'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
     try:
-        user = User.objects.get(email=email)
-        reset_token = PasswordResetToken.objects.get(
-            user=user,
-            token=token,
-            used=False
-        )
+        token = request.data.get('token')
+        email = request.data.get('email')
+        userId = request.data.get('userId')
+        new_password = request.data.get('password')
 
-        if not reset_token.is_valid():
-            return Response(
-                {'error': 'Token expired or already used'},
+        if not token:
+            error_response = Response(
+                {'error': 'Token is required'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+            add_cors_headers(error_response, request)
+            return error_response
 
-        # Set new password
-        user.set_password(new_password)
-        # Activate user if status is pending (password reset implies user wants to use the account)
-        if user.status == 'pending':
-            user.status = 'active'
-        user.save()
+        if not new_password:
+            error_response = Response(
+                {'error': 'Password is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            add_cors_headers(error_response, request)
+            return error_response
 
-        # Mark token as used
-        reset_token.mark_as_used()
+        user = None
+        
+        # Try to find user by email, userId, or token
+        if email:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                error_response = Response(
+                    {'error': 'User not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+                add_cors_headers(error_response, request)
+                return error_response
+        elif userId:
+            try:
+                user = User.objects.get(id=userId)
+            except User.DoesNotExist:
+                error_response = Response(
+                    {'error': 'User not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+                add_cors_headers(error_response, request)
+                return error_response
+        else:
+            # If no email or userId, try to find by token only (token is unique)
+            try:
+                reset_token = PasswordResetToken.objects.get(token=token, used=False)
+                user = reset_token.user
+            except PasswordResetToken.DoesNotExist:
+                error_response = Response(
+                    {'error': 'Invalid token'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                add_cors_headers(error_response, request)
+                return error_response
 
-        return Response({'status': 'Password reset successfully'})
+        # Verify token for this user
+        try:
+            reset_token = PasswordResetToken.objects.get(
+                user=user,
+                token=token,
+                used=False
+            )
 
-    except User.DoesNotExist:
-        return Response(
-            {'error': 'User not found'},
-            status=status.HTTP_404_NOT_FOUND
+            if not reset_token.is_valid():
+                error_response = Response(
+                    {'error': 'Token expired or already used'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                add_cors_headers(error_response, request)
+                return error_response
+
+            # Validate password length
+            if len(new_password) < 8:
+                error_response = Response(
+                    {'error': 'Password must be at least 8 characters long'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                add_cors_headers(error_response, request)
+                return error_response
+
+            # Set new password
+            user.set_password(new_password)
+            # Activate user if status is pending (password reset implies user wants to use the account)
+            if user.status == 'pending':
+                user.status = 'active'
+            user.save()
+
+            # Mark token as used
+            reset_token.mark_as_used()
+
+            response = Response({
+                'status': 'Password reset successfully',
+                'message': 'Votre mot de passe a été réinitialisé avec succès'
+            })
+            add_cors_headers(response, request)
+            return response
+
+        except PasswordResetToken.DoesNotExist:
+            error_response = Response(
+                {'error': 'Invalid token'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+
+    except Exception as e:
+        logger.error(f"Error in reset_password_view: {e}", exc_info=True)
+        error_response = Response(
+            {
+                'error': 'An error occurred while resetting the password',
+                'message': str(e) if settings.DEBUG else None
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-    except PasswordResetToken.DoesNotExist:
-        return Response(
-            {'error': 'Invalid token'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        add_cors_headers(error_response, request)
+        return error_response
 
 
 @api_view(['POST'])
@@ -1226,32 +1402,99 @@ def reset_password_view(request):
 def verify_reset_token_view(request):
     """
     Verify if a reset token is valid (without resetting password)
+    Accepts either email or userId to find the user
     """
-    token = request.data.get('token')
-    email = request.data.get('email')
-
-    if not token or not email:
-        return Response(
-            {'error': 'Token and email are required'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
     try:
-        user = User.objects.get(email=email)
-        reset_token = PasswordResetToken.objects.get(
-            user=user,
-            token=token,
-            used=False
+        token = request.data.get('token')
+        email = request.data.get('email')
+        userId = request.data.get('userId')
+
+        if not token:
+            error_response = Response(
+                {'error': 'Token is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+
+        user = None
+        
+        # Try to find user by email or userId
+        if email:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                error_response = Response({
+                    'valid': False,
+                    'error': 'User not found'
+                })
+                add_cors_headers(error_response, request)
+                return error_response
+        elif userId:
+            try:
+                user = User.objects.get(id=userId)
+                email = user.email  # Set email for response
+            except User.DoesNotExist:
+                error_response = Response({
+                    'valid': False,
+                    'error': 'User not found'
+                })
+                add_cors_headers(error_response, request)
+                return error_response
+        else:
+            # If no email or userId, try to find by token only (token is unique)
+            try:
+                reset_token = PasswordResetToken.objects.get(token=token, used=False)
+                user = reset_token.user
+                email = user.email
+            except PasswordResetToken.DoesNotExist:
+                error_response = Response({
+                    'valid': False,
+                    'error': 'Invalid token'
+                })
+                add_cors_headers(error_response, request)
+                return error_response
+
+        # Verify token for this user
+        try:
+            reset_token = PasswordResetToken.objects.get(
+                user=user,
+                token=token,
+                used=False
+            )
+
+            is_valid = reset_token.is_valid()
+            response_data = {
+                'valid': is_valid,
+                'email': email,
+            }
+            if is_valid:
+                response_data['expires_at'] = reset_token.expires_at.isoformat()
+            
+            response = Response(response_data)
+            add_cors_headers(response, request)
+            return response
+
+        except PasswordResetToken.DoesNotExist:
+            error_response = Response({
+                'valid': False,
+                'error': 'Invalid token'
+            })
+            add_cors_headers(error_response, request)
+            return error_response
+
+    except Exception as e:
+        logger.error(f"Error in verify_reset_token_view: {e}", exc_info=True)
+        error_response = Response(
+            {
+                'valid': False,
+                'error': 'An error occurred while verifying the token',
+                'message': str(e) if settings.DEBUG else None
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-        is_valid = reset_token.is_valid()
-        return Response({
-            'valid': is_valid,
-            'expires_at': reset_token.expires_at.isoformat() if is_valid else None
-        })
-
-    except (User.DoesNotExist, PasswordResetToken.DoesNotExist):
-        return Response({'valid': False})
+        add_cors_headers(error_response, request)
+        return error_response
 
 
 @api_view(['POST'])

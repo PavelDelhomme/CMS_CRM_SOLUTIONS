@@ -218,6 +218,16 @@
    - Retour de valeurs par défaut en cas d'erreur lors de la récupération des paramètres
    - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour garantir leur présence
 
+16. ✅ **Corrections reset-password - Support userId et gestion CORS** (27 Novembre 2025)
+   - Page reset-password améliorée pour accepter `userId` en plus de `email` dans les paramètres URL
+   - Support de la vérification du token avec seulement le token (le backend peut récupérer l'utilisateur depuis le token unique)
+   - Endpoints backend `verify_reset_token_view()` modifiés pour accepter `userId`, `email`, ou token seul
+   - Endpoints backend `reset_password_view()` modifiés pour accepter `userId`, `email`, ou token seul
+   - Ajout gestion CORS et erreurs complète dans `verify_reset_token_view()`, `reset_password_view()` et `request_password_reset_view()`
+   - Gestion d'erreurs améliorée avec messages clairs et logging
+   - Validation de la longueur du mot de passe dans le backend
+   - Toutes les réponses (succès et erreur) ajoutent maintenant manuellement les headers CORS pour garantir leur présence
+
 #### Améliorations Dark Mode Complètes
 1. ✅ **Toggle Dark Mode dans headers** - Accessible en haut de toutes les pages
    - Toggle ajouté dans MobileHeader (visible sur mobile, en haut à droite)

@@ -20,33 +20,60 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const tokenParam = searchParams?.get('token')
     const emailParam = searchParams?.get('email')
+    const userIdParam = searchParams?.get('userId')
 
-    if (tokenParam && emailParam) {
+    if (tokenParam) {
       setToken(tokenParam)
-      setEmail(emailParam)
-      verifyToken(tokenParam, emailParam)
+      
+      if (emailParam) {
+        // Cas normal : email directement dans l'URL
+        setEmail(emailParam)
+        verifyToken(tokenParam, emailParam, null)
+      } else if (userIdParam) {
+        // Cas test : userId dans l'URL, on vérifie le token et récupère l'email
+        verifyToken(tokenParam, null, userIdParam)
+      } else {
+        // Pas d'email ni userId, on essaie de vérifier le token seul (le backend peut le gérer)
+        verifyToken(tokenParam, null, null)
+      }
     } else {
       setVerifying(false)
-      setError('Token ou email manquant dans l\'URL')
+      setError('Token manquant dans l\'URL')
     }
   }, [searchParams])
 
-  const verifyToken = async (tokenValue: string, emailValue: string) => {
+  const verifyToken = async (tokenValue: string, emailValue: string | null, userIdValue: string | null) => {
     try {
-      const response = await api.post('/auth/verify-reset-token/', {
+      const payload: any = {
         token: tokenValue,
-        email: emailValue,
-      }, {
+      }
+      
+      if (emailValue) {
+        payload.email = emailValue
+      } else if (userIdValue) {
+        payload.userId = userIdValue
+      }
+      // Si ni email ni userId, on envoie juste le token (le backend peut le gérer)
+
+      const response = await api.post('/auth/verify-reset-token/', payload, {
         headers: {
           'Content-Type': 'application/json',
         }
       })
+      
       setTokenValid(response.data.valid)
-      if (!response.data.valid) {
-        setError('Le lien de réinitialisation est invalide ou a expiré')
+      
+      // Si l'email n'était pas fourni mais que le backend le retourne, on le met à jour
+      if (response.data.email && !emailValue) {
+        setEmail(response.data.email)
       }
-    } catch (error) {
-      setError('Erreur lors de la vérification du token')
+      
+      if (!response.data.valid) {
+        setError(response.data.error || 'Le lien de réinitialisation est invalide ou a expiré')
+      }
+    } catch (error: any) {
+      console.error('Error verifying token:', error)
+      setError(error.response?.data?.error || 'Erreur lors de la vérification du token')
       setTokenValid(false)
     } finally {
       setVerifying(false)
@@ -70,11 +97,17 @@ export default function ResetPasswordPage() {
     setLoading(true)
 
     try {
-      await api.post('/auth/reset-password/', {
+      const payload: any = {
         token: token,
-        email: email,
         password: password,
-      }, {
+      }
+      
+      // Envoyer email si disponible, sinon juste le token (le backend peut le gérer)
+      if (email) {
+        payload.email = email
+      }
+
+      await api.post('/auth/reset-password/', payload, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -85,7 +118,8 @@ export default function ResetPasswordPage() {
         router.push('/login')
       }, 3000)
     } catch (error: any) {
-      setError(error.response?.data?.error || 'Erreur lors de la réinitialisation')
+      console.error('Error resetting password:', error)
+      setError(error.response?.data?.error || error.response?.data?.message || 'Erreur lors de la réinitialisation')
     } finally {
       setLoading(false)
     }
