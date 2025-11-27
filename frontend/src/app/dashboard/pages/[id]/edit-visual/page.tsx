@@ -7,9 +7,24 @@ import pageService, { Page } from '@/services/page.service'
 import BlockEditor, { Block } from '@/components/editor/BlockEditor'
 import toast from 'react-hot-toast'
 
+// Hook pour la largeur du viewport
+function useViewportWidth() {
+  const [width, setWidth] = useState(0)
+  
+  useEffect(() => {
+    const updateWidth = () => setWidth(window.innerWidth)
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+  
+  return width
+}
+
 export default function VisualPageEditor() {
   const router = useRouter()
   const params = useParams()
+  const viewportWidth = useViewportWidth()
   const pageId = params?.id ? parseInt(params.id as string) : null
   const [page, setPage] = useState<Page | null>(null)
   const [loading, setLoading] = useState(true)
@@ -20,6 +35,9 @@ export default function VisualPageEditor() {
   const [metaDescription, setMetaDescription] = useState('')
   const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>('draft')
   const [isHomepage, setIsHomepage] = useState(false)
+  
+  // Calcul de la largeur dynamique
+  const editorWidth = viewportWidth >= 1024 ? viewportWidth - 256 : viewportWidth // 256px = 16rem (sidebar)
 
   useEffect(() => {
     if (pageId) {
@@ -137,13 +155,9 @@ export default function VisualPageEditor() {
       }
     >
       <div 
-        className="fixed top-[64px] lg:top-[73px] bottom-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden" 
+        className="fixed top-[64px] lg:top-[73px] bottom-0 left-0 lg:left-64 right-0 bg-white dark:bg-gray-800 flex flex-col z-10 overflow-hidden" 
         style={{ 
-          width: '100vw',
-          left: '0',
-          right: '0',
-          marginLeft: '0',
-          marginRight: '0'
+          width: editorWidth > 0 ? `${editorWidth}px` : '100%',
         }}
       >
         {/* Page Title & SEO - Compact Header */}
