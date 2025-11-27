@@ -228,81 +228,59 @@ export default function AdminDashboard() {
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
               {/* Activité Aujourd'hui */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Aujourd'hui</p>
-                    <p className="text-2xl font-bold text-blue-900 mt-1">
-                      {detailedStats.activity.users_today || 0}
-                    </p>
-                    <p className="text-xs text-blue-600 mt-1">Nouveaux utilisateurs</p>
-                  </div>
-                  <div className="p-2 bg-blue-200 rounded-lg">
-                    <svg className="h-6 w-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  </div>
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm opacity-90">Aujourd'hui</p>
+                  <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
                 </div>
+                <p className="text-3xl font-bold">{detailedStats.activity.users_today || 0}</p>
+                <p className="text-sm opacity-80 mt-1">Nouveaux utilisateurs</p>
               </div>
 
               {/* Activité Cette Semaine */}
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Cette Semaine</p>
-                    <p className="text-2xl font-bold text-green-900 mt-1">
-                      {detailedStats.activity.users_this_week || 0}
-                    </p>
-                    <p className="text-xs text-green-600 mt-1">Utilisateurs</p>
-                  </div>
-                  <div className="p-2 bg-green-200 rounded-lg">
-                    <svg className="h-6 w-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm opacity-90">Cette Semaine</p>
+                  <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
                 </div>
+                <p className="text-3xl font-bold">{detailedStats.activity.users_this_week || 0}</p>
+                <p className="text-sm opacity-80 mt-1">Utilisateurs</p>
               </div>
 
               {/* Abonnements Actifs */}
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-purple-700 uppercase tracking-wide">Abonnements</p>
-                    <p className="text-2xl font-bold text-purple-900 mt-1">
-                      {detailedStats.overview.active_subscriptions || 0}
-                    </p>
-                    <p className="text-xs text-purple-600 mt-1">
-                      {detailedStats.overview.trial_subscriptions || 0} en trial
-                    </p>
-                  </div>
-                  <div className="p-2 bg-purple-200 rounded-lg">
-                    <svg className="h-6 w-6 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  </div>
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm opacity-90">Abonnements</p>
+                  <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
                 </div>
+                <p className="text-3xl font-bold">{detailedStats.overview.active_subscriptions || 0}</p>
+                <p className="text-sm opacity-80 mt-1">
+                  {detailedStats.overview.trial_subscriptions || 0} en trial
+                </p>
               </div>
 
               {/* Revenu Total */}
-              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border border-indigo-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-indigo-700 uppercase tracking-wide">Revenu Total</p>
-                    <p className="text-2xl font-bold text-indigo-900 mt-1">
-                      {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(detailedStats.revenue.total || 0)}
-                    </p>
-                    <p className="text-xs text-indigo-600 mt-1">
-                      {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(detailedStats.revenue.monthly || 0)}/mois
-                    </p>
-                  </div>
-                  <div className="p-2 bg-indigo-200 rounded-lg">
-                    <svg className="h-6 w-6 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
+              <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm opacity-90">Revenu Total</p>
+                  <svg className="w-8 h-8 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
+                <p className="text-3xl font-bold">
+                  {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(detailedStats.revenue.total || 0)}
+                </p>
+                <p className="text-sm opacity-80 mt-1">
+                  {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(detailedStats.revenue.monthly || 0)}/mois
+                </p>
               </div>
             </div>
 
