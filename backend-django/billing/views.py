@@ -181,9 +181,40 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         
         # Check if tenant already has a subscription
         if Subscription.objects.filter(tenant=tenant).exists():
+            # If subscription exists, update it instead (change plan)
+            existing_subscription = Subscription.objects.get(tenant=tenant)
+            plan = serializer.validated_data.get('plan')
+            if not plan:
+                return Response(
+                    {'error': 'Plan is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Update existing subscription
+            existing_subscription.plan = plan
+            billing_cycle = serializer.validated_data.get('billing_cycle', existing_subscription.billing_cycle)
+            existing_subscription.billing_cycle = billing_cycle
+            
+            # Reset dates if starting new billing cycle
+            now = timezone.now()
+            if billing_cycle == 'monthly':
+                existing_subscription.current_period_end = now + timedelta(days=30)
+            else:
+                existing_subscription.current_period_end = now + timedelta(days=365)
+            existing_subscription.current_period_start = now
+            
+            # Reactivate if cancelled
+            if existing_subscription.status == 'cancelled':
+                existing_subscription.status = 'active'
+                existing_subscription.cancelled_at = None
+            
+            existing_subscription.save()
+            
+            headers = self.get_success_headers(serializer.data)
             return Response(
-                {'error': 'This tenant already has a subscription. Please update or cancel the existing one.'},
-                status=status.HTTP_400_BAD_REQUEST
+                SubscriptionSerializer(existing_subscription).data,
+                status=status.HTTP_200_OK,
+                headers=headers
             )
         
         # Get plan

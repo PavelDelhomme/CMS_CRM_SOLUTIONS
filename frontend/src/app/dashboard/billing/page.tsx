@@ -78,14 +78,11 @@ export default function TenantBillingPage() {
       }
 
       // Direct subscription creation/update
-      if (subscription) {
-        await billingService.updateSubscriptionPlan(subscription.id, planId)
-      } else {
-        await billingService.createSubscription({
-          plan_id: planId,
-          tenant_id: authService.getStoredUser()?.tenant_id,
-        })
-      }
+      // Note: createSubscription will update if subscription already exists
+      await billingService.createSubscription({
+        plan_id: planId,
+        // tenant_id not needed - backend uses user's tenant automatically
+      })
       loadBillingData()
       toast.success('Plan mis à jour avec succès !')
     } catch (error: any) {
@@ -96,14 +93,11 @@ export default function TenantBillingPage() {
   const handleCheckoutSuccess = async () => {
     if (checkoutPlanId) {
       try {
-        if (subscription) {
-          await billingService.updateSubscriptionPlan(subscription.id, checkoutPlanId)
-        } else {
-          await billingService.createSubscription({
-            plan_id: checkoutPlanId,
-            tenant_id: authService.getStoredUser()?.tenant_id,
-          })
-        }
+        // Note: createSubscription will update if subscription already exists
+        await billingService.createSubscription({
+          plan_id: checkoutPlanId,
+          // tenant_id not needed - backend uses user's tenant automatically
+        })
         loadBillingData()
         toast.success('Plan mis à jour avec succès !')
       } catch (error: any) {
