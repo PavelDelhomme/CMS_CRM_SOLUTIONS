@@ -192,7 +192,7 @@ function SortablePreviewBlock({
 }
 
 // FAQ Section Component with state
-function FAQSectionPreview({ title, items, blockStyles }: { title?: string; items: any[]; blockStyles?: React.CSSProperties }) {
+function FAQSectionPreview({ title, items, wrapperStyles }: { title?: string; items: any[]; wrapperStyles?: React.CSSProperties }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   
   return (

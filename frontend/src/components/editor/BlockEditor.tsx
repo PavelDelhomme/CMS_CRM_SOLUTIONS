@@ -80,7 +80,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     isHistoryUpdate.current = true
     history.undo()
     // Fermer les paramètres quand on fait undo
-    setPropertiesOpen(false)
     setSelectedBlock(null)
   }, [history])
 
@@ -88,7 +87,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     isHistoryUpdate.current = true
     history.redo()
     // Fermer les paramètres quand on fait redo
-    setPropertiesOpen(false)
     setSelectedBlock(null)
   }, [history])
 
@@ -162,7 +160,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     }
     history.set([...history.state, newBlock], true)
     setSelectedBlock(newBlock.id)
-    setPropertiesOpen(true)
+    setSidebarOpen(true) // Ouvrir la sidebar pour afficher les paramètres
     // Tracker l'ajout du bloc
     trackBlockAction(blockType.name, 'add')
   }, [history, trackBlockAction])
@@ -171,7 +169,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     // Désélectionner immédiatement le bloc si c'était celui sélectionné (optimistic UI)
     if (selectedBlock === blockId) {
       setSelectedBlock(null)
-      setPropertiesOpen(false)
     }
     
     // Trouver le bloc à supprimer pour le tracking
@@ -234,9 +231,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           <button
             onClick={() => {
               setSidebarOpen(!sidebarOpen)
-              // Fermer les paramètres si on ouvre la sidebar
+              // Fermer les paramètres si on ferme la sidebar
               if (!sidebarOpen) {
-                setPropertiesOpen(false)
                 setSelectedBlock(null)
               }
             }}
@@ -399,9 +395,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                 </button>
               </div>
               <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Blocs disponibles</h3>
-        
-        {/* Group by category */}
+              
+              {/* Group by category */}
         {['content', 'layout', 'media', 'custom'].map((category) => {
           const categoryBlocks = blockTypes.filter((bt: BlockType) => bt.category === category)
           if (categoryBlocks.length === 0) return null
@@ -510,7 +505,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             ))}
           </div>
         )}
-      </div>
+            </>
+          )}
+        </div>
 
         {/* Main Editor Area - Full Width - No Preview */}
         <div className="flex-1 flex flex-col min-w-0 w-full h-full">
