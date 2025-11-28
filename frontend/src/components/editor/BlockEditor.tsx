@@ -27,6 +27,12 @@ export interface Block {
     align?: 'left' | 'center' | 'right' | 'stretch'
     alignTo?: string // ID du bloc de référence pour position relative
   }
+  width?: string // Largeur personnalisée (px, %, etc.)
+  height?: string // Hauteur personnalisée (px, %, etc.)
+  minWidth?: string
+  minHeight?: string
+  maxWidth?: string
+  maxHeight?: string
 }
 
 
@@ -304,7 +310,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           />
         )}
 
-        {/* Sidebar - Block Palette OR Properties Panel */}
+        {/* Sidebar - Block Palette (Always visible) */}
         <div className={`
           ${sidebarOpen ? 'fixed left-0 top-0 h-full z-50' : 'hidden'}
           lg:static lg:block
@@ -317,91 +323,19 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           shadow-lg lg:shadow-none
           flex-shrink-0
         `}>
-          {selectedBlock ? (
-            /* Properties Panel in Sidebar */
-            <>
-              {/* Mobile: Close button */}
-              <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              {/* Desktop Header */}
-              <div className="hidden lg:flex items-center justify-between mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
-                <button
-                  onClick={handleCloseProperties}
-                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                  title="Revenir aux blocs disponibles"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Tabs pour Propriétés et Style */}
-              <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPropertiesTab('content')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
-                      propertiesTab === 'content'
-                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Contenu
-                  </button>
-                  <button
-                    onClick={() => setPropertiesTab('style')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
-                      propertiesTab === 'style'
-                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    🎨 Style
-                  </button>
-                </div>
-              </div>
-
-              {propertiesTab === 'content' ? (
-                <BlockPropertiesPanel
-                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                  blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
-                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                />
-              ) : (
-                <BlockStylePanel
-                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                />
-              )}
-            </>
-          ) : (
-            /* Block Palette */
-            <>
-              {/* Mobile: Close button */}
-              <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
+          {/* Mobile: Close button */}
+          <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
               
               {/* Group by category */}
         {['content', 'layout', 'media', 'custom'].map((category) => {
@@ -512,14 +446,12 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             ))}
           </div>
         )}
-            </>
-          )}
         </div>
 
-        {/* Main Editor Area - Full Width - No Preview */}
-        <div className="flex-1 flex flex-col min-w-0 w-full h-full">
-          {/* Editor Panel - Full Width */}
-          <div className="flex-1 flex flex-col min-w-0 h-full">
+        {/* Main Editor Area - Split: Blocks Editor + Properties Panel */}
+        <div className="flex-1 flex min-w-0 w-full h-full border-r border-gray-200 dark:border-gray-700">
+          {/* Editor Panel - Left side of middle column */}
+          <div className={`flex-1 flex flex-col min-w-0 h-full transition-all duration-300 ${selectedBlock ? 'lg:w-2/3' : 'w-full'}`}>
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -569,6 +501,67 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
               </SortableContext>
             </DndContext>
           </div>
+
+          {/* Properties Panel - Right side of middle column (only when block selected) */}
+          {selectedBlock && (
+            <div className="hidden lg:flex flex-col w-1/3 min-w-[320px] max-w-[480px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
+                <button
+                  onClick={handleCloseProperties}
+                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  title="Fermer les paramètres"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Tabs pour Propriétés et Style */}
+              <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <div className="flex gap-2 px-4">
+                  <button
+                    onClick={() => setPropertiesTab('content')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'content'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    Contenu
+                  </button>
+                  <button
+                    onClick={() => setPropertiesTab('style')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'style'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    🎨 Style
+                  </button>
+                </div>
+              </div>
+
+              {/* Properties Content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                {propertiesTab === 'content' ? (
+                  <BlockPropertiesPanel
+                    block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                    blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
+                    onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                  />
+                ) : (
+                  <BlockStylePanel
+                    block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                    onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
       </div>
@@ -615,6 +608,44 @@ function SortableBlock({
   const isMedium = layoutCols > 4 && layoutCols <= 8 // 5-8 colonnes = moyen
   const isLarge = layoutCols > 8 // 9-12 colonnes = grand
 
+  // Gestion du redimensionnement
+  const [isResizing, setIsResizing] = useState(false)
+  const blockRef = useRef<HTMLDivElement>(null)
+
+  const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>, direction: string) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setIsResizing(true)
+    
+    const startX = e.clientX
+    const startY = e.clientY
+    const startWidth = blockRef.current?.offsetWidth || 0
+    const startLayout = block.layout || 12
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!blockRef.current || !blockRef.current.parentElement) return
+      
+      const deltaX = moveEvent.clientX - startX
+      const containerWidth = blockRef.current.parentElement.offsetWidth
+      const newWidth = Math.max(50, startWidth + (direction.includes('right') ? deltaX : -deltaX))
+      const colsPerPixel = 12 / containerWidth
+      const newLayout = Math.max(1, Math.min(12, Math.round(newWidth * colsPerPixel)))
+      
+      if (newLayout !== startLayout) {
+        onUpdate({ layout: newLayout as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 })
+      }
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }
+
   // Déterminer la taille du texte selon la largeur du bloc
   const getTextSize = () => {
     if (isSmall) return 'text-xs'
@@ -658,10 +689,42 @@ function SortableBlock({
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node)
+        if (node) {
+          blockRef.current = node
+        }
+      }}
       style={style}
-      className={`w-full mb-4 bg-white dark:bg-gray-800 rounded-xl border-2 ${isSelected ? 'border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800' : 'border-gray-200 dark:border-gray-700'} shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden min-h-[80px]`}
+      className={`relative w-full mb-4 bg-white dark:bg-gray-800 rounded-xl border-2 ${isSelected ? 'border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800' : 'border-gray-200 dark:border-gray-700'} shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden min-h-[80px] ${isResizing ? 'select-none' : ''}`}
     >
+      {/* Resize Handles - Only visible when selected */}
+      {isSelected && (
+        <>
+          {/* Corner handles */}
+          <div
+            className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-br-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'left')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-bl-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'right')}
+            title="Redimensionner"
+          />
+          {/* Edge handles */}
+          <div
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-r-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'left')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-l-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'right')}
+            title="Redimensionner"
+          />
+        </>
+      )}
       {/* Block Header - Modern Design */}
       <div
         className={`flex items-center justify-between ${getPadding()} cursor-move transition-colors ${
@@ -720,6 +783,54 @@ function SortableBlock({
           </button>
         </div>
       </div>
+
+      {/* Resize Handles - Only visible when selected */}
+      {isSelected && (
+        <>
+          {/* Corner handles */}
+          <div
+            className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-br-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'top-left')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-bl-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'top-right')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute bottom-0 left-0 w-4 h-4 cursor-nesw-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-tr-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'bottom-left')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-tl-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'bottom-right')}
+            title="Redimensionner"
+          />
+          {/* Edge handles */}
+          <div
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-2 cursor-ns-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-b-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'top')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-2 cursor-ns-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-t-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'bottom')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-r-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'left')}
+            title="Redimensionner"
+          />
+          <div
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-l-lg z-20"
+            onMouseDown={(e) => handleResizeStart(e, 'right')}
+            title="Redimensionner"
+          />
+        </>
+      )}
 
       {/* Block Content - Modern Design */}
       <div className={`${isSmall ? 'p-2 sm:p-3' : 'p-4 sm:p-6'} bg-white dark:bg-gray-800`}>
