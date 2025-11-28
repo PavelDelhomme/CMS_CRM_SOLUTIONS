@@ -4599,6 +4599,309 @@ function BlockRenderer({
         </div>
       )
 
+    case 'modal':
+      return (
+        <div className="space-y-3">
+          <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 flex items-center gap-1">
+              <span>⭐</span>
+              <span>Fonctionnalité Premium</span>
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la modal
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Titre"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Contenu
+            </label>
+            <textarea
+              value={block.data.content || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Contenu de la modal"
+              rows={4}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du bouton déclencheur
+            </label>
+            <input
+              type="text"
+              value={block.data.trigger_text || 'Ouvrir'}
+              onChange={(e) => onUpdate({ data: { ...block.data, trigger_text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Ouvrir"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Taille
+            </label>
+            <select
+              value={block.data.size || 'medium'}
+              onChange={(e) => onUpdate({ data: { ...block.data, size: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="small">Petit</option>
+              <option value="medium">Moyen</option>
+              <option value="large">Grand</option>
+              <option value="fullscreen">Plein écran</option>
+            </select>
+          </div>
+        </div>
+      )
+
+    case 'chart':
+      return (
+        <div className="space-y-3">
+          <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 flex items-center gap-1">
+              <span>⭐</span>
+              <span>Fonctionnalité Premium</span>
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Type de graphique
+            </label>
+            <select
+              value={block.data.chart_type || 'line'}
+              onChange={(e) => onUpdate({ data: { ...block.data, chart_type: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="line">Ligne</option>
+              <option value="bar">Barres</option>
+              <option value="pie">Camembert</option>
+              <option value="doughnut">Donut</option>
+              <option value="area">Aire</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Titre du graphique"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Données (JSON)
+            </label>
+            <textarea
+              value={block.data.data || '{"labels": ["Jan", "Feb", "Mar"], "datasets": [{"label": "Ventes", "data": [10, 20, 30]}]}'}
+              onChange={(e) => {
+                try {
+                  JSON.parse(e.target.value)
+                  onUpdate({ data: { ...block.data, data: e.target.value } })
+                } catch {
+                  // Ignore invalid JSON
+                }
+              }}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 font-mono"
+              placeholder='{"labels": [...], "datasets": [...]}'
+              rows={6}
+            />
+            <p className="text-[10px] text-gray-500 mt-1">Format Chart.js JSON</p>
+          </div>
+        </div>
+      )
+
+    case 'calendar':
+      return (
+        <div className="space-y-3">
+          <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 flex items-center gap-1">
+              <span>⭐</span>
+              <span>Fonctionnalité Premium</span>
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Type de calendrier
+            </label>
+            <select
+              value={block.data.calendar_type || 'month'}
+              onChange={(e) => onUpdate({ data: { ...block.data, calendar_type: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="month">Mensuel</option>
+              <option value="week">Hebdomadaire</option>
+              <option value="day">Quotidien</option>
+              <option value="agenda">Agenda</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Afficher les événements
+            </label>
+            <input
+              type="checkbox"
+              checked={block.data.show_events !== false}
+              onChange={(e) => onUpdate({ data: { ...block.data, show_events: e.target.checked } })}
+              className="w-4 h-4"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Événements (JSON)
+            </label>
+            <textarea
+              value={block.data.events || '[]'}
+              onChange={(e) => {
+                try {
+                  JSON.parse(e.target.value)
+                  onUpdate({ data: { ...block.data, events: e.target.value } })
+                } catch {
+                  // Ignore invalid JSON
+                }
+              }}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 font-mono"
+              placeholder='[{"title": "Événement", "date": "2024-01-15", "time": "10:00"}]'
+              rows={4}
+            />
+          </div>
+        </div>
+      )
+
+    case 'pagination':
+      const totalPages = block.data.total_pages || 10
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nombre total de pages
+            </label>
+            <input
+              type="number"
+              value={totalPages}
+              onChange={(e) => onUpdate({ data: { ...block.data, total_pages: Math.max(1, parseInt(e.target.value) || 1) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              min={1}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Page actuelle
+            </label>
+            <input
+              type="number"
+              value={block.data.current_page || 1}
+              onChange={(e) => onUpdate({ data: { ...block.data, current_page: Math.max(1, Math.min(totalPages, parseInt(e.target.value) || 1)) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              min={1}
+              max={totalPages}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Afficher les flèches
+            </label>
+            <input
+              type="checkbox"
+              checked={block.data.show_arrows !== false}
+              onChange={(e) => onUpdate({ data: { ...block.data, show_arrows: e.target.checked } })}
+              className="w-4 h-4"
+            />
+          </div>
+        </div>
+      )
+
+    case 'list':
+      const listItems = block.data.items || ['Item 1', 'Item 2']
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Type de liste
+            </label>
+            <select
+              value={block.data.list_type || 'unordered'}
+              onChange={(e) => onUpdate({ data: { ...block.data, list_type: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="unordered">Non ordonnée (puces)</option>
+              <option value="ordered">Ordonnée (numéros)</option>
+              <option value="none">Aucun style</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Éléments (un par ligne)
+            </label>
+            <textarea
+              value={listItems.join('\n')}
+              onChange={(e) => {
+                const newItems = e.target.value.split('\n').filter(item => item.trim())
+                onUpdate({ data: { ...block.data, items: newItems } })
+              }}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Item 1&#10;Item 2&#10;Item 3"
+              rows={6}
+            />
+          </div>
+        </div>
+      )
+
+    case 'link':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du lien
+            </label>
+            <input
+              type="text"
+              value={block.data.text || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Texte du lien"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL
+            </label>
+            <UrlInputWithSuggestions
+              value={block.data.url || ''}
+              onChange={(url) => onUpdate({ data: { ...block.data, url } })}
+              placeholder="URL ou sélectionner une page..."
+              className="text-xs"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Ouvrir dans
+            </label>
+            <select
+              value={block.data.target || '_self'}
+              onChange={(e) => onUpdate({ data: { ...block.data, target: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="_self">Même onglet</option>
+              <option value="_blank">Nouvel onglet</option>
+              <option value="_parent">Page parente</option>
+              <option value="_top">Page principale</option>
+            </select>
+          </div>
+        </div>
+      )
+
     default:
       return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">

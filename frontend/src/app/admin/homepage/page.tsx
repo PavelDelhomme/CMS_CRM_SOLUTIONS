@@ -28,6 +28,16 @@ export default function HomepageEditorPage() {
   const [metaDescription, setMetaDescription] = useState('')
   const [showPreview, setShowPreview] = useState(true)
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+  const [showSeoExpanded, setShowSeoExpanded] = useState(false)
+  // SEO avancé
+  const [ogTitle, setOgTitle] = useState('')
+  const [ogDescription, setOgDescription] = useState('')
+  const [ogImage, setOgImage] = useState('')
+  const [twitterCardType, setTwitterCardType] = useState('summary')
+  const [twitterImage, setTwitterImage] = useState('')
+  const [metaKeywords, setMetaKeywords] = useState('')
+  const [canonicalUrl, setCanonicalUrl] = useState('')
+  const [robots, setRobots] = useState('index, follow')
 
   // Sauvegarde automatique
   const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
@@ -213,34 +223,214 @@ export default function HomepageEditorPage() {
       }
     >
       <div className="flex flex-col h-[calc(100vh-180px)]">
-        {/* SEO Settings Bar */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex gap-4 items-center flex-wrap">
-          <div className="flex-1 min-w-[200px]">
-            <label htmlFor="meta_title" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Titre SEO
-            </label>
-            <input
-              id="meta_title"
-              type="text"
-              value={metaTitle}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaTitle(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Titre pour les moteurs de recherche"
-            />
+        {/* Page Selector - Quick Navigation */}
+        <div className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Page:</span>
+            <select
+              value="home"
+              onChange={(e) => {
+                if (e.target.value !== 'home') {
+                  router.push(`/admin/pages-public/${e.target.value}/edit`)
+                }
+              }}
+              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            >
+              <option value="home">Page d'accueil</option>
+              <option value="docs">Documentation</option>
+              <option value="contact">Contact</option>
+              <option value="faq">FAQ</option>
+            </select>
+            <button
+              onClick={() => router.push('/admin/pages-public')}
+              className="ml-auto px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+              Gérer toutes les pages →
+            </button>
           </div>
-          <div className="flex-1 min-w-[200px]">
-            <label htmlFor="meta_description" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Description SEO
-            </label>
-            <input
-              id="meta_description"
-              type="text"
-              value={metaDescription}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaDescription(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Description pour les moteurs de recherche"
-            />
+        </div>
+        {/* SEO Settings Bar - Expandable */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4">
+            <button
+              onClick={() => setShowSeoExpanded(!showSeoExpanded)}
+              className="flex items-center justify-between w-full text-left"
+            >
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">Paramètres SEO</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ({metaTitle.length}/60 caractères)
+                </span>
+              </div>
+              <svg className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${showSeoExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
+          
+          {showSeoExpanded && (
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+              {/* Basic SEO */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="meta_title" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Titre SEO <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="meta_title"
+                    type="text"
+                    value={metaTitle}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaTitle(e.target.value)}
+                    className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Titre pour les moteurs de recherche (50-60 caractères)"
+                    maxLength={60}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{metaTitle.length}/60 caractères</p>
+                </div>
+                <div>
+                  <label htmlFor="meta_description" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Description SEO
+                  </label>
+                  <textarea
+                    id="meta_description"
+                    value={metaDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMetaDescription(e.target.value)}
+                    className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Description pour les moteurs de recherche (150-160 caractères)"
+                    rows={2}
+                    maxLength={160}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{metaDescription.length}/160 caractères</p>
+                </div>
+              </div>
+
+              {/* Open Graph */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Open Graph (Réseaux sociaux)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      OG Title
+                    </label>
+                    <input
+                      type="text"
+                      value={ogTitle || metaTitle}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOgTitle(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                      placeholder="Titre pour Facebook, LinkedIn..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      OG Image URL
+                    </label>
+                    <input
+                      type="url"
+                      value={ogImage || ''}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOgImage(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      OG Description
+                    </label>
+                    <textarea
+                      value={ogDescription || metaDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setOgDescription(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                      placeholder="Description pour les réseaux sociaux"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Twitter Cards */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Twitter Cards</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Type de carte
+                    </label>
+                    <select
+                      value={twitterCardType || 'summary'}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTwitterCardType(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                    >
+                      <option value="summary">Summary</option>
+                      <option value="summary_large_image">Summary Large Image</option>
+                      <option value="app">App</option>
+                      <option value="player">Player</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Twitter Image URL
+                    </label>
+                    <input
+                      type="url"
+                      value={twitterImage || ogImage || ''}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTwitterImage(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Meta */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Méta tags supplémentaires</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Mots-clés (séparés par des virgules)
+                    </label>
+                    <input
+                      type="text"
+                      value={metaKeywords || ''}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaKeywords(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                      placeholder="vtc, chauffeur, transport..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Canonical URL
+                    </label>
+                    <input
+                      type="url"
+                      value={canonicalUrl || ''}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCanonicalUrl(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Robots (indexation)
+                    </label>
+                    <select
+                      value={robots || 'index, follow'}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRobots(e.target.value)}
+                      className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
+                    >
+                      <option value="index, follow">Indexer et suivre</option>
+                      <option value="noindex, follow">Ne pas indexer, suivre</option>
+                      <option value="index, nofollow">Indexer, ne pas suivre</option>
+                      <option value="noindex, nofollow">Ne pas indexer, ne pas suivre</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Main Editor Area with Split View */}

@@ -2519,6 +2519,148 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         </div>
       )
 
+    case 'modal': {
+      const ModalPreview = () => {
+        const [isOpen, setIsOpen] = useState(false)
+        const sizeClass = block.data.size === 'small' ? 'max-w-md' : block.data.size === 'large' ? 'max-w-4xl' : block.data.size === 'fullscreen' ? 'max-w-full h-full' : 'max-w-2xl'
+        return (
+          <div style={wrapperStyles} className="mb-6">
+            <button
+              onClick={() => setIsOpen(true)}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {block.data.trigger_text || 'Ouvrir'}
+            </button>
+            {isOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setIsOpen(false)}>
+                <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl ${sizeClass} w-full m-4`} onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{block.data.title || 'Modal'}</h3>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="p-6 text-gray-700 dark:text-gray-300">
+                    {block.data.content || 'Contenu de la modal...'}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      }
+      return <ModalPreview />
+    }
+
+    case 'chart':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          {block.data.title && (
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {block.data.title}
+            </h3>
+          )}
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="h-64 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 rounded">
+              Graphique {block.data.chart_type || 'line'} - Prévisualisation (nécessite Chart.js)
+            </div>
+            <p className="text-xs text-gray-500 mt-2">Type: {block.data.chart_type || 'line'}</p>
+          </div>
+        </div>
+      )
+
+    case 'calendar':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="h-96 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 rounded">
+              Calendrier {block.data.calendar_type || 'month'} - Prévisualisation (nécessite bibliothèque calendrier)
+            </div>
+            {block.data.show_events !== false && (
+              <p className="text-xs text-gray-500 mt-2">Événements activés</p>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'pagination':
+      const currentPage = block.data.current_page || 1
+      const totalPages = block.data.total_pages || 10
+      const showArrows = block.data.show_arrows !== false
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <nav className="flex items-center justify-center gap-2">
+            {showArrows && (
+              <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50" disabled={currentPage === 1}>
+                ‹
+              </button>
+            )}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum
+              if (totalPages <= 5) {
+                pageNum = i + 1
+              } else if (currentPage <= 3) {
+                pageNum = i + 1
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i
+              } else {
+                pageNum = currentPage - 2 + i
+              }
+              return (
+                <button
+                  key={i}
+                  className={`px-3 py-2 border rounded-lg ${
+                    pageNum === currentPage
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              )
+            })}
+            {showArrows && (
+              <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50" disabled={currentPage === totalPages}>
+                ›
+              </button>
+            )}
+          </nav>
+        </div>
+      )
+
+    case 'list':
+      const listItems = block.data.items || []
+      const ListTag = block.data.list_type === 'ordered' ? 'ol' : 'ul'
+      const listClass = block.data.list_type === 'none' ? 'list-none' : block.data.list_type === 'ordered' ? 'list-decimal' : 'list-disc'
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          {React.createElement(
+            ListTag,
+            { className: `${listClass} space-y-2 pl-6` },
+            listItems.map((item: string, index: number) => (
+              <li key={index} className="text-gray-700 dark:text-gray-300">{item}</li>
+            ))
+          )}
+        </div>
+      )
+
+    case 'link':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <a
+            href={block.data.url || '#'}
+            target={block.data.target || '_self'}
+            rel={block.data.target === '_blank' ? 'noopener noreferrer' : undefined}
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            {block.data.text || 'Lien'}
+          </a>
+        </div>
+      )
+
     default:
       return (
         <div style={wrapperStyles} className="mb-6 p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
