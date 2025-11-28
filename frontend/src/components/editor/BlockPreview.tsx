@@ -421,14 +421,28 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
     case 'video':
       if (!block.data.url) {
         return (
-          <div className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
+          <div style={blockStyles} className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
             Vidéo non configurée
           </div>
         )
       }
+      const videoWidth = block.data.width || 100
+      const videoHeight = block.data.height || 400
       return (
         <div style={blockStyles} className="mb-6">
-          <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+          {block.data.title && (
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              {block.data.title}
+            </h3>
+          )}
+          <div 
+            className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden mx-auto"
+            style={{
+              width: `${videoWidth}%`,
+              height: `${videoHeight}px`,
+              maxWidth: '100%'
+            }}
+          >
             <iframe
               src={block.data.url}
               className="w-full h-full"
@@ -693,16 +707,31 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         <div 
           style={{
             ...blockStyles,
+            display: 'grid',
             gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
             gap: block.styles?.gap || '1rem',
           }}
-          className="mb-6 grid gap-4"
+          className="mb-6"
         >
-          {Array.from({ length: columnCount }).map((_, i) => (
-            <div key={i} className="bg-gray-50 dark:bg-gray-800 p-4 rounded border border-gray-200 dark:border-gray-700">
-              {block.data[`column_${i + 1}_content`] || `Colonne ${i + 1}`}
-            </div>
-          ))}
+          {block.children && block.children.length > 0 ? (
+            block.children.map((childBlock: Block, i: number) => (
+              <div key={childBlock.id || i} className="min-h-[100px]">
+                <BlockPreviewRenderer
+                  block={childBlock}
+                  blockType={blockTypes.find((bt: BlockType) => bt.name === childBlock.type)}
+                  isSelected={false}
+                  isInteractive={false}
+                  onClick={() => {}}
+                />
+              </div>
+            ))
+          ) : (
+            Array.from({ length: columnCount }).map((_, i) => (
+              <div key={i} className="bg-gray-50 dark:bg-gray-800 p-4 rounded border-2 border-dashed border-gray-300 dark:border-gray-700 min-h-[100px] flex items-center justify-center">
+                <span className="text-gray-400 dark:text-gray-500 text-sm">Colonne {i + 1}</span>
+              </div>
+            ))
+          )}
         </div>
       )
 
@@ -1467,51 +1496,56 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
       )
 
     case 'form':
+      const formFields = block.data.fields || []
       return (
-        <div style={blockStyles} className="mb-6 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-          <h3 className="text-xl font-bold mb-4">{block.data.title || 'Formulaire de contact'}</h3>
+        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          {block.data.title && (
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">{block.data.title}</h3>
+          )}
           <form className="space-y-4">
-            {block.data.fields?.map((field: any, i: number) => (
-              <div key={i}>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {field.label || 'Champ'}
-                  {field.required && <span className="text-red-500">*</span>}
-                </label>
-                {field.type === 'textarea' ? (
-                  <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    rows={4}
-                    placeholder={field.placeholder}
-                    disabled
-                  />
-                ) : (
-                  <input
-                    type={field.type || 'text'}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder={field.placeholder}
-                    disabled
-                  />
-                )}
-              </div>
-            )) || (
+            {formFields.length > 0 ? (
+              formFields.map((field: any, i: number) => (
+                <div key={i}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {field.label || 'Champ'}
+                    {field.required && <span className="text-red-500 ml-1">*</span>}
+                  </label>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      rows={4}
+                      placeholder={field.placeholder || ''}
+                      disabled
+                    />
+                  ) : (
+                    <input
+                      type={field.type || 'text'}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={field.placeholder || ''}
+                      disabled
+                    />
+                  )}
+                </div>
+              ))
+            ) : (
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
-                  <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg" disabled />
+                  <input type="text" className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" disabled />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                  <input type="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg" disabled />
+                  <input type="email" className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" disabled />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
-                  <textarea className="w-full px-3 py-2 border border-gray-300 rounded-lg" rows={4} disabled />
+                  <textarea className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" rows={4} disabled />
                 </div>
               </>
             )}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               disabled
             >
               {block.data.submit_text || 'Envoyer'}
