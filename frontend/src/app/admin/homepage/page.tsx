@@ -193,6 +193,7 @@ export default function HomepageEditorPage() {
   const [showPreview, setShowPreview] = useState(true)
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
   const [showSeoExpanded, setShowSeoExpanded] = useState(false)
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null)
   // SEO avancé
   const [ogTitle, setOgTitle] = useState('')
   const [ogDescription, setOgDescription] = useState('')
