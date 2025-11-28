@@ -2317,7 +2317,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'tabs': {
       const tabs = block.data.tabs || []
       // Utiliser un composant séparé pour gérer l'état
-      const TabsComponent = () => {
+      const TabsPreview = () => {
         const [activeTab, setActiveTab] = useState(0)
         return (
           <div style={wrapperStyles} className="mb-6">
@@ -2350,7 +2350,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
           </div>
         )
       }
-      return <TabsComponent />
+      return <TabsPreview />
     }
 
     case 'rating':
