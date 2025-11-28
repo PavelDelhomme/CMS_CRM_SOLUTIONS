@@ -789,44 +789,24 @@ function SortableBlock({
         <>
           {/* Corner handles */}
           <div
-            className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-br-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'top-left')}
+            className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-br-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'left')}
             title="Redimensionner"
           />
           <div
-            className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-bl-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'top-right')}
-            title="Redimensionner"
-          />
-          <div
-            className="absolute bottom-0 left-0 w-4 h-4 cursor-nesw-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-tr-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'bottom-left')}
-            title="Redimensionner"
-          />
-          <div
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-tl-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'bottom-right')}
+            className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-bl-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'right')}
             title="Redimensionner"
           />
           {/* Edge handles */}
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-2 cursor-ns-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-b-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'top')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-r-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'left')}
             title="Redimensionner"
           />
           <div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-2 cursor-ns-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-t-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'bottom')}
-            title="Redimensionner"
-          />
-          <div
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-r-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'left')}
-            title="Redimensionner"
-          />
-          <div
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-l-lg z-20"
-            onMouseDown={(e) => handleResizeStart(e, 'right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-8 cursor-ew-resize bg-blue-500 border-2 border-white dark:border-gray-800 rounded-l-lg z-20 hover:bg-blue-600"
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'right')}
             title="Redimensionner"
           />
         </>
