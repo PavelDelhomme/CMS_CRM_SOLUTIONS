@@ -811,21 +811,67 @@
 
 ## 📝 Notes d'Implémentation
 
-### Priorité Haute
-1. Sélecteur de pages dans l'éditeur
-2. Amélioration SEO (Open Graph, Twitter Cards)
-3. Plus de blocs essentiels (Modal, Chart, Calendar)
-4. Propriétés de style avancées (Flexbox, Grid, Animations)
+### ✅ Blocs Déjà Implémentés (78 blocs)
+**Blocs de Contenu:** heading, text, paragraph, line, button, link, list, quote, code, alert, divider, spacer, breadcrumb, pagination, tags
 
-### Priorité Moyenne
-5. Blocs interactifs avancés
-6. Blocs e-commerce
-7. Blocs marketing
-8. Analytics integration
+**Blocs de Mise en Page:** columns, rows, section, container
 
-### Priorité Basse
-9. Blocs spécialisés (événements, éducation)
-10. Animations complexes
-11. 3D effects
-12. Advanced filters
+**Blocs Médias:** image, video, gallery, audio-player, carousel, video-embed, map
+
+**Blocs de Données:** table, chart, stats, progress-bar, progress-circle, timeline, calendar, countdown
+
+**Blocs de Formulaire:** form, form-newsletter, form-search, form-inscription, booking-form
+
+**Blocs Interactifs:** tabs, accordion, carousel, modal
+
+**Blocs E-commerce:** pricing, rating
+
+**Blocs de Design:** hero, banner, cta-section, feature-card, icon-box, card, testimonials, logo-grid, team-member, features-grid, contact-form, faq-section
+
+**Blocs VTC:** booking-form, pricing-table-vtc, service-zones, vehicle-gallery, contact-buttons, map, badges
+
+**Blocs Utilitaires:** search-bar
+
+**Blocs Footer:** footer
+
+### Priorité Haute - À Implémenter
+1. ✅ Sélecteur de pages dans l'éditeur - **FAIT**
+2. ✅ Amélioration SEO (Open Graph, Twitter Cards) - **FAIT**
+3. ✅ Plus de blocs essentiels (Modal, Chart, Calendar) - **FAIT**
+4. ⬜ Rich Text Editor (WYSIWYG) - **À FAIRE**
+5. ⬜ Propriétés de style avancées (Flexbox, Grid, Animations) - **PARTIELLEMENT FAIT**
+6. ⬜ Blocs e-commerce essentiels (Product Card, Shopping Cart, Checkout) - **À FAIRE**
+7. ⬜ Form Payment (Paiement) - **À FAIRE**
+
+### Priorité Moyenne - À Implémenter
+8. ⬜ Blocs interactifs avancés (Lightbox, Image Slider)
+9. ⬜ Blocs marketing (Exit Intent Popup, Lead Magnet)
+10. ⬜ Analytics integration
+11. ⬜ Form Multi-step, Form Conditional, Form File Upload
+12. ⬜ Vimeo Embed, SoundCloud Embed
+13. ⬜ Card Grid, Card Carousel, Logo Carousel
+14. ⬜ Product Comparison, Wishlist, Reviews
+
+### Priorité Basse - À Implémenter
+15. ⬜ Blocs spécialisés (événements, éducation)
+16. ⬜ Animations complexes
+17. ⬜ 3D effects
+18. ⬜ Advanced filters
+19. ⬜ Weather Widget, Currency Converter, Calculator
+20. ⬜ 360° Viewer, Image Comparison
+
+### 📊 Statistiques d'Implémentation
+- **Total blocs dans roadmap:** ~200+
+- **Blocs implémentés:** 78
+- **Taux d'implémentation:** ~39%
+- **Blocs essentiels implémentés:** ✅ (heading, text, image, button, form, etc.)
+- **Blocs premium implémentés:** ✅ (chart, calendar, modal, etc.)
+- **Blocs VTC implémentés:** ✅ (tous les blocs VTC de base)
+
+### 🎯 Prochaines Étapes Recommandées
+1. **Rich Text Editor (WYSIWYG)** - Priorité absolue pour améliorer l'expérience éditeur de texte
+2. **Blocs E-commerce** - Product Card, Shopping Cart, Checkout pour monétisation
+3. **Form Payment** - Intégration paiement pour les formulaires
+4. **Propriétés Flexbox/Grid** - Pour plus de flexibilité de mise en page
+5. **Lightbox** - Pour améliorer l'expérience galerie d'images
 
