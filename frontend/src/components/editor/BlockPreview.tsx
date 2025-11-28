@@ -2270,9 +2270,10 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'card':
       const cards = block.data.cards || []
       const cardColumns = block.data.columns || 3
+      const gridColsClass = cardColumns === 1 ? 'md:grid-cols-1' : cardColumns === 2 ? 'md:grid-cols-2' : cardColumns === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4'
       return (
         <div style={wrapperStyles} className="mb-6">
-          <div className={`grid grid-cols-1 md:grid-cols-${cardColumns} gap-6`}>
+          <div className={`grid grid-cols-1 ${gridColsClass} gap-6`}>
             {cards.length > 0 ? (
               cards.map((card: any, index: number) => (
                 <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -2313,39 +2314,44 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         </div>
       )
 
-    case 'tabs':
+    case 'tabs': {
       const tabs = block.data.tabs || []
-      const [activeTab, setActiveTab] = React.useState(0)
-      return (
-        <div style={wrapperStyles} className="mb-6">
-          {tabs.length > 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="flex border-b border-gray-200 dark:border-gray-700">
-                {tabs.map((tab: any, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveTab(index)}
-                    className={`px-6 py-3 font-medium text-sm transition-colors ${
-                      activeTab === index
-                        ? 'bg-white dark:bg-gray-900 text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                    }`}
-                  >
-                    {tab.title || `Onglet ${index + 1}`}
-                  </button>
-                ))}
+      // Utiliser un composant séparé pour gérer l'état
+      const TabsComponent = () => {
+        const [activeTab, setActiveTab] = useState(0)
+        return (
+          <div style={wrapperStyles} className="mb-6">
+            {tabs.length > 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
+                  {tabs.map((tab: any, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => setActiveTab(index)}
+                      className={`px-6 py-3 font-medium text-sm transition-colors ${
+                        activeTab === index
+                          ? 'bg-white dark:bg-gray-900 text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                      }`}
+                    >
+                      {tab.title || `Onglet ${index + 1}`}
+                    </button>
+                  ))}
+                </div>
+                <div className="p-6">
+                  <p className="text-gray-700 dark:text-gray-300">{tabs[activeTab]?.content || 'Contenu...'}</p>
+                </div>
               </div>
-              <div className="p-6">
-                <p className="text-gray-700 dark:text-gray-300">{tabs[activeTab]?.content || 'Contenu...'}</p>
+            ) : (
+              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucun onglet configuré
               </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
-              Aucun onglet configuré
-            </div>
-          )}
-        </div>
-      )
+            )}
+          </div>
+        )
+      }
+      return <TabsComponent />
+    }
 
     case 'rating':
       const rating = block.data.rating || 5
