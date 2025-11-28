@@ -233,7 +233,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       // Toujours utiliser les blocs par défaut en priorité pour garantir la disponibilité
       const defaultTypes = getDefaultBlockTypes()
       
-      // Si des blocs sont fournis via props, les utiliser, sinon utiliser les blocs par défaut
+      // Si des blocs sont fournis via props ET qu'il y en a, fusionner avec les blocs par défaut
       if (availableBlockTypes && availableBlockTypes.length > 0) {
         // Fusionner les blocs par défaut avec ceux de l'API pour éviter les doublons
         const mergedTypes = [...defaultTypes]
@@ -249,7 +249,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         })
         setBlockTypes(mergedTypes)
       } else {
-        // Essayer de charger depuis l'API, mais utiliser les blocs par défaut en fallback
+        // Si availableBlockTypes est vide ou undefined, essayer de charger depuis l'API
         try {
           const apiTypes = await blocksService.getBlockTypes()
           if (apiTypes && apiTypes.length > 0) {
@@ -266,6 +266,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             setBlockTypes(mergedTypes)
           } else {
             // Pas de blocs de l'API, utiliser uniquement les blocs par défaut
+            console.log('Utilisation des blocs par défaut (49 blocs)')
             setBlockTypes(defaultTypes)
           }
         } catch (apiError) {

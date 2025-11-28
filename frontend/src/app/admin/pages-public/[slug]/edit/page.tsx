@@ -308,9 +308,9 @@ export default function EditPublicPage() {
           <div className={`${showPreview ? 'w-1/2' : 'w-full'} border-r border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300`}>
             <div className="flex-1 overflow-hidden">
               <BlockEditor 
-                blocks={blocks} 
+                blocks={blocks}
                 onChange={setBlocks}
-                availableBlockTypes={blockTypes}
+                availableBlockTypes={blockTypes.length > 0 ? blockTypes : undefined}
               />
             </div>
           </div>
