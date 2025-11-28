@@ -18,6 +18,170 @@ interface PublicHomepageData {
   public_homepage_meta_description: string
 }
 
+// Fonction pour créer les blocs par défaut de la homepage
+function createDefaultHomepageBlocks(): Block[] {
+  const now = Date.now()
+  return [
+    // Hero Section
+    {
+      id: `block-${now}-1`,
+      type: 'hero',
+      data: {
+        title: 'Le WordPress des Chauffeurs VTC',
+        subtitle: 'Créez votre site VTC professionnel en quelques minutes. Gestion complète, réservations, paiements, tout inclus.',
+        buttons: [
+          { text: '🚀 Démarrer gratuitement', url: '/register', style: 'primary' },
+          { text: 'Voir les tarifs', url: '#pricing', style: 'secondary' }
+        ],
+        background_type: 'gradient',
+        background_gradient: 'from-blue-500 via-purple-600 to-pink-500',
+      },
+      styles: {
+        background_color: 'transparent',
+        color: '#ffffff',
+        text_align: 'center',
+        padding_top: '5rem',
+        padding_bottom: '8rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+    // Features Section
+    {
+      id: `block-${now}-2`,
+      type: 'heading',
+      data: {
+        text: 'Tout ce dont vous avez besoin',
+        level: 'h2',
+        align: 'center',
+      },
+      styles: {
+        color: '#111827',
+        text_align: 'center',
+        margin_bottom: '3rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+    {
+      id: `block-${now}-3`,
+      type: 'icon-box',
+      data: {
+        items: [
+          {
+            icon: '🎨',
+            title: 'Site Professionnel',
+            description: 'Designs modernes et responsive. Personnalisez votre site sans coder.',
+          },
+          {
+            icon: '📅',
+            title: 'Réservations en Ligne',
+            description: 'Système de réservation complet avec calendrier et notifications.',
+          },
+          {
+            icon: '💳',
+            title: 'Paiements Intégrés',
+            description: 'Acceptez les paiements en ligne. Cartes bancaires, virement, tout est possible.',
+          },
+          {
+            icon: '📱',
+            title: 'Mobile First',
+            description: 'Votre site s\'adapte automatiquement aux smartphones et tablettes.',
+          },
+          {
+            icon: '📊',
+            title: 'Analytics Inclus',
+            description: 'Suivez vos performances, réservations, revenus en temps réel.',
+          },
+          {
+            icon: '🔒',
+            title: 'Sécurisé & Rapide',
+            description: 'Hébergement sécurisé, sauvegardes automatiques, SSL inclus.',
+          },
+        ],
+        columns: 3,
+      },
+      styles: {
+        background_color: '#ffffff',
+        padding_top: '5rem',
+        padding_bottom: '5rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+    // Pricing Section
+    {
+      id: `block-${now}-4`,
+      type: 'heading',
+      data: {
+        text: 'Tarifs Transparents',
+        level: 'h2',
+        align: 'center',
+      },
+      styles: {
+        color: '#111827',
+        text_align: 'center',
+        margin_bottom: '1rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+    {
+      id: `block-${now}-5`,
+      type: 'text',
+      data: {
+        content: 'Choisissez le plan adapté à vos besoins. Pas d\'engagement, changez de plan à tout moment.',
+      },
+      styles: {
+        color: '#6b7280',
+        text_align: 'center',
+        margin_bottom: '3rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+    {
+      id: `block-${now}-6`,
+      type: 'pricing',
+      data: {
+        title: '',
+        show_title: false,
+        source: 'dynamic',
+        api_endpoint: '/api/billing/pricing-plans/',
+      },
+      styles: {
+        background_color: '#f9fafb',
+        padding_top: '5rem',
+        padding_bottom: '5rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+    // CTA Section
+    {
+      id: `block-${now}-7`,
+      type: 'cta-section',
+      data: {
+        title: 'Prêt à démarrer ?',
+        subtitle: 'Créez votre site VTC professionnel dès aujourd\'hui. Essai gratuit de 14 jours.',
+        button_text: '🚀 Créer mon compte gratuitement',
+        button_url: '/register',
+        background_type: 'gradient',
+        background_gradient: 'from-blue-600 to-purple-600',
+      },
+      styles: {
+        background_color: 'transparent',
+        color: '#ffffff',
+        text_align: 'center',
+        padding_top: '5rem',
+        padding_bottom: '5rem',
+      },
+      layout: 12,
+      container: 'container',
+    },
+  ]
+}
+
 export default function HomepageEditorPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -93,7 +257,18 @@ export default function HomepageEditorPage() {
       
       const data = homepageResponse.data
       
-      setBlocks(data.public_homepage_blocks || [])
+      // Si pas de blocs, créer la homepage depuis le backup
+      if (!data.public_homepage_blocks || data.public_homepage_blocks.length === 0) {
+        const defaultBlocks = createDefaultHomepageBlocks()
+        setBlocks(defaultBlocks)
+        // Sauvegarder les blocs par défaut
+        await api.patch('/system-settings/', {
+          public_homepage_blocks: defaultBlocks,
+        })
+      } else {
+        setBlocks(data.public_homepage_blocks || [])
+      }
+      
       setMetaTitle(data.public_homepage_meta_title || 'VTCBuilder - Le WordPress des chauffeurs VTC')
       setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site VTC professionnel')
       setOgTitle(data.public_homepage_og_title || '')
@@ -128,17 +303,19 @@ export default function HomepageEditorPage() {
         public_homepage_meta_keywords: metaKeywords,
         public_homepage_canonical_url: canonicalUrl,
         public_homepage_robots: robots,
+        public_homepage_status: pageStatus,
+        public_homepage_published_at: pageStatus === 'published' ? new Date().toISOString() : null,
       })
       // Mettre à jour le timestamp de dernière sauvegarde
       updateLastSaved()
-      toast.success('Page d\'accueil sauvegardée avec succès !')
+      toast.success(pageStatus === 'published' ? 'Page publiée avec succès !' : 'Brouillon sauvegardé avec succès !')
     } catch (error: any) {
       console.error('Erreur sauvegarde:', error)
       toast.error(error.response?.data?.error || 'Erreur lors de la sauvegarde')
     } finally {
       setSaving(false)
     }
-  }, [blocks, metaTitle, metaDescription, ogTitle, ogDescription, ogImage, twitterCardType, twitterImage, metaKeywords, canonicalUrl, robots, updateLastSaved])
+  }, [blocks, metaTitle, metaDescription, ogTitle, ogDescription, ogImage, twitterCardType, twitterImage, metaKeywords, canonicalUrl, robots, pageStatus, updateLastSaved])
 
   if (loading) {
     return (
@@ -473,7 +650,7 @@ export default function HomepageEditorPage() {
         <div className="flex-1 flex overflow-hidden">
           {/* Editor Section */}
           <div className={`${showPreview ? 'w-1/2' : 'w-full'} border-r border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300`}>
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-y-auto">
               <BlockEditor 
                 blocks={blocks} 
                 onChange={setBlocks}

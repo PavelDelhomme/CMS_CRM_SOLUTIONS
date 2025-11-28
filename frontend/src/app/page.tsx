@@ -242,6 +242,42 @@ export default function HomePage() {
   }
 
   // VTCBuilder landing page (for localhost:9494)
+  // Vérifier si on doit utiliser les blocs de l'éditeur ou l'ancienne version
+  const [useBlocks, setUseBlocks] = useState(false)
+  const [homepageBlocks, setHomepageBlocks] = useState<any[]>([])
+  const [homepageStatus, setHomepageStatus] = useState<string>('draft')
+  
+  useEffect(() => {
+    const checkBlocks = async () => {
+      try {
+        const settings = await settingsService.getSettings()
+        if (settings.public_homepage_blocks && settings.public_homepage_blocks.length > 0) {
+          setHomepageBlocks(settings.public_homepage_blocks)
+          setHomepageStatus(settings.public_homepage_status || 'draft')
+          // Utiliser les blocs seulement si publié
+          setUseBlocks(settings.public_homepage_status === 'published')
+        }
+      } catch (error) {
+        console.error('Erreur chargement blocs homepage:', error)
+      }
+    }
+    if (!isTenantSubdomain()) {
+      checkBlocks()
+    }
+  }, [])
+  
+  // Si on utilise les blocs et que la page est publiée, afficher avec BlockPreview
+  if (useBlocks && homepageStatus === 'published' && homepageBlocks.length > 0) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900">
+        <PublicHeader showThemeToggle={true} />
+        <BlockPreview blocks={homepageBlocks} blockTypes={[]} />
+        <PublicFooter />
+      </div>
+    )
+  }
+  
+  // Sinon, utiliser l'ancienne version (backup)
   return <PublicHomePageContent pricingPlans={pricingPlans} loading={loading} />
 }
 

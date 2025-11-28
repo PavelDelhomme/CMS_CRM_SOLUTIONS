@@ -1008,49 +1008,115 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         </div>
       )
 
-    case 'pricing':
-      const plans = block.data.plans || []
-      return (
-        <div style={wrapperStyles} className="mb-6">
-          {block.data.title && (
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
-              {block.data.title}
-            </h2>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {plans.map((plan: any, index: number) => (
-              <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                  {plan.name || 'Forfait'}
-                </h3>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                    {plan.price || 'Prix'}
-                  </span>
-                </div>
-                <ul className="space-y-2 mb-6">
-                  {(plan.features || []).map((feature: string, i: number) => (
-                    <li key={i} className="flex items-start text-gray-700 dark:text-gray-300">
-                      <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                {plan.button_text && plan.button_url && (
-                  <a
-                    href={plan.button_url}
-                    className="block w-full text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    {plan.button_text}
-                  </a>
-                )}
+    case 'pricing': {
+      const PricingPreview = () => {
+        const [plans, setPlans] = useState<any[]>(block.data.plans || [])
+        const [loading, setLoading] = useState(false)
+        
+        useEffect(() => {
+          if (block.data.source === 'dynamic' && block.data.api_endpoint) {
+            setLoading(true)
+            fetch(block.data.api_endpoint)
+              .then(res => res.json())
+              .then(data => {
+                const plansData = Array.isArray(data) ? data : (data.results || data.plans || [])
+                setPlans(plansData.filter((p: any) => p.is_active).sort((a: any, b: any) => (a.order || 0) - (b.order || 0)))
+              })
+              .catch(err => {
+                console.error('Erreur chargement plans:', err)
+                setPlans([])
+              })
+              .finally(() => setLoading(false))
+          }
+        }, [block.data.source, block.data.api_endpoint])
+        
+        const formatPrice = (price: number) => {
+          return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
+        }
+        
+        return (
+          <div style={wrapperStyles} className="mb-6">
+            {block.data.show_title !== false && block.data.title && (
+              <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-4">
+                {block.data.title}
+              </h2>
+            )}
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
               </div>
-            ))}
+            ) : plans.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {plans.map((plan: any, index: number) => (
+                  <div
+                    key={plan.id || index}
+                    className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 relative ${
+                      plan.is_featured ? 'ring-4 ring-blue-500 scale-105' : ''
+                    }`}
+                  >
+                    {plan.is_featured && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-bold">
+                          POPULAIRE
+                        </span>
+                      </div>
+                    )}
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{plan.name}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">{plan.description}</p>
+                    <div className="mb-6">
+                      <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
+                        {formatPrice(plan.price_monthly || plan.price || 0)}
+                      </span>
+                      <span className="text-gray-600 dark:text-gray-400">/mois</span>
+                      {plan.price_yearly && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          ou {formatPrice(plan.price_yearly)}/an (-{Math.round((1 - (plan.price_yearly / ((plan.price_monthly || plan.price || 0) * 12))) * 100)}%)
+                        </div>
+                      )}
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span className="text-gray-700 dark:text-gray-300">{plan.max_sites || 1} site{(plan.max_sites || 1) > 1 ? 's' : ''}</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span className="text-gray-700 dark:text-gray-300">{plan.max_users || 1} utilisateur{(plan.max_users || 1) > 1 ? 's' : ''} max</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span className="text-gray-700 dark:text-gray-300">{plan.max_storage_gb || 1} GB de stockage</span>
+                      </li>
+                      {plan.features && plan.features.map((feature: string, i: number) => (
+                        <li key={i} className="flex items-center">
+                          <span className="text-green-500 mr-2">✓</span>
+                          <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <a
+                      href={`/register?plan=${plan.slug || plan.id}`}
+                      className={`block w-full text-center py-3 rounded-lg font-bold transition-colors ${
+                        plan.is_featured
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
+                      }`}
+                    >
+                      Choisir {plan.name}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-400">
+                Aucun plan tarifaire disponible
+              </div>
+            )}
           </div>
-        </div>
-      )
+        )
+      }
+      return <PricingPreview />
+    }
 
     case 'timeline':
       const events = block.data.events || []
@@ -1676,14 +1742,22 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       )
 
     case 'hero':
+      const heroBg = block.data.background_type === 'gradient' && block.data.background_gradient
+        ? `linear-gradient(to ${block.data.background_gradient.includes('to-') ? block.data.background_gradient.split('to-')[1] : 'right'}, ${block.data.background_gradient.includes('from-') ? block.data.background_gradient.split('from-')[1].split(' ')[0] : '#667eea'}, ${block.data.background_gradient.includes('via-') ? block.data.background_gradient.split('via-')[1].split(' ')[0] : '#764ba2'}, ${block.data.background_gradient.includes('to-') ? block.data.background_gradient.split('to-')[1].split(' ')[0] : '#764ba2'})`
+        : block.data.background_image
+        ? `url(${block.data.background_image})`
+        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      
+      const heroButtons = block.data.buttons || (block.data.button_text ? [{ text: block.data.button_text, url: block.data.button_url, style: 'primary' }] : [])
+      
       return (
         <div 
           style={{
-            ...blockStyles,
-            backgroundImage: block.data.background_image ? `url(${block.data.background_image})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            ...wrapperStyles,
+            background: heroBg,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            padding: block.styles?.padding || '4rem 2rem',
+            padding: `${block.styles?.padding_top || '5rem'} ${block.styles?.padding_right || '2rem'} ${block.styles?.padding_bottom || '8rem'} ${block.styles?.padding_left || '2rem'}`,
             textAlign: block.styles?.text_align || 'center',
             minHeight: '400px',
           }}
@@ -1692,18 +1766,27 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
           {block.data.overlay && (
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           )}
-          <div className="relative z-10 text-white">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{block.data.title || 'Titre Hero'}</h1>
+          <div className="relative z-10" style={{ color: block.styles?.color || '#ffffff' }}>
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6">{block.data.title || 'Titre Hero'}</h1>
             {block.data.subtitle && (
-              <p className="text-xl mb-6">{block.data.subtitle}</p>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">{block.data.subtitle}</p>
             )}
-            {block.data.button_text && block.data.button_url && (
-              <a
-                href={block.data.button_url}
-                className="inline-block px-6 py-3 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-              >
-                {block.data.button_text}
-              </a>
+            {heroButtons.length > 0 && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {heroButtons.map((btn: any, index: number) => (
+                  <a
+                    key={index}
+                    href={btn.url || '#'}
+                    className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
+                      btn.style === 'primary'
+                        ? 'bg-white text-blue-600 hover:bg-blue-50'
+                        : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30'
+                    }`}
+                  >
+                    {btn.text}
+                  </a>
+                ))}
+              </div>
             )}
           </div>
         </div>
