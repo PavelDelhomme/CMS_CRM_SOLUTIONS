@@ -659,12 +659,23 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const showCopyButton = block.data.showCopyButton !== false
       
       // Fonction pour copier le code
-      const handleCopyCode = () => {
-        navigator.clipboard.writeText(code).then(() => {
-          // Toast pourrait être ajouté ici si nécessaire
-        }).catch(() => {
-          // Gestion d'erreur silencieuse
-        })
+      const handleCopyCode = async () => {
+        try {
+          await navigator.clipboard.writeText(code)
+          // Afficher un feedback visuel temporaire
+          const button = document.activeElement as HTMLElement
+          if (button) {
+            const originalText = button.textContent
+            button.textContent = '✓ Copié!'
+            button.classList.add('text-green-400')
+            setTimeout(() => {
+              button.textContent = originalText
+              button.classList.remove('text-green-400')
+            }, 2000)
+          }
+        } catch (err) {
+          console.error('Erreur lors de la copie:', err)
+        }
       }
       
       // Fonction pour obtenir le nom du langage pour affichage
@@ -2045,6 +2056,213 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
                 backgroundColor: block.data.color || '#3B82F6',
               }}
             />
+          </div>
+        </div>
+      )
+
+    case 'quote':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <blockquote 
+            className={`border-l-4 ${block.data.color || 'border-blue-500'} pl-6 py-4 bg-gray-50 dark:bg-gray-800 rounded-r-lg`}
+            style={contentStyles}
+          >
+            <p className={`text-lg italic text-gray-800 dark:text-gray-200 mb-2`}>
+              "{block.data.text || 'Citation...'}"
+            </p>
+            {block.data.author && (
+              <footer className="text-sm text-gray-600 dark:text-gray-400">
+                — {block.data.author}
+              </footer>
+            )}
+          </blockquote>
+        </div>
+      )
+
+    case 'icon-box':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <div 
+            className={`p-6 rounded-lg border-2 ${block.data.border_color || 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800 text-center`}
+            style={contentStyles}
+          >
+            {block.data.icon && (
+              <div className="text-5xl mb-4">{block.data.icon}</div>
+            )}
+            {block.data.title && (
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                {block.data.title}
+              </h3>
+            )}
+            {block.data.description && (
+              <p className="text-gray-600 dark:text-gray-400">
+                {block.data.description}
+              </p>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'feature-card':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <div 
+            className="p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+            style={contentStyles}
+          >
+            {block.data.icon && (
+              <div className="text-4xl mb-4">{block.data.icon}</div>
+            )}
+            {block.data.title && (
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                {block.data.title}
+              </h3>
+            )}
+            {block.data.description && (
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {block.data.description}
+              </p>
+            )}
+            {block.data.link_url && block.data.link_text && (
+              <a 
+                href={block.data.link_url}
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                {block.data.link_text} →
+              </a>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'video-embed':
+      const videoUrl = block.data.url || ''
+      const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
+      const isVimeo = videoUrl.includes('vimeo.com')
+      
+      let embedUrl = ''
+      if (isYouTube) {
+        const youtubeId = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1]
+        if (youtubeId) embedUrl = `https://www.youtube.com/embed/${youtubeId}`
+      } else if (isVimeo) {
+        const vimeoId = videoUrl.match(/vimeo\.com\/(\d+)/)?.[1]
+        if (vimeoId) embedUrl = `https://player.vimeo.com/video/${vimeoId}`
+      }
+      
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          {embedUrl ? (
+            <div className="relative w-full" style={{ paddingBottom: '56.25%', height: 0 }}>
+              <iframe
+                src={embedUrl}
+                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ) : videoUrl ? (
+            <div className="p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
+              URL vidéo non supportée. Utilisez YouTube ou Vimeo.
+            </div>
+          ) : (
+            <div className="p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
+              Aucune vidéo configurée
+            </div>
+          )}
+        </div>
+      )
+
+    case 'team-member':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <div 
+            className="text-center p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+            style={contentStyles}
+          >
+            {block.data.avatar && (
+              <img
+                src={block.data.avatar}
+                alt={block.data.name || 'Membre'}
+                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="96"%3E%3Crect fill="%23ddd" width="96" height="96" rx="48"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="32" dy="33" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3E?%3C/text%3E%3C/svg%3E'
+                }}
+              />
+            )}
+            {block.data.name && (
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                {block.data.name}
+              </h3>
+            )}
+            {block.data.role && (
+              <p className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                {block.data.role}
+              </p>
+            )}
+            {block.data.bio && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {block.data.bio}
+              </p>
+            )}
+            {block.data.social_links && Array.isArray(block.data.social_links) && block.data.social_links.length > 0 && (
+              <div className="flex justify-center gap-3">
+                {block.data.social_links.map((link: any, i: number) => (
+                  <a
+                    key={i}
+                    href={link.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    {link.icon || '🔗'}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'logo-grid':
+      const logos = block.data.logos || []
+      const columns = block.data.columns || 4
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          {block.data.title && (
+            <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
+              {block.data.title}
+            </h2>
+          )}
+          <div 
+            className="grid gap-6 items-center justify-items-center"
+            style={{
+              gridTemplateColumns: `repeat(${columns}, 1fr)`,
+            }}
+          >
+            {logos.length > 0 ? (
+              logos.map((logo: any, i: number) => (
+                <div key={i} className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
+                  {logo.url ? (
+                    <img
+                      src={logo.url}
+                      alt={logo.alt || `Logo ${i + 1}`}
+                      className="max-h-12 max-w-full object-contain"
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="60"%3E%3Crect fill="%23ddd" width="120" height="60"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="12" dy="20" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ELogo%3C/text%3E%3C/svg%3E'
+                      }}
+                    />
+                  ) : (
+                    <div className="w-24 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-gray-400 text-xs">
+                      Logo
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucun logo configuré
+              </div>
+            )}
           </div>
         </div>
       )

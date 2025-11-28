@@ -3605,6 +3605,372 @@ function BlockRenderer({
           </div>
         </div>
       )
+
+    case 'quote':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Citation
+            </label>
+            <textarea
+              value={block.data.text || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Votre citation..."
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Auteur
+            </label>
+            <input
+              type="text"
+              value={block.data.author || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, author: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Nom de l'auteur"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Couleur de la bordure
+            </label>
+            <input
+              type="color"
+              value={block.data.color || '#3B82F6'}
+              onChange={(e) => onUpdate({ data: { ...block.data, color: e.target.value } })}
+              className="w-full h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+            />
+          </div>
+        </div>
+      )
+
+    case 'icon-box':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Icône (emoji ou texte)
+            </label>
+            <input
+              type="text"
+              value={block.data.icon || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, icon: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="🎯 ou ⚡"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Titre de la boîte"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Description
+            </label>
+            <textarea
+              value={block.data.description || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, description: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Description..."
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Couleur de la bordure
+            </label>
+            <input
+              type="color"
+              value={block.data.border_color || '#E5E7EB'}
+              onChange={(e) => onUpdate({ data: { ...block.data, border_color: e.target.value } })}
+              className="w-full h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+            />
+          </div>
+        </div>
+      )
+
+    case 'feature-card':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Icône (emoji)
+            </label>
+            <input
+              type="text"
+              value={block.data.icon || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, icon: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="✨"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Titre de la fonctionnalité"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Description
+            </label>
+            <textarea
+              value={block.data.description || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, description: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Description de la fonctionnalité..."
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du lien
+            </label>
+            <input
+              type="text"
+              value={block.data.link_text || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, link_text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="En savoir plus"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL du lien
+            </label>
+            <UrlInputWithSuggestions
+              value={block.data.link_url || ''}
+              onChange={(url) => onUpdate({ data: { ...block.data, link_url: url } })}
+              placeholder="URL ou sélectionner une page..."
+              className="text-xs"
+            />
+          </div>
+        </div>
+      )
+
+    case 'video-embed':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL de la vidéo (YouTube ou Vimeo)
+            </label>
+            <input
+              type="text"
+              value={block.data.url || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, url: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+              Supporte YouTube et Vimeo
+            </p>
+          </div>
+        </div>
+      )
+
+    case 'team-member':
+      const socialLinks = block.data.social_links || [{ url: '', icon: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nom
+            </label>
+            <input
+              type="text"
+              value={block.data.name || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, name: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Jean Dupont"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Rôle
+            </label>
+            <input
+              type="text"
+              value={block.data.role || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, role: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Développeur"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL de l'avatar
+            </label>
+            <input
+              type="text"
+              value={block.data.avatar || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, avatar: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="https://..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Biographie
+            </label>
+            <textarea
+              value={block.data.bio || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, bio: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Biographie..."
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Liens sociaux ({socialLinks.length})
+            </label>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {socialLinks.map((link: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={link.url || ''}
+                    onChange={(e) => {
+                      const newLinks = [...socialLinks]
+                      newLinks[index] = { ...link, url: e.target.value }
+                      onUpdate({ data: { ...block.data, social_links: newLinks } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="URL"
+                  />
+                  <input
+                    type="text"
+                    value={link.icon || ''}
+                    onChange={(e) => {
+                      const newLinks = [...socialLinks]
+                      newLinks[index] = { ...link, icon: e.target.value }
+                      onUpdate({ data: { ...block.data, social_links: newLinks } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Icône emoji"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, social_links: [...socialLinks, { url: '', icon: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {socialLinks.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, social_links: socialLinks.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'logo-grid':
+      const logos = block.data.logos || [{ url: '', alt: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la section
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Nos partenaires"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nombre de colonnes
+            </label>
+            <input
+              type="number"
+              value={block.data.columns || 4}
+              onChange={(e) => onUpdate({ data: { ...block.data, columns: Math.max(1, Math.min(6, parseInt(e.target.value) || 4)) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              min={1}
+              max={6}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Logos ({logos.length})
+            </label>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {logos.map((logo: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={logo.url || ''}
+                    onChange={(e) => {
+                      const newLogos = [...logos]
+                      newLogos[index] = { ...logo, url: e.target.value }
+                      onUpdate({ data: { ...block.data, logos: newLogos } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="URL du logo"
+                  />
+                  <input
+                    type="text"
+                    value={logo.alt || ''}
+                    onChange={(e) => {
+                      const newLogos = [...logos]
+                      newLogos[index] = { ...logo, alt: e.target.value }
+                      onUpdate({ data: { ...block.data, logos: newLogos } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Texte alternatif"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, logos: [...logos, { url: '', alt: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {logos.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, logos: logos.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
     default:
       return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
