@@ -41,6 +41,13 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true) // Ouvrir par défaut sur desktop
   const [propertiesTab, setPropertiesTab] = useState<'content' | 'style'>('content')
+  
+  // S'assurer que la sidebar est ouverte quand un bloc est sélectionné
+  useEffect(() => {
+    if (selectedBlock) {
+      setSidebarOpen(true)
+    }
+  }, [selectedBlock])
   const { canUseBlockType } = useFeatures()
   
   // Historique avec undo/redo
