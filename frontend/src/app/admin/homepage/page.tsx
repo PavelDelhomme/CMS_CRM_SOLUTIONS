@@ -41,12 +41,32 @@ export default function HomepageEditorPage() {
 
   // Sauvegarde automatique
   const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
-    data: { blocks, metaTitle, metaDescription },
+    data: { 
+      blocks, 
+      metaTitle, 
+      metaDescription,
+      ogTitle,
+      ogDescription,
+      ogImage,
+      twitterCardType,
+      twitterImage,
+      metaKeywords,
+      canonicalUrl,
+      robots,
+    },
     onSave: async (data) => {
       await api.patch('/system-settings/', {
         public_homepage_blocks: data.blocks,
         public_homepage_meta_title: data.metaTitle,
         public_homepage_meta_description: data.metaDescription,
+        public_homepage_og_title: data.ogTitle,
+        public_homepage_og_description: data.ogDescription,
+        public_homepage_og_image: data.ogImage,
+        public_homepage_twitter_card_type: data.twitterCardType,
+        public_homepage_twitter_image: data.twitterImage,
+        public_homepage_meta_keywords: data.metaKeywords,
+        public_homepage_canonical_url: data.canonicalUrl,
+        public_homepage_robots: data.robots,
       })
     },
     debounceMs: 2000,
@@ -76,6 +96,14 @@ export default function HomepageEditorPage() {
       setBlocks(data.public_homepage_blocks || [])
       setMetaTitle(data.public_homepage_meta_title || 'VTCBuilder - Le WordPress des chauffeurs VTC')
       setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site VTC professionnel')
+      setOgTitle(data.public_homepage_og_title || '')
+      setOgDescription(data.public_homepage_og_description || '')
+      setOgImage(data.public_homepage_og_image || '')
+      setTwitterCardType(data.public_homepage_twitter_card_type || 'summary')
+      setTwitterImage(data.public_homepage_twitter_image || '')
+      setMetaKeywords(data.public_homepage_meta_keywords || '')
+      setCanonicalUrl(data.public_homepage_canonical_url || '')
+      setRobots(data.public_homepage_robots || 'index, follow')
       setBlockTypes(blockTypesData)
     } catch (error: any) {
       console.error('Erreur chargement:', error)
@@ -92,6 +120,14 @@ export default function HomepageEditorPage() {
         public_homepage_blocks: blocks,
         public_homepage_meta_title: metaTitle,
         public_homepage_meta_description: metaDescription,
+        public_homepage_og_title: ogTitle,
+        public_homepage_og_description: ogDescription,
+        public_homepage_og_image: ogImage,
+        public_homepage_twitter_card_type: twitterCardType,
+        public_homepage_twitter_image: twitterImage,
+        public_homepage_meta_keywords: metaKeywords,
+        public_homepage_canonical_url: canonicalUrl,
+        public_homepage_robots: robots,
       })
       // Mettre à jour le timestamp de dernière sauvegarde
       updateLastSaved()
@@ -102,7 +138,7 @@ export default function HomepageEditorPage() {
     } finally {
       setSaving(false)
     }
-  }, [blocks, metaTitle, metaDescription, updateLastSaved])
+  }, [blocks, metaTitle, metaDescription, ogTitle, ogDescription, ogImage, twitterCardType, twitterImage, metaKeywords, canonicalUrl, robots, updateLastSaved])
 
   if (loading) {
     return (
