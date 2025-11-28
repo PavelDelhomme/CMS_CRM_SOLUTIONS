@@ -12,6 +12,7 @@ import pageService, { Page } from '@/services/page.service'
 import settingsService, { SystemSettings } from '@/services/settings.service'
 import MaintenancePage from '@/components/MaintenancePage'
 import { useTheme } from '@/contexts/ThemeContext'
+import BlockPreview from '@/components/editor/BlockPreview'
 
 export default function HomePage() {
   const router = useRouter()

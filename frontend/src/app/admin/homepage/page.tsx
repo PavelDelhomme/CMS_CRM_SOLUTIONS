@@ -257,16 +257,20 @@ export default function HomepageEditorPage() {
       
       const data = homepageResponse.data
       
-      // Si pas de blocs, créer la homepage depuis le backup
-      if (!data.public_homepage_blocks || data.public_homepage_blocks.length === 0) {
+      // Charger les blocs existants ou créer depuis le backup
+      if (data.public_homepage_blocks && data.public_homepage_blocks.length > 0) {
+        setBlocks(data.public_homepage_blocks)
+      } else if (!data.public_homepage_blocks_initialized) {
+        // Créer les blocs par défaut depuis le backup
         const defaultBlocks = createDefaultHomepageBlocks()
         setBlocks(defaultBlocks)
-        // Sauvegarder les blocs par défaut
+        // Sauvegarder les blocs par défaut et marquer comme initialisé
         await api.patch('/system-settings/', {
           public_homepage_blocks: defaultBlocks,
+          public_homepage_blocks_initialized: true,
         })
       } else {
-        setBlocks(data.public_homepage_blocks || [])
+        setBlocks([])
       }
       
       setMetaTitle(data.public_homepage_meta_title || 'VTCBuilder - Le WordPress des chauffeurs VTC')
