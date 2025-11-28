@@ -2503,7 +2503,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       )
 
     case 'progress-circle':
-      const percentage = block.data.percentage || 75
+      const progressPercentage = block.data.percentage || 75
       const circleSize = block.data.size || 'medium'
       const sizeMap: { [key: string]: { size: string; stroke: string } } = {
         small: { size: '100', stroke: '8' },
@@ -2513,7 +2513,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const { size: svgSize, stroke: strokeWidth } = sizeMap[circleSize]
       const radius = (parseInt(svgSize) - parseInt(strokeWidth)) / 2
       const circumference = 2 * Math.PI * radius
-      const offset = circumference - (percentage / 100) * circumference
+      const offset = circumference - (progressPercentage / 100) * circumference
       return (
         <div style={wrapperStyles} className="mb-6 flex flex-col items-center">
           <div className="relative" style={{ width: `${svgSize}px`, height: `${svgSize}px` }}>
@@ -2540,7 +2540,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{percentage}%</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{progressPercentage}%</span>
             </div>
           </div>
           {block.data.text && (
