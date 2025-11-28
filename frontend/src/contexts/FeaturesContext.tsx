@@ -19,6 +19,16 @@ export interface TenantFeatures {
   can_use_analytics: boolean
   can_use_multiple_sites: boolean
   can_use_white_label: boolean
+  can_use_advanced_styling: boolean // Z-index, position, transform, etc.
+  can_use_custom_code: boolean // CSS/JS personnalisé
+  can_use_ai_content: boolean // Génération de contenu IA
+  can_use_advanced_forms: boolean // Formulaires avancés avec logique conditionnelle
+  can_use_ecommerce: boolean // Intégration e-commerce
+  can_use_membership: boolean // Système de membres
+  can_use_booking_system: boolean // Système de réservation avancé
+  can_use_email_marketing: boolean // Marketing email intégré
+  can_use_social_integration: boolean // Intégrations réseaux sociaux
+  can_use_api_access: boolean // Accès API
   max_pages: number
   max_storage_gb: number
   max_users: number
@@ -51,6 +61,16 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
           can_use_analytics: true,
           can_use_multiple_sites: true,
           can_use_white_label: true,
+          can_use_advanced_styling: true,
+          can_use_custom_code: true,
+          can_use_ai_content: true,
+          can_use_advanced_forms: true,
+          can_use_ecommerce: true,
+          can_use_membership: true,
+          can_use_booking_system: true,
+          can_use_email_marketing: true,
+          can_use_social_integration: true,
+          can_use_api_access: true,
           max_pages: -1, // Illimité
           max_storage_gb: -1, // Illimité
           max_users: -1, // Illimité
@@ -74,6 +94,16 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
           can_use_analytics: false,
           can_use_multiple_sites: false,
           can_use_white_label: false,
+          can_use_advanced_styling: false,
+          can_use_custom_code: false,
+          can_use_ai_content: false,
+          can_use_advanced_forms: false,
+          can_use_ecommerce: false,
+          can_use_membership: false,
+          can_use_booking_system: false,
+          can_use_email_marketing: false,
+          can_use_social_integration: false,
+          can_use_api_access: false,
           max_pages: 10,
           max_storage_gb: 1,
           max_users: 1,
