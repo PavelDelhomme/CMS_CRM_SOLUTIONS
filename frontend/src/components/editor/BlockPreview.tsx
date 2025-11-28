@@ -355,27 +355,35 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
       )
 
     case 'image':
-      if (!block.data.src) {
+      if (!block.data.url && !block.data.src) {
         return (
-          <div className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
+          <div style={blockStyles} className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
             Image non configurée
           </div>
         )
       }
+      const imageUrl = block.data.url || block.data.src
       return (
-        <div style={{ ...blockStyles, textAlign: block.data.align || 'center' }} className="mb-6">
-          <img
-            src={block.data.src}
-            alt={block.data.alt || ''}
-            className="max-w-full h-auto rounded-lg shadow-md"
-            style={{
-              maxWidth: '100%',
-              height: 'auto',
-            }}
-            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-              (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="18" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3EImage non disponible%3C/text%3E%3C/svg%3E'
-            }}
-          />
+        <div style={blockStyles} className="mb-6">
+          <div style={{
+            textAlign: block.data.align === 'left' ? 'left' : 
+                      block.data.align === 'right' ? 'right' : 'center'
+          }}>
+            <img
+              src={imageUrl}
+              alt={block.data.alt || ''}
+              className="rounded-lg shadow-md"
+              style={{
+                width: block.data.width ? `${block.data.width}%` : '100%',
+                maxWidth: '100%',
+                height: 'auto',
+                display: 'inline-block',
+              }}
+              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="18" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3EImage non disponible%3C/text%3E%3C/svg%3E'
+              }}
+            />
+          </div>
           {block.data.caption && (
             <p className="text-sm text-gray-600 dark:text-gray-400 italic mt-2 text-center">
               {block.data.caption}
