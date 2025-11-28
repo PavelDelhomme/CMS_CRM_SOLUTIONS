@@ -150,22 +150,31 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   }, [history, trackBlockAction])
 
   const removeBlock = useCallback((blockId: string) => {
-    // Suppression immédiate sans délai pour une meilleure réactivité
-    const blockToDelete = history.state.find((b: Block) => b.id === blockId)
-    const newBlocks = history.state.filter((b: Block) => b.id !== blockId)
-    
-    // Mettre à jour l'historique immédiatement
-    history.set(newBlocks, true)
-    
-    // Tracker la suppression du bloc
-    if (blockToDelete) {
-      trackBlockAction(blockToDelete.type, 'delete')
-    }
-    
-    // Désélectionner le bloc si c'était celui sélectionné
+    // Désélectionner immédiatement le bloc si c'était celui sélectionné (optimistic UI)
     if (selectedBlock === blockId) {
       setSelectedBlock(null)
       setPropertiesOpen(false)
+    }
+    
+    // Trouver le bloc à supprimer pour le tracking
+    const blockToDelete = history.state.find((b: Block) => b.id === blockId)
+    
+    // Suppression immédiate dans l'historique (pas de délai)
+    const newBlocks = history.state.filter((b: Block) => b.id !== blockId)
+    history.set(newBlocks, true)
+    
+    // Tracker la suppression de manière asynchrone pour ne pas bloquer l'UI
+    if (blockToDelete) {
+      // Utiliser requestIdleCallback ou setTimeout pour ne pas bloquer
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        window.requestIdleCallback(() => {
+          trackBlockAction(blockToDelete.type, 'delete')
+        })
+      } else {
+        setTimeout(() => {
+          trackBlockAction(blockToDelete.type, 'delete')
+        }, 0)
+      }
     }
   }, [history, selectedBlock, trackBlockAction])
 
@@ -648,10 +657,13 @@ function SortableBlock({
           <button
             onClick={(e) => {
               e.stopPropagation()
+              e.preventDefault()
+              // Suppression immédiate sans attendre
               onDelete()
             }}
-            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all`}
+            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors`}
             title="Supprimer"
+            type="button"
           >
             <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
