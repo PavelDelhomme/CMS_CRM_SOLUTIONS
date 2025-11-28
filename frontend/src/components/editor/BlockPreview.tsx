@@ -254,7 +254,12 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     // Z-index
     zIndex: block.styles?.z_index || block.styles?.zIndex,
     // Position
-    position: block.styles?.position || 'static',
+    position: block.position?.type || block.styles?.position || 'static',
+    // Coordonnées de position
+    top: block.position?.top || block.styles?.top,
+    right: block.position?.right || block.styles?.right,
+    bottom: block.position?.bottom || block.styles?.bottom,
+    left: block.position?.left || block.styles?.left,
     // Overflow
     overflow: block.styles?.overflow || 'visible',
     // Opacité
@@ -2069,9 +2074,43 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     }
   }
 
+  // Appliquer l'alignement selon le type de position
+  const getAlignmentClasses = () => {
+    if (block.position?.type === 'relative' || block.position?.type === 'absolute') {
+      const align = block.position?.align || 'left'
+      switch (align) {
+        case 'left':
+          return 'mr-auto'
+        case 'center':
+          return 'mx-auto'
+        case 'right':
+          return 'ml-auto'
+        case 'stretch':
+          return 'w-full'
+        default:
+          return ''
+      }
+    }
+    return ''
+  }
+
   // Wrap content with layout and container
+  const wrapperStyle: React.CSSProperties = {
+    ...(block.position?.type === 'absolute' || block.position?.type === 'relative' ? {
+      position: block.position.type,
+      top: block.position.top,
+      right: block.position.right,
+      bottom: block.position.bottom,
+      left: block.position.left,
+    } : {}),
+    transition: block.styles?.transition || 'all 300ms ease-in-out'
+  }
+
   return (
-    <div className={`${containerClass} mb-6 ${getHoverAnimationClass()}`} style={{ transition: block.styles?.transition || 'all 300ms ease-in-out' }}>
+    <div 
+      className={`${containerClass} mb-6 ${getHoverAnimationClass()} ${getAlignmentClasses()}`} 
+      style={wrapperStyle}
+    >
       <div className={layoutWidth}>
         {content}
       </div>

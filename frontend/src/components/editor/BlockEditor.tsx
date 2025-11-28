@@ -18,6 +18,15 @@ export interface Block {
   children?: Block[]
   layout?: 'full' | 'half' | 'third' | 'two-thirds' | 'quarter' | 'three-quarters'
   container?: 'container' | 'container-fluid' | 'none'
+  position?: {
+    type: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
+    top?: string
+    right?: string
+    bottom?: string
+    left?: string
+    align?: 'left' | 'center' | 'right' | 'stretch'
+    alignTo?: string // ID du bloc de référence pour position relative
+  }
 }
 
 
@@ -3606,9 +3615,13 @@ function BlockRenderer({
 function BlockStylePanel({
   block,
   onUpdate,
+  allBlocks = [],
+  blockTypes = [],
 }: {
   block: Block
   onUpdate: (updates: Partial<Block>) => void
+  allBlocks?: Block[]
+  blockTypes?: BlockType[]
 }) {
   const updateStyle = (key: string, value: any) => {
     onUpdate({
@@ -3722,20 +3735,182 @@ function BlockStylePanel({
         {/* Position */}
         <div className="mb-3">
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Position
+            Type de position
           </label>
           <select
-            value={block.styles?.position || 'static'}
-            onChange={(e) => updateStyle('position', e.target.value)}
+            value={block.position?.type || block.styles?.position || 'static'}
+            onChange={(e) => {
+              const positionType = e.target.value
+              onUpdate({
+                position: {
+                  ...block.position,
+                  type: positionType as 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
+                },
+                styles: {
+                  ...block.styles,
+                  position: positionType
+                }
+              })
+            }}
             className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
-            <option value="static">Statique</option>
-            <option value="relative">Relative</option>
-            <option value="absolute">Absolue</option>
-            <option value="fixed">Fixe</option>
-            <option value="sticky">Sticky</option>
+            <option value="static">Statique (dans le flux)</option>
+            <option value="relative">Relative (par rapport au flux)</option>
+            <option value="absolute">Absolue (par rapport au parent)</option>
+            <option value="fixed">Fixe (par rapport à la fenêtre)</option>
+            <option value="sticky">Sticky (collant au scroll)</option>
           </select>
         </div>
+
+        {/* Alignement */}
+        {(block.position?.type === 'relative' || block.position?.type === 'absolute' || block.styles?.position === 'relative' || block.styles?.position === 'absolute') && (
+          <>
+            <div className="mb-3">
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Alignement horizontal
+              </label>
+              <div className="grid grid-cols-4 gap-1">
+                {[
+                  { value: 'left', icon: '←', label: 'Gauche' },
+                  { value: 'center', icon: '↔', label: 'Centre' },
+                  { value: 'right', icon: '→', label: 'Droite' },
+                  { value: 'stretch', icon: '↔', label: 'Étirer' }
+                ].map((align) => (
+                  <button
+                    key={align.value}
+                    type="button"
+                    onClick={() => onUpdate({
+                      position: {
+                        ...block.position,
+                        align: align.value as 'left' | 'center' | 'right' | 'stretch'
+                      }
+                    })}
+                    className={`px-2 py-1.5 text-xs rounded border transition-all ${
+                      (block.position?.align || 'left') === align.value
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                        : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-400'
+                    }`}
+                    title={align.label}
+                  >
+                    <span className="text-sm">{align.icon}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Coordonnées pour position absolute */}
+            {block.position?.type === 'absolute' && (
+              <div className="mb-3 space-y-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Position (px ou %)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Top</label>
+                    <input
+                      type="text"
+                      value={block.position?.top || ''}
+                      onChange={(e) => onUpdate({
+                        position: {
+                          ...block.position,
+                          top: e.target.value
+                        },
+                        styles: {
+                          ...block.styles,
+                          top: e.target.value
+                        }
+                      })}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      placeholder="0px"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Right</label>
+                    <input
+                      type="text"
+                      value={block.position?.right || ''}
+                      onChange={(e) => onUpdate({
+                        position: {
+                          ...block.position,
+                          right: e.target.value
+                        },
+                        styles: {
+                          ...block.styles,
+                          right: e.target.value
+                        }
+                      })}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      placeholder="0px"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Bottom</label>
+                    <input
+                      type="text"
+                      value={block.position?.bottom || ''}
+                      onChange={(e) => onUpdate({
+                        position: {
+                          ...block.position,
+                          bottom: e.target.value
+                        },
+                        styles: {
+                          ...block.styles,
+                          bottom: e.target.value
+                        }
+                      })}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      placeholder="0px"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Left</label>
+                    <input
+                      type="text"
+                      value={block.position?.left || ''}
+                      onChange={(e) => onUpdate({
+                        position: {
+                          ...block.position,
+                          left: e.target.value
+                        },
+                        styles: {
+                          ...block.styles,
+                          left: e.target.value
+                        }
+                      })}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      placeholder="0px"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Bloc de référence pour position relative */}
+            {block.position?.type === 'relative' && (
+              <div className="mb-3">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Aligner par rapport à un autre bloc (optionnel)
+                </label>
+                <select
+                  value={block.position?.alignTo || ''}
+                  onChange={(e) => onUpdate({
+                    position: {
+                      ...block.position,
+                      alignTo: e.target.value || undefined
+                    }
+                  })}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="">Aucun (alignement normal)</option>
+                  {/* Les options seront remplies dynamiquement avec les autres blocs */}
+                </select>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                  Choisissez un bloc pour aligner celui-ci par rapport à lui
+                </p>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Overflow */}
         <div className="mb-3">
