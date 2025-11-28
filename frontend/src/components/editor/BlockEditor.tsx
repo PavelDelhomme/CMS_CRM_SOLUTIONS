@@ -230,14 +230,49 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
   const loadBlockTypes = async () => {
     try {
-      const types = availableBlockTypes || await blocksService.getBlockTypes()
-      // Si l'API ne retourne rien ou une liste vide, utiliser les blocs par défaut
-      if (!types || types.length === 0) {
-        setBlockTypes(getDefaultBlockTypes())
+      // Toujours utiliser les blocs par défaut en priorité pour garantir la disponibilité
+      const defaultTypes = getDefaultBlockTypes()
+      
+      // Si des blocs sont fournis via props, les utiliser, sinon utiliser les blocs par défaut
+      if (availableBlockTypes && availableBlockTypes.length > 0) {
+        // Fusionner les blocs par défaut avec ceux de l'API pour éviter les doublons
+        const mergedTypes = [...defaultTypes]
+        availableBlockTypes.forEach((apiType: BlockType) => {
+          const existingIndex = mergedTypes.findIndex((dt: BlockType) => dt.name === apiType.name)
+          if (existingIndex >= 0) {
+            // Remplacer le bloc par défaut par celui de l'API (plus à jour)
+            mergedTypes[existingIndex] = apiType
+          } else {
+            // Ajouter les nouveaux blocs de l'API
+            mergedTypes.push(apiType)
+          }
+        })
+        setBlockTypes(mergedTypes)
       } else {
-        // Ne pas filtrer ici - on affiche tous les blocs mais on les désactive selon les features
-        // Cela permet de voir ce qui est disponible avec un upgrade
-        setBlockTypes(types)
+        // Essayer de charger depuis l'API, mais utiliser les blocs par défaut en fallback
+        try {
+          const apiTypes = await blocksService.getBlockTypes()
+          if (apiTypes && apiTypes.length > 0) {
+            // Fusionner avec les blocs par défaut
+            const mergedTypes = [...defaultTypes]
+            apiTypes.forEach((apiType: BlockType) => {
+              const existingIndex = mergedTypes.findIndex((dt: BlockType) => dt.name === apiType.name)
+              if (existingIndex >= 0) {
+                mergedTypes[existingIndex] = apiType
+              } else {
+                mergedTypes.push(apiType)
+              }
+            })
+            setBlockTypes(mergedTypes)
+          } else {
+            // Pas de blocs de l'API, utiliser uniquement les blocs par défaut
+            setBlockTypes(defaultTypes)
+          }
+        } catch (apiError) {
+          // Erreur API, utiliser les blocs par défaut
+          console.warn('Erreur chargement blocs API, utilisation des blocs par défaut:', apiError)
+          setBlockTypes(defaultTypes)
+        }
       }
     } catch (error) {
       console.error('Error loading block types:', error)
@@ -922,41 +957,12 @@ function SortableBlock({
                 ? 'bg-blue-500 text-white shadow-md' 
                 : 'text-gray-500 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
-            title="Sélectionner"
+            title="Sélectionner pour configurer"
             type="button"
           >
             <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
-          <button
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.stopPropagation()
-              e.preventDefault()
-              onDuplicate()
-            }}
-            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-green-100 dark:hover:bg-green-900/30 hover:text-green-600 dark:hover:text-green-400 transition-colors relative z-10`}
-            title="Dupliquer"
-            type="button"
-          >
-            <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </button>
-          <button
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.stopPropagation()
-              e.preventDefault()
-              // Suppression immédiate sans attendre
-              onDelete()
-            }}
-            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors relative z-10`}
-            title="Supprimer"
-            type="button"
-          >
-            <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
         </div>
@@ -990,63 +996,16 @@ function SortableBlock({
         </>
       )}
 
-      {/* Block Content - Modern Design */}
+      {/* Block Content - Simple and Clean */}
       <div className={`${isSmall ? 'p-2 sm:p-3' : 'p-4 sm:p-6'} bg-white dark:bg-gray-800`}>
-        {/* Layout Controls - Enhanced */}
-        <div className={`mb-4 ${isSmall ? 'p-2' : 'p-3'} bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700`}>
-          <div className={`flex items-center ${isSmall ? 'gap-1.5 flex-wrap' : 'gap-3 flex-wrap'}`}>
-            <div className={`flex items-center ${isSmall ? 'gap-1' : 'gap-2'}`}>
-              <svg className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500 dark:text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
-              </svg>
-              <span className={`${isSmall ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${layoutCols <= 2 ? 'hidden sm:inline' : ''}`}>Largeur:</span>
-              <select
-                value={layoutCols}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onUpdate({ layout: parseInt(e.target.value) as Block['layout'] })}
-                className={`${isSmall ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-                onClick={(e: React.MouseEvent<HTMLSelectElement>) => e.stopPropagation()}
-                title="Nombre de colonnes sur 12 (système Bootstrap)"
-              >
-                <option value={12}>12/12 (Pleine largeur)</option>
-                <option value={11}>11/12</option>
-                <option value={10}>10/12</option>
-                <option value={9}>9/12 (3/4)</option>
-                <option value={8}>8/12 (2/3)</option>
-                <option value={7}>7/12</option>
-                <option value={6}>6/12 (1/2)</option>
-                <option value={5}>5/12</option>
-                <option value={4}>4/12 (1/3)</option>
-                <option value={3}>3/12 (1/4)</option>
-                <option value={2}>2/12 (1/6)</option>
-                <option value={1}>1/12</option>
-              </select>
-            </div>
-            <div className={`flex items-center ${isSmall ? 'gap-1' : 'gap-2'}`}>
-              <svg className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500 dark:text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              <span className={`${isSmall ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${layoutCols <= 2 ? 'hidden sm:inline' : ''}`}>Conteneur:</span>
-              <select
-                value={block.container || 'container'}
-                onChange={(e) => onUpdate({ container: e.target.value as Block['container'] })}
-                className={`${isSmall ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-                onClick={(e: React.MouseEvent<HTMLSelectElement>) => e.stopPropagation()}
-              >
-                <option value="container">Conteneur</option>
-                <option value="container-fluid">Fluide</option>
-                <option value="none">Aucun</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        {/* Afficher juste un indicateur visuel que le bloc est sélectionné */}
+        {/* Simple indicator when selected */}
         {isSelected && (
           <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg text-xs text-blue-700 dark:text-blue-300">
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>Bloc sélectionné - Paramètres dans la barre latérale</span>
+              <span>Bloc sélectionné - Configurez dans le panneau de droite</span>
             </div>
           </div>
         )}
