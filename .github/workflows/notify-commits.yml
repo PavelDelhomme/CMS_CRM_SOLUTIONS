@@ -1,0 +1,57 @@
+name: Notifications des commits
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - master
+  pull_request:
+    branches:
+      - main
+      - dev
+      - master
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get commit info
+        id: commit-info
+        run: |
+          echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
+          echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          echo "url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Create notification
+        run: |
+          echo "🚀 Nouveau commit détecté!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📝 Message: ${{ steps.commit-info.outputs.message }}"
+          echo "👤 Auteur: ${{ steps.commit-info.outputs.author }}"
+          echo "🌿 Branche: ${{ steps.commit-info.outputs.branch }}"
+          echo "🔗 Hash: ${{ steps.commit-info.outputs.hash }}"
+          echo "🔗 URL: ${{ steps.commit-info.outputs.url }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Summary
+        run: |
+          echo "### ✅ Commit traité avec succès" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Message:** ${{ steps.commit-info.outputs.message }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Auteur:** ${{ steps.commit-info.outputs.author }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branche:** ${{ steps.commit-info.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Hash:** \`${{ steps.commit-info.outputs.hash }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Voir le commit](${{ steps.commit-info.outputs.url }})" >> $GITHUB_STEP_SUMMARY
+
