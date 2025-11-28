@@ -344,7 +344,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         })}
         
         {/* Fallback if no categories */}
-        {blockTypes.length > 0 && !blockTypes.some(bt => bt.category) && (
+        {blockTypes.length > 0 && !blockTypes.some((bt: BlockType) => bt.category) && (
           <div className="space-y-2">
             {blockTypes.map((blockType: BlockType) => (
               <button
@@ -490,13 +490,13 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
               {propertiesTab === 'content' ? (
                 <BlockPropertiesPanel
-                  block={history.state.find(b => b.id === selectedBlock)!}
-                  blockType={blockTypes.find(bt => bt.name === history.state.find(b => b.id === selectedBlock)?.type)}
+                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                  blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
                   onUpdate={(updates) => updateBlock(selectedBlock, updates)}
                 />
               ) : (
                 <BlockStylePanel
-                  block={history.state.find(b => b.id === selectedBlock)!}
+                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
                   onUpdate={(updates) => updateBlock(selectedBlock, updates)}
                 />
               )}
@@ -696,7 +696,7 @@ function SortableBlock({
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation()
               onSelect()
             }}
@@ -739,9 +739,9 @@ function SortableBlock({
               <span className={`${block.layout === 'quarter' || block.layout === 'third' ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${block.layout === 'quarter' ? 'hidden sm:inline' : ''}`}>Largeur:</span>
               <select
                 value={block.layout || 'full'}
-                onChange={(e) => onUpdate({ layout: e.target.value as Block['layout'] })}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onUpdate({ layout: e.target.value as Block['layout'] })}
                 className={`${block.layout === 'quarter' || block.layout === 'third' ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent<HTMLSelectElement>) => e.stopPropagation()}
                 title="Nombre de colonnes dans la grille (sur 6 colonnes max)"
               >
                 <option value="full">6/6</option>
