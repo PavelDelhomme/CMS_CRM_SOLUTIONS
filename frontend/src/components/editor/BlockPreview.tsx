@@ -1466,52 +1466,6 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
         </div>
       )
 
-    case 'testimonials':
-      const testimonials = block.data.testimonials || []
-      return (
-        <div style={blockStyles} className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.length > 0 ? (
-              testimonials.map((testimonial: any, i: number) => (
-                <div key={i} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center mb-4">
-                    {testimonial.avatar && (
-                      <img
-                        src={testimonial.avatar}
-                        alt={testimonial.name}
-                        className="w-12 h-12 rounded-full mr-3"
-                      />
-                    )}
-                    <div>
-                      <div className="font-semibold text-gray-900 dark:text-gray-100">
-                        {testimonial.name || 'Client'}
-                      </div>
-                      {testimonial.role && (
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {testimonial.role}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-gray-700 dark:text-gray-300 italic">
-                    "{testimonial.text || 'Témoignage...'}"
-                  </p>
-                  {testimonial.rating && (
-                    <div className="mt-3 text-yellow-500">
-                      {'★'.repeat(testimonial.rating)}
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
-                Aucun témoignage
-              </div>
-            )}
-          </div>
-        </div>
-      )
-
     case 'form':
       return (
         <div style={blockStyles} className="mb-6 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -1563,64 +1517,6 @@ function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: 
               {block.data.submit_text || 'Envoyer'}
             </button>
           </form>
-        </div>
-      )
-
-    case 'pricing':
-      const plans = block.data.plans || []
-      return (
-        <div style={blockStyles} className="mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {plans.length > 0 ? (
-              plans.map((plan: any, i: number) => (
-                <div
-                  key={i}
-                  className={`bg-white dark:bg-gray-800 rounded-lg border-2 p-6 ${
-                    plan.featured ? 'border-blue-500 shadow-lg' : 'border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  {plan.featured && (
-                    <div className="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
-                      Populaire
-                    </div>
-                  )}
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                    {plan.name || 'Plan'}
-                  </h3>
-                  <div className="mb-4">
-                    <span className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-                      {plan.price || '0'}€
-                    </span>
-                    {plan.period && (
-                      <span className="text-gray-500 dark:text-gray-400">/{plan.period}</span>
-                    )}
-                  </div>
-                  <ul className="space-y-2 mb-6">
-                    {plan.features?.map((feature: string, j: number) => (
-                      <li key={j} className="flex items-start">
-                        <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                      plan.featured
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600'
-                    }`}
-                    disabled
-                  >
-                    {plan.button_text || 'Choisir'}
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
-                Aucun plan de tarification
-              </div>
-            )}
-          </div>
         </div>
       )
 
