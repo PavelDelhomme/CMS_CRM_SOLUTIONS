@@ -229,12 +229,19 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
 
   return (
     <div className="flex h-full w-full flex-col relative">
-      {/* Toolbar - Simplified */}
+      {/* Toolbar - Enhanced with History Navigation */}
       <div className="flex items-center justify-between px-4 lg:px-6 xl:px-8 py-2.5 lg:py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="flex items-center gap-3 lg:gap-4">
+        <div className="flex items-center gap-3 lg:gap-4 flex-wrap">
           {/* Mobile: Menu button */}
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => {
+              setSidebarOpen(!sidebarOpen)
+              // Fermer les paramètres si on ouvre la sidebar
+              if (!sidebarOpen) {
+                setPropertiesOpen(false)
+                setSelectedBlock(null)
+              }
+            }}
             className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             aria-label="Menu"
           >
@@ -242,12 +249,46 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
+
+          {/* History Navigation Buttons - Prominent */}
+          <div className="flex items-center gap-1 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg border-2 border-blue-200 dark:border-blue-700 p-1 shadow-sm">
+            <button
+              onClick={handleUndo}
+              disabled={!history.canUndo}
+              className={`p-2.5 rounded-md transition-all ${
+                history.canUndo
+                  ? 'text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/50 hover:scale-105 active:scale-95'
+                  : 'text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
+              }`}
+              title="Revenir en arrière (Ctrl+Z)"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div className="w-px h-6 bg-blue-300 dark:bg-blue-600"></div>
+            <button
+              onClick={handleRedo}
+              disabled={!history.canRedo}
+              className={`p-2.5 rounded-md transition-all ${
+                history.canRedo
+                  ? 'text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/50 hover:scale-105 active:scale-95'
+                  : 'text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
+              }`}
+              title="Revenir en avant (Ctrl+Shift+Z)"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
           <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
             <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
             </svg>
             <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-              {blocks.length} bloc{blocks.length > 1 ? 's' : ''}
+              {history.state.length} bloc{history.state.length > 1 ? 's' : ''}
             </span>
           </div>
         </div>
