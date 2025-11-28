@@ -907,66 +907,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             </DndContext>
           </div>
 
-          {/* Properties Panel - Right side of middle column (only when block selected) */}
-          {selectedBlock && (
-            <div className="hidden lg:flex flex-col w-1/3 min-w-[320px] max-w-[480px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
-                <button
-                  onClick={handleCloseProperties}
-                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                  title="Fermer les paramètres"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Tabs pour Propriétés et Style */}
-              <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <div className="flex gap-2 px-4">
-                  <button
-                    onClick={() => setPropertiesTab('content')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
-                      propertiesTab === 'content'
-                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Contenu
-                  </button>
-                  <button
-                    onClick={() => setPropertiesTab('style')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
-                      propertiesTab === 'style'
-                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    🎨 Style
-                  </button>
-                </div>
-              </div>
-
-              {/* Properties Content */}
-              <div className="flex-1 overflow-y-auto p-4">
-                {propertiesTab === 'content' ? (
-                  <BlockPropertiesPanel
-                    block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                    blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
-                    onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                  />
-                ) : (
-                  <BlockStylePanel
-                    block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                    onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                  />
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
       </div>
