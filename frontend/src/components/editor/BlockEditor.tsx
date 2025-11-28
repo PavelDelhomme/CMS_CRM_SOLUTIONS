@@ -183,7 +183,19 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     const newBlocks = history.state.map((b: Block) =>
       b.id === blockId ? { ...b, ...updates } : b
     )
-    history.set(newBlocks, true)
+    
+    // Si on a fait undo avant, créer une nouvelle branche dans l'historique
+    // En vérifiant si le futur n'est pas vide (on est dans une branche)
+    const hasFuture = history.canRedo
+    if (hasFuture) {
+      // On crée une nouvelle branche : on garde le passé jusqu'à maintenant, puis on ajoute la nouvelle modification
+      isHistoryUpdate.current = true
+      history.set(newBlocks, true)
+    } else {
+      // Comportement normal : ajouter à l'historique
+      history.set(newBlocks, true)
+    }
+    
     // Tracker la modification du bloc (debounce implicite via historique)
     if (block) {
       trackBlockAction(block.type, 'update')
@@ -193,12 +205,31 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   const handleUndo = useCallback(() => {
     isHistoryUpdate.current = true
     history.undo()
+    // Fermer les paramètres quand on fait undo
+    setPropertiesOpen(false)
+    setSelectedBlock(null)
   }, [history])
 
   const handleRedo = useCallback(() => {
     isHistoryUpdate.current = true
     history.redo()
+    // Fermer les paramètres quand on fait redo
+    setPropertiesOpen(false)
+    setSelectedBlock(null)
   }, [history])
+
+  // Gérer l'ouverture des paramètres - fermer la sidebar des blocs
+  const handleSelectBlock = useCallback((blockId: string) => {
+    setSelectedBlock(blockId)
+    setPropertiesOpen(true)
+    setSidebarOpen(false) // Fermer la sidebar des blocs
+  }, [])
+
+  // Gérer la fermeture des paramètres
+  const handleCloseProperties = useCallback(() => {
+    setPropertiesOpen(false)
+    setSelectedBlock(null)
+  }, [])
 
 
   return (
@@ -415,7 +446,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                               block={block}
                               blockTypes={blockTypes}
                               isSelected={selectedBlock === block.id}
-                              onSelect={() => setSelectedBlock(block.id)}
+                              onSelect={() => handleSelectBlock(block.id)}
                               onUpdate={(updates) => updateBlock(block.id, updates)}
                               onDelete={() => removeBlock(block.id)}
                             />
@@ -459,13 +490,10 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             `}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propriétés du bloc</h3>
-                <button
-                  onClick={() => {
-                    setSelectedBlock(null)
-                    setPropertiesOpen(false)
-                  }}
-                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
+                  <button
+                    onClick={handleCloseProperties}
+                    className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
                   ✕
                 </button>
               </div>
@@ -661,7 +689,7 @@ function SortableBlock({
               // Suppression immédiate sans attendre
               onDelete()
             }}
-            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors`}
+            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors relative z-10`}
             title="Supprimer"
             type="button"
           >
