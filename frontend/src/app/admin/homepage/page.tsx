@@ -283,6 +283,7 @@ export default function HomepageEditorPage() {
       setMetaKeywords(data.public_homepage_meta_keywords || '')
       setCanonicalUrl(data.public_homepage_canonical_url || '')
       setRobots(data.public_homepage_robots || 'index, follow')
+      setPageStatus(data.public_homepage_status || 'draft')
       setBlockTypes(blockTypesData)
     } catch (error: any) {
       console.error('Erreur chargement:', error)
