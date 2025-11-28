@@ -237,7 +237,7 @@ function FAQSectionPreview({ title, items, blockStyles }: { title?: string; item
   )
 }
 
-function BlockPreviewRenderer({ block, blockType }: { block: Block; blockType?: BlockType }) {
+function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; blockType?: BlockType; blockTypes?: BlockType[] }) {
   // Apply block styles if any - Convertir les styles personnalisés en CSS
   const blockStyles: React.CSSProperties = {
     ...(block.styles || {}),
