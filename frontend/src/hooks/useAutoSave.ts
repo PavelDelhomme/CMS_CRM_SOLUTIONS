@@ -71,6 +71,12 @@ export function useAutoSave({ data, onSave, debounceMs = 2000, enabled = true }:
     }
   }, [data, enabled, debounceMs, onSave])
 
-  return { isSaving, lastSaved }
+  // Fonction pour mettre à jour manuellement le timestamp après une sauvegarde manuelle
+  const updateLastSaved = () => {
+    lastSavedDataRef.current = data
+    setLastSaved(new Date())
+  }
+
+  return { isSaving, lastSaved, updateLastSaved }
 }
 

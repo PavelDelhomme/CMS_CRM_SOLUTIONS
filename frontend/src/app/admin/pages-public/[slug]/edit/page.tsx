@@ -33,7 +33,7 @@ export default function EditPublicPage() {
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
 
   // Sauvegarde automatique
-  const { isSaving: isAutoSaving, lastSaved } = useAutoSave({
+  const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
     data: { blocks, metaTitle, metaDescription },
     onSave: async (data) => {
       const settingsData: any = {}
@@ -134,6 +134,8 @@ export default function EditPublicPage() {
       }
       
       await api.patch('/system-settings/', settingsData)
+      // Mettre à jour le timestamp de dernière sauvegarde
+      updateLastSaved()
       toast.success('Page sauvegardée avec succès !')
     } catch (error: any) {
       console.error('Erreur sauvegarde:', error)
@@ -141,7 +143,7 @@ export default function EditPublicPage() {
     } finally {
       setSaving(false)
     }
-  }, [blocks, metaTitle, metaDescription, pageSlug])
+  }, [blocks, metaTitle, metaDescription, pageSlug, updateLastSaved])
 
   if (loading) {
     return (

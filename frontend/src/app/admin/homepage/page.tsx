@@ -30,7 +30,7 @@ export default function HomepageEditorPage() {
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
 
   // Sauvegarde automatique
-  const { isSaving: isAutoSaving, lastSaved } = useAutoSave({
+  const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
     data: { blocks, metaTitle, metaDescription },
     onSave: async (data) => {
       await api.patch('/system-settings/', {
@@ -83,6 +83,8 @@ export default function HomepageEditorPage() {
         public_homepage_meta_title: metaTitle,
         public_homepage_meta_description: metaDescription,
       })
+      // Mettre à jour le timestamp de dernière sauvegarde
+      updateLastSaved()
       toast.success('Page d\'accueil sauvegardée avec succès !')
     } catch (error: any) {
       console.error('Erreur sauvegarde:', error)
@@ -90,7 +92,7 @@ export default function HomepageEditorPage() {
     } finally {
       setSaving(false)
     }
-  }, [blocks, metaTitle, metaDescription])
+  }, [blocks, metaTitle, metaDescription, updateLastSaved])
 
   if (loading) {
     return (

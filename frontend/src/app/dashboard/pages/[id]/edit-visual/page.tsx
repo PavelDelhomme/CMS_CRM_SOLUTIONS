@@ -46,7 +46,7 @@ export default function VisualPageEditor() {
   const editorWidth = viewportWidth >= 1024 ? viewportWidth - 256 : viewportWidth // 256px = 16rem (sidebar)
 
   // Sauvegarde automatique
-  const { isSaving: isAutoSaving, lastSaved } = useAutoSave({
+  const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
     data: { title, blocks, metaTitle, metaDescription, status, isHomepage },
     onSave: async (data) => {
       if (!pageId || !data.title.trim()) return
@@ -110,6 +110,8 @@ export default function VisualPageEditor() {
         status,
         is_homepage: isHomepage,
       })
+      // Mettre à jour le timestamp de dernière sauvegarde
+      updateLastSaved()
       toast.success('Page sauvegardée !')
     } catch (error: any) {
       console.error('Erreur sauvegarde:', error)
