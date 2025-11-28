@@ -158,6 +158,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       { id: 13, name: 'breadcrumb', label: 'Fil d\'Ariane', icon: '🍞', category: 'content', description: 'Navigation breadcrumb', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 13, created_at: '', updated_at: '' },
       { id: 14, name: 'pagination', label: 'Pagination', icon: '📄', category: 'content', description: 'Navigation pagination', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 14, created_at: '', updated_at: '' },
       { id: 15, name: 'tags', label: 'Tags', icon: '🏷️', category: 'content', description: 'Tags/étiquettes', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 15, created_at: '', updated_at: '' },
+      { id: 16, name: 'badge', label: 'Badge', icon: '🏷️', category: 'content', description: 'Badge/étiquette simple', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 16, created_at: '', updated_at: '' },
       
       // Blocs de Mise en Page
       { id: 20, name: 'columns', label: 'Colonnes', icon: '📊', category: 'layout', description: 'Colonnes avec blocs imbriqués', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 20, created_at: '', updated_at: '' },
