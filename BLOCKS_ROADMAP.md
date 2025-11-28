@@ -1,30 +1,30 @@
 # Liste Exhaustive de Blocs Potentiels pour l'Éditeur
 
 ## 📋 Blocs de Contenu (Gratuits)
-- ✅ Heading (Titre)
-- ✅ Text (Texte)
-- ✅ Paragraph (Paragraphe)
-- ✅ Line (Ligne)
-- ✅ Button (Bouton)
-- ✅ Link (Lien)
-- ✅ List (Liste)
-- ✅ Quote (Citation)
-- ✅ Code (Code)
-- ✅ Alert (Alerte)
-- ⬜ Rich Text Editor (Éditeur WYSIWYG)
-- ⬜ Markdown Editor
-- ⬜ HTML Raw
-- ⬜ Divider (Séparateur)
-- ⬜ Spacer (Espaceur)
-- ⬜ Icon (Icône seule)
-- ⬜ Badge (Badge/Étiquette)
-- ⬜ Label (Label)
-- ⬜ Tooltip (Info-bulle)
-- ⬜ Popover (Popover)
-- ⬜ Dropdown (Menu déroulant)
-- ⬜ Breadcrumb (Fil d'Ariane) ✅
-- ⬜ Pagination (Pagination)
-- ⬜ Tags (Tags) ✅
+- ✅ Heading (Titre) - Implémenté
+- ✅ Text (Texte) - Implémenté
+- ✅ Paragraph (Paragraphe) - Implémenté
+- ✅ Line (Ligne) - Implémenté
+- ✅ Button (Bouton) - Implémenté
+- ✅ Link (Lien) - Implémenté
+- ✅ List (Liste) - Implémenté
+- ✅ Quote (Citation) - Implémenté
+- ✅ Code (Code) - Implémenté
+- ✅ Alert (Alerte) - Implémenté
+- ⬜ Rich Text Editor (Éditeur WYSIWYG) - À implémenter (priorité haute)
+- ⬜ Markdown Editor - À implémenter (priorité moyenne)
+- ⬜ HTML Raw - À implémenter (priorité moyenne)
+- ✅ Divider (Séparateur) - Implémenté (horizontal/vertical)
+- ✅ Spacer (Espaceur) - Implémenté (horizontal/vertical)
+- ⬜ Icon (Icône seule) - À implémenter (priorité moyenne)
+- ✅ Badge (Badge/Étiquette) - Implémenté
+- ⬜ Label (Label) - À implémenter (priorité basse)
+- ⬜ Tooltip (Info-bulle) - À implémenter (priorité moyenne)
+- ⬜ Popover (Popover) - À implémenter (priorité basse)
+- ⬜ Dropdown (Menu déroulant) - À implémenter (priorité moyenne)
+- ✅ Breadcrumb (Fil d'Ariane) - Implémenté
+- ✅ Pagination (Pagination) - Implémenté
+- ✅ Tags (Tags) - Implémenté
 - ⬜ Categories (Catégories)
 - ⬜ Author Box (Boîte auteur)
 - ⬜ Related Posts (Articles liés)
@@ -33,74 +33,74 @@
 - ⬜ Share Buttons (Boutons de partage)
 
 ## 🎨 Blocs de Mise en Page (Gratuits)
-- ✅ Columns (Colonnes)
-- ✅ Rows (Lignes)
-- ✅ Section (Section)
-- ✅ Container (Conteneur)
-- ⬜ Flexbox (Flexbox)
-- ⬜ Grid (Grille)
-- ⬜ Stack (Pile verticale)
-- ⬜ Inline (Ligne horizontale)
-- ⬜ Spacer (Espaceur)
-- ⬜ Divider (Séparateur)
-- ⬜ Group (Groupe)
-- ⬜ Wrapper (Enveloppe)
+- ✅ Columns (Colonnes) - Implémenté
+- ✅ Rows (Lignes) - Implémenté
+- ✅ Section (Section) - Implémenté
+- ✅ Container (Conteneur) - Implémenté (via propriété container)
+- ⬜ Flexbox (Flexbox) - À implémenter (priorité moyenne)
+- ⬜ Grid (Grille) - À implémenter (priorité moyenne)
+- ⬜ Stack (Pile verticale) - À implémenter (priorité basse)
+- ⬜ Inline (Ligne horizontale) - À implémenter (priorité basse)
+- ✅ Spacer (Espaceur) - Implémenté (déjà dans contenu)
+- ✅ Divider (Séparateur) - Implémenté (déjà dans contenu)
+- ⬜ Group (Groupe) - À implémenter (priorité basse)
+- ⬜ Wrapper (Enveloppe) - À implémenter (priorité basse)
 
 ## 🖼️ Blocs Médias (Gratuits)
-- ✅ Image (Image)
-- ✅ Video (Vidéo)
-- ✅ Gallery (Galerie)
-- ✅ Audio Player (Lecteur audio) ✅
-- ⬜ Image Slider (Diaporama)
-- ⬜ Image Carousel (Carrousel)
-- ⬜ Lightbox (Lightbox)
-- ⬜ Image Comparison (Comparaison d'images)
-- ⬜ Video Playlist (Playlist vidéo)
-- ⬜ YouTube Embed
-- ⬜ Vimeo Embed
-- ⬜ SoundCloud Embed
-- ⬜ Spotify Embed
-- ⬜ Map (Carte) ✅
-- ⬜ 360° Viewer (Visionneuse 360°)
+- ✅ Image (Image) - Implémenté
+- ✅ Video (Vidéo) - Implémenté
+- ✅ Gallery (Galerie) - Implémenté
+- ✅ Audio Player (Lecteur audio) - Implémenté
+- ⬜ Image Slider (Diaporama) - À implémenter (priorité moyenne)
+- ✅ Image Carousel (Carrousel) - Implémenté (carousel block)
+- ⬜ Lightbox (Lightbox) - À implémenter (priorité moyenne)
+- ⬜ Image Comparison (Comparaison d'images) - À implémenter (priorité basse)
+- ⬜ Video Playlist (Playlist vidéo) - À implémenter (priorité basse)
+- ✅ YouTube Embed - Implémenté (video-embed block)
+- ⬜ Vimeo Embed - À implémenter (priorité moyenne)
+- ⬜ SoundCloud Embed - À implémenter (priorité basse)
+- ⬜ Spotify Embed - À implémenter (priorité basse)
+- ✅ Map (Carte) - Implémenté
+- ⬜ 360° Viewer (Visionneuse 360°) - À implémenter (priorité basse)
 
 ## 📊 Blocs de Données (Premium ⭐)
-- ✅ Table (Tableau)
-- ⬜ Chart (Graphique) - Line, Bar, Pie, Doughnut
-- ⬜ Data Table (Tableau de données)
-- ⬜ Statistics (Statistiques)
-- ⬜ Counter (Compteur)
-- ⬜ Progress Bar (Barre de progression) ✅
-- ⬜ Progress Circle (Cercle de progression) ✅
-- ⬜ Timeline (Chronologie) ✅
-- ⬜ Calendar (Calendrier)
-- ⬜ Countdown (Compte à rebours) ✅
-- ⬜ Clock (Horloge)
-- ⬜ Weather Widget (Widget météo)
-- ⬜ Currency Converter (Convertisseur de devise)
-- ⬜ Calculator (Calculatrice)
+- ✅ Table (Tableau) - Implémenté
+- ✅ Chart (Graphique) - Implémenté (basique)
+- ⬜ Data Table (Tableau de données) - À implémenter (priorité moyenne)
+- ✅ Statistics (Statistiques) - Implémenté (stats block)
+- ⬜ Counter (Compteur) - À implémenter (priorité moyenne)
+- ✅ Progress Bar (Barre de progression) - Implémenté
+- ✅ Progress Circle (Cercle de progression) - Implémenté
+- ✅ Timeline (Chronologie) - Implémenté
+- ✅ Calendar (Calendrier) - Implémenté
+- ✅ Countdown (Compte à rebours) - Implémenté
+- ⬜ Clock (Horloge) - À implémenter (priorité basse)
+- ⬜ Weather Widget (Widget météo) - À implémenter (priorité basse)
+- ⬜ Currency Converter (Convertisseur de devise) - À implémenter (priorité basse)
+- ⬜ Calculator (Calculatrice) - À implémenter (priorité basse)
 
 ## 📝 Blocs de Formulaire (Gratuits/Premium)
-- ✅ Form (Formulaire de contact)
-- ✅ Form Newsletter (Newsletter)
-- ✅ Form Search (Recherche) ✅
-- ✅ Form Inscription (Inscription)
-- ✅ Booking Form (Formulaire de réservation) ✅
-- ⬜ Form Multi-step (Formulaire multi-étapes) - Premium
-- ⬜ Form Conditional (Formulaire conditionnel) - Premium
-- ⬜ Form Calculator (Formulaire calculateur) - Premium
-- ⬜ Form File Upload (Upload de fichiers) - Premium
-- ⬜ Form Payment (Paiement) - Premium
-- ⬜ Form Quiz (Quiz) - Premium
-- ⬜ Form Survey (Sondage) - Premium
-- ⬜ Form Poll (Sondage rapide)
-- ⬜ Form RSVP (RSVP)
+- ✅ Form (Formulaire de contact) - Implémenté
+- ✅ Form Newsletter (Newsletter) - Implémenté
+- ✅ Form Search (Recherche) - Implémenté
+- ✅ Form Inscription (Inscription) - Implémenté
+- ✅ Booking Form (Formulaire de réservation) - Implémenté
+- ⬜ Form Multi-step (Formulaire multi-étapes) - Premium - À implémenter (priorité moyenne)
+- ⬜ Form Conditional (Formulaire conditionnel) - Premium - À implémenter (priorité moyenne)
+- ⬜ Form Calculator (Formulaire calculateur) - Premium - À implémenter (priorité basse)
+- ⬜ Form File Upload (Upload de fichiers) - Premium - À implémenter (priorité moyenne)
+- ⬜ Form Payment (Paiement) - Premium - À implémenter (priorité haute)
+- ⬜ Form Quiz (Quiz) - Premium - À implémenter (priorité basse)
+- ⬜ Form Survey (Sondage) - Premium - À implémenter (priorité basse)
+- ⬜ Form Poll (Sondage rapide) - À implémenter (priorité basse)
+- ⬜ Form RSVP (RSVP) - À implémenter (priorité basse)
 
 ## 🎯 Blocs Interactifs (Premium ⭐)
-- ✅ Tabs (Onglets) ✅
-- ✅ Accordion (Accordéon) ✅
-- ✅ Carousel (Carrousel) ✅
-- ⬜ Modal (Modal/Popup) - Premium
-- ⬜ Popup (Popup)
+- ✅ Tabs (Onglets) - Implémenté
+- ✅ Accordion (Accordéon) - Implémenté
+- ✅ Carousel (Carrousel) - Implémenté
+- ✅ Modal (Modal/Popup) - Implémenté
+- ⬜ Popup (Popup) - À implémenter (priorité basse, similaire à Modal)
 - ⬜ Sidebar (Barre latérale)
 - ⬜ Drawer (Tiroir)
 - ⬜ Dropdown Menu (Menu déroulant)
@@ -124,16 +124,16 @@
 - ⬜ Typeahead (Saisie prédictive)
 
 ## 🛍️ Blocs E-commerce (Premium ⭐)
-- ⬜ Product Card (Carte produit)
-- ⬜ Product Gallery (Galerie produit)
-- ⬜ Product Details (Détails produit)
-- ⬜ Shopping Cart (Panier)
-- ⬜ Checkout (Paiement)
-- ⬜ Price Table (Tableau de prix) ✅
-- ⬜ Product Comparison (Comparaison produits)
-- ⬜ Wishlist (Liste de souhaits)
-- ⬜ Reviews (Avis clients)
-- ⬜ Rating (Évaluation) ✅
+- ⬜ Product Card (Carte produit) - À implémenter (priorité haute)
+- ⬜ Product Gallery (Galerie produit) - À implémenter (priorité haute)
+- ⬜ Product Details (Détails produit) - À implémenter (priorité haute)
+- ⬜ Shopping Cart (Panier) - À implémenter (priorité haute)
+- ⬜ Checkout (Paiement) - À implémenter (priorité haute)
+- ✅ Price Table (Tableau de prix) - Implémenté (pricing block)
+- ⬜ Product Comparison (Comparaison produits) - À implémenter (priorité moyenne)
+- ⬜ Wishlist (Liste de souhaits) - À implémenter (priorité moyenne)
+- ⬜ Reviews (Avis clients) - À implémenter (priorité moyenne)
+- ✅ Rating (Évaluation) - Implémenté
 - ⬜ Stock Status (Statut stock)
 - ⬜ Add to Cart Button (Bouton ajouter au panier)
 - ⬜ Buy Now Button (Bouton acheter maintenant)
@@ -142,20 +142,20 @@
 - ⬜ Cross-sell Products (Produits croisés)
 
 ## 🎨 Blocs de Design (Gratuits/Premium)
-- ✅ Hero (Héro)
-- ✅ Banner (Bannière)
-- ✅ CTA Section (Section CTA)
-- ✅ Feature Card (Carte fonctionnalité) ✅
-- ✅ Icon Box (Boîte icône) ✅
-- ✅ Card (Carte) ✅
-- ⬜ Card Grid (Grille de cartes)
-- ⬜ Card Masonry (Masonry de cartes)
-- ⬜ Card Carousel (Carrousel de cartes)
-- ⬜ Testimonials (Témoignages) ✅
-- ⬜ Reviews Slider (Slider d'avis)
-- ⬜ Logo Grid (Grille de logos) ✅
-- ⬜ Logo Carousel (Carrousel de logos)
-- ⬜ Team Member (Membre d'équipe) ✅
+- ✅ Hero (Héro) - Implémenté
+- ✅ Banner (Bannière) - Implémenté
+- ✅ CTA Section (Section CTA) - Implémenté
+- ✅ Feature Card (Carte fonctionnalité) - Implémenté
+- ✅ Icon Box (Boîte icône) - Implémenté
+- ✅ Card (Carte) - Implémenté
+- ⬜ Card Grid (Grille de cartes) - À implémenter (priorité moyenne)
+- ⬜ Card Masonry (Masonry de cartes) - À implémenter (priorité basse)
+- ⬜ Card Carousel (Carrousel de cartes) - À implémenter (priorité moyenne)
+- ✅ Testimonials (Témoignages) - Implémenté
+- ⬜ Reviews Slider (Slider d'avis) - À implémenter (priorité moyenne)
+- ✅ Logo Grid (Grille de logos) - Implémenté
+- ⬜ Logo Carousel (Carrousel de logos) - À implémenter (priorité moyenne)
+- ✅ Team Member (Membre d'équipe) - Implémenté
 - ⬜ Team Grid (Grille d'équipe)
 - ⬜ Client List (Liste clients)
 - ⬜ Partner Logos (Logos partenaires)
@@ -191,13 +191,13 @@
 - ⬜ Interactive Card (Carte interactive)
 
 ## 📱 Blocs VTC Spécifiques (Gratuits/Premium)
-- ✅ Booking Form (Formulaire de réservation) ✅
-- ✅ Pricing Table VTC (Tableau de prix VTC) ✅
-- ✅ Service Zones (Zones de service) ✅
-- ✅ Vehicle Gallery (Galerie véhicules) ✅
-- ✅ Contact Buttons (Boutons de contact) ✅
-- ✅ Map (Carte) ✅
-- ✅ Badges (Badges) ✅
+- ✅ Booking Form (Formulaire de réservation) - Implémenté
+- ✅ Pricing Table VTC (Tableau de prix VTC) - Implémenté
+- ✅ Service Zones (Zones de service) - Implémenté
+- ✅ Vehicle Gallery (Galerie véhicules) - Implémenté
+- ✅ Contact Buttons (Boutons de contact) - Implémenté
+- ✅ Map (Carte) - Implémenté
+- ✅ Badges (Badges) - Implémenté
 - ⬜ Route Calculator (Calculateur d'itinéraire) - Premium
 - ⬜ Fare Calculator (Calculateur de tarif) - Premium
 - ⬜ Availability Calendar (Calendrier disponibilité) - Premium
@@ -251,7 +251,7 @@
 - ⬜ Tag Manager (Gestionnaire de tags)
 
 ## 🔧 Blocs Utilitaires (Gratuits)
-- ✅ Search Bar (Barre de recherche) ✅
+- ✅ Search Bar (Barre de recherche) - Implémenté
 - ⬜ Language Switcher (Sélecteur langue)
 - ⬜ Currency Switcher (Sélecteur devise)
 - ⬜ Theme Switcher (Sélecteur thème)
@@ -424,7 +424,7 @@
 - ⬜ FAQ Chatbot (Chatbot FAQ) - Premium
 
 ## 🎨 Blocs Footer (Gratuits)
-- ✅ Footer (Pied de page) ✅
+- ✅ Footer (Pied de page) - Implémenté
 - ⬜ Footer Columns (Colonnes footer)
 - ⬜ Footer Links (Liens footer)
 - ⬜ Footer Social (Social footer)
