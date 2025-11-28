@@ -80,35 +80,38 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   // Raccourcis clavier pour undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ne pas intercepter si on est dans un input/textarea
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return
+      }
+
       // Ctrl+Z ou Cmd+Z pour undo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         if (history.canUndo) {
-          isHistoryUpdate.current = true
-          history.undo()
+          handleUndo()
         }
       }
       // Ctrl+Shift+Z ou Cmd+Shift+Z pour redo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
         e.preventDefault()
         if (history.canRedo) {
-          isHistoryUpdate.current = true
-          history.redo()
+          handleRedo()
         }
       }
       // Ctrl+Y pour redo (alternative)
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
         e.preventDefault()
         if (history.canRedo) {
-          isHistoryUpdate.current = true
-          history.redo()
+          handleRedo()
         }
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [history])
+  }, [history, handleUndo, handleRedo])
 
   const loadBlockTypes = async () => {
     try {
