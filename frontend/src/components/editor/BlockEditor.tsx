@@ -38,7 +38,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   // Historique avec undo/redo
   const history = useHistory<Block[]>(blocks, 50)
   const isHistoryUpdate = useRef(false)
-  const deleteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   
   // Tracking des blocs
   const { trackBlockAction } = useBlockTracking()
@@ -142,30 +141,23 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
   }, [history, trackBlockAction])
 
   const removeBlock = useCallback((blockId: string) => {
-    // Annuler le timeout précédent s'il existe
-    if (deleteTimeoutRef.current) {
-      window.clearTimeout(deleteTimeoutRef.current)
+    // Suppression immédiate sans délai pour une meilleure réactivité
+    const blockToDelete = history.state.find((b: Block) => b.id === blockId)
+    const newBlocks = history.state.filter((b: Block) => b.id !== blockId)
+    
+    // Mettre à jour l'historique immédiatement
+    history.set(newBlocks, true)
+    
+    // Tracker la suppression du bloc
+    if (blockToDelete) {
+      trackBlockAction(blockToDelete.type, 'delete')
     }
-
-    // Utiliser un timeout pour éviter les doubles clics
-    deleteTimeoutRef.current = window.setTimeout(() => {
-      const blockToDelete = history.state.find((b: Block) => b.id === blockId)
-      const newBlocks = history.state.filter((b: Block) => b.id !== blockId)
-      history.set(newBlocks, true)
-      
-      // Tracker la suppression du bloc
-      if (blockToDelete) {
-        trackBlockAction(blockToDelete.type, 'delete')
-      }
-      
-      // Désélectionner le bloc si c'était celui sélectionné
-      if (selectedBlock === blockId) {
-        setSelectedBlock(null)
-        setPropertiesOpen(false)
-      }
-      
-      deleteTimeoutRef.current = null
-    }, 100)
+    
+    // Désélectionner le bloc si c'était celui sélectionné
+    if (selectedBlock === blockId) {
+      setSelectedBlock(null)
+      setPropertiesOpen(false)
+    }
   }, [history, selectedBlock, trackBlockAction])
 
   const updateBlock = useCallback((blockId: string, updates: Partial<Block>) => {
@@ -548,7 +540,7 @@ function SortableBlock({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.5 : 1,
   }
 

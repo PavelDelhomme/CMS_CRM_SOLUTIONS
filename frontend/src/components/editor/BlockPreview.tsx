@@ -241,10 +241,36 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
   // Apply block styles if any - Convertir les styles personnalisés en CSS
   const blockStyles: React.CSSProperties = {
     ...(block.styles || {}),
-    // Couleur de fond
-    backgroundColor: block.styles?.background_color || block.styles?.backgroundColor,
+    // Couleur de fond (si pas de gradient)
+    backgroundColor: block.styles?.background && !block.styles?.background.includes('gradient') 
+      ? block.styles?.background 
+      : block.styles?.background_color || block.styles?.backgroundColor,
+    // Gradient background
+    background: block.styles?.background && block.styles?.background.includes('gradient')
+      ? block.styles?.background
+      : undefined,
     // Couleur de texte
     color: block.styles?.color,
+    // Z-index
+    zIndex: block.styles?.z_index || block.styles?.zIndex,
+    // Position
+    position: block.styles?.position || 'static',
+    // Overflow
+    overflow: block.styles?.overflow || 'visible',
+    // Opacité
+    opacity: block.styles?.opacity !== undefined ? block.styles?.opacity : 1,
+    // Transform
+    transform: block.styles?.transform,
+    // Box shadow
+    boxShadow: block.styles?.box_shadow || block.styles?.boxShadow,
+    // Border radius
+    borderRadius: block.styles?.border_radius || block.styles?.borderRadius,
+    // Transition
+    transition: block.styles?.transition || block.styles?.transition_duration 
+      ? `all ${block.styles?.transition_duration || 300}ms ease-in-out`
+      : undefined,
+    // Backdrop filter
+    backdropFilter: block.styles?.backdrop_filter || block.styles?.backdropFilter,
     // Padding
     paddingTop: block.styles?.padding_vertical || block.styles?.padding_top || block.styles?.paddingVertical,
     paddingBottom: block.styles?.padding_vertical || block.styles?.padding_bottom || block.styles?.paddingBottom,
@@ -2027,9 +2053,28 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     }
   })()
 
+  // Générer les classes d'animation au survol
+  const getHoverAnimationClass = () => {
+    const animation = block.styles?.hover_animation || 'none'
+    switch (animation) {
+      case 'scale':
+        return 'hover:scale-105'
+      case 'lift':
+        return 'hover:-translate-y-2 hover:shadow-lg'
+      case 'fade':
+        return 'hover:opacity-80'
+      case 'rotate':
+        return 'hover:rotate-3'
+      case 'glow':
+        return 'hover:shadow-2xl hover:shadow-blue-500/50'
+      default:
+        return ''
+    }
+  }
+
   // Wrap content with layout and container
   return (
-    <div className={`${containerClass} mb-6`}>
+    <div className={`${containerClass} mb-6 ${getHoverAnimationClass()}`} style={{ transition: block.styles?.transition || 'all 300ms ease-in-out' }}>
       <div className={layoutWidth}>
         {content}
       </div>
