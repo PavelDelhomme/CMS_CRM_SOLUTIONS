@@ -12,8 +12,10 @@ interface BlockPreviewProps {
   blockTypes: BlockType[]
   onBlocksChange?: (blocks: Block[]) => void
   onBlockSelect?: (blockId: string | null) => void
+  onBlockDoubleClick?: (blockId: string) => void
   selectedBlockId?: string | null
   isInteractive?: boolean
+  isEditable?: boolean
 }
 
 export default function BlockPreview({ 
@@ -21,8 +23,10 @@ export default function BlockPreview({
   blockTypes, 
   onBlocksChange,
   onBlockSelect,
+  onBlockDoubleClick,
   selectedBlockId,
-  isInteractive = false 
+  isInteractive = false,
+  isEditable = false
 }: BlockPreviewProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -62,6 +66,12 @@ export default function BlockPreview({
   const handleBlockClick = (blockId: string) => {
     if (onBlockSelect && !isDragging) {
       onBlockSelect(blockId === selectedBlockId ? null : blockId)
+    }
+  }
+
+  const handleBlockDoubleClick = (blockId: string) => {
+    if (onBlockDoubleClick && !isDragging) {
+      onBlockDoubleClick(blockId)
     }
   }
 
@@ -119,7 +129,9 @@ export default function BlockPreview({
                     blockType={blockTypes.find((bt: BlockType) => bt.name === block.type)}
                     isSelected={selectedBlockId === block.id}
                     isInteractive={isInteractive}
+                    isEditable={isEditable}
                     onClick={() => handleBlockClick(block.id)}
+                    onDoubleClick={() => handleBlockDoubleClick(block.id)}
                   />
                 ))}
               </SortableContext>
@@ -147,13 +159,17 @@ function SortablePreviewBlock({
   blockType,
   isSelected,
   isInteractive,
+  isEditable,
   onClick,
+  onDoubleClick,
 }: {
   block: Block
   blockType?: BlockType
   isSelected: boolean
   isInteractive: boolean
+  isEditable: boolean
   onClick: () => void
+  onDoubleClick: () => void
 }) {
   const {
     attributes,
@@ -174,16 +190,22 @@ function SortablePreviewBlock({
     <div
       ref={setNodeRef}
       style={style}
-      className={`mb-6 relative group ${isInteractive ? 'cursor-move' : ''} ${
+      className={`mb-6 relative group ${isInteractive ? 'cursor-move' : isEditable ? 'cursor-pointer' : ''} ${
         isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-      }`}
+      } ${isEditable ? 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-1' : ''}`}
       onClick={onClick}
+      onDoubleClick={isEditable ? onDoubleClick : undefined}
       {...(isInteractive ? { ...attributes, ...listeners } : {})}
     >
       {isInteractive && (
         <div className="absolute -top-2 -left-2 z-10 bg-blue-500 text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
           <span className="mr-1">⋮⋮</span>
           Déplacer
+        </div>
+      )}
+      {isEditable && !isInteractive && (
+        <div className="absolute -top-2 -left-2 z-10 bg-blue-500 text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          Double-clic pour éditer
         </div>
       )}
       <BlockPreviewRenderer block={block} blockType={blockType} />

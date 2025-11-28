@@ -664,68 +664,88 @@ export default function HomepageEditorPage() {
           )}
         </div>
 
-        {/* Main Editor Area with Split View */}
+        {/* Main Editor Area - Preview as Main Editing Space */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Editor Section */}
-          <div className={`${showPreview ? 'w-1/2' : 'w-full'} border-r border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300`}>
+          {/* Sidebar - Block Palette */}
+          <div className="w-64 lg:w-72 xl:w-80 border-r border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
             <div className="flex-1 overflow-y-auto">
               <BlockEditor 
                 blocks={blocks}
                 onChange={setBlocks}
                 availableBlockTypes={blockTypes.length > 0 ? blockTypes : undefined}
+                onBlockSelect={setSelectedBlockId}
+                selectedBlockId={selectedBlockId}
               />
             </div>
           </div>
 
-          {/* Preview Section */}
-          {showPreview && (
-            <div className="w-1/2 border-l border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300">
-              <div className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                  Prévisualisation en direct
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-500">
-                  {previewMode === 'desktop' ? '💻 Desktop' : previewMode === 'tablet' ? '📱 Tablette' : '📱 Mobile'}
-                </span>
+          {/* Preview Section - Main Editing Space */}
+          <div className="flex-1 border-l border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
+            <div className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                Édition en direct
+              </span>
+              <div className="flex items-center gap-2">
+                <select
+                  value={previewMode}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPreviewMode(e.target.value as 'desktop' | 'tablet' | 'mobile')}
+                  className="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >
+                  <option value="desktop">💻 Desktop</option>
+                  <option value="tablet">📱 Tablette</option>
+                  <option value="mobile">📱 Mobile</option>
+                </select>
               </div>
-              <div className="flex-1 overflow-hidden relative bg-gray-100 dark:bg-gray-900 p-4">
-                {/* Device Frame */}
-                <div className={`h-full mx-auto transition-all duration-300 ${
+            </div>
+            <div className="flex-1 overflow-hidden relative bg-gray-100 dark:bg-gray-900 p-4">
+              {/* Device Frame */}
+              <div className={`h-full mx-auto transition-all duration-300 ${
+                previewMode === 'desktop' 
+                  ? 'w-full max-w-full' 
+                  : previewMode === 'tablet' 
+                  ? 'w-full max-w-[768px]' 
+                  : 'w-full max-w-[375px]'
+              }`}>
+                {/* Device Frame Border */}
+                <div className={`h-full bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden ${
                   previewMode === 'desktop' 
-                    ? 'w-full max-w-full' 
+                    ? 'border-0' 
                     : previewMode === 'tablet' 
-                    ? 'w-full max-w-[768px]' 
-                    : 'w-full max-w-[375px]'
+                    ? 'border-8 border-gray-800 dark:border-gray-700 rounded-t-3xl' 
+                    : 'border-8 border-gray-800 dark:border-gray-700 rounded-[2.5rem]'
                 }`}>
-                  {/* Device Frame Border */}
-                  <div className={`h-full bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden ${
-                    previewMode === 'desktop' 
-                      ? 'border-0' 
-                      : previewMode === 'tablet' 
-                      ? 'border-8 border-gray-800 dark:border-gray-700 rounded-t-3xl' 
-                      : 'border-8 border-gray-800 dark:border-gray-700 rounded-[2.5rem]'
+                  {/* Device Notch (Mobile) */}
+                  {previewMode === 'mobile' && (
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 dark:bg-gray-700 rounded-b-2xl z-10"></div>
+                  )}
+                  {/* Preview Content - Editable */}
+                  <div className={`h-full overflow-auto ${
+                    previewMode === 'tablet' ? 'px-4' : previewMode === 'mobile' ? 'px-2' : ''
                   }`}>
-                    {/* Device Notch (Mobile) */}
-                    {previewMode === 'mobile' && (
-                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 dark:bg-gray-700 rounded-b-2xl z-10"></div>
-                    )}
-                    {/* Preview Content */}
-                    <div className={`h-full overflow-auto ${
-                      previewMode === 'tablet' ? 'px-4' : previewMode === 'mobile' ? 'px-2' : ''
+                    <div className={`min-h-full ${
+                      previewMode === 'tablet' ? 'max-w-[768px] mx-auto' : 
+                      previewMode === 'mobile' ? 'max-w-[375px] mx-auto' : 
+                      'w-full'
                     }`}>
-                      <div className={`min-h-full ${
-                        previewMode === 'tablet' ? 'max-w-[768px] mx-auto' : 
-                        previewMode === 'mobile' ? 'max-w-[375px] mx-auto' : 
-                        'w-full'
-                      }`}>
-                        <BlockPreview blocks={blocks} blockTypes={blockTypes} />
-                      </div>
+                      <BlockPreview 
+                        blocks={blocks} 
+                        blockTypes={blockTypes}
+                        isEditable={true}
+                        isInteractive={true}
+                        selectedBlockId={selectedBlockId}
+                        onBlockSelect={setSelectedBlockId}
+                        onBlockDoubleClick={(blockId) => {
+                          setSelectedBlockId(blockId)
+                          // Le BlockEditor ouvrira automatiquement le panneau de paramètres
+                        }}
+                        onBlocksChange={setBlocks}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </AdminLayout>

@@ -40,18 +40,37 @@ interface BlockEditorProps {
   blocks: Block[]
   onChange: (blocks: Block[]) => void
   availableBlockTypes?: BlockType[]
+  onBlockSelect?: (blockId: string | null) => void
+  selectedBlockId?: string | null
 }
 
-export default function BlockEditor({ blocks, onChange, availableBlockTypes }: BlockEditorProps) {
+export default function BlockEditor({ blocks, onChange, availableBlockTypes, onBlockSelect, selectedBlockId: externalSelectedBlockId }: BlockEditorProps) {
   const [blockTypes, setBlockTypes] = useState<BlockType[]>([])
-  const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
+  const [selectedBlock, setSelectedBlock] = useState<string | null>(externalSelectedBlockId || null)
+  
+  // Synchroniser avec la sélection externe
+  useEffect(() => {
+    if (externalSelectedBlockId !== undefined) {
+      setSelectedBlock(externalSelectedBlockId)
+    }
+  }, [externalSelectedBlockId])
+  
+  // Notifier le parent quand la sélection change
+  useEffect(() => {
+    if (onBlockSelect) {
+      onBlockSelect(selectedBlock)
+    }
+  }, [selectedBlock, onBlockSelect])
   const [sidebarOpen, setSidebarOpen] = useState(true) // Ouvrir par défaut sur desktop
   const [propertiesTab, setPropertiesTab] = useState<'content' | 'style'>('content')
   
-  // S'assurer que la sidebar est ouverte quand un bloc est sélectionné
+  // S'assurer que la sidebar est ouverte quand un bloc est sélectionné (instantané, pas de latence)
   useEffect(() => {
     if (selectedBlock) {
-      setSidebarOpen(true)
+      // Utiliser requestAnimationFrame pour rendre instantané
+      requestAnimationFrame(() => {
+        setSidebarOpen(true)
+      })
     }
   }, [selectedBlock])
   const { canUseBlockType } = useFeatures()
@@ -354,10 +373,12 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     }
   }, [history, trackBlockAction])
 
-  // Gérer l'ouverture des paramètres - afficher dans la sidebar
+  // Gérer l'ouverture des paramètres - afficher dans la sidebar (instantané)
   const handleSelectBlock = useCallback((blockId: string) => {
+    // Mise à jour synchrone pour éviter la latence
     setSelectedBlock(blockId)
-    setSidebarOpen(true) // Ouvrir la sidebar pour afficher les paramètres
+    // Ouvrir la sidebar immédiatement sans délai
+    setSidebarOpen(true)
   }, [])
 
   // Gérer la fermeture des paramètres - revenir aux blocs disponibles
@@ -726,8 +747,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
               </div>
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
                 <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
-              
-              {/* Group by category */}
+        
+        {/* Group by category */}
         {['content', 'layout', 'media', 'custom'].map((category) => {
           const categoryBlocks = blockTypes.filter((bt: BlockType) => bt.category === category)
           if (categoryBlocks.length === 0) return null
@@ -750,8 +771,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                   const canUse = canUseBlockType(blockType.name, isPremium)
                   
                   return (
-                    <button
-                      key={blockType.id}
+                  <button
+                    key={blockType.id}
                       onClick={() => {
                         if (canUse) {
                           addBlock(blockType)
@@ -786,7 +807,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                             </span>
                           )}
                         </div>
-                        {blockType.description && (
+                      {blockType.description && (
                           <div className={`text-xs line-clamp-1 hidden sm:block mt-0.5 ${
                             canUse ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'
                           }`}>
@@ -796,7 +817,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                         {!canUse && isPremium && (
                           <div className="text-xs text-orange-600 dark:text-orange-400 mt-1 hidden sm:block">
                             Nécessite un abonnement premium
-                          </div>
+                    </div>
                         )}
                       </div>
                       {canUse ? (
@@ -808,7 +829,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                       )}
-                    </button>
+                  </button>
                   )
                 })}
               </div>
@@ -838,18 +859,18 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
         )}
               </div>
             </>
-          )}
-        </div>
+        )}
+      </div>
 
-        {/* Main Editor Area */}
+      {/* Main Editor Area */}
         <div className="flex-1 flex min-w-0 w-full h-full border-r border-gray-200 dark:border-gray-700">
           {/* Editor Panel */}
           <div className="flex-1 flex flex-col min-w-0 h-full transition-all duration-300 w-full">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
               <SortableContext items={history.state.map((b: Block) => b.id)} strategy={verticalListSortingStrategy}>
                 <div className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 max-w-full">
                   {history.state.length === 0 ? (
@@ -865,8 +886,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                           Cliquez sur un bloc dans la palette à gauche pour commencer
                         </p>
                       </div>
-                    </div>
-                  ) : (
+                </div>
+              ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-12 gap-4 lg:gap-6 auto-rows-min">
                       {history.state
                         .filter((b: Block) => !b.position || b.position.type === 'static')
@@ -877,13 +898,13 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                         
                         return (
                           <div key={block.id} className={colSpan}>
-                            <SortableBlock
-                              block={block}
-                              blockTypes={blockTypes}
-                              isSelected={selectedBlock === block.id}
+                  <SortableBlock
+                    block={block}
+                    blockTypes={blockTypes}
+                    isSelected={selectedBlock === block.id}
                               onSelect={() => handleSelectBlock(block.id)}
-                              onUpdate={(updates) => updateBlock(block.id, updates)}
-                              onDelete={() => removeBlock(block.id)}
+                    onUpdate={(updates) => updateBlock(block.id, updates)}
+                    onDelete={() => removeBlock(block.id)}
                               onDuplicate={() => {
                                 const newBlock: Block = {
                                   ...block,
@@ -901,11 +922,11 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                         )
                       })}
                     </div>
-                  )}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
 
         </div>
 
@@ -1085,7 +1106,7 @@ function SortableBlock({
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
           <div className={`flex-shrink-0 ${getIconContainerSize()} rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-gray-200 dark:border-gray-700`}>
             <span className={getIconSize()}>{blockType?.icon || '📦'}</span>
-          </div>
+        </div>
           <div className="min-w-0 flex-1">
             <span className={`${getTextSize()} font-semibold text-gray-900 dark:text-gray-100 truncate block`}>{blockType?.label || block.type}</span>
             {blockType?.description && layoutCols > 4 && (
@@ -1181,13 +1202,13 @@ function BlockRenderer({
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Contenu (éditeur simple)
             </label>
-            <textarea
-              value={block.data.content || ''}
+        <textarea
+          value={block.data.content || ''}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onUpdate({ data: { ...block.data, content: e.target.value } })}
               className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Entrez votre texte..."
-              rows={6}
-            />
+          placeholder="Entrez votre texte..."
+          rows={6}
+        />
           </div>
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <p className="text-xs text-blue-800 dark:text-blue-200">
@@ -1205,29 +1226,29 @@ function BlockRenderer({
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Texte du titre
             </label>
-            <input
-              type="text"
-              value={block.data.text || ''}
-              onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+          <input
+            type="text"
+            value={block.data.text || ''}
+            onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
               className="w-full p-2 sm:p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-lg sm:text-2xl font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Titre..."
-            />
+            placeholder="Titre..."
+          />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Niveau
               </label>
-              <select
-                value={headingLevel}
-                onChange={(e) => onUpdate({ data: { ...block.data, level: e.target.value } })}
+          <select
+            value={headingLevel}
+            onChange={(e) => onUpdate({ data: { ...block.data, level: e.target.value } })}
                 className="w-full text-sm p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               >
                 <option value="h1">H1 (Très grand)</option>
                 <option value="h2">H2 (Grand)</option>
                 <option value="h3">H3 (Moyen)</option>
                 <option value="h4">H4 (Petit)</option>
-              </select>
+          </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1303,7 +1324,7 @@ function BlockRenderer({
               URL du lien
             </label>
             <UrlInputWithSuggestions
-              value={block.data.url || ''}
+            value={block.data.url || ''}
               onChange={(url) => onUpdate({ data: { ...block.data, url } })}
               placeholder="URL ou sélectionner une page..."
               className="text-sm"
@@ -1314,17 +1335,17 @@ function BlockRenderer({
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Style
               </label>
-              <select
-                value={block.data.style || 'primary'}
-                onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+          <select
+            value={block.data.style || 'primary'}
+            onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
                 className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="primary">Primaire</option>
-                <option value="secondary">Secondaire</option>
-                <option value="outline">Outline</option>
+          >
+            <option value="primary">Primaire</option>
+            <option value="secondary">Secondaire</option>
+            <option value="outline">Outline</option>
                 <option value="ghost">Ghost</option>
                 <option value="link">Lien</option>
-              </select>
+          </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1341,7 +1362,7 @@ function BlockRenderer({
                 <option value="lg">Grand</option>
                 <option value="xl">Très grand</option>
               </select>
-            </div>
+          </div>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1455,16 +1476,16 @@ function BlockRenderer({
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Hauteur (px)
                 </label>
-                <input
-                  type="number"
-                  value={block.data.height || 40}
-                  onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 40 } })}
+          <input
+            type="number"
+            value={block.data.height || 40}
+            onChange={(e) => onUpdate({ data: { ...block.data, height: parseInt(e.target.value) || 40 } })}
                   className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Hauteur en pixels..."
-                  min={10}
-                  max={200}
-                />
-              </div>
+            placeholder="Hauteur en pixels..."
+            min={10}
+            max={200}
+          />
+            </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 italic">Espaceur vertical de {(block.data.height || 40)}px</p>
             </>
           )}
@@ -1490,16 +1511,16 @@ function BlockRenderer({
             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Style
             </label>
-            <select
-              value={block.data.style || 'solid'}
-              onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+          <select
+            value={block.data.style || 'solid'}
+            onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
               className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="solid">Solide</option>
-              <option value="dashed">Tirets</option>
-              <option value="dotted">Pointillés</option>
+          >
+            <option value="solid">Solide</option>
+            <option value="dashed">Tirets</option>
+            <option value="dotted">Pointillés</option>
               <option value="double">Double</option>
-            </select>
+          </select>
           </div>
           {block.data.direction === 'horizontal' && (
             <div>
@@ -5117,9 +5138,9 @@ function BlockRenderer({
             <div>
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Bloc {block.type}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">Configuration à venir</p>
-              {blockType?.description && (
+          {blockType?.description && (
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{blockType.description}</p>
-              )}
+          )}
             </div>
           </div>
         </div>
@@ -5706,43 +5727,43 @@ function BlockPropertiesPanel({
           {Object.entries(blockType.schema).map(([key, schema]) => {
             const schemaObj = schema as any
             return (
-              <div key={key}>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <div key={key}>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {schemaObj.label || key}
-                </label>
+              </label>
                 {schemaObj.type === 'text' && (
-                  <input
-                    type="text"
-                    value={block.data[key] || ''}
-                    onChange={(e) =>
-                      onUpdate({
-                        data: { ...block.data, [key]: e.target.value },
-                      })
-                    }
+                <input
+                  type="text"
+                  value={block.data[key] || ''}
+                  onChange={(e) =>
+                    onUpdate({
+                      data: { ...block.data, [key]: e.target.value },
+                    })
+                  }
                     className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                )}
+                />
+              )}
                 {schemaObj.type === 'textarea' && (
-                  <textarea
-                    value={block.data[key] || ''}
-                    onChange={(e) =>
-                      onUpdate({
-                        data: { ...block.data, [key]: e.target.value },
-                      })
-                    }
+                <textarea
+                  value={block.data[key] || ''}
+                  onChange={(e) =>
+                    onUpdate({
+                      data: { ...block.data, [key]: e.target.value },
+                    })
+                  }
                     className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    rows={3}
-                  />
-                )}
+                  rows={3}
+                />
+              )}
                 {schemaObj.type === 'number' && (
-                  <input
-                    type="number"
-                    value={block.data[key] || ''}
-                    onChange={(e) =>
-                      onUpdate({
-                        data: { ...block.data, [key]: parseFloat(e.target.value) || 0 },
-                      })
-                    }
+                <input
+                  type="number"
+                  value={block.data[key] || ''}
+                  onChange={(e) =>
+                    onUpdate({
+                      data: { ...block.data, [key]: parseFloat(e.target.value) || 0 },
+                    })
+                  }
                     className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 )}
@@ -5757,9 +5778,9 @@ function BlockPropertiesPanel({
                     }
                     placeholder={schemaObj.placeholder || 'URL ou sélectionner une page...'}
                     className="text-sm"
-                  />
-                )}
-              </div>
+                />
+              )}
+            </div>
             )
           })}
         </div>
