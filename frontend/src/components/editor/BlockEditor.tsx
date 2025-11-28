@@ -184,17 +184,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       b.id === blockId ? { ...b, ...updates } : b
     )
     
-    // Si on a fait undo avant, créer une nouvelle branche dans l'historique
-    // En vérifiant si le futur n'est pas vide (on est dans une branche)
-    const hasFuture = history.canRedo
-    if (hasFuture) {
-      // On crée une nouvelle branche : on garde le passé jusqu'à maintenant, puis on ajoute la nouvelle modification
-      isHistoryUpdate.current = true
-      history.set(newBlocks, true)
-    } else {
-      // Comportement normal : ajouter à l'historique
-      history.set(newBlocks, true)
-    }
+    // Si on a fait undo avant (futur non vide), créer une nouvelle branche
+    // Le hook useHistory gère déjà cela en effaçant le futur et créant une nouvelle branche
+    history.set(newBlocks, true)
     
     // Tracker la modification du bloc (debounce implicite via historique)
     if (block) {
