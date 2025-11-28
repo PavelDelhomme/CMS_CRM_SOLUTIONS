@@ -470,7 +470,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'video':
       if (!block.data.url) {
         return (
-          <div style={blockStyles} className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
+          <div style={wrapperStyles} className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
             Vidéo non configurée
           </div>
         )
@@ -478,7 +478,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const videoWidth = block.data.width || 100
       const videoHeight = block.data.height || 400
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {block.data.title}
@@ -508,7 +508,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         return (
           <div 
             style={{ 
-              ...blockStyles,
+              ...wrapperStyles,
               width: `${block.data.width || 40}px`,
               height: '1px',
               display: 'inline-block',
@@ -539,7 +539,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       if (dividerDirection === 'vertical') {
         const dividerHeight = block.data.height || 100
         return (
-          <div style={blockStyles} className="mb-6 flex items-center justify-center">
+          <div style={wrapperStyles} className="mb-6 flex items-center justify-center">
             <div 
               className={`border-l-2 border-gray-400 dark:border-gray-600`}
               style={{ 
@@ -557,7 +557,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
                           block.data.width === 'half' ? '50%' : 
                           block.data.width === 'third' ? '33%' : '100%'
       return (
-        <div style={blockStyles} className="mb-6 flex justify-center">
+        <div style={wrapperStyles} className="mb-6 flex justify-center">
           <div 
             className={`border-t-2 border-gray-400 dark:border-gray-600`}
             style={{ 
@@ -616,7 +616,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const style = variantStyles[variant as keyof typeof variantStyles] || variantStyles.info
       
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <div className={`${style.bg} ${style.border} border-l-4 rounded-lg p-4 ${style.text}`}>
             <div className="flex items-start">
               <div className="flex-shrink-0">
@@ -697,7 +697,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       }
       
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <div className="bg-gray-900 dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-700 dark:border-gray-800">
             {/* Header avec langage et bouton copier */}
             <div className="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-gray-900 border-b border-gray-700 dark:border-gray-800">
@@ -787,7 +787,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'rows':
       const rowCount = block.data.rows_count || 2
       return (
-        <div style={blockStyles} className="mb-6 space-y-4">
+        <div style={wrapperStyles} className="mb-6 space-y-4">
           {Array.from({ length: rowCount }).map((_, i) => (
             <div key={i} className="bg-gray-50 dark:bg-gray-800 p-4 rounded border border-gray-200 dark:border-gray-700">
               Ligne {i + 1} - Les colonnes peuvent être ajoutées ici
@@ -804,7 +804,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const bordered = block.data.bordered !== false
       
       return (
-        <div style={blockStyles} className="mb-6 overflow-x-auto">
+        <div style={wrapperStyles} className="mb-6 overflow-x-auto">
           <table className={`w-full ${bordered ? 'border border-gray-300 dark:border-gray-600' : ''}`}>
             {hasHeader && tableData.length > 0 && (
               <thead>
@@ -834,7 +834,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'paragraph':
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
             {block.data.content || 'Paragraphe vide'}
           </p>
@@ -843,7 +843,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'line':
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <span className="text-base text-gray-700 dark:text-gray-300">
             {block.data.text || 'Texte sur une ligne'}
           </span>
@@ -852,7 +852,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'form-newsletter':
       return (
-        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <div style={wrapperStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
           {block.data.title && (
             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               {block.data.title}
@@ -881,7 +881,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'form-search':
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <form className="flex gap-2">
             <input
               type="search"
@@ -900,7 +900,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'form-inscription':
       return (
-        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <div style={wrapperStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
           {block.data.title && (
             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               {block.data.title}
@@ -964,7 +964,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'testimonials':
       const testimonials = block.data.testimonials || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1000,7 +1000,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'pricing':
       const plans = block.data.plans || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1044,7 +1044,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'timeline':
       const events = block.data.events || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1080,7 +1080,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'accordion':
       const accordionItems = block.data.items || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1104,7 +1104,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'stats':
       const stats = block.data.stats || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1131,7 +1131,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'social-links':
       const socialLinks = block.data.links || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-4">
               {block.data.title}
@@ -1158,7 +1158,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'booking-form':
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               {block.data.title}
@@ -1262,7 +1262,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'pricing-table':
       const pricingRows = block.data.rows || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1308,7 +1308,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'service-zones':
       const zones = block.data.zones || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1341,7 +1341,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'vehicle-gallery':
       const vehicles = block.data.vehicles || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-100 mb-8">
               {block.data.title}
@@ -1392,7 +1392,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'contact-buttons':
       const contacts = block.data.contacts || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
               {block.data.title}
@@ -1439,7 +1439,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const mapAddress = block.data.address || ''
       const mapHeight = block.data.height || 400
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
               {block.data.title}
@@ -1485,7 +1485,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         return colors[color] || colors.blue
       }
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100 mb-6">
               {block.data.title}
@@ -1515,7 +1515,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const images = block.data.images || []
       const galleryColumns = block.data.columns || 3
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <div 
             className="grid gap-4"
             style={{
@@ -1547,7 +1547,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'form':
       const formFields = block.data.fields || []
       return (
-        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <div style={wrapperStyles} className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
           {block.data.title && (
             <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">{block.data.title}</h3>
           )}
@@ -1606,7 +1606,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'accordion':
       const items = block.data.items || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           <div className="space-y-2">
             {items.length > 0 ? (
               items.map((item: any, i: number) => (
@@ -1634,7 +1634,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'tabs':
       const tabs = block.data.tabs || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {tabs.length > 0 ? (
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
@@ -1701,7 +1701,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'features-grid':
       const features = block.data.features || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.title && (
             <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
               {block.data.title}
@@ -1768,7 +1768,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'contact-form':
       return (
-        <div style={blockStyles} className="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <div style={wrapperStyles} className="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
           {block.data.title && (
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               {block.data.title}
@@ -1836,7 +1836,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         <FAQSectionPreview 
           title={block.data.title}
           items={faqItems}
-          blockStyles={blockStyles}
+          wrapperStyles={wrapperStyles}
         />
       )
 
@@ -1882,7 +1882,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'footer':
       const footerColumns = block.data.columns || []
       return (
-        <div style={blockStyles} className="mb-6 bg-gray-900 dark:bg-gray-950 text-white p-8 rounded-lg">
+        <div style={wrapperStyles} className="mb-6 bg-gray-900 dark:bg-gray-950 text-white p-8 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
             {footerColumns.length > 0 ? (
               footerColumns.map((column: any, colIndex: number) => (
@@ -1958,7 +1958,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'carousel':
       const carouselItems = block.data.items || []
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {carouselItems.length > 0 ? (
             <div className="relative overflow-hidden rounded-lg">
               <div className="flex transition-transform duration-500" style={{ transform: `translateX(0)` }}>
@@ -2002,7 +2002,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
       
       return (
-        <div style={blockStyles} className="mb-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white p-8 rounded-lg text-center">
+        <div style={wrapperStyles} className="mb-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white p-8 rounded-lg text-center">
           {block.data.title && (
             <h3 className="text-2xl font-bold mb-6">{block.data.title}</h3>
           )}
@@ -2030,7 +2030,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'progress-bar':
       const percentage = Math.min(100, Math.max(0, block.data.percentage || 0))
       return (
-        <div style={blockStyles} className="mb-6">
+        <div style={wrapperStyles} className="mb-6">
           {block.data.label && (
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{block.data.label}</span>
@@ -2051,7 +2051,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     default:
       return (
-        <div style={blockStyles} className="mb-6 p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
+        <div style={wrapperStyles} className="mb-6 p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
           <div className="flex flex-col items-center gap-3">
             <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
               <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
