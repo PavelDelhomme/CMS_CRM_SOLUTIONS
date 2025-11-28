@@ -496,32 +496,236 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           />
         )}
 
-        {/* Sidebar - Block Palette (Always visible) */}
+        {/* Sidebar - Block Palette OU Properties Panel */}
         <div className={`
           ${sidebarOpen ? 'fixed left-0 top-0 h-full z-50' : 'hidden'}
           lg:static lg:block
           w-64 lg:w-72 xl:w-80 2xl:w-96
           bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800
           border-r border-gray-200 dark:border-gray-700 
-          p-4 sm:p-5 lg:p-6
-          overflow-y-auto 
+          overflow-hidden
           transition-transform duration-300 ease-in-out
           shadow-lg lg:shadow-none
           flex-shrink-0
+          flex flex-col
         `}>
-          {/* Mobile: Close button */}
-          <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
+          {/* Afficher le panneau de paramètres si un bloc est sélectionné, sinon la palette de blocs */}
+          {selectedBlock ? (
+            /* Properties Panel dans la sidebar */
+            <>
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
+                <button
+                  onClick={() => {
+                    setSelectedBlock(null)
+                    setSidebarOpen(true)
+                  }}
+                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  title="Retour aux blocs disponibles"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Tabs pour Propriétés et Style */}
+              <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <div className="flex gap-2 px-4">
+                  <button
+                    onClick={() => setPropertiesTab('content')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'content'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    📝 Contenu
+                  </button>
+                  <button
+                    onClick={() => setPropertiesTab('style')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'style'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    🎨 Style
+                  </button>
+                </div>
+              </div>
+
+              {/* Properties Content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                {propertiesTab === 'content' ? (
+                  <>
+                    {/* Actions du bloc (Dupliquer, Supprimer) */}
+                    <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            const block = history.state.find((b: Block) => b.id === selectedBlock)
+                            if (block) {
+                              const newBlock: Block = {
+                                ...block,
+                                id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                              }
+                              const currentIndex = history.state.findIndex((b: Block) => b.id === block.id)
+                              const newBlocks = [...history.state]
+                              newBlocks.splice(currentIndex + 1, 0, newBlock)
+                              history.set(newBlocks)
+                              onChange(newBlocks)
+                              trackBlockAction(block.type, 'add')
+                            }
+                          }}
+                          className="flex-1 px-3 py-2 text-xs font-medium bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Dupliquer
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (selectedBlock) {
+                              removeBlock(selectedBlock)
+                            }
+                          }}
+                          className="flex-1 px-3 py-2 text-xs font-medium bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Configuration Layout (Largeur, Conteneur, Z-index) */}
+                    <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">Mise en page</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Largeur (colonnes sur 12)
+                          </label>
+                          <select
+                            value={history.state.find((b: Block) => b.id === selectedBlock)?.layout || 12}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                              if (selectedBlock) {
+                                updateBlock(selectedBlock, { layout: parseInt(e.target.value) as Block['layout'] })
+                              }
+                            }}
+                            className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value={12}>12/12 (Pleine largeur)</option>
+                            <option value={11}>11/12</option>
+                            <option value={10}>10/12</option>
+                            <option value={9}>9/12 (3/4)</option>
+                            <option value={8}>8/12 (2/3)</option>
+                            <option value={7}>7/12</option>
+                            <option value={6}>6/12 (1/2)</option>
+                            <option value={5}>5/12</option>
+                            <option value={4}>4/12 (1/3)</option>
+                            <option value={3}>3/12 (1/4)</option>
+                            <option value={2}>2/12 (1/6)</option>
+                            <option value={1}>1/12</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Conteneur
+                          </label>
+                          <select
+                            value={history.state.find((b: Block) => b.id === selectedBlock)?.container || 'container'}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                              if (selectedBlock) {
+                                updateBlock(selectedBlock, { container: e.target.value as Block['container'] })
+                              }
+                            }}
+                            className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="container">Conteneur</option>
+                            <option value="container-fluid">Fluide</option>
+                            <option value="none">Aucun</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Z-index
+                          </label>
+                          <input
+                            type="number"
+                            value={history.state.find((b: Block) => b.id === selectedBlock)?.styles?.z_index || 0}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              if (selectedBlock) {
+                                const currentBlock = history.state.find((b: Block) => b.id === selectedBlock)
+                                if (currentBlock) {
+                                  updateBlock(selectedBlock, {
+                                    styles: {
+                                      ...currentBlock.styles,
+                                      z_index: parseInt(e.target.value) || 0,
+                                    },
+                                  })
+                                }
+                              }
+                            }}
+                            className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Propriétés du bloc */}
+                    <BlockPropertiesPanel
+                      block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                      blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
+                      onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                    />
+                  </>
+                ) : (
+                  <BlockStylePanel
+                    block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                    onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                  />
+                )}
+              </div>
+
+              {/* Bouton retour aux blocs */}
+              <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <button
+                  onClick={() => {
+                    setSelectedBlock(null)
+                    setSidebarOpen(true)
+                  }}
+                  className="w-full px-4 py-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Retour aux blocs disponibles
+                </button>
+              </div>
+            </>
+          ) : (
+            /* Block Palette */
+            <>
+              {/* Mobile: Close button */}
+              <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700 p-4">
+                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+                <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
               
               {/* Group by category */}
         {['content', 'layout', 'media', 'custom'].map((category) => {
@@ -632,12 +836,15 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
             ))}
           </div>
         )}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Main Editor Area - Split: Blocks Editor + Properties Panel */}
+        {/* Main Editor Area */}
         <div className="flex-1 flex min-w-0 w-full h-full border-r border-gray-200 dark:border-gray-700">
-          {/* Editor Panel - Left side of middle column */}
-          <div className={`flex-1 flex flex-col min-w-0 h-full transition-all duration-300 ${selectedBlock ? 'lg:w-2/3' : 'w-full'}`}>
+          {/* Editor Panel */}
+          <div className="flex-1 flex flex-col min-w-0 h-full transition-all duration-300 w-full">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
