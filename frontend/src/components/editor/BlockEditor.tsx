@@ -298,6 +298,60 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
               {history.state.length} bloc{history.state.length > 1 ? 's' : ''}
             </span>
           </div>
+
+          {/* Export/Import buttons */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                const dataStr = JSON.stringify(history.state, null, 2)
+                const dataBlob = new Blob([dataStr], { type: 'application/json' })
+                const url = URL.createObjectURL(dataBlob)
+                const link = document.createElement('a')
+                link.href = url
+                link.download = `blocks-${new Date().toISOString().split('T')[0]}.json`
+                link.click()
+                URL.revokeObjectURL(url)
+              }}
+              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              title="Exporter les blocs"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </button>
+            <label className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer" title="Importer des blocs">
+              <input
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    const reader = new FileReader()
+                    reader.onload = (event) => {
+                      try {
+                        const imported = JSON.parse(event.target?.result as string)
+                        if (Array.isArray(imported)) {
+                          const newBlocks = imported.map((b: Block) => ({
+                            ...b,
+                            id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                          }))
+                          history.set([...history.state, ...newBlocks])
+                          onChange([...history.state, ...newBlocks])
+                        }
+                      } catch (error) {
+                        alert('Erreur lors de l\'importation du fichier')
+                      }
+                    }
+                    reader.readAsText(file)
+                  }
+                }}
+              />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -491,6 +545,18 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                               onSelect={() => handleSelectBlock(block.id)}
                               onUpdate={(updates) => updateBlock(block.id, updates)}
                               onDelete={() => removeBlock(block.id)}
+                              onDuplicate={() => {
+                                const newBlock: Block = {
+                                  ...block,
+                                  id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                                }
+                                const currentIndex = history.state.findIndex((b: Block) => b.id === block.id)
+                                const newBlocks = [...history.state]
+                                newBlocks.splice(currentIndex + 1, 0, newBlock)
+                                history.set(newBlocks)
+                                onChange(newBlocks)
+                                trackBlockAction(block.type, 'add')
+                              }}
                             />
                           </div>
                         )
