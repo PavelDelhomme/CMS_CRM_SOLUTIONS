@@ -16,7 +16,7 @@ export interface Block {
   data: Record<string, any>
   styles?: Record<string, any>
   children?: Block[]
-  layout?: 'full' | 'half' | 'third' | 'two-thirds' | 'quarter' | 'three-quarters'
+  layout?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 // Nombre de colonnes sur 12 (système Bootstrap)
   container?: 'container' | 'container-fluid' | 'none'
   position?: {
     type: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
@@ -139,7 +139,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       type: blockType.name,
       data: {},
       styles: blockType.default_styles || {},
-      layout: 'full',
+      layout: 12, // Par défaut, pleine largeur (12/12)
       container: 'container',
     }
     history.set([...history.state, newBlock], true)
@@ -392,15 +392,13 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                       </div>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 lg:gap-6 auto-rows-min">
-                      {history.state.map((block) => {
-                        // Calculer le span de colonnes basé sur le layout
-                        const colSpan = block.layout === 'full' ? 'col-span-full' :
-                          block.layout === 'three-quarters' ? 'col-span-3' :
-                          block.layout === 'two-thirds' ? 'col-span-4' :
-                          block.layout === 'half' ? 'col-span-3' :
-                          block.layout === 'third' ? 'col-span-2' :
-                          block.layout === 'quarter' ? 'col-span-1' : 'col-span-full'
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-12 gap-4 lg:gap-6 auto-rows-min">
+                      {history.state
+                        .filter((b: Block) => !b.position || b.position.type === 'static')
+                        .map((block) => {
+                          // Calculer le span de colonnes basé sur le layout (système 12 colonnes)
+                          const layoutCols = block.layout || 12
+                          const colSpan = layoutCols === 12 ? 'col-span-full' : `col-span-${layoutCols}`
                         
                         return (
                           <div key={block.id} className={colSpan}>
@@ -690,7 +688,7 @@ function SortableBlock({
           </div>
           <div className="min-w-0 flex-1">
             <span className={`${getTextSize()} font-semibold text-gray-900 dark:text-gray-100 truncate block`}>{blockType?.label || block.type}</span>
-            {blockType?.description && block.layout !== 'quarter' && block.layout !== 'third' && (
+            {blockType?.description && layoutCols > 4 && (
               <span className="text-xs text-gray-500 dark:text-gray-400 truncate block hidden sm:block">{blockType.description}</span>
             )}
           </div>
@@ -729,39 +727,45 @@ function SortableBlock({
       </div>
 
       {/* Block Content - Modern Design */}
-      <div className={`${block.layout === 'quarter' || block.layout === 'third' ? 'p-2 sm:p-3' : 'p-4 sm:p-6'} bg-white dark:bg-gray-800`}>
+      <div className={`${isSmall ? 'p-2 sm:p-3' : 'p-4 sm:p-6'} bg-white dark:bg-gray-800`}>
         {/* Layout Controls - Enhanced */}
-        <div className={`mb-4 ${block.layout === 'quarter' || block.layout === 'third' ? 'p-2' : 'p-3'} bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700`}>
-          <div className={`flex items-center ${block.layout === 'quarter' || block.layout === 'third' ? 'gap-1.5 flex-wrap' : 'gap-3 flex-wrap'}`}>
-            <div className={`flex items-center ${block.layout === 'quarter' || block.layout === 'third' ? 'gap-1' : 'gap-2'}`}>
-              <svg className={`${block.layout === 'quarter' || block.layout === 'third' ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500 dark:text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className={`mb-4 ${isSmall ? 'p-2' : 'p-3'} bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700`}>
+          <div className={`flex items-center ${isSmall ? 'gap-1.5 flex-wrap' : 'gap-3 flex-wrap'}`}>
+            <div className={`flex items-center ${isSmall ? 'gap-1' : 'gap-2'}`}>
+              <svg className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500 dark:text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
               </svg>
-              <span className={`${block.layout === 'quarter' || block.layout === 'third' ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${block.layout === 'quarter' ? 'hidden sm:inline' : ''}`}>Largeur:</span>
+              <span className={`${isSmall ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${layoutCols <= 2 ? 'hidden sm:inline' : ''}`}>Largeur:</span>
               <select
-                value={block.layout || 'full'}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onUpdate({ layout: e.target.value as Block['layout'] })}
-                className={`${block.layout === 'quarter' || block.layout === 'third' ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+                value={layoutCols}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onUpdate({ layout: parseInt(e.target.value) as Block['layout'] })}
+                className={`${isSmall ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
                 onClick={(e: React.MouseEvent<HTMLSelectElement>) => e.stopPropagation()}
-                title="Nombre de colonnes dans la grille (sur 6 colonnes max)"
+                title="Nombre de colonnes sur 12 (système Bootstrap)"
               >
-                <option value="full">6/6</option>
-                <option value="three-quarters">5/6</option>
-                <option value="two-thirds">4/6</option>
-                <option value="half">3/6</option>
-                <option value="third">2/6</option>
-                <option value="quarter">1/6</option>
+                <option value={12}>12/12 (Pleine largeur)</option>
+                <option value={11}>11/12</option>
+                <option value={10}>10/12</option>
+                <option value={9}>9/12 (3/4)</option>
+                <option value={8}>8/12 (2/3)</option>
+                <option value={7}>7/12</option>
+                <option value={6}>6/12 (1/2)</option>
+                <option value={5}>5/12</option>
+                <option value={4}>4/12 (1/3)</option>
+                <option value={3}>3/12 (1/4)</option>
+                <option value={2}>2/12 (1/6)</option>
+                <option value={1}>1/12</option>
               </select>
             </div>
-            <div className={`flex items-center ${block.layout === 'quarter' || block.layout === 'third' ? 'gap-1' : 'gap-2'}`}>
-              <svg className={`${block.layout === 'quarter' || block.layout === 'third' ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500 dark:text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`flex items-center ${isSmall ? 'gap-1' : 'gap-2'}`}>
+              <svg className={`${isSmall ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500 dark:text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-              <span className={`${block.layout === 'quarter' || block.layout === 'third' ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${block.layout === 'quarter' ? 'hidden sm:inline' : ''}`}>Conteneur:</span>
+              <span className={`${isSmall ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700 dark:text-gray-300 ${layoutCols <= 2 ? 'hidden sm:inline' : ''}`}>Conteneur:</span>
               <select
                 value={block.container || 'container'}
                 onChange={(e) => onUpdate({ container: e.target.value as Block['container'] })}
-                className={`${block.layout === 'quarter' || block.layout === 'third' ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+                className={`${isSmall ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <option value="container">Conteneur</option>

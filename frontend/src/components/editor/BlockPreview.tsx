@@ -300,13 +300,20 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     textAlign: block.styles?.text_align || block.styles?.textAlign || block.styles?.text_align,
   }
 
-  // Get layout width
-  const layoutWidth = block.layout === 'full' ? 'w-full' :
-    block.layout === 'three-quarters' ? 'w-3/4' :
-    block.layout === 'two-thirds' ? 'w-2/3' :
-    block.layout === 'half' ? 'w-1/2' :
-    block.layout === 'third' ? 'w-1/3' :
-    block.layout === 'quarter' ? 'w-1/4' : 'w-full'
+  // Get layout width (système 12 colonnes Bootstrap)
+  const layoutCols = typeof block.layout === 'number' ? block.layout : 12
+  const layoutWidth = layoutCols === 12 ? 'w-full' :
+    layoutCols === 11 ? 'w-[91.666667%]' :
+    layoutCols === 10 ? 'w-[83.333333%]' :
+    layoutCols === 9 ? 'w-3/4' :
+    layoutCols === 8 ? 'w-2/3' :
+    layoutCols === 7 ? 'w-[58.333333%]' :
+    layoutCols === 6 ? 'w-1/2' :
+    layoutCols === 5 ? 'w-[41.666667%]' :
+    layoutCols === 4 ? 'w-1/3' :
+    layoutCols === 3 ? 'w-1/4' :
+    layoutCols === 2 ? 'w-1/6' :
+    layoutCols === 1 ? 'w-[8.333333%]' : 'w-full'
 
   // Get container class
   const containerClass = block.container === 'container-fluid' ? 'w-full' :
