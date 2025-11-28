@@ -8,6 +8,7 @@ import blocksService, { BlockType } from '@/services/blocks.service'
 import { useFeatures } from '@/contexts/FeaturesContext'
 import UrlInputWithSuggestions from './UrlInputWithSuggestions'
 import { useHistory } from '@/hooks/useHistory'
+import { useBlockTracking } from '@/hooks/useBlockTracking'
 
 export interface Block {
   id: string
@@ -116,8 +117,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const oldIndex = history.state.findIndex(b => b.id === active.id)
-      const newIndex = history.state.findIndex(b => b.id === over.id)
+      const oldIndex = history.state.findIndex((b: Block) => b.id === active.id)
+      const newIndex = history.state.findIndex((b: Block) => b.id === over.id)
 
       const newBlocks = arrayMove(history.state, oldIndex, newIndex)
       history.set(newBlocks, true)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import AdminLayout from '@/components/AdminLayout'
@@ -163,7 +163,7 @@ export default function HomepageEditorPage() {
               id="meta_title"
               type="text"
               value={metaTitle}
-              onChange={(e) => setMetaTitle(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaTitle(e.target.value)}
               className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Titre pour les moteurs de recherche"
             />
@@ -176,7 +176,7 @@ export default function HomepageEditorPage() {
               id="meta_description"
               type="text"
               value={metaDescription}
-              onChange={(e) => setMetaDescription(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaDescription(e.target.value)}
               className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Description pour les moteurs de recherche"
             />
