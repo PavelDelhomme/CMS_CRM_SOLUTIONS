@@ -39,8 +39,7 @@ interface BlockEditorProps {
 export default function BlockEditor({ blocks, onChange, availableBlockTypes }: BlockEditorProps) {
   const [blockTypes, setBlockTypes] = useState<BlockType[]>([])
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [propertiesOpen, setPropertiesOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true) // Ouvrir par défaut sur desktop
   const [propertiesTab, setPropertiesTab] = useState<'content' | 'style'>('content')
   const { canUseBlockType } = useFeatures()
   
@@ -213,17 +212,16 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     }
   }, [history, trackBlockAction])
 
-  // Gérer l'ouverture des paramètres - fermer la sidebar des blocs
+  // Gérer l'ouverture des paramètres - afficher dans la sidebar
   const handleSelectBlock = useCallback((blockId: string) => {
     setSelectedBlock(blockId)
-    setPropertiesOpen(true)
-    setSidebarOpen(false) // Fermer la sidebar des blocs
+    setSidebarOpen(true) // Ouvrir la sidebar pour afficher les paramètres
   }, [])
 
-  // Gérer la fermeture des paramètres
+  // Gérer la fermeture des paramètres - revenir aux blocs disponibles
   const handleCloseProperties = useCallback(() => {
-    setPropertiesOpen(false)
     setSelectedBlock(null)
+    setPropertiesTab('content') // Réinitialiser l'onglet
   }, [])
 
 
@@ -303,7 +301,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           />
         )}
 
-        {/* Sidebar - Block Palette with Categories - Modern Design */}
+        {/* Sidebar - Block Palette OR Properties Panel */}
         <div className={`
           ${sidebarOpen ? 'fixed left-0 top-0 h-full z-50' : 'hidden'}
           lg:static lg:block
@@ -316,20 +314,92 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           shadow-lg lg:shadow-none
           flex-shrink-0
         `}>
-          {/* Mobile: Close button */}
-          <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Blocs disponibles</h3>
+          {selectedBlock ? (
+            /* Properties Panel in Sidebar */
+            <>
+              {/* Mobile: Close button */}
+              <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Desktop Header */}
+              <div className="hidden lg:flex items-center justify-between mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Paramètres du bloc</h3>
+                <button
+                  onClick={handleCloseProperties}
+                  className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  title="Revenir aux blocs disponibles"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Tabs pour Propriétés et Style */}
+              <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPropertiesTab('content')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'content'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    Contenu
+                  </button>
+                  <button
+                    onClick={() => setPropertiesTab('style')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                      propertiesTab === 'style'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    🎨 Style
+                  </button>
+                </div>
+              </div>
+
+              {propertiesTab === 'content' ? (
+                <BlockPropertiesPanel
+                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                  blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
+                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                />
+              ) : (
+                <BlockStylePanel
+                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
+                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                />
+              )}
+            </>
+          ) : (
+            /* Block Palette */
+            <>
+              {/* Mobile: Close button */}
+              <div className="flex items-center justify-between mb-5 lg:hidden pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Blocs disponibles</h3>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Blocs disponibles</h3>
         
         {/* Group by category */}
         {['content', 'layout', 'media', 'custom'].map((category) => {
@@ -497,97 +567,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
           </div>
         </div>
 
-        {/* Properties Panel - Responsive (Drawer on mobile, sidebar on desktop) */}
-        {selectedBlock && (
-          <>
-            {/* Mobile Overlay */}
-            {propertiesOpen && (
-              <div
-                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-                onClick={() => {
-                  setPropertiesOpen(false)
-                  setSelectedBlock(null)
-                }}
-              />
-            )}
-
-            {/* Properties Panel - Wider on desktop */}
-            <div className={`
-              ${propertiesOpen ? 'fixed right-0 top-0 h-full z-50' : 'hidden'}
-              lg:static lg:block
-              w-full sm:w-80 lg:w-96 xl:w-[28rem] 2xl:w-[32rem]
-              bg-white dark:bg-gray-800 
-              border-l border-gray-300 dark:border-gray-700 
-              p-4 sm:p-5 lg:p-6 xl:p-8
-              overflow-y-auto
-              shadow-lg lg:shadow-none
-              transition-transform duration-300 ease-in-out
-              flex-shrink-0
-            `}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propriétés du bloc</h3>
-                  <button
-                    onClick={handleCloseProperties}
-                    className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                  ✕
-                </button>
-              </div>
-              
-              {/* Tabs pour Propriétés et Style */}
-              <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPropertiesTab('content')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
-                      propertiesTab === 'content'
-                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    Contenu
-                  </button>
-                  <button
-                    onClick={() => setPropertiesTab('style')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
-                      propertiesTab === 'style'
-                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    🎨 Style
-                  </button>
-                </div>
-              </div>
-
-              {propertiesTab === 'content' ? (
-                <BlockPropertiesPanel
-                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                  blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
-                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                />
-              ) : (
-                <BlockStylePanel
-                  block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                  onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                />
-              )}
-            </div>
-          </>
-        )}
-
-        {/* Mobile: Floating action button to open properties */}
-        {selectedBlock && !propertiesOpen && (
-          <button
-            onClick={() => setPropertiesOpen(true)}
-            className="lg:hidden fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-30"
-            aria-label="Ouvrir les propriétés"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-            </svg>
-          </button>
-        )}
       </div>
     </div>
   )
@@ -787,7 +766,17 @@ function SortableBlock({
             </div>
           </div>
         </div>
-        <BlockRenderer block={block} blockType={blockType} onUpdate={onUpdate} />
+        {/* Afficher juste un indicateur visuel que le bloc est sélectionné */}
+        {isSelected && (
+          <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Bloc sélectionné - Paramètres dans la barre latérale</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
