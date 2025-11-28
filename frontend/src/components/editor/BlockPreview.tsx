@@ -238,9 +238,32 @@ function FAQSectionPreview({ title, items, blockStyles }: { title?: string; item
 }
 
 function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; blockType?: BlockType; blockTypes?: BlockType[] }) {
-  // Apply block styles if any - Convertir les styles personnalisés en CSS
-  const blockStyles: React.CSSProperties = {
-    ...(block.styles || {}),
+  // Styles du wrapper (container) - position, margin, padding du container
+  const wrapperStyles: React.CSSProperties = {
+    // Position
+    position: block.position?.type || block.styles?.position || 'static',
+    // Coordonnées de position
+    top: block.position?.top || block.styles?.top,
+    right: block.position?.right || block.styles?.right,
+    bottom: block.position?.bottom || block.styles?.bottom,
+    left: block.position?.left || block.styles?.left,
+    // Z-index
+    zIndex: block.styles?.z_index || block.styles?.zIndex,
+    // Overflow
+    overflow: block.styles?.overflow || 'visible',
+    // Margin (espacement externe)
+    marginTop: block.styles?.margin_vertical || block.styles?.margin_top || block.styles?.marginTop,
+    marginBottom: block.styles?.margin_vertical || block.styles?.margin_bottom || block.styles?.marginBottom,
+    marginLeft: block.styles?.margin_horizontal || block.styles?.margin_left || block.styles?.marginLeft,
+    marginRight: block.styles?.margin_horizontal || block.styles?.margin_right || block.styles?.marginRight,
+    // Transition
+    transition: block.styles?.transition || (block.styles?.transition_duration 
+      ? `all ${block.styles?.transition_duration || 300}ms ease-in-out`
+      : undefined),
+  }
+
+  // Styles du contenu (appliqués aux éléments internes comme boutons, textes, etc.)
+  const contentStyles: React.CSSProperties = {
     // Couleur de fond (si pas de gradient)
     backgroundColor: block.styles?.background && !block.styles?.background.includes('gradient') 
       ? block.styles?.background 
@@ -251,17 +274,6 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       : undefined,
     // Couleur de texte
     color: block.styles?.color,
-    // Z-index
-    zIndex: block.styles?.z_index || block.styles?.zIndex,
-    // Position
-    position: block.position?.type || block.styles?.position || 'static',
-    // Coordonnées de position
-    top: block.position?.top || block.styles?.top,
-    right: block.position?.right || block.styles?.right,
-    bottom: block.position?.bottom || block.styles?.bottom,
-    left: block.position?.left || block.styles?.left,
-    // Overflow
-    overflow: block.styles?.overflow || 'visible',
     // Opacité
     opacity: block.styles?.opacity !== undefined ? block.styles?.opacity : 1,
     // Transform
@@ -276,28 +288,19 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
                block.styles?.box_shadow || block.styles?.boxShadow || undefined,
     // Border radius
     borderRadius: block.styles?.border_radius || block.styles?.borderRadius,
-    // Transition
-    transition: block.styles?.transition || (block.styles?.transition_duration 
-      ? `all ${block.styles?.transition_duration || 300}ms ease-in-out`
-      : undefined),
     // Backdrop filter
     backdropFilter: block.styles?.backdrop_filter || block.styles?.backdropFilter,
-    // Padding
+    // Padding (espacement interne du contenu)
     paddingTop: block.styles?.padding_vertical || block.styles?.padding_top || block.styles?.paddingVertical,
     paddingBottom: block.styles?.padding_vertical || block.styles?.padding_bottom || block.styles?.paddingBottom,
     paddingLeft: block.styles?.padding_horizontal || block.styles?.padding_left || block.styles?.paddingLeft,
     paddingRight: block.styles?.padding_horizontal || block.styles?.padding_right || block.styles?.paddingRight,
-    // Margin
-    marginTop: block.styles?.margin_vertical || block.styles?.margin_top || block.styles?.marginTop,
-    marginBottom: block.styles?.margin_vertical || block.styles?.margin_bottom || block.styles?.marginBottom,
-    marginLeft: block.styles?.margin_horizontal || block.styles?.margin_left || block.styles?.marginLeft,
-    marginRight: block.styles?.margin_horizontal || block.styles?.margin_right || block.styles?.marginRight,
     // Bordures
     borderWidth: block.styles?.border_width || block.styles?.borderWidth,
     borderStyle: block.styles?.border_style || block.styles?.borderStyle,
     borderColor: block.styles?.border_color || block.styles?.borderColor,
     // Alignement du texte
-    textAlign: block.styles?.text_align || block.styles?.textAlign || block.styles?.text_align,
+    textAlign: block.styles?.text_align || block.styles?.textAlign || block.styles?.text_align || 'left',
   }
 
   // Get layout width (système 12 colonnes Bootstrap)
@@ -327,46 +330,47 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
                         headingLevel === 'h2' ? 'h2' :
                         headingLevel === 'h3' ? 'h3' :
                         headingLevel === 'h4' ? 'h4' : 'h2'
+      const headingAlign = block.data.align || contentStyles.textAlign || 'left'
       return (
-        <div style={blockStyles} className="mb-6">
-          {HeadingTag === 'h1' && <h1 className="font-bold" style={{
+        <div className="mb-6" style={{ textAlign: headingAlign }}>
+          {HeadingTag === 'h1' && <h1 className="font-bold inline-block" style={{
+            ...contentStyles,
             fontSize: block.styles?.font_size || '2rem',
             fontWeight: block.styles?.font_weight || 'bold',
             marginBottom: block.styles?.margin_bottom || '1rem',
-            textAlign: block.data.align || 'left',
-            color: block.data.color || block.styles?.color || undefined
+            color: block.data.color || contentStyles.color || undefined
           }}>
             {block.data.text || 'Titre'}
           </h1>}
           {HeadingTag === 'h2' && (
-            <h2 className="font-bold" style={{
+            <h2 className="font-bold inline-block" style={{
+              ...contentStyles,
               fontSize: block.styles?.font_size || '2rem',
               fontWeight: block.styles?.font_weight || 'bold',
               marginBottom: block.styles?.margin_bottom || '1rem',
-              textAlign: block.data.align || 'left',
-              color: block.data.color || block.styles?.color || undefined
+              color: block.data.color || contentStyles.color || undefined
             }}>
               {block.data.text || 'Titre'}
             </h2>
           )}
           {HeadingTag === 'h3' && (
-            <h3 className="font-bold" style={{
+            <h3 className="font-bold inline-block" style={{
+              ...contentStyles,
               fontSize: block.styles?.font_size || '2rem',
               fontWeight: block.styles?.font_weight || 'bold',
               marginBottom: block.styles?.margin_bottom || '1rem',
-              textAlign: block.data.align || 'left',
-              color: block.data.color || block.styles?.color || undefined
+              color: block.data.color || contentStyles.color || undefined
             }}>
               {block.data.text || 'Titre'}
             </h3>
           )}
           {HeadingTag === 'h4' && (
-            <h4 className="font-bold" style={{
+            <h4 className="font-bold inline-block" style={{
+              ...contentStyles,
               fontSize: block.styles?.font_size || '2rem',
               fontWeight: block.styles?.font_weight || 'bold',
               marginBottom: block.styles?.margin_bottom || '1rem',
-              textAlign: block.data.align || 'left',
-              color: block.data.color || block.styles?.color || undefined
+              color: block.data.color || contentStyles.color || undefined
             }}>
               {block.data.text || 'Titre'}
             </h4>
@@ -376,12 +380,13 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
     case 'text':
       return (
-        <div style={blockStyles} className="mb-6 prose dark:prose-invert max-w-none">
+        <div className="mb-6 prose dark:prose-invert max-w-none" style={{ textAlign: contentStyles.textAlign }}>
           <div 
             dangerouslySetInnerHTML={{ 
               __html: (block.data.content || '').replace(/\n/g, '<br />') 
             }}
             style={{
+              ...contentStyles,
               fontSize: block.styles?.font_size || '1rem',
               lineHeight: block.styles?.line_height || '1.6',
             }}
@@ -444,16 +449,19 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         ? 'bg-transparent text-blue-600 hover:underline'
         : 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900'
       
+      const buttonAlign = block.data.align || contentStyles.textAlign || 'left'
+      
       return (
-        <div style={{ ...blockStyles, textAlign: block.data.align || 'left' }} className="mb-6">
+        <div className="mb-6" style={{ textAlign: buttonAlign }}>
           <a
             href={block.data.url || '#'}
             className={`${block.data.full_width ? 'w-full block text-center' : 'inline-block'} ${buttonSizeClass} rounded-lg font-medium transition-colors ${buttonStyleClass}`}
             style={{
+              ...contentStyles,
               padding: block.styles?.padding || undefined,
-              borderRadius: block.styles?.border_radius || '0.5rem',
-              backgroundColor: block.data.bg_color || undefined,
-              color: block.data.text_color || undefined,
+              borderRadius: contentStyles.borderRadius || block.styles?.border_radius || '0.5rem',
+              backgroundColor: block.data.bg_color || contentStyles.backgroundColor || undefined,
+              color: block.data.text_color || contentStyles.color || undefined,
             }}
           >
             {block.data.text || 'Bouton'}
@@ -2101,22 +2109,31 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     return ''
   }
 
-  // Wrap content with layout and container
-  const wrapperStyle: React.CSSProperties = {
-    ...(block.position?.type === 'absolute' || block.position?.type === 'relative' ? {
-      position: block.position.type,
-      top: block.position.top,
-      right: block.position.right,
-      bottom: block.position.bottom,
-      left: block.position.left,
-    } : {}),
-    transition: block.styles?.transition || 'all 300ms ease-in-out'
+  // Appliquer l'alignement selon le type de position
+  const getAlignmentClasses = () => {
+    if (block.position?.type === 'relative' || block.position?.type === 'absolute' || block.position?.type === 'fixed' || block.position?.type === 'sticky') {
+      const align = block.position?.align || 'left'
+      switch (align) {
+        case 'left':
+          return 'mr-auto'
+        case 'center':
+          return 'mx-auto'
+        case 'right':
+          return 'ml-auto'
+        case 'stretch':
+          return 'w-full'
+        default:
+          return ''
+      }
+    }
+    return ''
   }
 
+  // Wrap content with layout and container
   return (
     <div 
       className={`${containerClass} mb-6 ${getHoverAnimationClass()} ${getAlignmentClasses()}`} 
-      style={wrapperStyle}
+      style={wrapperStyles}
     >
       <div className={layoutWidth}>
         {content}
