@@ -553,117 +553,51 @@ function SortableBlock({
 
   const blockType = blockTypes.find(bt => bt.name === block.type)
 
+  // Calculer les tailles basées sur le nombre de colonnes (sur 12)
+  const layoutCols = typeof block.layout === 'number' ? block.layout : 12
+  const isSmall = layoutCols <= 4 // 1-4 colonnes = petit
+  const isMedium = layoutCols > 4 && layoutCols <= 8 // 5-8 colonnes = moyen
+  const isLarge = layoutCols > 8 // 9-12 colonnes = grand
+
   // Déterminer la taille du texte selon la largeur du bloc
   const getTextSize = () => {
-    switch (block.layout) {
-      case 'quarter':
-        return 'text-xs'
-      case 'third':
-        return 'text-xs sm:text-sm'
-      case 'half':
-        return 'text-xs sm:text-sm'
-      case 'two-thirds':
-        return 'text-sm'
-      case 'three-quarters':
-        return 'text-sm sm:text-base'
-      case 'full':
-      default:
-        return 'text-sm sm:text-base'
-    }
+    if (isSmall) return 'text-xs'
+    if (isMedium) return 'text-xs sm:text-sm'
+    return 'text-sm sm:text-base'
   }
 
   // Déterminer la taille de l'icône selon la largeur du bloc
   const getIconSize = () => {
-    switch (block.layout) {
-      case 'quarter':
-        return 'text-sm'
-      case 'third':
-        return 'text-base sm:text-lg'
-      case 'half':
-        return 'text-base sm:text-lg'
-      case 'two-thirds':
-        return 'text-lg sm:text-xl'
-      case 'three-quarters':
-        return 'text-lg sm:text-xl'
-      case 'full':
-      default:
-        return 'text-lg sm:text-xl'
-    }
+    if (isSmall) return 'text-sm'
+    if (isMedium) return 'text-base sm:text-lg'
+    return 'text-lg sm:text-xl'
   }
 
   // Déterminer le padding selon la largeur du bloc
   const getPadding = () => {
-    switch (block.layout) {
-      case 'quarter':
-        return 'p-2'
-      case 'third':
-        return 'p-2 sm:p-3'
-      case 'half':
-        return 'p-2 sm:p-3'
-      case 'two-thirds':
-        return 'p-3 sm:p-4'
-      case 'three-quarters':
-        return 'p-3 sm:p-4'
-      case 'full':
-      default:
-        return 'p-3 sm:p-4'
-    }
+    if (isSmall) return 'p-2'
+    if (isMedium) return 'p-2 sm:p-3'
+    return 'p-3 sm:p-4'
   }
 
   // Déterminer la taille de l'icône container
   const getIconContainerSize = () => {
-    switch (block.layout) {
-      case 'quarter':
-        return 'w-6 h-6 sm:w-7 sm:h-7'
-      case 'third':
-        return 'w-7 h-7 sm:w-8 sm:h-8'
-      case 'half':
-        return 'w-7 h-7 sm:w-8 sm:h-8'
-      case 'two-thirds':
-        return 'w-8 h-8 sm:w-10 sm:h-10'
-      case 'three-quarters':
-        return 'w-8 h-8 sm:w-10 sm:h-10'
-      case 'full':
-      default:
-        return 'w-8 h-8 sm:w-10 sm:h-10'
-    }
+    if (isSmall) return 'w-6 h-6 sm:w-7 sm:h-7'
+    if (isMedium) return 'w-7 h-7 sm:w-8 sm:h-8'
+    return 'w-8 h-8 sm:w-10 sm:h-10'
   }
 
   // Déterminer la taille des boutons
   const getButtonSize = () => {
-    switch (block.layout) {
-      case 'quarter':
-        return 'p-1.5'
-      case 'third':
-        return 'p-1.5 sm:p-2'
-      case 'half':
-        return 'p-1.5 sm:p-2'
-      case 'two-thirds':
-        return 'p-2'
-      case 'three-quarters':
-        return 'p-2'
-      case 'full':
-      default:
-        return 'p-2'
-    }
+    if (isSmall) return 'p-1.5'
+    if (isMedium) return 'p-1.5 sm:p-2'
+    return 'p-2'
   }
 
   const getButtonIconSize = () => {
-    switch (block.layout) {
-      case 'quarter':
-        return 'w-3 h-3 sm:w-4 sm:h-4'
-      case 'third':
-        return 'w-3.5 h-3.5 sm:w-4 sm:h-4'
-      case 'half':
-        return 'w-3.5 h-3.5 sm:w-4 sm:h-4'
-      case 'two-thirds':
-        return 'w-4 h-4 sm:w-5 sm:h-5'
-      case 'three-quarters':
-        return 'w-4 h-4 sm:w-5 sm:h-5'
-      case 'full':
-      default:
-        return 'w-4 h-4 sm:w-5 sm:h-5'
-    }
+    if (isSmall) return 'w-3 h-3 sm:w-4 sm:h-4'
+    if (isMedium) return 'w-3.5 h-3.5 sm:w-4 sm:h-4'
+    return 'w-4 h-4 sm:w-5 sm:h-5'
   }
 
   return (
