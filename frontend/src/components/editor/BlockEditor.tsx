@@ -3134,6 +3134,460 @@ function BlockRenderer({
           </div>
         </div>
       )
+    case 'banner':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre de la bannière
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Titre de la bannière"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Sous-titre (optionnel)
+            </label>
+            <input
+              type="text"
+              value={block.data.subtitle || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, subtitle: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Sous-titre"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Image de fond (URL)
+            </label>
+            <input
+              type="url"
+              value={block.data.background_image || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, background_image: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Hauteur minimale (px)
+              </label>
+              <input
+                type="number"
+                value={block.data.min_height || 400}
+                onChange={(e) => onUpdate({ data: { ...block.data, min_height: parseInt(e.target.value) || 400 } })}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                min={200}
+                max={1000}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Alignement du texte
+              </label>
+              <select
+                value={block.data.text_align || 'center'}
+                onChange={(e) => onUpdate({ data: { ...block.data, text_align: e.target.value } })}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="left">Gauche</option>
+                <option value="center">Centre</option>
+                <option value="right">Droite</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`banner-overlay-${block.id}`}
+              checked={block.data.overlay || false}
+              onChange={(e) => onUpdate({ data: { ...block.data, overlay: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`banner-overlay-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Overlay sombre sur l'image
+            </label>
+          </div>
+          {block.data.button_text && (
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Texte bouton
+                </label>
+                <input
+                  type="text"
+                  value={block.data.button_text || ''}
+                  onChange={(e) => onUpdate({ data: { ...block.data, button_text: e.target.value } })}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  URL bouton
+                </label>
+                <UrlInputWithSuggestions
+                  value={block.data.button_url || ''}
+                  onChange={(url) => onUpdate({ data: { ...block.data, button_url: url } })}
+                  placeholder="URL"
+                  className="text-xs"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    case 'footer':
+      const footerLinks = block.data.links || []
+      const footerColumns = block.data.columns || [
+        { title: 'Liens rapides', links: [] },
+        { title: 'Contact', links: [] },
+        { title: 'Réseaux sociaux', links: [] }
+      ]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte du copyright
+            </label>
+            <input
+              type="text"
+              value={block.data.copyright || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, copyright: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="© 2024 Votre Entreprise. Tous droits réservés."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Colonnes du footer ({footerColumns.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {footerColumns.map((column: any, colIndex: number) => (
+                <div key={colIndex} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={column.title || ''}
+                    onChange={(e) => {
+                      const newColumns = [...footerColumns]
+                      newColumns[colIndex] = { ...column, title: e.target.value }
+                      onUpdate({ data: { ...block.data, columns: newColumns } })
+                    }}
+                    className="w-full mb-2 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Titre de la colonne"
+                  />
+                  <div className="space-y-1">
+                    {(column.links || []).map((link: any, linkIndex: number) => (
+                      <div key={linkIndex} className="flex gap-1">
+                        <UrlInputWithSuggestions
+                          value={link.url || ''}
+                          onChange={(url) => {
+                            const newColumns = [...footerColumns]
+                            const newLinks = [...(newColumns[colIndex].links || [])]
+                            newLinks[linkIndex] = { ...link, url }
+                            newColumns[colIndex] = { ...column, links: newLinks }
+                            onUpdate({ data: { ...block.data, columns: newColumns } })
+                          }}
+                          placeholder="URL"
+                          className="text-xs flex-1"
+                        />
+                        <input
+                          type="text"
+                          value={link.label || ''}
+                          onChange={(e) => {
+                            const newColumns = [...footerColumns]
+                            const newLinks = [...(newColumns[colIndex].links || [])]
+                            newLinks[linkIndex] = { ...link, label: e.target.value }
+                            newColumns[colIndex] = { ...column, links: newLinks }
+                            onUpdate({ data: { ...block.data, columns: newColumns } })
+                          }}
+                          className="w-24 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                          placeholder="Label"
+                        />
+                        <button
+                          onClick={() => {
+                            const newColumns = [...footerColumns]
+                            newColumns[colIndex] = {
+                              ...column,
+                              links: (column.links || []).filter((_: any, i: number) => i !== linkIndex)
+                            }
+                            onUpdate({ data: { ...block.data, columns: newColumns } })
+                          }}
+                          className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const newColumns = [...footerColumns]
+                        newColumns[colIndex] = {
+                          ...column,
+                          links: [...(column.links || []), { label: '', url: '' }]
+                        }
+                        onUpdate({ data: { ...block.data, columns: newColumns } })
+                      }}
+                      className="w-full px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      + Ajouter lien
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, columns: [...footerColumns, { title: '', links: [] }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter colonne
+              </button>
+              {footerColumns.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, columns: footerColumns.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer colonne
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    case 'section':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Image de fond (URL) - Optionnel
+            </label>
+            <input
+              type="url"
+              value={block.data.background_image || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, background_image: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Position de l'image
+              </label>
+              <select
+                value={block.data.background_position || 'center'}
+                onChange={(e) => onUpdate({ data: { ...block.data, background_position: e.target.value } })}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="center">Centre</option>
+                <option value="top">Haut</option>
+                <option value="bottom">Bas</option>
+                <option value="left">Gauche</option>
+                <option value="right">Droite</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Taille de l'image
+              </label>
+              <select
+                value={block.data.background_size || 'cover'}
+                onChange={(e) => onUpdate({ data: { ...block.data, background_size: e.target.value } })}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                <option value="cover">Couvrir</option>
+                <option value="contain">Contenir</option>
+                <option value="auto">Auto</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`section-overlay-${block.id}`}
+              checked={block.data.overlay || false}
+              onChange={(e) => onUpdate({ data: { ...block.data, overlay: e.target.checked } })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor={`section-overlay-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+              Overlay sombre sur l'image
+            </label>
+          </div>
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-xs text-blue-800 dark:text-blue-200">
+              💡 Cette section peut contenir d'autres blocs. Ajoutez des blocs enfants pour remplir la section.
+            </p>
+          </div>
+        </div>
+      )
+    case 'carousel':
+      const carouselItems = block.data.items || []
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Éléments du carousel ({carouselItems.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {carouselItems.map((item: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="url"
+                    value={item.image || ''}
+                    onChange={(e) => {
+                      const newItems = [...carouselItems]
+                      newItems[index] = { ...item, image: e.target.value }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="URL de l'image"
+                  />
+                  <input
+                    type="text"
+                    value={item.title || ''}
+                    onChange={(e) => {
+                      const newItems = [...carouselItems]
+                      newItems[index] = { ...item, title: e.target.value }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Titre (optionnel)"
+                  />
+                  <input
+                    type="text"
+                    value={item.description || ''}
+                    onChange={(e) => {
+                      const newItems = [...carouselItems]
+                      newItems[index] = { ...item, description: e.target.value }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Description (optionnel)"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, items: [...carouselItems, { image: '', title: '', description: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {carouselItems.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, items: carouselItems.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Vitesse (ms)
+              </label>
+              <input
+                type="number"
+                value={block.data.autoplay_speed || 3000}
+                onChange={(e) => onUpdate({ data: { ...block.data, autoplay_speed: parseInt(e.target.value) || 3000 } })}
+                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                min={1000}
+                max={10000}
+              />
+            </div>
+            <div className="flex items-center gap-2 pt-6">
+              <input
+                type="checkbox"
+                id={`carousel-autoplay-${block.id}`}
+                checked={block.data.autoplay !== false}
+                onChange={(e) => onUpdate({ data: { ...block.data, autoplay: e.target.checked } })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor={`carousel-autoplay-${block.id}`} className="text-xs text-gray-700 dark:text-gray-300">
+                Lecture automatique
+              </label>
+            </div>
+          </div>
+        </div>
+      )
+    case 'countdown':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Date cible
+            </label>
+            <input
+              type="datetime-local"
+              value={block.data.target_date || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, target_date: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre (optionnel)
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Offre se termine dans..."
+            />
+          </div>
+        </div>
+      )
+    case 'progress-bar':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Label
+            </label>
+            <input
+              type="text"
+              value={block.data.label || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, label: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Compétence"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Pourcentage (0-100)
+            </label>
+            <input
+              type="number"
+              value={block.data.percentage || 0}
+              onChange={(e) => onUpdate({ data: { ...block.data, percentage: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              min={0}
+              max={100}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Couleur de la barre
+            </label>
+            <input
+              type="color"
+              value={block.data.color || '#3B82F6'}
+              onChange={(e) => onUpdate({ data: { ...block.data, color: e.target.value } })}
+              className="w-full h-8 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+            />
+          </div>
+        </div>
+      )
     default:
       return (
         <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">

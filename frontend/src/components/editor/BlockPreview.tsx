@@ -1799,6 +1799,215 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         />
       )
 
+    case 'banner':
+      return (
+        <div
+          style={{
+            ...blockStyles,
+            backgroundImage: block.data.background_image ? `url(${block.data.background_image})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: `${block.data.min_height || 400}px`,
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: block.data.text_align === 'left' ? 'flex-start' : block.data.text_align === 'right' ? 'flex-end' : 'center',
+            padding: block.styles?.padding || '4rem 2rem',
+          }}
+          className="mb-6 rounded-lg overflow-hidden"
+        >
+          {block.data.overlay && (
+            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          )}
+          <div className="relative z-10 text-white w-full">
+            {block.data.title && (
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">{block.data.title}</h1>
+            )}
+            {block.data.subtitle && (
+              <p className="text-xl mb-6">{block.data.subtitle}</p>
+            )}
+            {block.data.button_text && block.data.button_url && (
+              <a
+                href={block.data.button_url}
+                className="inline-block px-6 py-3 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              >
+                {block.data.button_text}
+              </a>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'footer':
+      const footerColumns = block.data.columns || []
+      return (
+        <div style={blockStyles} className="mb-6 bg-gray-900 dark:bg-gray-950 text-white p-8 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            {footerColumns.length > 0 ? (
+              footerColumns.map((column: any, colIndex: number) => (
+                <div key={colIndex}>
+                  {column.title && (
+                    <h3 className="text-lg font-semibold mb-4">{column.title}</h3>
+                  )}
+                  <ul className="space-y-2">
+                    {(column.links || []).map((link: any, linkIndex: number) => (
+                      <li key={linkIndex}>
+                        <a
+                          href={link.url || '#'}
+                          className="text-gray-300 hover:text-white transition-colors"
+                        >
+                          {link.label || 'Lien'}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-700 rounded">
+                Aucune colonne configurée
+              </div>
+            )}
+          </div>
+          {block.data.copyright && (
+            <div className="border-t border-gray-800 pt-4 text-center text-sm text-gray-400">
+              {block.data.copyright}
+            </div>
+          )}
+        </div>
+      )
+
+    case 'section':
+      return (
+        <div
+          style={{
+            ...blockStyles,
+            backgroundImage: block.data.background_image ? `url(${block.data.background_image})` : undefined,
+            backgroundSize: block.data.background_size || 'cover',
+            backgroundPosition: block.data.background_position || 'center',
+            position: 'relative',
+            padding: block.styles?.padding || '2rem',
+            minHeight: block.styles?.min_height || 'auto',
+          }}
+          className="mb-6 rounded-lg"
+        >
+          {block.data.overlay && block.data.background_image && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div>
+          )}
+          <div className="relative z-10">
+            {block.children && block.children.length > 0 ? (
+              block.children.map((childBlock: Block, i: number) => (
+                <div key={childBlock.id || i}>
+                  <BlockPreviewRenderer
+                    block={childBlock}
+                    blockType={blockTypes.find((bt: BlockType) => bt.name === childBlock.type)}
+                    blockTypes={blockTypes}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded">
+                Ajoutez des blocs dans cette section
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'carousel':
+      const carouselItems = block.data.items || []
+      return (
+        <div style={blockStyles} className="mb-6">
+          {carouselItems.length > 0 ? (
+            <div className="relative overflow-hidden rounded-lg">
+              <div className="flex transition-transform duration-500" style={{ transform: `translateX(0)` }}>
+                {carouselItems.map((item: any, index: number) => (
+                  <div key={index} className="min-w-full relative">
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.title || `Slide ${index + 1}`}
+                        className="w-full h-96 object-cover"
+                        onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                          (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect fill="%23ddd" width="800" height="400"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="24" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ESlide%3C/text%3E%3C/svg%3E'
+                        }}
+                      />
+                    )}
+                    {(item.title || item.description) && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
+                        {item.title && <h3 className="text-2xl font-bold mb-2">{item.title}</h3>}
+                        {item.description && <p>{item.description}</p>}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+              Aucun élément dans le carousel
+            </div>
+          )}
+        </div>
+      )
+
+    case 'countdown':
+      const targetDate = block.data.target_date ? new Date(block.data.target_date).getTime() : null
+      const now = Date.now()
+      const timeLeft = targetDate && targetDate > now ? targetDate - now : 0
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
+      
+      return (
+        <div style={blockStyles} className="mb-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white p-8 rounded-lg text-center">
+          {block.data.title && (
+            <h3 className="text-2xl font-bold mb-6">{block.data.title}</h3>
+          )}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+              <div className="text-3xl font-bold">{days}</div>
+              <div className="text-sm opacity-90">Jours</div>
+            </div>
+            <div className="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+              <div className="text-3xl font-bold">{hours}</div>
+              <div className="text-sm opacity-90">Heures</div>
+            </div>
+            <div className="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+              <div className="text-3xl font-bold">{minutes}</div>
+              <div className="text-sm opacity-90">Minutes</div>
+            </div>
+            <div className="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+              <div className="text-3xl font-bold">{seconds}</div>
+              <div className="text-sm opacity-90">Secondes</div>
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'progress-bar':
+      const percentage = Math.min(100, Math.max(0, block.data.percentage || 0))
+      return (
+        <div style={blockStyles} className="mb-6">
+          {block.data.label && (
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{block.data.label}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{percentage}%</span>
+            </div>
+          )}
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${percentage}%`,
+                backgroundColor: block.data.color || '#3B82F6',
+              }}
+            />
+          </div>
+        </div>
+      )
+
     default:
       return (
         <div style={blockStyles} className="mb-6 p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">
