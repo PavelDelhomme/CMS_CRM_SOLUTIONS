@@ -77,6 +77,22 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
     loadBlockTypes()
   }, [])
 
+  const handleUndo = useCallback(() => {
+    isHistoryUpdate.current = true
+    history.undo()
+    // Fermer les paramètres quand on fait undo
+    setPropertiesOpen(false)
+    setSelectedBlock(null)
+  }, [history])
+
+  const handleRedo = useCallback(() => {
+    isHistoryUpdate.current = true
+    history.redo()
+    // Fermer les paramètres quand on fait redo
+    setPropertiesOpen(false)
+    setSelectedBlock(null)
+  }, [history])
+
   // Raccourcis clavier pour undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -196,22 +212,6 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
       trackBlockAction(block.type, 'update')
     }
   }, [history, trackBlockAction])
-
-  const handleUndo = useCallback(() => {
-    isHistoryUpdate.current = true
-    history.undo()
-    // Fermer les paramètres quand on fait undo
-    setPropertiesOpen(false)
-    setSelectedBlock(null)
-  }, [history])
-
-  const handleRedo = useCallback(() => {
-    isHistoryUpdate.current = true
-    history.redo()
-    // Fermer les paramètres quand on fait redo
-    setPropertiesOpen(false)
-    setSelectedBlock(null)
-  }, [history])
 
   // Gérer l'ouverture des paramètres - fermer la sidebar des blocs
   const handleSelectBlock = useCallback((blockId: string) => {

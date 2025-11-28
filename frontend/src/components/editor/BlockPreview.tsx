@@ -196,7 +196,7 @@ function FAQSectionPreview({ title, items, blockStyles }: { title?: string; item
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   
   return (
-    <div style={blockStyles} className="mb-6">
+    <div style={wrapperStyles} className="mb-6">
       {title && (
         <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
           {title}
@@ -397,18 +397,16 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     case 'image':
       if (!block.data.url && !block.data.src) {
         return (
-          <div style={blockStyles} className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
+          <div className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded text-center text-gray-400">
             Image non configurée
           </div>
         )
       }
       const imageUrl = block.data.url || block.data.src
+      const imageAlign = block.data.align || contentStyles.textAlign || 'center'
       return (
-        <div style={blockStyles} className="mb-6">
-          <div style={{
-            textAlign: block.data.align === 'left' ? 'left' : 
-                      block.data.align === 'right' ? 'right' : 'center'
-          }}>
+        <div className="mb-6">
+          <div style={{ textAlign: imageAlign }}>
             <img
               src={imageUrl}
               alt={block.data.alt || ''}
@@ -523,7 +521,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       return (
         <div 
           style={{ 
-            ...blockStyles,
+            ...contentStyles,
             height: `${block.data.height || 40}px`,
             display: 'block'
           }} 
@@ -757,7 +755,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       return (
         <div 
           style={{
-            ...blockStyles,
+            ...contentStyles,
             display: 'grid',
             gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
             gap: block.styles?.gap || '1rem',
@@ -1735,7 +1733,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       return (
         <div
           style={{
-            ...blockStyles,
+            ...contentStyles,
             background: block.data.background_gradient || 'linear-gradient(to right, #2563eb, #9333ea)',
             padding: block.styles?.padding || '5rem 2rem',
           }}
@@ -1924,7 +1922,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       return (
         <div
           style={{
-            ...blockStyles,
+            ...contentStyles,
             backgroundImage: block.data.background_image ? `url(${block.data.background_image})` : undefined,
             backgroundSize: block.data.background_size || 'cover',
             backgroundPosition: block.data.background_position || 'center',
