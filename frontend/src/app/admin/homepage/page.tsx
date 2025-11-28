@@ -202,6 +202,7 @@ export default function HomepageEditorPage() {
   const [metaKeywords, setMetaKeywords] = useState('')
   const [canonicalUrl, setCanonicalUrl] = useState('')
   const [robots, setRobots] = useState('index, follow')
+  const [pageStatus, setPageStatus] = useState<'draft' | 'published'>('draft')
 
   // Sauvegarde automatique
   const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
@@ -217,6 +218,7 @@ export default function HomepageEditorPage() {
       metaKeywords,
       canonicalUrl,
       robots,
+      pageStatus,
     },
     onSave: async (data) => {
       await api.patch('/system-settings/', {
@@ -231,6 +233,7 @@ export default function HomepageEditorPage() {
         public_homepage_meta_keywords: data.metaKeywords,
         public_homepage_canonical_url: data.canonicalUrl,
         public_homepage_robots: data.robots,
+        public_homepage_status: data.pageStatus,
       })
     },
     debounceMs: 2000,
@@ -417,6 +420,16 @@ export default function HomepageEditorPage() {
             </div>
           ) : null}
 
+          {/* Status Selector */}
+          <select
+            value={pageStatus}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPageStatus(e.target.value as 'draft' | 'published')}
+            className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
+            <option value="draft">📝 Brouillon</option>
+            <option value="published">✅ Publié</option>
+          </select>
+
           {/* Save Button */}
           <button
             onClick={handleSave}
@@ -433,7 +446,7 @@ export default function HomepageEditorPage() {
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Sauvegarder
+                {pageStatus === 'draft' ? 'Sauvegarder brouillon' : 'Publier'}
               </>
             )}
           </button>
@@ -447,7 +460,7 @@ export default function HomepageEditorPage() {
             <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Page:</span>
             <select
               value="home"
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                 if (e.target.value !== 'home') {
                   router.push(`/admin/pages-public/${e.target.value}/edit`)
                 }
@@ -666,9 +679,7 @@ export default function HomepageEditorPage() {
 
           {/* Preview Section */}
           {showPreview && (
-            <div className={`w-1/2 border-l border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300 ${
-              previewMode === 'tablet' ? 'max-w-2xl mx-auto' : previewMode === 'mobile' ? 'max-w-md mx-auto' : ''
-            }`}>
+            <div className="w-1/2 border-l border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300">
               <div className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between">
                 <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                   Prévisualisation en direct
@@ -677,16 +688,39 @@ export default function HomepageEditorPage() {
                   {previewMode === 'desktop' ? '💻 Desktop' : previewMode === 'tablet' ? '📱 Tablette' : '📱 Mobile'}
                 </span>
               </div>
-              <div className="flex-1 overflow-hidden relative">
-                <div className={`absolute inset-0 overflow-auto ${
-                  previewMode === 'tablet' ? 'px-4' : previewMode === 'mobile' ? 'px-2' : ''
+              <div className="flex-1 overflow-hidden relative bg-gray-100 dark:bg-gray-900 p-4">
+                {/* Device Frame */}
+                <div className={`h-full mx-auto transition-all duration-300 ${
+                  previewMode === 'desktop' 
+                    ? 'w-full max-w-full' 
+                    : previewMode === 'tablet' 
+                    ? 'w-full max-w-[768px]' 
+                    : 'w-full max-w-[375px]'
                 }`}>
-                  <div className={`h-full ${
-                    previewMode === 'tablet' ? 'max-w-[768px] mx-auto' : 
-                    previewMode === 'mobile' ? 'max-w-[375px] mx-auto' : 
-                    'w-full'
+                  {/* Device Frame Border */}
+                  <div className={`h-full bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden ${
+                    previewMode === 'desktop' 
+                      ? 'border-0' 
+                      : previewMode === 'tablet' 
+                      ? 'border-8 border-gray-800 dark:border-gray-700 rounded-t-3xl' 
+                      : 'border-8 border-gray-800 dark:border-gray-700 rounded-[2.5rem]'
                   }`}>
-                    <BlockPreview blocks={blocks} blockTypes={blockTypes} />
+                    {/* Device Notch (Mobile) */}
+                    {previewMode === 'mobile' && (
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 dark:bg-gray-700 rounded-b-2xl z-10"></div>
+                    )}
+                    {/* Preview Content */}
+                    <div className={`h-full overflow-auto ${
+                      previewMode === 'tablet' ? 'px-4' : previewMode === 'mobile' ? 'px-2' : ''
+                    }`}>
+                      <div className={`min-h-full ${
+                        previewMode === 'tablet' ? 'max-w-[768px] mx-auto' : 
+                        previewMode === 'mobile' ? 'max-w-[375px] mx-auto' : 
+                        'w-full'
+                      }`}>
+                        <BlockPreview blocks={blocks} blockTypes={blockTypes} />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

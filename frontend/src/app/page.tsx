@@ -265,7 +265,7 @@ export default function HomePage() {
     if (!isTenantSubdomain()) {
       checkBlocks()
     }
-  }, [])
+  }, [isTenantDomain])
   
   // Si on utilise les blocs et que la page est publiée, afficher avec BlockPreview
   if (useBlocks && homepageStatus === 'published' && homepageBlocks.length > 0) {
