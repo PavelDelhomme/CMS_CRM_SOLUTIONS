@@ -3703,6 +3703,100 @@ function BlockStylePanel({
         </div>
       </div>
 
+      {/* Propriétés avancées - Premium */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Propriétés avancées</span>
+          <span className="px-2 py-0.5 text-[10px] font-bold text-yellow-700 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400 rounded">PREMIUM</span>
+        </div>
+        
+        {/* Z-index */}
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Z-index (superposition)
+          </label>
+          <input
+            type="number"
+            value={block.styles?.z_index || 0}
+            onChange={(e) => updateStyle('z_index', parseInt(e.target.value) || 0)}
+            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            placeholder="0"
+          />
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+            Contrôle la superposition des éléments (plus élevé = au-dessus)
+          </p>
+        </div>
+
+        {/* Position */}
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Position
+          </label>
+          <select
+            value={block.styles?.position || 'static'}
+            onChange={(e) => updateStyle('position', e.target.value)}
+            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
+            <option value="static">Statique</option>
+            <option value="relative">Relative</option>
+            <option value="absolute">Absolue</option>
+            <option value="fixed">Fixe</option>
+            <option value="sticky">Sticky</option>
+          </select>
+        </div>
+
+        {/* Overflow */}
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Overflow (débordement)
+          </label>
+          <select
+            value={block.styles?.overflow || 'visible'}
+            onChange={(e) => updateStyle('overflow', e.target.value)}
+            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
+            <option value="visible">Visible</option>
+            <option value="hidden">Caché</option>
+            <option value="scroll">Défilement</option>
+            <option value="auto">Auto</option>
+          </select>
+        </div>
+
+        {/* Opacité */}
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Opacité (0-1)
+          </label>
+          <input
+            type="number"
+            step="0.1"
+            min="0"
+            max="1"
+            value={block.styles?.opacity || 1}
+            onChange={(e) => updateStyle('opacity', parseFloat(e.target.value) || 1)}
+            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+
+        {/* Transform */}
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Rotation (degrés)
+          </label>
+          <input
+            type="number"
+            value={block.styles?.transform_rotate || 0}
+            onChange={(e) => {
+              const rotate = parseInt(e.target.value) || 0
+              updateStyle('transform', `rotate(${rotate}deg)`)
+              updateStyle('transform_rotate', rotate)
+            }}
+            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            placeholder="0"
+          />
+        </div>
+      </div>
+
       {/* Padding */}
       <div>
         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
