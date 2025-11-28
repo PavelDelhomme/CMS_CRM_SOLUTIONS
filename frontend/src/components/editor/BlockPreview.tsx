@@ -261,14 +261,20 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     opacity: block.styles?.opacity !== undefined ? block.styles?.opacity : 1,
     // Transform
     transform: block.styles?.transform,
-    // Box shadow
-    boxShadow: block.styles?.box_shadow || block.styles?.boxShadow,
+    // Box shadow (support des nouvelles valeurs)
+    boxShadow: block.styles?.box_shadow === 'sm' ? '0 1px 2px 0 rgb(0 0 0 / 0.05)' :
+               block.styles?.box_shadow === 'md' ? '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' :
+               block.styles?.box_shadow === 'lg' ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' :
+               block.styles?.box_shadow === 'xl' ? '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' :
+               block.styles?.box_shadow === '2xl' ? '0 25px 50px -12px rgb(0 0 0 / 0.25)' :
+               block.styles?.box_shadow === 'none' ? 'none' :
+               block.styles?.box_shadow || block.styles?.boxShadow || undefined,
     // Border radius
     borderRadius: block.styles?.border_radius || block.styles?.borderRadius,
     // Transition
-    transition: block.styles?.transition || block.styles?.transition_duration 
+    transition: block.styles?.transition || (block.styles?.transition_duration 
       ? `all ${block.styles?.transition_duration || 300}ms ease-in-out`
-      : undefined,
+      : undefined),
     // Backdrop filter
     backdropFilter: block.styles?.backdrop_filter || block.styles?.backdropFilter,
     // Padding
@@ -285,15 +291,6 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
     borderWidth: block.styles?.border_width || block.styles?.borderWidth,
     borderStyle: block.styles?.border_style || block.styles?.borderStyle,
     borderColor: block.styles?.border_color || block.styles?.borderColor,
-    borderRadius: block.styles?.border_radius || block.styles?.borderRadius,
-    // Ombres
-    boxShadow: block.styles?.box_shadow === 'sm' ? '0 1px 2px 0 rgb(0 0 0 / 0.05)' :
-               block.styles?.box_shadow === 'md' ? '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' :
-               block.styles?.box_shadow === 'lg' ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' :
-               block.styles?.box_shadow === 'xl' ? '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' :
-               block.styles?.box_shadow === '2xl' ? '0 25px 50px -12px rgb(0 0 0 / 0.25)' :
-               block.styles?.box_shadow === 'none' ? 'none' :
-               block.styles?.box_shadow || undefined,
     // Alignement du texte
     textAlign: block.styles?.text_align || block.styles?.textAlign || block.styles?.text_align,
   }
