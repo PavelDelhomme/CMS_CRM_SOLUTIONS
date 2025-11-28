@@ -2267,6 +2267,252 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
         </div>
       )
 
+    case 'card':
+      const cards = block.data.cards || []
+      const cardColumns = block.data.columns || 3
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <div className={`grid grid-cols-1 md:grid-cols-${cardColumns} gap-6`}>
+            {cards.length > 0 ? (
+              cards.map((card: any, index: number) => (
+                <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
+                  {card.image && (
+                    <img
+                      src={card.image}
+                      alt={card.title || `Card ${index + 1}`}
+                      className="w-full h-48 object-cover"
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="18" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3EImage%3C/text%3E%3C/svg%3E'
+                      }}
+                    />
+                  )}
+                  <div className="p-6">
+                    {card.title && (
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{card.title}</h3>
+                    )}
+                    {card.description && (
+                      <p className="text-gray-700 dark:text-gray-300 mb-4">{card.description}</p>
+                    )}
+                    {card.button_text && card.button_url && (
+                      <a
+                        href={card.button_url}
+                        className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        {card.button_text}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                Aucune carte configurée
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'tabs':
+      const tabs = block.data.tabs || []
+      const [activeTab, setActiveTab] = React.useState(0)
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          {tabs.length > 0 ? (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex border-b border-gray-200 dark:border-gray-700">
+                {tabs.map((tab: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveTab(index)}
+                    className={`px-6 py-3 font-medium text-sm transition-colors ${
+                      activeTab === index
+                        ? 'bg-white dark:bg-gray-900 text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                    }`}
+                  >
+                    {tab.title || `Onglet ${index + 1}`}
+                  </button>
+                ))}
+              </div>
+              <div className="p-6">
+                <p className="text-gray-700 dark:text-gray-300">{tabs[activeTab]?.content || 'Contenu...'}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+              Aucun onglet configuré
+            </div>
+          )}
+        </div>
+      )
+
+    case 'rating':
+      const rating = block.data.rating || 5
+      const ratingSize = block.data.size || 'medium'
+      const sizeClass = ratingSize === 'small' ? 'text-lg' : ratingSize === 'large' ? 'text-3xl' : 'text-2xl'
+      return (
+        <div style={wrapperStyles} className="mb-6 text-center">
+          <div className="flex items-center justify-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span key={star} className={sizeClass}>
+                {star <= rating ? '⭐' : '☆'}
+              </span>
+            ))}
+          </div>
+          {block.data.show_text !== false && block.data.text && (
+            <p className="mt-2 text-gray-700 dark:text-gray-300">{block.data.text}</p>
+          )}
+        </div>
+      )
+
+    case 'breadcrumb':
+      const breadcrumbItems = block.data.items || []
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <nav className="flex items-center space-x-2 text-sm">
+            {breadcrumbItems.map((item: any, index: number) => (
+              <React.Fragment key={index}>
+                {index > 0 && <span className="text-gray-400">/</span>}
+                {index === breadcrumbItems.length - 1 ? (
+                  <span className="text-gray-900 dark:text-gray-100 font-medium">{item.label || `Item ${index + 1}`}</span>
+                ) : (
+                  <a
+                    href={item.url || '#'}
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    {item.label || `Item ${index + 1}`}
+                  </a>
+                )}
+              </React.Fragment>
+            ))}
+          </nav>
+        </div>
+      )
+
+    case 'tags':
+      const tags = block.data.tags || []
+      const tagStyle = block.data.style || 'rounded'
+      const tagClass = tagStyle === 'square' ? 'rounded-none' : tagStyle === 'pill' ? 'rounded-full' : 'rounded'
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            {tags.length > 0 ? (
+              tags.map((tag: string, index: number) => (
+                <span
+                  key={index}
+                  className={`px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium ${tagClass}`}
+                >
+                  {tag}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-400">Aucun tag</span>
+            )}
+          </div>
+        </div>
+      )
+
+    case 'progress-circle':
+      const percentage = block.data.percentage || 75
+      const circleSize = block.data.size || 'medium'
+      const sizeMap: { [key: string]: { size: string; stroke: string } } = {
+        small: { size: '100', stroke: '8' },
+        medium: { size: '150', stroke: '10' },
+        large: { size: '200', stroke: '12' },
+      }
+      const { size: svgSize, stroke: strokeWidth } = sizeMap[circleSize]
+      const radius = (parseInt(svgSize) - parseInt(strokeWidth)) / 2
+      const circumference = 2 * Math.PI * radius
+      const offset = circumference - (percentage / 100) * circumference
+      return (
+        <div style={wrapperStyles} className="mb-6 flex flex-col items-center">
+          <div className="relative" style={{ width: `${svgSize}px`, height: `${svgSize}px` }}>
+            <svg width={svgSize} height={svgSize} className="transform -rotate-90">
+              <circle
+                cx={parseInt(svgSize) / 2}
+                cy={parseInt(svgSize) / 2}
+                r={radius}
+                stroke="#e5e7eb"
+                strokeWidth={strokeWidth}
+                fill="none"
+              />
+              <circle
+                cx={parseInt(svgSize) / 2}
+                cy={parseInt(svgSize) / 2}
+                r={radius}
+                stroke="#3b82f6"
+                strokeWidth={strokeWidth}
+                fill="none"
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+                strokeLinecap="round"
+                className="transition-all duration-500"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{percentage}%</span>
+            </div>
+          </div>
+          {block.data.text && (
+            <p className="mt-4 text-gray-700 dark:text-gray-300">{block.data.text}</p>
+          )}
+        </div>
+      )
+
+    case 'search-bar':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          <form
+            action={block.data.action || '#'}
+            method="get"
+            className="flex gap-2"
+          >
+            <input
+              type="search"
+              placeholder={block.data.placeholder || 'Rechercher...'}
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {block.data.show_button !== false && (
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Rechercher
+              </button>
+            )}
+          </form>
+        </div>
+      )
+
+    case 'audio-player':
+      return (
+        <div style={wrapperStyles} className="mb-6">
+          {block.data.src ? (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              {block.data.title && (
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                  {block.data.title}
+                </h3>
+              )}
+              <audio
+                controls={block.data.controls !== false}
+                autoPlay={block.data.autoplay === true}
+                loop={block.data.loop === true}
+                className="w-full"
+              >
+                <source src={block.data.src} />
+                Votre navigateur ne supporte pas l'élément audio.
+              </audio>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-300 rounded">
+              Aucun fichier audio configuré
+            </div>
+          )}
+        </div>
+      )
+
     default:
       return (
         <div style={wrapperStyles} className="mb-6 p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center">

@@ -577,6 +577,7 @@ function SortableBlock({
   onSelect,
   onUpdate,
   onDelete,
+  onDuplicate,
 }: {
   block: Block
   blockTypes: BlockType[]
@@ -584,6 +585,7 @@ function SortableBlock({
   onSelect: () => void
   onUpdate: (updates: Partial<Block>) => void
   onDelete: () => void
+  onDuplicate: () => void
 }) {
   const {
     attributes,
@@ -764,6 +766,20 @@ function SortableBlock({
             <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+          <button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation()
+              e.preventDefault()
+              onDuplicate()
+            }}
+            className={`${getButtonSize()} rounded-lg text-gray-500 dark:text-gray-400 hover:bg-green-100 dark:hover:bg-green-900/30 hover:text-green-600 dark:hover:text-green-400 transition-colors relative z-10`}
+            title="Dupliquer"
+            type="button"
+          >
+            <svg className={getButtonIconSize()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </button>
           <button
@@ -4050,6 +4066,468 @@ function BlockRenderer({
                   - Supprimer
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'card':
+      const cards = block.data.cards || [{ title: '', description: '', image: '', button_text: '', button_url: '' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Nombre de colonnes
+            </label>
+            <select
+              value={block.data.columns || 3}
+              onChange={(e) => onUpdate({ data: { ...block.data, columns: parseInt(e.target.value) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value={1}>1 colonne</option>
+              <option value={2}>2 colonnes</option>
+              <option value={3}>3 colonnes</option>
+              <option value={4}>4 colonnes</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Cartes ({cards.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {cards.map((card: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={card.title || ''}
+                    onChange={(e) => {
+                      const newCards = [...cards]
+                      newCards[index] = { ...card, title: e.target.value }
+                      onUpdate({ data: { ...block.data, cards: newCards } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Titre"
+                  />
+                  <textarea
+                    value={card.description || ''}
+                    onChange={(e) => {
+                      const newCards = [...cards]
+                      newCards[index] = { ...card, description: e.target.value }
+                      onUpdate({ data: { ...block.data, cards: newCards } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Description"
+                    rows={2}
+                  />
+                  <input
+                    type="url"
+                    value={card.image || ''}
+                    onChange={(e) => {
+                      const newCards = [...cards]
+                      newCards[index] = { ...card, image: e.target.value }
+                      onUpdate({ data: { ...block.data, cards: newCards } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="URL image"
+                  />
+                  <div className="grid grid-cols-2 gap-1">
+                    <input
+                      type="text"
+                      value={card.button_text || ''}
+                      onChange={(e) => {
+                        const newCards = [...cards]
+                        newCards[index] = { ...card, button_text: e.target.value }
+                        onUpdate({ data: { ...block.data, cards: newCards } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                      placeholder="Texte bouton"
+                    />
+                    <input
+                      type="url"
+                      value={card.button_url || ''}
+                      onChange={(e) => {
+                        const newCards = [...cards]
+                        newCards[index] = { ...card, button_url: e.target.value }
+                        onUpdate({ data: { ...block.data, cards: newCards } })
+                      }}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                      placeholder="URL bouton"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, cards: [...cards, { title: '', description: '', image: '', button_text: '', button_url: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter carte
+              </button>
+              {cards.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, cards: cards.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'tabs':
+      const tabs = block.data.tabs || [{ title: 'Onglet 1', content: '' }]
+      return (
+        <div className="space-y-3">
+          <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 flex items-center gap-1">
+              <span>⭐</span>
+              <span>Fonctionnalité Premium</span>
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Onglets ({tabs.length})
+            </label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {tabs.map((tab: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={tab.title || ''}
+                    onChange={(e) => {
+                      const newTabs = [...tabs]
+                      newTabs[index] = { ...tab, title: e.target.value }
+                      onUpdate({ data: { ...block.data, tabs: newTabs } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Titre onglet"
+                  />
+                  <textarea
+                    value={tab.content || ''}
+                    onChange={(e) => {
+                      const newTabs = [...tabs]
+                      newTabs[index] = { ...tab, content: e.target.value }
+                      onUpdate({ data: { ...block.data, tabs: newTabs } })
+                    }}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Contenu"
+                    rows={3}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, tabs: [...tabs, { title: `Onglet ${tabs.length + 1}`, content: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter onglet
+              </button>
+              {tabs.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, tabs: tabs.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'rating':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Note (1-5)
+            </label>
+            <input
+              type="number"
+              value={block.data.rating || 5}
+              onChange={(e) => onUpdate({ data: { ...block.data, rating: Math.max(1, Math.min(5, parseInt(e.target.value) || 5)) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              min={1}
+              max={5}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Taille
+            </label>
+            <select
+              value={block.data.size || 'medium'}
+              onChange={(e) => onUpdate({ data: { ...block.data, size: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="small">Petit</option>
+              <option value="medium">Moyen</option>
+              <option value="large">Grand</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Afficher le texte
+            </label>
+            <input
+              type="checkbox"
+              checked={block.data.show_text !== false}
+              onChange={(e) => onUpdate({ data: { ...block.data, show_text: e.target.checked } })}
+              className="w-4 h-4"
+            />
+            {block.data.show_text !== false && (
+              <input
+                type="text"
+                value={block.data.text || ''}
+                onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+                className="w-full mt-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                placeholder="Texte (ex: '4.5 sur 5')"
+              />
+            )}
+          </div>
+        </div>
+      )
+
+    case 'breadcrumb':
+      const breadcrumbItems = block.data.items || [{ label: 'Accueil', url: '/' }]
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Éléments ({breadcrumbItems.length})
+            </label>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {breadcrumbItems.map((item: any, index: number) => (
+                <div key={index} className="p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <input
+                    type="text"
+                    value={item.label || ''}
+                    onChange={(e) => {
+                      const newItems = [...breadcrumbItems]
+                      newItems[index] = { ...item, label: e.target.value }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    className="w-full mb-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                    placeholder="Label"
+                  />
+                  <UrlInputWithSuggestions
+                    value={item.url || ''}
+                    onChange={(url) => {
+                      const newItems = [...breadcrumbItems]
+                      newItems[index] = { ...item, url }
+                      onUpdate({ data: { ...block.data, items: newItems } })
+                    }}
+                    placeholder="URL"
+                    className="text-xs"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => onUpdate({ data: { ...block.data, items: [...breadcrumbItems, { label: '', url: '' }] } })}
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Ajouter
+              </button>
+              {breadcrumbItems.length > 1 && (
+                <button
+                  onClick={() => onUpdate({ data: { ...block.data, items: breadcrumbItems.slice(0, -1) } })}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  - Supprimer
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'tags':
+      const tags = block.data.tags || ['Tag 1', 'Tag 2']
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Tags (séparés par des virgules)
+            </label>
+            <textarea
+              value={tags.join(', ')}
+              onChange={(e) => {
+                const newTags = e.target.value.split(',').map(t => t.trim()).filter(t => t)
+                onUpdate({ data: { ...block.data, tags: newTags } })
+              }}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Tag 1, Tag 2, Tag 3..."
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Style
+            </label>
+            <select
+              value={block.data.style || 'rounded'}
+              onChange={(e) => onUpdate({ data: { ...block.data, style: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="rounded">Arrondi</option>
+              <option value="square">Carré</option>
+              <option value="pill">Pilule</option>
+            </select>
+          </div>
+        </div>
+      )
+
+    case 'progress-circle':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Pourcentage (0-100)
+            </label>
+            <input
+              type="number"
+              value={block.data.percentage || 75}
+              onChange={(e) => onUpdate({ data: { ...block.data, percentage: Math.max(0, Math.min(100, parseInt(e.target.value) || 0)) } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              min={0}
+              max={100}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Taille
+            </label>
+            <select
+              value={block.data.size || 'medium'}
+              onChange={(e) => onUpdate({ data: { ...block.data, size: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            >
+              <option value="small">Petit (100px)</option>
+              <option value="medium">Moyen (150px)</option>
+              <option value="large">Grand (200px)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Texte
+            </label>
+            <input
+              type="text"
+              value={block.data.text || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, text: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Texte sous le cercle"
+            />
+          </div>
+        </div>
+      )
+
+    case 'search-bar':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Placeholder
+            </label>
+            <input
+              type="text"
+              value={block.data.placeholder || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, placeholder: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Rechercher..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Action (URL de recherche)
+            </label>
+            <input
+              type="url"
+              value={block.data.action || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, action: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="/search"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Afficher le bouton
+            </label>
+            <input
+              type="checkbox"
+              checked={block.data.show_button !== false}
+              onChange={(e) => onUpdate({ data: { ...block.data, show_button: e.target.checked } })}
+              className="w-4 h-4"
+            />
+          </div>
+        </div>
+      )
+
+    case 'audio-player':
+      return (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL du fichier audio
+            </label>
+            <input
+              type="url"
+              value={block.data.src || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, src: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="https://..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Titre
+            </label>
+            <input
+              type="text"
+              value={block.data.title || ''}
+              onChange={(e) => onUpdate({ data: { ...block.data, title: e.target.value } })}
+              className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+              placeholder="Titre de l'audio"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Contrôles
+            </label>
+            <div className="space-y-1">
+              <label className="flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={block.data.controls !== false}
+                  onChange={(e) => onUpdate({ data: { ...block.data, controls: e.target.checked } })}
+                  className="w-4 h-4"
+                />
+                Afficher les contrôles
+              </label>
+              <label className="flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={block.data.autoplay === true}
+                  onChange={(e) => onUpdate({ data: { ...block.data, autoplay: e.target.checked } })}
+                  className="w-4 h-4"
+                />
+                Lecture automatique
+              </label>
+              <label className="flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={block.data.loop === true}
+                  onChange={(e) => onUpdate({ data: { ...block.data, loop: e.target.checked } })}
+                  className="w-4 h-4"
+                />
+                Répéter
+              </label>
             </div>
           </div>
         </div>
