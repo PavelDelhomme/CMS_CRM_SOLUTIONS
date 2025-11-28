@@ -538,7 +538,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes }: B
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-12 gap-4 lg:gap-6 auto-rows-min">
                       {history.state
                         .filter((b: Block) => !b.position || b.position.type === 'static')
-                        .map((block) => {
+                        .map((block: Block) => {
                           // Calculer le span de colonnes basé sur le layout (système 12 colonnes)
                           const layoutCols = block.layout || 12
                           const colSpan = layoutCols === 12 ? 'col-span-full' : `col-span-${layoutCols}`
@@ -697,7 +697,7 @@ function SortableBlock({
             </svg>
           </button>
           <button
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation()
               e.preventDefault()
               // Suppression immédiate sans attendre
@@ -754,7 +754,7 @@ function SortableBlock({
                 value={block.container || 'container'}
                 onChange={(e) => onUpdate({ container: e.target.value as Block['container'] })}
                 className={`${isSmall ? 'text-[10px] px-1.5 py-1' : 'text-xs px-3 py-1.5'} border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e: React.MouseEvent<HTMLSelectElement>) => e.stopPropagation()}
               >
                 <option value="container">Conteneur</option>
                 <option value="container-fluid">Fluide</option>
@@ -800,7 +800,7 @@ function BlockRenderer({
             </label>
             <textarea
               value={block.data.content || ''}
-              onChange={(e) => onUpdate({ data: { ...block.data, content: e.target.value } })}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onUpdate({ data: { ...block.data, content: e.target.value } })}
               className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Entrez votre texte..."
               rows={6}
