@@ -2091,26 +2091,6 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
 
   // Appliquer l'alignement selon le type de position
   const getAlignmentClasses = () => {
-    if (block.position?.type === 'relative' || block.position?.type === 'absolute') {
-      const align = block.position?.align || 'left'
-      switch (align) {
-        case 'left':
-          return 'mr-auto'
-        case 'center':
-          return 'mx-auto'
-        case 'right':
-          return 'ml-auto'
-        case 'stretch':
-          return 'w-full'
-        default:
-          return ''
-      }
-    }
-    return ''
-  }
-
-  // Appliquer l'alignement selon le type de position
-  const getAlignmentClasses = () => {
     if (block.position?.type === 'relative' || block.position?.type === 'absolute' || block.position?.type === 'fixed' || block.position?.type === 'sticky') {
       const align = block.position?.align || 'left'
       switch (align) {
