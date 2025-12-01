@@ -270,6 +270,7 @@ export default function VisualPageEditor() {
               placeholder="Titre de la page"
             />
           </div>
+        </div>
 
         {/* SEO Panel (Collapsible) - Compact in header */}
         <div className="px-4 lg:px-6 xl:px-8 pb-2 bg-gray-50 dark:bg-gray-900 flex-shrink-0 w-full">

@@ -1247,7 +1247,7 @@ const SortableBlock = React.memo(function SortableBlock({
       </div>
     </div>
   )
-}
+})
 
 // Block Renderer Component
 function BlockRenderer({

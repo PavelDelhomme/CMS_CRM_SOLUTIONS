@@ -36,6 +36,10 @@
    - ✅ Toutes les fonctionnalités vérifiées
    - ✅ Gestion des erreurs améliorée
    - ✅ Vérifications null ajoutées
+   - ✅ Erreurs de syntaxe corrigées :
+     - `BlockEditor.tsx` : Correction de la fermeture de `React.memo` (ligne 1250)
+     - `edit-visual/page.tsx` : Correction de la balise `div` non fermée (ligne 256)
+   - ✅ Script de vérification des erreurs frontend créé (`scripts/frontend/check_syntax.sh`)
 
 ## 🎯 Mise à Jour Majeure - Génération Automatique de Previews (01/12/2025)
 
