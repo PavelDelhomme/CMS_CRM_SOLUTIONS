@@ -8,9 +8,9 @@ export default function PublicFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">VTCBuilder</h3>
+            <h3 className="text-xl font-bold mb-4">CMS_CRM_SOLUTIONS</h3>
             <p className="text-gray-400">
-              La plateforme SaaS complète pour créer et gérer votre site VTC professionnel.
+              Plateforme générique CMS/CRM multi-tenant pour créer et gérer vos sites web professionnels.
             </p>
           </div>
           <div>
@@ -38,8 +38,8 @@ export default function PublicFooter() {
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 VTCBuilder. Tous droits réservés.</p>
-          <p className="mt-2 text-sm">vtcbuilder.com - Développé avec ❤️ en France</p>
+          <p>&copy; 2025 CMS_CRM_SOLUTIONS. Tous droits réservés.</p>
+          <p className="mt-2 text-sm">Plateforme générique CMS/CRM multi-tenant - Développé avec ❤️</p>
         </div>
       </div>
     </footer>
