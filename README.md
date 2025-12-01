@@ -1,0 +1,142 @@
+# 🔧 CMS_CRM_SOLUTIONS - Plateforme Générique
+
+> **🚀 Plateforme générique multi-tenant pour créer des solutions CMS/CRM personnalisées**
+
+CMS_CRM_SOLUTIONS est une plateforme complète et générique qui permet de développer rapidement des solutions CMS/CRM personnalisées sans réinventer la roue.
+
+## ✨ Fonctionnalités
+
+### 🏢 Multi-Tenant
+- Architecture multi-tenant avec isolation complète des données
+- Schémas PostgreSQL séparés par tenant
+- Routage automatique par sous-domaine
+- Gestion centralisée des clients
+
+### 📝 CMS Complet
+- Gestion de pages avec éditeur
+- Système de blocs réutilisables
+- Gestion de contenu flexible
+- Gestion des médias
+
+### 💳 Facturation
+- Intégration Stripe
+- Gestion des abonnements
+- Facturation automatisée
+
+### 🔐 Sécurité
+- Authentification JWT
+- Isolation complète des données
+- CORS configuré
+- Headers de sécurité
+
+### 🚀 Performance
+- Cache Redis
+- Optimisations base de données
+- CDN ready
+
+## 🏗️ Architecture
+
+```
+CMS_CRM_SOLUTIONS (Core Générique)
+    │
+    ├── Multi-tenant Architecture
+    ├── Billing System
+    ├── Template Engine
+    ├── Block System
+    ├── User Management
+    ├── API Framework
+    └── Admin Dashboard
+```
+
+## 🛠️ Stack Technologique
+
+- **Backend**: Django 5.0.1 (Python 3.12)
+- **Frontend**: Next.js 14 (React 18 + TypeScript)
+- **Base de données**: PostgreSQL 15
+- **Cache**: Redis 7
+- **Conteneurisation**: Docker & Docker Compose
+- **Reverse Proxy**: Nginx
+
+## 🚀 Démarrage Rapide
+
+### Prérequis
+
+- Docker & Docker Compose
+- Git
+- Make (optionnel)
+
+### Installation
+
+```bash
+# 1. Cloner le projet
+git clone https://github.com/PavelDelhomme/CMS_CRM_SOLUTIONS.git
+cd CMS_CRM_SOLUTIONS
+
+# 2. Installation complète
+make setup
+
+# 3. Démarrer les services
+make start
+
+# 4. Créer un super utilisateur
+make superuser
+```
+
+## 🔐 Accès
+
+- **Frontend**: http://localhost:9494
+- **API**: http://localhost:9495/api
+- **Admin**: http://localhost:9495/admin
+- **API Docs**: http://localhost:9495/api/docs
+
+## 📚 Documentation
+
+- [Guide d'Installation](docs/INSTALLATION.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Documentation API](docs/API.md)
+- [Guide de Contribution](docs/CONTRIBUTING.md)
+
+## 🧪 Tests
+
+```bash
+# Backend
+cd backend-django && make test
+
+# Frontend
+cd frontend && npm test
+```
+
+## 📦 Structure du Projet
+
+```
+CMS_CRM_SOLUTIONS/
+├── backend-django/       # Backend Django
+├── frontend/             # Frontend Next.js
+├── docker/               # Configuration Docker
+├── scripts/              # Scripts d'automatisation
+├── docs/                 # Documentation
+└── tests/                # Tests
+```
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](docs/CONTRIBUTING.md) pour plus d'informations.
+
+## 📝 License
+
+MIT License - voir le fichier LICENSE pour plus de détails.
+
+## 🔗 Liens
+
+- **Dépôt GitHub**: https://github.com/PavelDelhomme/CMS_CRM_SOLUTIONS
+- **Branche dev**: https://github.com/PavelDelhomme/CMS_CRM_SOLUTIONS/tree/dev
+- **VTCBuilder** (projet source): https://github.com/PavelDelhomme/VTCBuilder
+
+## 👨‍💻 Auteur
+
+Développé avec ❤️ pour créer la meilleure solution SaaS multi-tenant générique.
+
+---
+
+**⭐ Si ce projet vous plaît, n'oubliez pas de lui donner une étoile !**
+
