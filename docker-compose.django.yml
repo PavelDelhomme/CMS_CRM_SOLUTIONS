@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # Traefik - Reverse Proxy pour multi-tenant
+  traefik:
+    image: traefik:v2.10
+    container_name: vtcbuilder_traefik
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@vtcbuilder.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "9400:80"
+      - "9401:443"
+      - "9499:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - vtcbuilder_network
+
+  # PostgreSQL Database (recommandé pour Django)
+  postgres:
+    image: postgres:15-alpine
+    container_name: vtcbuilder_postgres
+    environment:
+      POSTGRES_DB: vtcbuilder
+      POSTGRES_USER: vtcbuilder_user
+      POSTGRES_PASSWORD: vtcbuilder_password
+    ports:
+      - "9496:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vtcbuilder_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vtcbuilder_user -d vtcbuilder"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: vtcbuilder_redis
+    ports:
+      - "9497:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vtcbuilder_network
+
+  # Django Backend API
+  backend:
+    build:
+      context: ./backend-django
+      dockerfile: Dockerfile
+    container_name: vtcbuilder_backend
+    working_dir: /app
+    volumes:
+      - ./backend-django:/app
+    environment:
+      DB_ENGINE: django_tenants.postgresql_backend
+      DB_NAME: vtcbuilder
+      DB_USER: vtcbuilder_user
+      DB_PASSWORD: vtcbuilder_password
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: django-insecure-change-this-in-production-key
+      DEBUG: 1
+      DJANGO_SETTINGS_MODULE: vtcbuilder.settings
+      ALLOWED_HOSTS: "*"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - vtcbuilder_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+
+  # React/Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: vtcbuilder_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://api.localhost
+    networks:
+      - vtcbuilder_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  # PgAdmin (Development only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: vtcbuilder_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vtcbuilder.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "9498:80"
+    depends_on:
+      - postgres
+    networks:
+      - vtcbuilder_network
+
+networks:
+  vtcbuilder_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

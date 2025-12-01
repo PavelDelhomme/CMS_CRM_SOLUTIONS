@@ -1,0 +1,118 @@
+name: vtcbuilder
+
+networks:
+  vtcbuilder_network:
+    driver: bridge
+    name: vtcbuilder_network
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: vtcbuilder-postgres
+    environment:
+      POSTGRES_DB: vtcbuilder
+      POSTGRES_USER: vtcbuilder_user
+      POSTGRES_PASSWORD: vtcbuilder_password
+    ports:
+      - "9496:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vtcbuilder_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vtcbuilder_user -d vtcbuilder"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: vtcbuilder-redis
+    ports:
+      - "9497:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vtcbuilder_network
+
+  # Django Backend API
+  backend:
+    build:
+      context: ./backend-django
+      dockerfile: Dockerfile
+    image: vtcbuilder-backend:latest
+    container_name: vtcbuilder-backend
+    working_dir: /app
+    volumes:
+      - ./backend-django:/app
+      - ./backend-django/logs:/var/log
+    environment:
+      DB_ENGINE: django_tenants.postgresql_backend
+      DB_NAME: vtcbuilder
+      DB_USER: vtcbuilder_user
+      DB_PASSWORD: vtcbuilder_password
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: django-insecure-change-this-in-production-key
+      DEBUG: 1
+      DJANGO_SETTINGS_MODULE: vtcbuilder.settings
+      ALLOWED_HOSTS: "*"
+      # Email SMTP Configuration (OVH Mail)
+      EMAIL_HOST: ssl0.ovh.net
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: "True"
+      EMAIL_USE_SSL: "False"
+      EMAIL_HOST_USER: test@delhomme.ovh
+      EMAIL_HOST_PASSWORD: t^^SAjZJ9!9kjPn#
+      DEFAULT_FROM_EMAIL: noreply@vtcbuilder.com
+      FRONTEND_URL: http://localhost:9494
+    ports:
+      - "9495:8000"  # Django sur le port 9495
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - vtcbuilder_network
+
+  # React/Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    image: vtcbuilder-frontend:latest
+    container_name: vtcbuilder-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:9495
+    ports:
+      - "9494:3000"  # Next.js sur le port 9494
+    networks:
+      - vtcbuilder_network
+
+  # PgAdmin (Development only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: vtcbuilder-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vtcbuilder.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "9498:80"
+    depends_on:
+      - postgres
+    networks:
+      - vtcbuilder_network
+
+volumes:
+  postgres_data:
+  redis_data:

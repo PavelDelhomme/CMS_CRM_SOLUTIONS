@@ -1,0 +1,8 @@
+# Crontab pour VTCBuilder
+# Exécuter la vérification des trials expirés tous les jours à 2h du matin
+# et envoyer les notifications
+0 2 * * * cd /app && python manage.py check_trial_expiration --send-notifications >> /var/log/trial_check.log 2>&1
+
+# Alternative: Exécuter toutes les heures (pour les tests)
+# 0 * * * * cd /app && python manage.py check_trial_expiration --send-notifications >> /var/log/trial_check.log 2>&1
+

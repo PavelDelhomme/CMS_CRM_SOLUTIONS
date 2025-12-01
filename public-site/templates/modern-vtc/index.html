@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{site_name}} - Service VTC Premium</title>
+    <meta name="description" content="{{site_description}}">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="{{logo_url}}" alt="{{site_name}}" />
+                    <span>{{site_name}}</span>
+                </div>
+                <nav class="nav">
+                    <a href="#accueil">Accueil</a>
+                    <a href="#services">Services</a>
+                    <a href="#tarifs">Tarifs</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+                <a href="#reservation" class="btn btn-primary">Réserver</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">{{hero_title}}</h1>
+                <p class="hero-subtitle">{{hero_subtitle}}</p>
+                <div class="hero-cta">
+                    <a href="#reservation" class="btn btn-primary btn-lg">Réserver maintenant</a>
+                    <a href="tel:{{phone}}" class="btn btn-secondary btn-lg">
+                        📞 {{phone}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section">
+        <div class="container">
+            <h2 class="section-title">Nos Services VTC</h2>
+            <p class="section-subtitle">Des prestations adaptées à vos besoins</p>
+            
+            <div class="services-grid">
+                {{#each services}}
+                <div class="service-card">
+                    <div class="service-icon">{{icon}}</div>
+                    <h3 class="service-title">{{name}}</h3>
+                    <p class="service-description">{{description}}</p>
+                    <div class="service-features">
+                        <span>👥 {{max_passengers}} passagers</span>
+                        <span>🧳 {{max_luggage}} bagages</span>
+                    </div>
+                    <div class="service-price">À partir de {{base_price}}€</div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+
+    <!-- Pourquoi Nous Choisir -->
+    <section class="section bg-gray">
+        <div class="container">
+            <h2 class="section-title">Pourquoi Nous Choisir ?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">✓</div>
+                    <h3>Ponctualité Garantie</h3>
+                    <p>Nous sommes toujours à l'heure pour vous</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚗</div>
+                    <h3>Véhicules Premium</h3>
+                    <p>Flotte récente et parfaitement entretenue</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <h3>Tarifs Transparents</h3>
+                    <p>Prix fixés à l'avance, sans surprise</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Service 5 Étoiles</h3>
+                    <p>Chauffeurs professionnels et courtois</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tarifs Section -->
+    <section id="tarifs" class="section">
+        <div class="container">
+            <h2 class="section-title">Simulateur de Tarif</h2>
+            <div class="calculator-card">
+                <form id="price-calculator">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Adresse de départ</label>
+                            <input type="text" id="pickup" placeholder="Ex: Aéroport CDG">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse d'arrivée</label>
+                            <input type="text" id="dropoff" placeholder="Ex: Paris Centre">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Service</label>
+                            <select id="service">
+                                {{#each services}}
+                                <option value="{{id}}">{{name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date & Heure</label>
+                            <input type="datetime-local" id="datetime">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Calculer le tarif
+                    </button>
+                </form>
+                <div id="price-result" class="price-result hidden">
+                    <div class="price-amount">Prix estimé: <span id="estimated-price">--</span>€</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title">Réserver une Course</h2>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Contactez-nous</h3>
+                    <div class="contact-item">
+                        <span class="icon">📞</span>
+                        <a href="tel:{{phone}}">{{phone}}</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="icon">✉️</span>
+                        <a href="mailto:{{email}}">{{email}}</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="icon">📍</span>
+                        <span>{{address}}</span>
+                    </div>
+                </div>
+
+                <form id="booking-form" class="booking-form">
+                    <input type="text" name="name" placeholder="Votre nom *" required>
+                    <input type="email" name="email" placeholder="Votre email *" required>
+                    <input type="tel" name="phone" placeholder="Votre téléphone *" required>
+                    <input type="text" name="pickup" placeholder="Adresse de départ *" required>
+                    <input type="text" name="dropoff" placeholder="Adresse d'arrivée *" required>
+                    <input type="datetime-local" name="datetime" required>
+                    <textarea name="notes" rows="3" placeholder="Informations complémentaires"></textarea>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Envoyer la demande
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>{{site_name}}</h4>
+                    <p>Votre service VTC de confiance</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Navigation</h4>
+                    <a href="#accueil">Accueil</a>
+                    <a href="#services">Services</a>
+                    <a href="#tarifs">Tarifs</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>{{phone}}</p>
+                    <p>{{email}}</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{current_year}} {{site_name}} - Tous droits réservés</p>
+                <p>Propulsé par <a href="https://vtcbuilder.com">VTCBuilder</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
