@@ -290,17 +290,25 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
       // Si des blocs sont fournis via props ET qu'il y en a, fusionner avec les blocs par défaut
       if (availableBlockTypes && availableBlockTypes.length > 0) {
         // Fusionner les blocs par défaut avec ceux de l'API pour éviter les doublons
-        const mergedTypes = [...defaultTypes]
+        const mergedTypes: BlockType[] = []
+        const seenNames = new Set<string>()
+        
+        // D'abord ajouter les blocs de l'API (priorité)
         availableBlockTypes.forEach((apiType: BlockType) => {
-          const existingIndex = mergedTypes.findIndex((dt: BlockType) => dt.name === apiType.name)
-          if (existingIndex >= 0) {
-            // Remplacer le bloc par défaut par celui de l'API (plus à jour)
-            mergedTypes[existingIndex] = apiType
-          } else {
-            // Ajouter les nouveaux blocs de l'API
+          if (!seenNames.has(apiType.name)) {
             mergedTypes.push(apiType)
+            seenNames.add(apiType.name)
           }
         })
+        
+        // Ensuite ajouter les blocs par défaut qui n'existent pas déjà
+        defaultTypes.forEach((defaultType: BlockType) => {
+          if (!seenNames.has(defaultType.name)) {
+            mergedTypes.push(defaultType)
+            seenNames.add(defaultType.name)
+          }
+        })
+        
         setBlockTypes(mergedTypes)
       } else {
         // Si availableBlockTypes est vide ou undefined, essayer de charger depuis l'API
@@ -308,15 +316,25 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
           const apiTypes = await blocksService.getBlockTypes()
           if (apiTypes && apiTypes.length > 0) {
             // Fusionner avec les blocs par défaut
-            const mergedTypes = [...defaultTypes]
+            const mergedTypes: BlockType[] = []
+            const seenNames = new Set<string>()
+            
+            // D'abord ajouter les blocs de l'API (priorité)
             apiTypes.forEach((apiType: BlockType) => {
-              const existingIndex = mergedTypes.findIndex((dt: BlockType) => dt.name === apiType.name)
-              if (existingIndex >= 0) {
-                mergedTypes[existingIndex] = apiType
-              } else {
+              if (!seenNames.has(apiType.name)) {
                 mergedTypes.push(apiType)
+                seenNames.add(apiType.name)
               }
             })
+            
+            // Ensuite ajouter les blocs par défaut qui n'existent pas déjà
+            defaultTypes.forEach((defaultType: BlockType) => {
+              if (!seenNames.has(defaultType.name)) {
+                mergedTypes.push(defaultType)
+                seenNames.add(defaultType.name)
+              }
+            })
+            
             setBlockTypes(mergedTypes)
           } else {
             // Pas de blocs de l'API, utiliser uniquement les blocs par défaut
@@ -834,7 +852,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                   
                   return (
                   <button
-                    key={blockType.id}
+                    key={`${blockType.name}-${blockType.id}`}
                       onClick={() => {
                         if (canUse) {
                           addBlock(blockType)
@@ -904,7 +922,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
           <div className="space-y-2">
             {blockTypes.map((blockType: BlockType) => (
               <button
-                key={blockType.id}
+                key={`${blockType.name}-${blockType.id}`}
                 onClick={() => addBlock(blockType)}
                 className="w-full px-3 py-2 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 hover:border-blue-500 transition flex items-center gap-2"
               >

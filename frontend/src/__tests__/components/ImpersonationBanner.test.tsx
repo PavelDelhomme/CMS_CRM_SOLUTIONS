@@ -24,6 +24,7 @@ describe('ImpersonationBanner', () => {
   })
 
   it('should render when impersonating', () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const authService = require('@/services/auth.service').default
     authService.isImpersonating = jest.fn(() => true)
     authService.getImpersonationInfo = jest.fn(() => ({

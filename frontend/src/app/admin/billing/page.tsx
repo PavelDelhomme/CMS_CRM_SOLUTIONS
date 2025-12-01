@@ -432,7 +432,7 @@ export default function BillingPage() {
             }}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
-            <option value="overview">Vue d'ensemble</option>
+            <option value="overview">Vue d&apos;ensemble</option>
             <option value="subscriptions">Abonnements ({subscriptions.length})</option>
             <option value="invoices">Factures ({invoices.length})</option>
             <option value="payments">Paiements ({payments.length})</option>
@@ -452,7 +452,7 @@ export default function BillingPage() {
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
-            Vue d'ensemble
+            Vue d&apos;ensemble
           </button>
           <button
             onClick={() => setActiveTab('subscriptions')}
@@ -1470,7 +1470,7 @@ function PricingPlansTab({
       {/* Preview des plans */}
       {sortedPlans.filter(p => p.is_active).length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4">Aperçu de l'affichage sur le site public</h3>
+          <h3 className="text-lg font-semibold mb-4">Aperçu de l&apos;affichage sur le site public</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {sortedPlans.filter(p => p.is_active).map((plan) => (
               <div
@@ -1623,7 +1623,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre d'utilisateurs *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre d&apos;utilisateurs *</label>
           <input
             type="number"
             value={formData.max_users || 1}
@@ -1647,7 +1647,7 @@ function PricingPlanForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordre d'affichage *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordre d&apos;affichage *</label>
           <input
             type="number"
             value={formData.order || 0}
@@ -1696,7 +1696,7 @@ function PricingPlanForm({
             onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
             className="mr-2"
           />
-          <span className="text-sm text-gray-700 dark:text-gray-300">Marquer comme "Populaire"</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">Marquer comme &quot;Populaire&quot;</span>
         </label>
       </div>
 
@@ -2234,7 +2234,7 @@ function PaymentMethodForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordre d'affichage</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordre d&apos;affichage</label>
           <input
             type="number"
             value={formData.order || 0}
