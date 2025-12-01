@@ -80,12 +80,18 @@ export default function HomePage() {
       loadPricingPlans()
     } catch (error) {
       console.error('Erreur vérification mode maintenance:', error)
-      // Continue loading if error
+      // Continue loading if error - IMPORTANT: Ne pas bloquer l'affichage
       loadPricingPlans()
     } finally {
       setCheckingMaintenance(false)
     }
   }
+  
+  // IMPORTANT: Charger les pricing plans immédiatement, même si checkMaintenanceMode échoue
+  useEffect(() => {
+    // Charger les pricing plans en parallèle, sans attendre la vérification de maintenance
+    loadPricingPlans()
+  }, [])
 
   const loadTenantHomePage = async () => {
     try {
@@ -122,11 +128,14 @@ export default function HomePage() {
   // Check maintenance mode before showing landing page
   // Allow admins to bypass maintenance mode
   // Only check if we're not on a tenant domain and window is available
+  // IMPORTANT: Ne JAMAIS bloquer l'affichage pendant le SSR - toujours afficher le contenu
   const isAdmin = typeof window !== 'undefined' ? authService.isSuperAdmin() : false
-  const isMaintenanceMode = !isTenantDomain && systemSettings?.maintenance_mode && !isAdmin
+  // Ne vérifier la maintenance que si on est côté client ET qu'on a fini de charger
+  const isMaintenanceMode = typeof window !== 'undefined' && !isTenantDomain && !checkingMaintenance && systemSettings?.maintenance_mode && !isAdmin
 
-  // Show maintenance page if maintenance mode is enabled (and user is not admin)
-  if (isMaintenanceMode) {
+  // Show maintenance page ONLY if maintenance mode is enabled AND we're client-side AND we've finished checking
+  // NEVER block during SSR or initial render
+  if (isMaintenanceMode && typeof window !== 'undefined') {
     return (
       <MaintenancePage
         message={systemSettings?.maintenance_message || 'Le site est actuellement en maintenance. Nous serons de retour très bientôt !'}
@@ -136,7 +145,8 @@ export default function HomePage() {
   }
 
   // If on tenant subdomain, show tenant public site
-  if (isTenantDomain) {
+  // Mais seulement si on est côté client (pas pendant SSR)
+  if (isTenantDomain && typeof window !== 'undefined') {
     if (loading) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -280,9 +290,28 @@ export default function HomePage() {
   // La page complète inclut Header, Hero, Features, Pricing, CTA, Footer
   // Forcer l'affichage même si loading est true
   // IMPORTANT: Rendre directement le contenu complet pour éviter les problèmes SSR
+  // Utiliser un header simple pendant le SSR, PublicHeader s'hydratera côté client
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
-      <PublicHeader showThemeToggle={true} />
+      {/* Header simple pour SSR - PublicHeader s'hydratera côté client */}
+      {typeof window !== 'undefined' ? (
+        <PublicHeader showThemeToggle={true} />
+      ) : (
+        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-2">
+                <h1 className="text-2xl font-bold text-gray-900">CMS_CRM_SOLUTIONS</h1>
+                <span className="text-xs text-gray-600">Beta</span>
+              </Link>
+              <div className="flex items-center space-x-4">
+                <Link href="/login" className="text-gray-700 hover:text-gray-900 font-medium">Connexion</Link>
+                <Link href="/register" className="px-4 py-2 rounded-lg font-medium bg-white text-blue-600 hover:bg-blue-50">Créer un compte</Link>
+              </div>
+            </div>
+          </div>
+        </header>
+      )}
       
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
