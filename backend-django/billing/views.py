@@ -168,9 +168,9 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             
             try:
                 if user.is_super_admin():
-                    return Subscription.objects.all()
+                    return Subscription.objects.all().order_by('-created_at', '-id')
                 elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
-                    return Subscription.objects.filter(tenant=user.tenant)
+                    return Subscription.objects.filter(tenant=user.tenant).order_by('-created_at', '-id')
             except Exception as e:
                 logger.error(f"Error checking user permissions in SubscriptionViewSet: {e}", exc_info=True)
             

@@ -47,6 +47,38 @@ docker-compose -f ../docker-compose.simple.yml up -d backend
 # Attendre que Django soit prêt
 sleep 10
 
+# Exécuter les migrations automatiquement
+echo "🗄️  Exécution des migrations Django..."
+docker-compose -f ../docker-compose.simple.yml exec -T backend python manage.py migrate --noinput || {
+    echo "⚠️  Erreur lors des migrations, mais on continue..."
+}
+
+# Créer le super admin s'il n'existe pas
+echo "👤 Vérification du super admin..."
+docker-compose -f ../docker-compose.simple.yml exec -T backend python manage.py shell -c "
+from tenants.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+user, created = User.objects.get_or_create(
+    email='admin@vtcbuilder.com',
+    defaults={
+        'is_superuser': True,
+        'is_staff': True,
+    }
+)
+user.set_password('admin123')
+user.is_superuser = True
+user.is_staff = True
+user.role = 'super-admin'
+user.status = 'active'
+user.save()
+if created:
+    print('✅ Super admin créé')
+else:
+    print('✅ Super admin mis à jour')
+" || echo "⚠️  Erreur lors de la création du super admin"
+
 # Démarrer le frontend
 echo "🔧 Démarrage du frontend..."
 docker-compose -f ../docker-compose.simple.yml up -d frontend

@@ -170,6 +170,114 @@ class User(GuardianUserMixin, AbstractUser):
 
     def is_active_user(self):
         return self.status == 'active'
+    
+    def can_use_feature(self, feature):
+        """
+        Vérifie si l'utilisateur peut utiliser une feature.
+        Le super admin a accès à toutes les features sans exception.
+        """
+        # Super admin a accès à tout
+        if self.is_super_admin():
+            return True
+        
+        # Si l'utilisateur n'a pas de tenant, pas d'accès
+        if not self.tenant:
+            return False
+        
+        # Vérifier si le tenant a un abonnement actif
+        try:
+            from billing.models import Subscription
+            subscription = Subscription.objects.filter(
+                tenant=self.tenant,
+                status='active'
+            ).first()
+            
+            if not subscription:
+                return False
+            
+            plan = subscription.plan
+            
+            # Vérifier que le plan existe
+            if not plan:
+                return False
+            
+            # Vérifier si la feature est disponible pour ce plan
+            return feature.is_available_for_plan(plan)
+        except ImportError:
+            # Si billing n'est pas disponible, autoriser par défaut
+            return True
+        except Exception:
+            return False
+
+
+class Feature(models.Model):
+    """
+    Feature model for managing available features
+    """
+    FEATURE_STATUS = [
+        ('development', 'En développement'),
+        ('beta', 'Bêta'),
+        ('stable', 'Stable'),
+        ('deprecated', 'Déprécié'),
+    ]
+    
+    name = models.CharField(max_length=100, unique=True, help_text="Identifiant unique de la fonctionnalité")
+    label = models.CharField(max_length=255, help_text="Nom affiché de la fonctionnalité")
+    description = models.TextField(blank=True, help_text="Description de la fonctionnalité")
+    status = models.CharField(max_length=20, choices=FEATURE_STATUS, default='development')
+    # Relation ManyToMany avec les plans tarifaires qui donnent accès à cette feature
+    # Si vide, la feature est accessible à tous les plans
+    available_plans = models.ManyToManyField(
+        'billing.PricingPlan',
+        related_name='available_features',
+        blank=True,
+        help_text="Plans tarifaires qui donnent accès à cette feature. Si vide, accessible à tous."
+    )
+    requires_setup = models.BooleanField(default=False, help_text="Nécessite une configuration")
+    category = models.CharField(max_length=50, blank=True, help_text="Catégorie de la fonctionnalité")
+    order = models.IntegerField(default=0, help_text="Ordre d'affichage")
+    is_active = models.BooleanField(default=True, help_text="Fonctionnalité disponible")
+    
+    # Metadata
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'features'
+        ordering = ['category', 'order', 'label']
+    
+    def __str__(self):
+        return f"{self.label} ({self.name})"
+    
+    def is_available_for_plan(self, plan):
+        """
+        Vérifie si la feature est disponible pour un plan donné.
+        Si aucun plan n'est associé, la feature est accessible à tous.
+        """
+        if not self.available_plans.exists():
+            return True  # Accessible à tous si aucun plan spécifique
+        return self.available_plans.filter(id=plan.id).exists()
+
+
+class UserFeature(models.Model):
+    """
+    Link between users and enabled features
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enabled_features')
+    feature = models.ForeignKey(Feature, on_delete=models.CASCADE, related_name='user_features')
+    is_enabled = models.BooleanField(default=True)
+    enabled_at = models.DateTimeField(auto_now_add=True)
+    enabled_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='features_enabled')
+    notes = models.TextField(blank=True, help_text="Notes sur l'activation de cette fonctionnalité")
+    
+    class Meta:
+        db_table = 'user_features'
+        unique_together = ['user', 'feature']
+        ordering = ['-enabled_at']
+    
+    def __str__(self):
+        return f"{self.user.email} - {self.feature.label}"
 
 
 class PasswordResetToken(models.Model):

@@ -56,3 +56,6 @@ black==24.1.1
 flake8==7.0.0
 isort==5.13.2
 
+# Screenshot generation
+playwright==1.40.0
+

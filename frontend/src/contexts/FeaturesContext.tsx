@@ -82,8 +82,36 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
 
       // Pour les tenants, charger depuis l'API
       try {
-        const response = await api.get('/tenant/features/')
-        setFeatures(response.data)
+        // Utiliser le nouvel endpoint qui retourne les features basées sur le plan
+        const response = await api.get('/tenants/features/')
+        const availableFeatures = response.data || []
+        
+        // Construire l'objet TenantFeatures basé sur les features disponibles
+        // Pour l'instant, on utilise une logique simple basée sur les noms de features
+        const featureNames = availableFeatures.map((f: any) => f.name)
+        
+        setFeatures({
+          can_use_premium_blocks: featureNames.includes('advanced-blocks'),
+          can_use_custom_domain: featureNames.includes('custom-domain'),
+          can_use_advanced_seo: featureNames.includes('seo-tools'),
+          can_use_analytics: featureNames.includes('analytics'),
+          can_use_multiple_sites: featureNames.includes('multiple-sites'),
+          can_use_white_label: featureNames.includes('white-label'),
+          can_use_advanced_styling: featureNames.includes('advanced-styling'),
+          can_use_custom_code: featureNames.includes('custom-code'),
+          can_use_ai_content: featureNames.includes('ai-content'),
+          can_use_advanced_forms: featureNames.includes('advanced-forms'),
+          can_use_ecommerce: featureNames.includes('ecommerce'),
+          can_use_membership: featureNames.includes('membership'),
+          can_use_booking_system: true, // Toujours disponible
+          can_use_email_marketing: featureNames.includes('email-marketing'),
+          can_use_social_integration: featureNames.includes('social-integration'),
+          can_use_api_access: featureNames.includes('api-access'),
+          max_pages: 10, // Sera déterminé par le plan
+          max_storage_gb: 1, // Sera déterminé par le plan
+          max_users: 1, // Sera déterminé par le plan
+          available_block_types: featureNames.includes('advanced-blocks') ? ['*'] : ['heading', 'text', 'image', 'button', 'video', 'spacer', 'divider'],
+        })
       } catch (error: any) {
         // Si l'endpoint n'existe pas encore, utiliser des valeurs par défaut
         console.warn('Features endpoint not available, using defaults')

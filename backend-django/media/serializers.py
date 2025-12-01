@@ -153,8 +153,8 @@ class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = [
-            'id', 'name', 'slug', 'description', 'thumbnail',
-            'preview_url', 'structure', 'default_settings',
+            'id', 'name', 'slug', 'description', 'preview_image',
+            'structure', 'default_settings',
             'html_content', 'css_content', 'variables',
             'category', 'is_premium', 'price', 'is_active',
             'usage_count', 'created_at', 'updated_at'
@@ -168,7 +168,7 @@ class TemplateListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = [
-            'id', 'name', 'slug', 'description', 'thumbnail',
+            'id', 'name', 'slug', 'description', 'preview_image',
             'category', 'is_premium', 'price', 'is_active', 'usage_count'
         ]
         read_only_fields = ['id', 'usage_count']

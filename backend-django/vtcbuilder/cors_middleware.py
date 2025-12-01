@@ -16,30 +16,47 @@ class CORSAlwaysMiddleware(MiddlewareMixin):
     
     def _add_cors_headers(self, response, request):
         """Ajouter les headers CORS à une réponse"""
-        origin = request.META.get('HTTP_ORIGIN')
-        
-        # Si pas d'origin, pas besoin de CORS
-        if not origin:
-            return response
-        
-        # Vérifier si l'origin est autorisé
-        allowed = False
-        
-        if settings.DEBUG:
-            # En développement, autoriser tous les localhost
-            if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
-                allowed = True
-        else:
-            # En production, vérifier les origines autorisées
-            if hasattr(settings, 'CORS_ALLOWED_ORIGINS'):
-                allowed = origin in settings.CORS_ALLOWED_ORIGINS
-        
-        if allowed:
-            # Ajouter les headers CORS
-            response['Access-Control-Allow-Origin'] = origin
-            response['Access-Control-Allow-Credentials'] = 'true'
-            response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
-            response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+        try:
+            origin = request.META.get('HTTP_ORIGIN') or request.META.get('HTTP_REFERER', '').split('/')[0:3]
+            if isinstance(origin, list):
+                origin = '/'.join(origin)
+            
+            # Si pas d'origin, essayer de le déduire de la requête
+            if not origin:
+                # En développement, autoriser par défaut
+                if settings.DEBUG:
+                    origin = 'http://localhost:9494'
+                else:
+                    return response
+            
+            # Vérifier si l'origin est autorisé
+            allowed = False
+            
+            if settings.DEBUG:
+                # En développement, autoriser tous les localhost et 127.0.0.1
+                if (origin.startswith('http://localhost') or 
+                    origin.startswith('http://127.0.0.1') or
+                    origin.startswith('https://localhost') or
+                    origin.startswith('https://127.0.0.1')):
+                    allowed = True
+            else:
+                # En production, vérifier les origines autorisées
+                if hasattr(settings, 'CORS_ALLOWED_ORIGINS'):
+                    allowed = origin in settings.CORS_ALLOWED_ORIGINS
+                elif hasattr(settings, 'CORS_ALLOW_ALL_ORIGINS') and settings.CORS_ALLOW_ALL_ORIGINS:
+                    allowed = True
+            
+            if allowed:
+                # Ajouter les headers CORS
+                response['Access-Control-Allow-Origin'] = origin
+                response['Access-Control-Allow-Credentials'] = 'true'
+                response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+                response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+                # Ajouter header pour les requêtes preflight
+                if request.method == 'OPTIONS':
+                    response['Access-Control-Max-Age'] = '86400'
+        except Exception as e:
+            logger.warning(f"Error adding CORS headers in middleware: {e}")
         
         return response
     

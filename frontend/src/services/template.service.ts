@@ -5,8 +5,7 @@ export interface Template {
   name: string;
   slug: string;
   description?: string;
-  thumbnail?: string;
-  preview_url?: string;
+  preview_image?: string; // URL de l'image de prévisualisation uploadée
   structure?: Record<string, any>;
   default_settings?: Record<string, any>;
   html_content?: string;
@@ -57,13 +56,21 @@ class TemplateService {
     return response.data;
   }
 
-  async create(data: Partial<Template>) {
-    const response = await api.post('/templates/', data);
+  async create(data: Partial<Template> | FormData) {
+    // Si c'est FormData, ne pas définir Content-Type (laisser le navigateur le faire)
+    const config = data instanceof FormData 
+      ? {} 
+      : {};
+    const response = await api.post('/templates/', data, config);
     return response.data;
   }
 
-  async update(id: number, data: Partial<Template>) {
-    const response = await api.patch(`/templates/${id}/`, data);
+  async update(id: number, data: Partial<Template> | FormData) {
+    // Si c'est FormData, ne pas définir Content-Type (laisser le navigateur le faire)
+    const config = data instanceof FormData 
+      ? {} 
+      : {};
+    const response = await api.patch(`/templates/${id}/`, data, config);
     return response.data;
   }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -48,29 +48,35 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
   const [blockTypes, setBlockTypes] = useState<BlockType[]>([])
   const [selectedBlock, setSelectedBlock] = useState<string | null>(externalSelectedBlockId || null)
   
-  // Synchroniser avec la sélection externe
+  // Synchroniser avec la sélection externe (optimisé pour éviter les conflits)
   useEffect(() => {
-    if (externalSelectedBlockId !== undefined) {
+    if (externalSelectedBlockId !== undefined && externalSelectedBlockId !== selectedBlock) {
+      console.log('[BlockEditor] Synchronisation externe:', externalSelectedBlockId)
       setSelectedBlock(externalSelectedBlockId)
+      if (externalSelectedBlockId) {
+        setSidebarOpen(true)
+      }
     }
-  }, [externalSelectedBlockId])
+  }, [externalSelectedBlockId]) // Retirer selectedBlock des dépendances pour éviter les boucles
   
-  // Notifier le parent quand la sélection change
+  // Notifier le parent quand la sélection change (debounced pour éviter trop d'appels)
   useEffect(() => {
     if (onBlockSelect) {
-      onBlockSelect(selectedBlock)
+      // Utiliser requestIdleCallback pour ne pas bloquer le rendu
+      const timeoutId = setTimeout(() => {
+        onBlockSelect(selectedBlock)
+      }, 0)
+      return () => clearTimeout(timeoutId)
     }
   }, [selectedBlock, onBlockSelect])
   const [sidebarOpen, setSidebarOpen] = useState(true) // Ouvrir par défaut sur desktop
-  const [propertiesTab, setPropertiesTab] = useState<'content' | 'style'>('content')
+  const [propertiesTab, setPropertiesTab] = useState<'content' | 'layout' | 'style'>('content')
   
-  // S'assurer que la sidebar est ouverte quand un bloc est sélectionné (instantané, pas de latence)
+  // S'assurer que la sidebar est ouverte quand un bloc est sélectionné (INSTANTANÉ, synchrone)
   useEffect(() => {
     if (selectedBlock) {
-      // Utiliser requestAnimationFrame pour rendre instantané
-      requestAnimationFrame(() => {
-        setSidebarOpen(true)
-      })
+      // Mise à jour synchrone pour réactivité immédiate
+      setSidebarOpen(true)
     }
   }, [selectedBlock])
   const { canUseBlockType } = useFeatures()
@@ -78,6 +84,9 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
   // Historique avec undo/redo
   const history = useHistory<Block[]>(blocks, 50)
   const isHistoryUpdate = useRef(false)
+  const isInternalUpdate = useRef(false) // Pour éviter les boucles infinies
+  const onChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastBlocksRef = useRef<string>('') // Pour comparer les blocs (JSON string)
   
   // Tracking des blocs
   const { trackBlockAction } = useBlockTracking()
@@ -91,18 +100,44 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
 
   // Synchroniser l'historique avec les blocks externes
   useEffect(() => {
-    if (!isHistoryUpdate.current) {
-      history.reset(blocks)
+    if (!isHistoryUpdate.current && !isInternalUpdate.current) {
+      const blocksJson = JSON.stringify(blocks)
+      if (blocksJson !== lastBlocksRef.current) {
+        history.reset(blocks)
+        lastBlocksRef.current = blocksJson
+      }
     }
     isHistoryUpdate.current = false
-  }, [blocks])
+    isInternalUpdate.current = false
+  }, [blocks, history])
 
-  // Synchroniser onChange avec l'historique
+  // Synchroniser onChange avec l'historique (avec debounce et protection contre les boucles)
   useEffect(() => {
-    if (history.state !== blocks) {
-      onChange(history.state)
+    const historyJson = JSON.stringify(history.state)
+    const blocksJson = JSON.stringify(blocks)
+    
+    // Ne pas appeler onChange si c'est une mise à jour externe ou si les valeurs sont identiques
+    if (historyJson !== blocksJson && historyJson !== lastBlocksRef.current) {
+      isInternalUpdate.current = true
+      lastBlocksRef.current = historyJson
+      
+      // Debounce pour éviter trop d'appels (surtout pour les changements de couleur)
+      if (onChangeTimeoutRef.current) {
+        clearTimeout(onChangeTimeoutRef.current)
+      }
+      
+      onChangeTimeoutRef.current = setTimeout(() => {
+        onChange(history.state)
+        isInternalUpdate.current = false
+      }, 50) // 50ms de debounce pour les mises à jour de style
     }
-  }, [history.state])
+    
+    return () => {
+      if (onChangeTimeoutRef.current) {
+        clearTimeout(onChangeTimeoutRef.current)
+      }
+    }
+  }, [history.state, onChange])
 
   useEffect(() => {
     loadBlockTypes()
@@ -373,12 +408,18 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
     }
   }, [history, trackBlockAction])
 
-  // Gérer l'ouverture des paramètres - afficher dans la sidebar (instantané)
+  // Gérer l'ouverture des paramètres - afficher dans la sidebar (INSTANTANÉ, synchrone)
   const handleSelectBlock = useCallback((blockId: string) => {
-    // Mise à jour synchrone pour éviter la latence
+    // Log pour diagnostic
+    console.log('[BlockEditor] handleSelectBlock appelé pour:', blockId, 'à', Date.now())
+    
+    // Mise à jour synchrone IMMÉDIATE (pas de délai, pas de requestAnimationFrame)
+    // Utiliser flushSync pour forcer un rendu synchrone si nécessaire
     setSelectedBlock(blockId)
-    // Ouvrir la sidebar immédiatement sans délai
     setSidebarOpen(true)
+    
+    // Log après mise à jour
+    console.log('[BlockEditor] État mis à jour:', blockId)
   }, [])
 
   // Gérer la fermeture des paramètres - revenir aux blocs disponibles
@@ -387,6 +428,14 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
     setPropertiesTab('content') // Réinitialiser l'onglet
   }, [])
 
+  // Mémoriser le bloc sélectionné pour éviter les recherches répétées (OPTIMISATION PERFORMANCE)
+  const selectedBlockData = useMemo(() => {
+    if (!selectedBlock) return null
+    const block = history.state.find((b: Block) => b.id === selectedBlock)
+    if (!block) return null
+    const blockType = blockTypes.find((bt: BlockType) => bt.name === block.type)
+    return { block, blockType }
+  }, [selectedBlock, history.state, blockTypes])
 
   return (
     <div className="flex h-full w-full flex-col relative">
@@ -508,7 +557,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden relative w-full">
+      <div className="flex flex-1 overflow-hidden relative w-full h-full min-h-0">
         {/* Mobile Sidebar Overlay */}
         {sidebarOpen && (
           <div
@@ -520,7 +569,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
         {/* Sidebar - Block Palette OU Properties Panel */}
         <div className={`
           ${sidebarOpen ? 'fixed left-0 top-0 h-full z-50' : 'hidden'}
-          lg:static lg:block
+          lg:static lg:block lg:h-full
           w-64 lg:w-72 xl:w-80 2xl:w-96
           bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800
           border-r border-gray-200 dark:border-gray-700 
@@ -551,12 +600,12 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                 </button>
               </div>
 
-              {/* Tabs pour Propriétés et Style */}
+              {/* Tabs pour Propriétés, Mise en page et Style */}
               <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <div className="flex gap-2 px-4">
+                <div className="flex gap-2 px-4 overflow-x-auto">
                   <button
                     onClick={() => setPropertiesTab('content')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                    className={`px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
                       propertiesTab === 'content'
                         ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -565,8 +614,18 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                     📝 Contenu
                   </button>
                   <button
+                    onClick={() => setPropertiesTab('layout')}
+                    className={`px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
+                      propertiesTab === 'layout'
+                        ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    📐 Mise en page
+                  </button>
+                  <button
                     onClick={() => setPropertiesTab('style')}
-                    className={`px-3 py-2 text-xs font-medium transition-colors ${
+                    className={`px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
                       propertiesTab === 'style'
                         ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -586,8 +645,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                       <div className="flex gap-2">
                         <button
                           onClick={() => {
-                            const block = history.state.find((b: Block) => b.id === selectedBlock)
-                            if (block) {
+                            if (selectedBlockData?.block) {
+                              const block = selectedBlockData.block
                               const newBlock: Block = {
                                 ...block,
                                 id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -623,16 +682,27 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                       </div>
                     </div>
 
+                    {/* Propriétés du bloc - Contenu éditable */}
+                    {selectedBlockData && (
+                      <BlockPropertiesPanel
+                        block={selectedBlockData.block}
+                        blockType={selectedBlockData.blockType}
+                        onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                      />
+                    )}
+                  </>
+                ) : propertiesTab === 'layout' ? (
+                  <>
                     {/* Configuration Layout (Largeur, Conteneur, Z-index) */}
                     <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">Mise en page</h4>
+                      <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">Mise en page du conteneur</h4>
                       <div className="space-y-3">
                         <div>
                           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Largeur (colonnes sur 12)
                           </label>
                           <select
-                            value={history.state.find((b: Block) => b.id === selectedBlock)?.layout || 12}
+                            value={selectedBlockData?.block?.layout || 12}
                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                               if (selectedBlock) {
                                 updateBlock(selectedBlock, { layout: parseInt(e.target.value) as Block['layout'] })
@@ -659,7 +729,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                             Conteneur
                           </label>
                           <select
-                            value={history.state.find((b: Block) => b.id === selectedBlock)?.container || 'container'}
+                            value={selectedBlockData?.block?.container || 'container'}
                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                               if (selectedBlock) {
                                 updateBlock(selectedBlock, { container: e.target.value as Block['container'] })
@@ -678,18 +748,15 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                           </label>
                           <input
                             type="number"
-                            value={history.state.find((b: Block) => b.id === selectedBlock)?.styles?.z_index || 0}
+                            value={selectedBlockData?.block?.styles?.z_index || 0}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              if (selectedBlock) {
-                                const currentBlock = history.state.find((b: Block) => b.id === selectedBlock)
-                                if (currentBlock) {
-                                  updateBlock(selectedBlock, {
-                                    styles: {
-                                      ...currentBlock.styles,
-                                      z_index: parseInt(e.target.value) || 0,
-                                    },
-                                  })
-                                }
+                              if (selectedBlock && selectedBlockData?.block) {
+                                updateBlock(selectedBlock, {
+                                  styles: {
+                                    ...selectedBlockData.block.styles,
+                                    z_index: parseInt(e.target.value) || 0,
+                                  },
+                                })
                               }
                             }}
                             className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -698,19 +765,14 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                         </div>
                       </div>
                     </div>
-
-                    {/* Propriétés du bloc */}
-                    <BlockPropertiesPanel
-                      block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                      blockType={blockTypes.find((bt: BlockType) => bt.name === history.state.find((b: Block) => b.id === selectedBlock)?.type)}
-                      onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                    />
                   </>
                 ) : (
-                  <BlockStylePanel
-                    block={history.state.find((b: Block) => b.id === selectedBlock)!}
-                    onUpdate={(updates) => updateBlock(selectedBlock, updates)}
-                  />
+                  selectedBlockData && (
+                    <BlockStylePanel
+                      block={selectedBlockData.block}
+                      onUpdate={(updates) => updateBlock(selectedBlock, updates)}
+                    />
+                  )
                 )}
               </div>
 
@@ -745,7 +807,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
                   </svg>
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 min-h-0">
                 <h3 className="hidden lg:block text-base font-bold text-gray-900 dark:text-gray-100 mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">Blocs disponibles</h3>
         
         {/* Group by category */}
@@ -935,8 +997,8 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
   )
 }
 
-// Sortable Block Component
-function SortableBlock({
+// Sortable Block Component - Optimisé avec React.memo pour éviter les re-renders inutiles
+const SortableBlock = React.memo(function SortableBlock({
   block,
   blockTypes,
   isSelected,
@@ -1119,7 +1181,11 @@ function SortableBlock({
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation()
               e.preventDefault()
+              // Log pour diagnostic
+              console.log('[SortableBlock] Bouton paramètres cliqué pour bloc:', block.id, 'à', Date.now())
+              // Appel immédiat, pas de délai
               onSelect()
+              console.log('[SortableBlock] onSelect() appelé')
             }}
             className={`${getButtonSize()} rounded-lg transition-all relative z-10 ${
               isSelected 

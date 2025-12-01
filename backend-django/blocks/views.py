@@ -100,6 +100,21 @@ class BlockTypeViewSet(CORSMixin, viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         """List block types with comprehensive error handling"""
         try:
+            # Handle OPTIONS request for CORS preflight
+            if request.method == 'OPTIONS':
+                response = Response()
+                add_cors_headers(response, request)
+                return response
+            
+            # Check authentication
+            if not request.user or not request.user.is_authenticated:
+                error_response = Response({
+                    'error': 'Authentication required',
+                    'message': 'You must be authenticated to access block types'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+                add_cors_headers(error_response, request)
+                return error_response
+            
             if not BLOCKS_MODELS_AVAILABLE or BlockType is None:
                 error_response = Response({
                     'error': 'Block types are not available',

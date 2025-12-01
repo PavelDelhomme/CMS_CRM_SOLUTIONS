@@ -72,6 +72,45 @@ class BlocksService {
   }
 
   /**
+   * Create a new block type (super admin only)
+   */
+  async createBlockType(data: Partial<BlockType>): Promise<BlockType | null> {
+    try {
+      const response = await api.post('/blocks/types/', data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error creating block type:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update a block type (super admin only)
+   */
+  async updateBlockType(id: number, data: Partial<BlockType>): Promise<BlockType | null> {
+    try {
+      const response = await api.patch(`/blocks/types/${id}/`, data);
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error updating block type ${id}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a block type (super admin only)
+   */
+  async deleteBlockType(id: number): Promise<boolean> {
+    try {
+      await api.delete(`/blocks/types/${id}/`);
+      return true;
+    } catch (error: any) {
+      console.error(`Error deleting block type ${id}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Get all block templates
    */
   async getBlockTemplates(): Promise<BlockTemplate[]> {

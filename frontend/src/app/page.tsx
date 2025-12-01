@@ -22,6 +22,11 @@ export default function HomePage() {
   const [tenantPage, setTenantPage] = useState<Page | null>(null)
   const [systemSettings, setSystemSettings] = useState<SystemSettings | null>(null)
   const [checkingMaintenance, setCheckingMaintenance] = useState(true)
+  // VTCBuilder landing page (for localhost:9494)
+  // Vérifier si on doit utiliser les blocs de l'éditeur ou l'ancienne version
+  const [useBlocks, setUseBlocks] = useState(false)
+  const [homepageBlocks, setHomepageBlocks] = useState<any[]>([])
+  const [homepageStatus, setHomepageStatus] = useState<string>('draft')
 
   useEffect(() => {
     // Check maintenance mode first (only for public homepage, not tenant domains)
@@ -32,6 +37,26 @@ export default function HomePage() {
       loadTenantHomePage()
     }
   }, [])
+
+  // Charger les blocs de la homepage publique (pour localhost:9494)
+  useEffect(() => {
+    const checkBlocks = async () => {
+      try {
+        const settings = await settingsService.getSettings()
+        if (settings.public_homepage_blocks && settings.public_homepage_blocks.length > 0) {
+          setHomepageBlocks(settings.public_homepage_blocks)
+          setHomepageStatus(settings.public_homepage_status || 'draft')
+          // Utiliser les blocs seulement si publié
+          setUseBlocks(settings.public_homepage_status === 'published')
+        }
+      } catch (error) {
+        console.error('Erreur chargement blocs homepage:', error)
+      }
+    }
+    if (!isTenantSubdomain() && !isTenantDomain) {
+      checkBlocks()
+    }
+  }, [isTenantDomain])
 
   const checkMaintenanceMode = async () => {
     try {
@@ -241,31 +266,6 @@ export default function HomePage() {
       </div>
     )
   }
-
-  // VTCBuilder landing page (for localhost:9494)
-  // Vérifier si on doit utiliser les blocs de l'éditeur ou l'ancienne version
-  const [useBlocks, setUseBlocks] = useState(false)
-  const [homepageBlocks, setHomepageBlocks] = useState<any[]>([])
-  const [homepageStatus, setHomepageStatus] = useState<string>('draft')
-  
-  useEffect(() => {
-    const checkBlocks = async () => {
-      try {
-        const settings = await settingsService.getSettings()
-        if (settings.public_homepage_blocks && settings.public_homepage_blocks.length > 0) {
-          setHomepageBlocks(settings.public_homepage_blocks)
-          setHomepageStatus(settings.public_homepage_status || 'draft')
-          // Utiliser les blocs seulement si publié
-          setUseBlocks(settings.public_homepage_status === 'published')
-        }
-      } catch (error) {
-        console.error('Erreur chargement blocs homepage:', error)
-      }
-    }
-    if (!isTenantSubdomain()) {
-      checkBlocks()
-    }
-  }, [isTenantDomain])
   
   // Si on utilise les blocs et que la page est publiée, afficher avec BlockPreview
   if (useBlocks && homepageStatus === 'published' && homepageBlocks.length > 0) {

@@ -4,7 +4,281 @@
 
 ---
 
-## 🧪 CHECKLIST DE TEST - VÉRIFICATION INTERFACE COMPLÈTE (À FAIRE DEMAIN)
+## 🚨 PRIORITÉS ACTUELLES - EN COURS DE TRAITEMENT
+
+## 🎯 Mise à Jour Majeure - Génération Automatique de Previews (01/12/2025)
+
+### ✅ Système de Génération Automatique de Previews avec Playwright
+
+**Génération automatique de captures d'écran pour les templates**
+
+#### Composants Créés :
+
+1. **Service de Capture d'Écran** (`media/screenshot_service.py`) :
+   - ✅ Utilise Playwright avec Chromium
+   - ✅ Mode headless pour Docker
+   - ✅ Capture full page
+   - ✅ Génère des images PNG de qualité
+
+2. **Commandes de Management** :
+   - ✅ `generate_template_previews.py` : Génère les previews
+     - Options : `--all`, `--missing-only`, `--template-id`, `--force`, `--width`, `--height`
+   - ✅ `install_playwright.py` : Installe Playwright et Chromium
+
+3. **Endpoint API** :
+   - ✅ `POST /api/templates/{id}/generate_preview/` : Génère une preview à la demande
+   - Paramètres : `width`, `height`, `force`
+
+4. **Génération Automatique** :
+   - ✅ Lors de la création d'un template (si HTML/CSS présent)
+   - ✅ Lors de la mise à jour (si `regenerate_preview: true`)
+
+5. **Documentation** :
+   - ✅ `media/README_SCREENSHOTS.md` : Guide complet d'utilisation
+
+#### Utilisation :
+
+```bash
+# Installer Playwright
+cd backend-django && make install-playwright
+
+# Générer toutes les previews
+make generate-previews ARGS="--all"
+
+# Générer uniquement les previews manquantes
+make generate-previews ARGS="--missing-only"
+
+# Via API
+POST /api/templates/{id}/generate_preview/
+{
+  "width": 1200,
+  "height": 800,
+  "force": false
+}
+```
+
+#### Détails Techniques :
+
+- **Format** : PNG
+- **Dimensions par défaut** : 1200x800px
+- **Attente** : 2 secondes après chargement pour les animations
+- **Variables** : Remplacées par leurs valeurs par défaut
+- **Stockage** : `media/templates/previews/`
+
+## 🎯 Mise à Jour Majeure - Système de Features Basé sur les Plans (01/12/2025)
+
+### ✅ Système de Features Basé sur les Plans d'Abonnement
+
+**Remplacement du système `is_premium` par un système basé sur les plans tarifaires**
+
+#### Modifications Apportées :
+
+1. **Modèle Feature** :
+   - ✅ Remplacement de `is_premium` par `available_plans` (ManyToMany avec `PricingPlan`)
+   - ✅ Méthode `is_available_for_plan(plan)` pour vérifier l'accès
+   - ✅ Si `available_plans` est vide, la feature est accessible à tous les plans
+
+2. **Modèle User** :
+   - ✅ Méthode `can_use_feature(feature)` qui vérifie l'accès selon le plan d'abonnement
+   - ✅ **Super admin a accès à toutes les features sans exception**
+
+3. **Migration** :
+   - ✅ `tenants/migrations/0006_replace_is_premium_with_plans.py` créée
+   - ⚠️ **À EXÉCUTER** : `docker exec vtcbuilder-backend python manage.py migrate`
+
+4. **Initialisation des Features** :
+   - ✅ `init_features.py` mis à jour pour utiliser les plans
+   - ✅ Features associées aux plans :
+     - **Starter** : Éditeur, Média, Blog, Thèmes, Templates personnalisés
+     - **Business** : + Analytics, Blocs avancés, SEO
+     - **Enterprise** : + Email Marketing, Multi-langue
+   - ⚠️ **À EXÉCUTER** : `docker exec vtcbuilder-backend python manage.py init_features`
+
+5. **API Endpoints** :
+   - ✅ `GET /api/tenants/features/` : Features disponibles pour le tenant actuel
+   - ✅ `GET /api/features/available/` : Filtre selon le plan de l'utilisateur
+   - ✅ Super admin voit toutes les features
+
+6. **Frontend** :
+   - ✅ `FeaturesContext` mis à jour pour utiliser `/api/tenants/features/`
+   - ✅ Super admin a accès à toutes les features automatiquement
+
+### ✅ Tests Automatisés et Organisation
+
+#### Tests Créés :
+
+1. **Tests API Complets** :
+   - ✅ `backend-django/tests/api/test_all_endpoints.py` : Teste tous les endpoints
+   - ✅ Utilise les variables d'environnement (`TEST_API_URL`, `TEST_EMAIL`, `TEST_PASSWORD`)
+   - ✅ Affiche les résultats détaillés avec taux de réussite
+
+2. **Scripts de Test** :
+   - ✅ `scripts/backend/test_api_endpoints.sh` : Teste tous les endpoints
+   - ✅ `scripts/backend/check_backend_errors.sh` : Vérifie les erreurs dans les logs
+   - ✅ `scripts/backend/verify_features_access.sh` : Vérifie l'accès aux features
+   - ✅ `scripts/backend/run_all_tests.sh` : Exécute tous les tests backend
+
+#### Organisation des Scripts :
+
+- ✅ `scripts/backend/` : Scripts backend (tests, vérifications)
+- ✅ `scripts/frontend/` : Scripts frontend (à venir)
+- ✅ `scripts/utils/` : Scripts utilitaires (start.sh, fix_dark_mode_all.sh)
+
+#### Commandes Makefile :
+
+**Racine du projet** :
+- `make test-api` : Tester tous les endpoints API
+- `make check-errors` : Vérifier les erreurs dans les logs
+- `make verify-features` : Vérifier l'accès aux features selon les plans
+
+**Backend Django** (`cd backend-django && make`) :
+- `make test-api` : Tests des endpoints API
+- `make test-endpoints` : Alias pour test-api
+- `make check-errors` : Vérifier les erreurs dans les logs
+- `make verify-features` : Vérifier l'accès aux features
+
+### ⚠️ Actions Requises
+
+1. **Exécuter les migrations** :
+   ```bash
+   docker exec vtcbuilder-backend python manage.py migrate
+   ```
+
+2. **Initialiser les features** :
+   ```bash
+   docker exec vtcbuilder-backend python manage.py init_features
+   ```
+
+3. **Nettoyer le cache Python** :
+   ```bash
+   docker exec vtcbuilder-backend bash -c "find . -name '*.pyc' -delete && find . -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true"
+   ```
+
+4. **Redémarrer le backend** :
+   ```bash
+   cd backend-django && make restart
+   ```
+
+5. **Tester les endpoints** :
+   ```bash
+   make test-api
+   ```
+
+## 🔧 Corrections Récentes (01/12/2025)
+
+### ✅ Erreurs Corrigées
+1. **FieldError dans DetailedStatsView** : `total_amount` → `total` (le modèle Invoice utilise `total`)
+   - ⚠️ **IMPORTANT** : Redémarrer le backend Docker pour appliquer la correction
+   - Commande : `cd backend-django && make restart`
+
+2. **Erreur React Hooks** : Ordre des hooks corrigé dans `page.tsx`
+   - Les `useState` sont maintenant déclarés avant tous les `return` conditionnels
+
+3. **Organisation des onglets de paramètres de blocs** :
+   - Onglet "Contenu" : pour éditer le contenu du bloc
+   - Onglet "Mise en page" : pour layout, conteneur, z-index (nouvellement créé)
+   - Onglet "Style" : pour les styles CSS
+
+4. **Tests API créés** : `tests/api/test_endpoints.py`
+   - Teste tous les endpoints de l'API
+   - Affiche les résultats détaillés
+
+### 🆕 Système de Gestion des Fonctionnalités
+
+**Nouveau système pour activer/désactiver les fonctionnalités par utilisateur**
+
+#### Modèles créés :
+- `Feature` : Modèle pour les fonctionnalités disponibles
+- `UserFeature` : Lien entre utilisateurs et fonctionnalités activées
+
+#### API Endpoints :
+- `GET /api/features/` : Liste toutes les fonctionnalités
+- `GET /api/features/available/` : Fonctionnalités disponibles
+- `POST /api/features/{id}/toggle/` : Activer/désactiver (super admin uniquement)
+- `GET /api/user-features/` : Fonctionnalités de l'utilisateur connecté
+- `GET /api/user-features/my-features/` : Mes fonctionnalités activées
+- `POST /api/user-features/enable-feature/` : Activer une fonctionnalité (body: `{"feature_id": 1}`)
+- `POST /api/user-features/disable-feature/` : Désactiver une fonctionnalité (body: `{"feature_id": 1}`)
+
+#### Commandes de management :
+- `python manage.py init_features` : Initialise les fonctionnalités par défaut
+
+#### Fonctionnalités par défaut :
+1. Éditeur de Blocs (stable)
+2. Bibliothèque Média (beta)
+3. Articles de Blog (development)
+4. Thèmes WordPress-like (development)
+5. Analytics (beta, premium)
+6. Blocs Avancés (beta, premium)
+7. Templates Personnalisés (stable)
+8. Outils SEO (development, premium)
+9. Email Marketing (development, premium)
+10. Multi-langue (development, premium)
+
+#### Migration nécessaire :
+```bash
+cd backend-django
+python manage.py makemigrations tenants
+python manage.py migrate
+python manage.py init_features
+```
+
+#### À Faire :
+- [ ] Créer interface frontend pour gérer les fonctionnalités
+- [ ] Ajouter vérification des fonctionnalités dans les composants frontend
+- [ ] Implémenter les fonctionnalités manquantes (blog, thèmes, etc.)
+- [ ] Ajouter système de permissions basé sur les fonctionnalités activées
+
+---
+
+### ⚡ Priorité Haute - En Cours (2025-12-01)
+
+1. **🔧 Correction Erreurs CORS et 500** (EN COURS)
+   - ✅ Amélioration middleware CORS pour garantir headers toujours présents
+   - ✅ Ajout gestion OPTIONS pour preflight requests
+   - ✅ Amélioration gestion erreurs endpoints `/api/blocks/types/`, `/api/users/impersonation-status/`, `/api/system-settings/`
+   - ⏳ **À TESTER** : Vérifier que les erreurs CORS sont résolues après redémarrage backend
+   - ⏳ **À TESTER** : Vérifier que les erreurs 500 sont résolues et retournent des messages d'erreur clairs
+
+2. **📄 Gestion Pages Publiques** (EN COURS)
+   - ⏳ Ajouter possibilité ajouter/supprimer des pages publiques dans `/admin/pages-public`
+   - ⏳ Permettre titrer les pages publiques
+   - ⏳ Vérifier que seule la homepage est listée actuellement
+
+3. **📊 Statistiques d'Utilisation des Blocs** (PLANIFIÉ)
+   - ⏳ Implémenter tracking d'utilisation des blocs
+   - ⏳ Créer endpoint pour récupérer statistiques d'utilisation
+   - ⏳ Afficher blocs populaires dans l'éditeur
+   - ⏳ Proposer blocs recommandés basés sur l'utilisation
+
+### 📋 Priorité Moyenne - Planifié
+
+4. **✏️ Améliorations Éditeur WordPress-like**
+   - ⏳ Permettre édition directe des blocs en double-cliquant dans la prévisualisation
+   - ⏳ Permettre modification du contenu des blocs conteneur dans les paramètres
+   - ⏳ Améliorer l'éditeur avec blocs en accordéon, catégories, scroll
+   - ⏳ Permettre accès aux paramètres d'un bloc existant via l'icône roulette
+
+5. **🎨 Système de Thèmes WordPress-like**
+   - ⏳ Implémenter système de thèmes
+   - ⏳ Permettre sélection de thème par tenant
+   - ⏳ Créer thèmes par défaut
+
+6. **📚 Système d'Articles/Blog**
+   - ⏳ Gestion complète des articles
+   - ⏳ Publication/dépublication
+   - ⏳ Planification de publication
+
+### 📝 Notes Importantes
+
+- **Message "bloqué par un bloqueur de publicité"** : Ce n'est pas vraiment un bloqueur de publicité, c'est un message générique du frontend quand une requête échoue. Les vraies erreurs sont les erreurs CORS et 500.
+- **Port 9495** : Le backend Django écoute sur le port 9495 (configuré dans docker-compose.simple.yml)
+- **Tenants de test** : Les tenants de test ont été créés via le script `create_tenants_for_plans.py`
+- **BLOCKS_ROADMAP.md** : Vérifié - la plupart des blocs de base sont implémentés (✅), certains sont à implémenter (⬜)
+
+---
+
+## 🧪 CHECKLIST DE TEST - VÉRIFICATION INTERFACE COMPLÈTE (À FAIRE APRÈS CORRECTIONS)
 
 > **⚠️ IMPORTANT : Surveiller les logs navigateur (F12 → Console) et logs backend (docker logs) pendant tous les tests**
 
@@ -669,6 +943,17 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 
 ## 📋 Tâches à Faire
 
+### ✅ TÂCHES RÉCEMMENT COMPLÉTÉES (1 Décembre 2025)
+
+#### Corrections Erreurs & Améliorations - ✅ COMPLÉTÉ
+1. ✅ **Pagination Subscription corrigée** - UnorderedObjectListWarning résolu
+2. ✅ **Script création tenants pour tous les plans** - Commande `create_tenants_for_plans` créée
+3. ✅ **Endpoint analytics/block-usage créé** - Erreur 404 résolue
+4. ✅ **Problème "No reference tenant" corrigé** - Création automatique tenant de référence
+5. ✅ **Toggle afficher/masquer mot de passe** - Ajout dans page login
+6. ✅ **Migrations automatiques au démarrage** - Plus d'erreur "relation does not exist"
+7. ✅ **Super admin créé automatiquement** - Plus d'erreur "Unauthorized" après redémarrage
+
 ### ✅ TÂCHES RÉCEMMENT COMPLÉTÉES (27 Novembre 2025)
 
 #### Corrections Erreurs CORS et 500 - ✅ COMPLÉTÉ
@@ -738,6 +1023,65 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - [ ] **Intégration CI/CD** - Automatiser l'exécution des tests
 
 ### Priorité Haute (Après tests et vérifications)
+
+#### 🎨 Système de Thèmes WordPress-like
+- [ ] **Thèmes prédéfinis** - Créer des thèmes complets (comme WordPress)
+  - Thème "Classic" - Design classique et professionnel
+  - Thème "Modern" - Design moderne avec gradients
+  - Thème "Minimal" - Design épuré et minimaliste
+  - Thème "VTC Pro" - Thème spécialisé pour VTC avec sections réservations
+  - Chaque thème inclut : palette de couleurs, typographie, layouts, blocs prédéfinis
+- [ ] **Gestionnaire de thèmes** - Interface pour activer/changer de thème
+  - Page `/admin/themes` pour super admin
+  - Page `/dashboard/themes` pour tenant admin
+  - Prévisualisation des thèmes avant activation
+  - Personnalisation des couleurs du thème
+- [ ] **Templates de pages par thème** - Templates spécifiques à chaque thème
+  - Page d'accueil, À propos, Contact, Services, Blog, etc.
+  - Templates réutilisables et personnalisables
+
+#### 📄 Gestion Complète des Pages Publiques
+
+**✅ Déjà Implémenté** :
+- ✅ **Titres personnalisés** - Champ `title` dans modèle Page, interface d'édition disponible
+- ✅ **Médiathèque** - `/dashboard/media` avec upload fonctionnel (backend + frontend)
+- ✅ **Publication/Dépublication** - Statuts `draft`, `published`, `scheduled` + actions `publish()`/`unpublish()`
+- ✅ **Ajout/Suppression pages** - Création (`/dashboard/pages/new`) et suppression (`handleDelete`) fonctionnelles
+- ✅ **Modèle Page complet** - Champs SEO (meta_title, meta_description, featured_image), statuts, homepage
+
+**⏳ À Améliorer/Créer** :
+- [ ] **Médiathèque améliorée** - 
+  - Galerie avec prévisualisation améliorée (actuellement basique)
+  - Filtres par type (images, vidéos, documents)
+  - Recherche dans la médiathèque
+  - Insertion directe depuis l'éditeur (clic sur image dans médiathèque → insertion dans bloc)
+- [ ] **Interface pages publiques admin** - 
+  - Améliorer `/admin/pages-public` pour ajouter/supprimer facilement
+  - Bouton "Nouvelle page" visible et fonctionnel
+  - Gestion des pages publiques du site VTCBuilder (pas seulement tenant)
+- [ ] **Publication programmée** - 
+  - Interface pour programmer la publication (date/heure)
+  - Système de tâches pour publier automatiquement à la date programmée
+- [ ] **Changement statut facile** - 
+  - Dropdown ou toggle pour changer le statut directement depuis la liste
+  - Feedback visuel immédiat
+
+#### 🎨 Améliorations Éditeur WordPress-like
+- [ ] **Édition directe dans prévisualisation** - Double-clic pour éditer
+  - Double-clic sur un bloc dans la prévisualisation ouvre les paramètres
+  - Édition inline du texte directement dans la prévisualisation
+- [ ] **Modification contenu blocs conteneur** - Éditer le contenu des conteneurs
+  - Permettre d'ajouter/modifier le contenu des blocs conteneur
+  - Interface pour gérer les enfants d'un conteneur
+- [ ] **Blocs en accordéon avec catégories** - Organisation améliorée
+  - Catégories rétractables/détractables (Contenu, Mise en page, Médias, etc.)
+  - Scroll dans la liste des blocs
+  - Recherche de blocs
+- [ ] **Accès paramètres bloc existant** - Icône roulette crantée
+  - Clic sur l'icône roulette d'un bloc existant ouvre les paramètres
+  - Panneau de paramètres s'ouvre automatiquement
+
+#### Autres
 - [ ] **Composants éditeur WordPress frontend** - Finaliser BlockEditor, palette de blocs, drag & drop
 - [ ] **Routing multi-tenant** - Activer middleware django-tenants
 - [ ] **Pages tenant** - Créer pages login/admin pour sous-domaines tenant
@@ -746,6 +1090,27 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - [ ] **Pages publiques manquantes** - Documentation, Contact, FAQ, CGV, Confidentialité
 
 ### Priorité Moyenne
+
+#### 📰 Système d'Articles/Blog
+- [ ] **Modèle Article/Post** - Créer modèle pour articles de blog
+  - Champs : titre, slug, contenu, auteur, catégorie, tags, featured_image
+  - Statuts : draft, published, scheduled
+  - Dates : published_at, updated_at
+- [ ] **Catégories et Tags** - Système de taxonomie
+  - Modèle `Category` pour catégories d'articles
+  - Modèle `Tag` pour tags d'articles
+  - Relations many-to-many avec articles
+- [ ] **Pages Blog** - Interface pour gérer les articles
+  - Liste articles (`/dashboard/articles`)
+  - Création article (`/dashboard/articles/new`)
+  - Édition article (`/dashboard/articles/[id]/edit`)
+  - Page publique liste articles (`/blog`)
+  - Page publique détail article (`/blog/[slug]`)
+- [ ] **Commentaires** (optionnel) - Système de commentaires pour articles
+  - Modèle `Comment` lié aux articles
+  - Modération des commentaires
+
+#### Autres
 - [ ] **Système de formulaires intégré** - Formulaires dans l'éditeur WordPress pour pages tenant
 - [ ] **Templates site** - Templates pour sites publics (gestion et application)
 - [ ] **Analytics tenant** - Statistiques d'utilisation pour chaque tenant
@@ -844,20 +1209,23 @@ cd frontend && npm install  # Installer Jest et dépendances
 
 ## 📈 Progression Globale
 
-- **Backend** : ~90% ✅ (améliorations gestion erreurs, templates HTML/CSS)
+- **Backend** : ~92% ✅ (améliorations gestion erreurs, templates HTML/CSS, analytics endpoint)
 - **Frontend Super Admin** : ~95% ✅ (stats, templates, settings fonctionnels)
 - **Frontend Tenant Admin** : ~80% ✅ (éditeur WordPress amélioré, design moderne, responsive complet, split view permanent)
 - **Frontend Public** : ~10% ⏳
 - **Routing Multi-Tenant** : ~30% ⏳
 - **Documentation** : ~98% ✅ (STATUS.md à jour, tests documentés)
 - **Tests Automatisés** : ~90% ✅ (37 fichiers créés, à exécuter et valider)
+- **Système de Thèmes** : ~20% ⏳ (templates existent, système de thèmes à créer)
+- **Gestion Pages Publiques** : ~60% ⏳ (CRUD fonctionnel, médiathèque basique, articles à créer)
+- **Éditeur WordPress-like** : ~70% ⏳ (blocs fonctionnels, améliorations UX en cours)
 
 ---
 
 ## 🔄 Dernière Mise à Jour
 
-**Date** : 2025-01-XX  
-**Focus Actuel** : Améliorations éditeur de site public - Design moderne et fonctionnalités WordPress-like
+**Date** : 2025-12-01  
+**Focus Actuel** : Corrections erreurs + Création tenants pour tous les plans + Améliorations éditeur
 
 **Statut actuel** :
 - ✅ Toutes les corrections CORS et 500 sont terminées (dashboard, tenants, users, billing, templates, settings)
@@ -873,10 +1241,56 @@ cd frontend && npm install  # Installer Jest et dépendances
 - ✅ **Largeur pleine écran** - Éditeur utilise toute la largeur disponible
 - ✅ Gestion erreurs ERR_BLOCKED_BY_CLIENT (bloqueurs de publicité) avec avertissements console
 - ✅ CORS headers garantis sur tous les endpoints MediaViewSet même en cas d'erreur
+- ✅ **Corrections récentes (2025-12-01)** :
+  - ✅ Pagination Subscription corrigée (UnorderedObjectListWarning résolu)
+  - ✅ Script création tenants pour tous les plans tarifaires créé
+  - ✅ Endpoint `/api/analytics/block-usage/` créé (erreur 404 résolue)
+  - ✅ Problème "No reference tenant" corrigé (création automatique)
+  - ✅ Toggle afficher/masquer mot de passe dans page login
+  - ✅ Migrations automatiques au démarrage
+  - ✅ Super admin créé automatiquement au démarrage
 - ⏳ **Tests complets de l'interface en cours** - Voir checklist ci-dessus
 - ⏳ Vérification que toutes les fonctionnalités fonctionnent sans erreurs
+- ⏳ **Améliorations éditeur en cours** - Voir section "Priorité Haute" ci-dessus
 
 **Modifications Récentes** :
+
+### ✅ Corrections Récentes (2025-12-01)
+
+#### Corrections Erreurs & Améliorations
+1. ✅ **Pagination Subscription corrigée**
+   - Ajout `order_by('-created_at', '-id')` dans `SubscriptionViewSet.get_queryset()`
+   - Ajout `ordering = ['-created_at', '-id']` dans modèle `Subscription.Meta`
+   - Résout l'erreur `UnorderedObjectListWarning` sur `/admin/billing`
+
+2. ✅ **Script création tenants pour tous les plans**
+   - Commande Django `create_tenants_for_plans` créée
+   - Crée automatiquement un tenant pour chaque plan tarifaire actif
+   - Crée l'admin du tenant et l'abonnement associé
+   - Script de test `test_create_tenants.sh` créé
+   - Usage : `python manage.py create_tenants_for_plans`
+
+3. ✅ **Endpoint analytics/block-usage créé**
+   - Endpoint `/api/analytics/block-usage/` créé dans `api/views.py`
+   - Résout l'erreur 404 sur le tracking des blocs
+   - Permet de tracker l'utilisation des blocs pour analytics
+
+4. ✅ **Problème "No reference tenant" corrigé**
+   - Création automatique d'un tenant de référence si aucun n'existe
+   - Permet au super admin de gérer les templates sans erreur
+
+5. ✅ **Toggle afficher/masquer mot de passe**
+   - Ajout bouton avec icône œil dans le champ mot de passe
+   - Permet d'afficher/masquer le mot de passe lors de la saisie
+
+6. ✅ **Migrations automatiques au démarrage**
+   - Script `start.sh` exécute automatiquement les migrations
+   - Plus d'erreur "relation does not exist" après redémarrage
+
+7. ✅ **Super admin créé automatiquement**
+   - Script `start.sh` crée/met à jour le super admin au démarrage
+   - Email : `admin@vtcbuilder.com` / Password : `admin123`
+   - Plus d'erreur "Unauthorized" après redémarrage
 
 ### ✅ Améliorations Interface & Création de Pages (2025-01-XX)
 

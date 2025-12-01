@@ -23,12 +23,12 @@ export default function AdminTemplatesPage() {
     is_premium: false,
     price: 0,
     is_active: true,
-    preview_url: '',
+    preview_image: null as File | null,
     html_content: '',
     css_content: '',
     variables: {} as Record<string, { type: string; default: string; description: string }>,
   })
-  const [activeTab, setActiveTab] = useState<'info' | 'html' | 'css' | 'variables'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'html' | 'css' | 'variables' | 'preview'>('info')
   const [detectedVariables, setDetectedVariables] = useState<string[]>([])
   const [htmlFile, setHtmlFile] = useState<File | null>(null)
   const [cssFile, setCssFile] = useState<File | null>(null)
@@ -65,11 +65,31 @@ export default function AdminTemplatesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      // Préparer les données pour l'envoi
+      const dataToSend = new FormData()
+      
+      // Ajouter tous les champs texte
+      dataToSend.append('name', formData.name)
+      dataToSend.append('slug', formData.slug)
+      dataToSend.append('description', formData.description || '')
+      dataToSend.append('category', formData.category)
+      dataToSend.append('is_premium', formData.is_premium.toString())
+      dataToSend.append('price', formData.price.toString())
+      dataToSend.append('is_active', formData.is_active.toString())
+      dataToSend.append('html_content', formData.html_content || '')
+      dataToSend.append('css_content', formData.css_content || '')
+      dataToSend.append('variables', JSON.stringify(formData.variables || {}))
+      
+      // Ajouter l'image de prévisualisation si elle existe
+      if (formData.preview_image instanceof File) {
+        dataToSend.append('preview_image', formData.preview_image)
+      }
+      
       if (editingTemplate) {
-        await templateService.update(editingTemplate.id, formData)
+        await templateService.update(editingTemplate.id, dataToSend)
         toast.success('Template mis à jour avec succès !')
       } else {
-        await templateService.create(formData)
+        await templateService.create(dataToSend)
         toast.success('Template créé avec succès !')
       }
       setShowForm(false)
@@ -122,7 +142,7 @@ export default function AdminTemplatesPage() {
       is_premium: template.is_premium,
       price: parseFloat(template.price?.toString() || '0'),
       is_active: template.is_active,
-      preview_url: template.preview_url || '',
+      preview_image: null, // L'image sera chargée depuis l'URL si disponible
       html_content: template.html_content || '',
       css_content: template.css_content || '',
       variables: (template as any).variables || {},
@@ -162,7 +182,7 @@ export default function AdminTemplatesPage() {
       is_premium: false,
       price: 0,
       is_active: true,
-      preview_url: '',
+      preview_image: null as File | null,
     html_content: '',
     css_content: '',
     variables: {},
@@ -318,6 +338,17 @@ export default function AdminTemplatesPage() {
                 >
                   Variables {detectedVariables.length > 0 && `(${detectedVariables.length})`}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('preview')}
+                  className={`py-2 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
+                    activeTab === 'preview'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                  }`}
+                >
+                  Prévisualisation
+                </button>
               </nav>
             </div>
 
@@ -379,15 +410,24 @@ export default function AdminTemplatesPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  URL de prévisualisation
+                  Image de prévisualisation
                 </label>
                 <input
-                  type="url"
-                  value={formData.preview_url}
-                  onChange={(e) => setFormData({ ...formData, preview_url: e.target.value })}
-                  className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://..."
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setFormData({ ...formData, preview_image: file })
+                    }
+                  }}
+                  className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
+                {formData.preview_image && (
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    Fichier sélectionné : {formData.preview_image.name}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -658,6 +698,54 @@ export default function AdminTemplatesPage() {
               </div>
             )}
 
+            {/* Preview Tab */}
+            {activeTab === 'preview' && (
+              <div className="space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                    Prévisualisation en directe
+                  </h4>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                    Aperçu du template avec les variables remplacées par leurs valeurs par défaut.
+                  </p>
+                </div>
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                  <div className="bg-gray-100 dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Aperçu du template</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Force re-render by updating a state
+                        setFormData({ ...formData })
+                      }}
+                      className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                    >
+                      Actualiser
+                    </button>
+                  </div>
+                  <div className="p-4 bg-white dark:bg-gray-800">
+                    <style dangerouslySetInnerHTML={{ __html: formData.css_content || '' }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: Object.entries(formData.variables || {}).reduce(
+                          (html, [key, value]: [string, any]) => {
+                            const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g')
+                            return html.replace(regex, value?.default || `{{${key}}}`)
+                          },
+                          formData.html_content || ''
+                        ),
+                      }}
+                    />
+                  </div>
+                </div>
+                {(!formData.html_content && !formData.css_content) && (
+                  <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                    <p>Ajoutez du contenu HTML et CSS pour voir la prévisualisation</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
               <button
                 type="button"
@@ -741,9 +829,9 @@ export default function AdminTemplatesPage() {
                 </td>
                 <td className="px-3 sm:px-6 py-4 text-right text-sm font-medium">
                   <div className="flex justify-end items-center flex-wrap gap-1 sm:gap-2">
-                    {template.preview_url && (
+                    {template.preview_image && (
                       <a
-                        href={template.preview_url}
+                        href={template.preview_image}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50"

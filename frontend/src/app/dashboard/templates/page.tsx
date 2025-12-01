@@ -151,9 +151,9 @@ export default function TemplatesPage() {
               <div key={template.id} className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
                 {/* Preview Image */}
                 <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
-                  {template.thumbnail ? (
+                  {template.preview_image ? (
                     <img 
-                      src={template.thumbnail} 
+                      src={template.preview_image} 
                       alt={template.name}
                       className="w-full h-full object-cover"
                     />
@@ -193,9 +193,9 @@ export default function TemplatesPage() {
                     >
                       {applying === template.id ? 'Application...' : template.is_premium ? 'Acheter' : 'Appliquer'}
                     </button>
-                    {template.preview_url && (
+                    {template.preview_image && (
                       <a
-                        href={template.preview_url}
+                        href={template.preview_image}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 flex items-center justify-center"

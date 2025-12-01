@@ -32,12 +32,27 @@ def add_cors_headers(response, request):
         logger.warning(f"Error adding CORS headers: {e}")
 
 
-@api_view(['GET', 'POST', 'PATCH', 'PUT'])
+@api_view(['GET', 'POST', 'PATCH', 'PUT', 'OPTIONS'])
 @permission_classes([IsAuthenticated])
 def system_settings_view(request):
     """Get, create or update system settings (singleton)"""
     try:
-        if not request.user.is_super_admin():
+        # Handle OPTIONS request for CORS preflight
+        if request.method == 'OPTIONS':
+            response = Response()
+            add_cors_headers(response, request)
+            return response
+        
+        # Check authentication
+        if not request.user or not request.user.is_authenticated:
+            error_response = Response(
+                {'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        if not hasattr(request.user, 'is_super_admin') or not request.user.is_super_admin():
             error_response = Response(
                 {'error': 'Only super admin can manage system settings'},
                 status=status.HTTP_403_FORBIDDEN

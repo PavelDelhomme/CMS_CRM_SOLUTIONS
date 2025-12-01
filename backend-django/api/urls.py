@@ -7,6 +7,7 @@ from rest_framework.routers import DefaultRouter
 # Import views
 from tenants.views import (
     TenantViewSet, UserViewSet, UserProfileView,
+    FeatureViewSet, UserFeatureViewSet,
     login_view, register_view, register_with_plan_view, logout_view,
     request_password_reset_view, reset_password_view, verify_reset_token_view,
     verify_invitation_token_view, complete_invitation_view
@@ -30,12 +31,14 @@ from billing.views import (
 )
 from settings_app.views import system_settings_view, system_settings_test_email_view, system_settings_test_stripe_view
 from billing.webhooks import stripe_webhook
-from .views import DashboardView, DetailedStatsView
+from .views import DashboardView, DetailedStatsView, block_usage_tracking_view
 
 # Router for viewsets
 router = DefaultRouter()
 router.register(r'tenants', TenantViewSet, basename='tenant')
 router.register(r'users', UserViewSet, basename='user')
+router.register(r'features', FeatureViewSet, basename='feature')
+router.register(r'user-features', UserFeatureViewSet, basename='user-feature')
 router.register(r'pages', PageViewSet, basename='page')
 router.register(r'services', ServiceViewSet, basename='service')
 router.register(r'bookings', BookingViewSet, basename='booking')
@@ -101,6 +104,10 @@ urlpatterns = [
     # Stripe Webhooks
     path('billing/webhooks/stripe/', stripe_webhook, name='stripe-webhook-slash'),
     path('billing/webhooks/stripe', stripe_webhook, name='stripe-webhook'),
+    
+    # Analytics
+    path('analytics/block-usage/', block_usage_tracking_view, name='analytics-block-usage-slash'),
+    path('analytics/block-usage', block_usage_tracking_view, name='analytics-block-usage'),
 
     # Include router URLs LAST (order matters!)
     path('', include(router.urls)),

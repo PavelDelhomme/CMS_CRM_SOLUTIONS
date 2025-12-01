@@ -99,8 +99,12 @@ class Template(models.Model):
     description = models.TextField(blank=True, null=True)
 
     # Assets
-    thumbnail = models.ImageField(upload_to='templates/thumbnails/', blank=True, null=True)
-    preview_url = models.URLField(blank=True, null=True)
+    preview_image = models.ImageField(
+        upload_to='templates/previews/', 
+        blank=True, 
+        null=True,
+        help_text="Image de prévisualisation du template"
+    )
 
     # Template data
     structure = models.JSONField(default=dict, blank=True)

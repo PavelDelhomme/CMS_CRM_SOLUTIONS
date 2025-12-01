@@ -96,6 +96,7 @@ class Subscription(models.Model):
     
     class Meta:
         db_table = 'subscriptions'
+        ordering = ['-created_at', '-id']
     
     def __str__(self):
         return f"{self.tenant.name} - {self.plan.name}"

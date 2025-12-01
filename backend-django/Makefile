@@ -139,6 +139,7 @@ start: ## Démarrer les services Django
 up: ## Démarrer les services Django
 	@echo "$(GREEN)🚀 Démarrage des services Django...$(NC)"
 	@./start.sh
+	@echo "$(GREEN)✅ Services démarrés avec migrations automatiques !$(NC)"
 
 stop: ## Arrêter tous les services
 	@echo "$(YELLOW)⏸️  Arrêt des services...$(NC)"
@@ -148,7 +149,13 @@ stop: ## Arrêter tous les services
 restart: stop start ## Redémarrer tous les services
 
 down: ## Arrêter et supprimer les containers
-	@echo "$(RED)🗑️  Suppression des containers...$(NC)"
+	@echo "$(RED)🗑️  Arrêt des containers...$(NC)"
+	@$(DOCKER_COMPOSE) stop
+	@echo "$(YELLOW)💡 Pour supprimer complètement les containers, utilisez: make down-remove$(NC)"
+	@echo "$(GREEN)✅ Containers arrêtés !$(NC)"
+
+down-remove: ## Arrêter et supprimer complètement les containers
+	@echo "$(RED)🗑️  Suppression complète des containers...$(NC)"
 	@$(DOCKER_COMPOSE) down
 	@echo "$(GREEN)✅ Containers supprimés !$(NC)"
 
@@ -223,6 +230,26 @@ test: ## Exécuter les tests avec pytest
 	@docker exec $(BACKEND_CONTAINER) pytest --verbose --tb=short -v
 	@echo "$(GREEN)✅ Tests terminés !$(NC)"
 
+test-api: ## Tester tous les endpoints de l'API
+	@echo "$(GREEN)🧪 Tests des endpoints API...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python tests/api/test_all_endpoints.py
+	@echo "$(GREEN)✅ Tests API terminés !$(NC)"
+
+test-endpoints: test-api ## Alias pour test-api
+
+check-errors: ## Vérifier les erreurs dans les logs
+	@echo "$(BLUE)🔍 Vérification des erreurs...$(NC)"
+	@docker logs $(BACKEND_CONTAINER) --tail 100 2>&1 | grep -E "ERROR|Exception|Traceback|500|FieldError" || echo "$(GREEN)✅ Aucune erreur détectée$(NC)"
+
+verify-features: ## Vérifier l'accès aux features selon les plans
+	@echo "$(GREEN)🔐 Vérification de l'accès aux features...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings'); django.setup(); from tenants.models import User, Feature; from billing.models import PricingPlan; super_admin = User.objects.filter(role='super-admin').first(); all_features = Feature.objects.filter(is_active=True); accessible = sum(1 for f in all_features if super_admin.can_use_feature(f)) if super_admin else 0; print(f'Super Admin: {accessible}/{all_features.count()} features accessibles'); plans = PricingPlan.objects.all(); print(f'Plans: {plans.count()}'); [print(f'  - {p.name}: {Feature.objects.filter(available_plans=p, is_active=True).count()} features') for p in plans]"
+	@echo "$(GREEN)✅ Vérification terminée !$(NC)"
+
 ##@ Tests Billing spécifiques
 
 test-subscriptions-internal: ## Tester les abonnements (interne)
@@ -291,6 +318,22 @@ reset: clean migrate ## Reset des données
 
 status: ## Statut des services
 	@$(DOCKER_COMPOSE) ps
+
+##@ Templates
+
+generate-previews: ## Générer les previews des templates (usage: make generate-previews ARGS="--all")
+	@echo "$(GREEN)📸 Génération des previews de templates...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py generate_template_previews $(ARGS)
+	@echo "$(GREEN)✅ Previews générées !$(NC)"
+
+install-playwright: ## Installer Playwright pour les captures d'écran
+	@echo "$(GREEN)📦 Installation de Playwright...$(NC)"
+	@$(DOCKER_COMPOSE) up -d backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py install_playwright
+	@echo "$(GREEN)✅ Playwright installé !$(NC)"
 
 ##@ URLs
 

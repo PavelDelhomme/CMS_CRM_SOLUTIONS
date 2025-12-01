@@ -88,9 +88,9 @@ export default function TemplatesPage() {
                 key={template.id}
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
               >
-                {template.preview_url ? (
+                {template.preview_image ? (
                   <img
-                    src={template.preview_url}
+                    src={template.preview_image}
                     alt={template.name}
                     className="w-full h-48 object-cover"
                   />

@@ -358,6 +358,7 @@ class MediaViewSet(viewsets.ModelViewSet):
 class TemplateViewSet(viewsets.ModelViewSet):
     """ViewSet for managing templates"""
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # Support pour upload d'images
 
     def _get_reference_tenant(self):
         """Get a reference tenant for super admin template management"""
@@ -367,6 +368,22 @@ class TemplateViewSet(viewsets.ModelViewSet):
         if not tenant:
             # Fallback to any tenant (even inactive) if no active tenant
             tenant = Tenant.objects.filter(deleted_at__isnull=True).first()
+        if not tenant:
+            # Create a default reference tenant if none exists
+            try:
+                tenant, created = Tenant.objects.get_or_create(
+                    slug='reference-tenant',
+                    defaults={
+                        'name': 'Reference Tenant',
+                        'email': 'reference@vtcbuilder.com',
+                        'status': 'active',
+                    }
+                )
+                if created:
+                    logger.info(f"Created reference tenant for template management: {tenant.id}")
+            except Exception as e:
+                logger.error(f"Error creating reference tenant: {e}", exc_info=True)
+                return None
         return tenant
 
     def get_queryset(self):
@@ -402,6 +419,17 @@ class TemplateViewSet(viewsets.ModelViewSet):
                         data['slug'] = slugify(data.get('name', ''))
                     
                     template = Template.objects.create(**data)
+                    
+                    # Générer automatiquement la preview si le template a du contenu HTML/CSS
+                    if not template.preview_image and template.html_content:
+                        try:
+                            from media.screenshot_service import screenshot_service
+                            if screenshot_service.playwright_available:
+                                screenshot_service.generate_and_save_preview(template)
+                                template.save()
+                        except Exception as e:
+                            logger.warning(f"Impossible de générer la preview automatiquement: {e}")
+                    
                     return Response(TemplateSerializer(template).data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 import logging
@@ -426,6 +454,17 @@ class TemplateViewSet(viewsets.ModelViewSet):
                 
                 with tenant_context(user.tenant):
                     template = Template.objects.create(**validated_data)
+                    
+                    # Générer automatiquement la preview si le template a du contenu HTML/CSS
+                    if not template.preview_image and template.html_content:
+                        try:
+                            from media.screenshot_service import screenshot_service
+                            if screenshot_service.playwright_available:
+                                screenshot_service.generate_and_save_preview(template)
+                                template.save()
+                        except Exception as e:
+                            logger.warning(f"Impossible de générer la preview automatiquement: {e}")
+                    
                     return Response(TemplateSerializer(template).data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 import logging
@@ -465,6 +504,17 @@ class TemplateViewSet(viewsets.ModelViewSet):
                     serializer = TemplateSerializer(instance, data=request.data, partial=partial)
                     serializer.is_valid(raise_exception=True)
                     serializer.save()
+                    
+                    # Régénérer la preview si le contenu HTML/CSS a été modifié
+                    if ('html_content' in request.data or 'css_content' in request.data) and request.data.get('regenerate_preview', False):
+                        try:
+                            from media.screenshot_service import screenshot_service
+                            if screenshot_service.playwright_available:
+                                screenshot_service.generate_and_save_preview(instance)
+                                instance.save()
+                        except Exception as e:
+                            logger.warning(f"Impossible de régénérer la preview: {e}")
+                    
                     return Response(serializer.data)
             except Template.DoesNotExist:
                 return Response(
@@ -490,6 +540,17 @@ class TemplateViewSet(viewsets.ModelViewSet):
                     serializer = TemplateSerializer(instance, data=request.data, partial=partial)
                     serializer.is_valid(raise_exception=True)
                     serializer.save()
+                    
+                    # Régénérer la preview si le contenu HTML/CSS a été modifié
+                    if ('html_content' in request.data or 'css_content' in request.data) and request.data.get('regenerate_preview', False):
+                        try:
+                            from media.screenshot_service import screenshot_service
+                            if screenshot_service.playwright_available:
+                                screenshot_service.generate_and_save_preview(instance)
+                                instance.save()
+                        except Exception as e:
+                            logger.warning(f"Impossible de régénérer la preview: {e}")
+                    
                     return Response(serializer.data)
             except Template.DoesNotExist:
                 return Response(
@@ -761,6 +822,65 @@ class TemplateViewSet(viewsets.ModelViewSet):
                 return Response([], status=status.HTTP_200_OK)
         
         return Response([], status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'])
+    def generate_preview(self, request, pk=None):
+        """
+        Génère automatiquement une capture d'écran du template
+        POST data (optionnel): {
+            'width': 1200,
+            'height': 800,
+            'force': true  # Régénérer même si une preview existe
+        }
+        """
+        from media.screenshot_service import screenshot_service
+        
+        template = self.get_object()
+        
+        # Vérifier si Playwright est disponible
+        if not screenshot_service.playwright_available:
+            response = Response(
+                {'error': 'Playwright n\'est pas disponible. Installez-le avec: playwright install'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+            add_cors_headers(response, request)
+            return response
+        
+        # Vérifier si une preview existe déjà
+        if template.preview_image and not request.data.get('force', False):
+            response = Response(
+                {'message': 'Une preview existe déjà. Utilisez "force": true pour régénérer'},
+                status=status.HTTP_200_OK
+            )
+            add_cors_headers(response, request)
+            return response
+        
+        try:
+            width = request.data.get('width', 1200)
+            height = request.data.get('height', 800)
+            
+            # Générer la preview
+            if screenshot_service.generate_and_save_preview(template, width, height):
+                template.save()
+                serializer = self.get_serializer(template)
+                response = Response({
+                    'message': 'Preview générée avec succès',
+                    'template': serializer.data
+                }, status=status.HTTP_200_OK)
+            else:
+                response = Response(
+                    {'error': 'Erreur lors de la génération de la preview'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        except Exception as e:
+            logger.error(f"Erreur lors de la génération de la preview: {e}", exc_info=True)
+            response = Response(
+                {'error': f'Erreur lors de la génération: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+        add_cors_headers(response, request)
+        return response
     
     @action(detail=True, methods=['post'])
     def render(self, request, pk=None):

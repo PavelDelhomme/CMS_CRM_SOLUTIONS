@@ -167,10 +167,24 @@ test-backend: ## Exécuter les tests backend
 	@cd backend-django && $(MAKE) test
 	@echo "$(GREEN)✅ Tests backend terminés !$(NC)"
 
+test-api: ## Tester tous les endpoints de l'API
+	@echo "$(GREEN)🧪 Tests des endpoints API...$(NC)"
+	@cd backend-django && $(MAKE) test-api
+	@echo "$(GREEN)✅ Tests API terminés !$(NC)"
+
 test-frontend: ## Exécuter les tests frontend
 	@echo "$(GREEN)🧪 Exécution des tests frontend...$(NC)"
 	@cd frontend && npm test -- --passWithNoTests
 	@echo "$(GREEN)✅ Tests frontend terminés !$(NC)"
+
+check-errors: ## Vérifier les erreurs dans les logs backend
+	@echo "$(BLUE)🔍 Vérification des erreurs...$(NC)"
+	@cd backend-django && $(MAKE) check-errors
+
+verify-features: ## Vérifier l'accès aux features selon les plans
+	@echo "$(GREEN)🔐 Vérification de l'accès aux features...$(NC)"
+	@cd backend-django && $(MAKE) verify-features
+	@echo "$(GREEN)✅ Vérification terminée !$(NC)"
 
 test-coverage: ## Exécuter les tests avec couverture de code
 	@echo "$(GREEN)📊 Exécution des tests avec couverture...$(NC)"
