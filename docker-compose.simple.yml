@@ -1,27 +1,27 @@
-name: vtcbuilder
+name: cms_crm_solutions
 
 networks:
-  vtcbuilder_network:
+  cms_crm_network:
     driver: bridge
-    name: vtcbuilder_network
+    name: cms_crm_network
 
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: vtcbuilder-postgres
+    container_name: cms_crm_postgres
     environment:
-      POSTGRES_DB: vtcbuilder
-      POSTGRES_USER: vtcbuilder_user
-      POSTGRES_PASSWORD: vtcbuilder_password
+      POSTGRES_DB: cms_crm_solutions
+      POSTGRES_USER: cms_crm_user
+      POSTGRES_PASSWORD: cms_crm_password
     ports:
       - "9496:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - vtcbuilder_network
+      - cms_crm_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vtcbuilder_user -d vtcbuilder"]
+      test: ["CMD-SHELL", "pg_isready -U cms_crm_user -d cms_crm_solutions"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,36 +29,36 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: vtcbuilder-redis
+    container_name: cms_crm_redis
     ports:
       - "9497:6379"
     volumes:
       - redis_data:/data
     networks:
-      - vtcbuilder_network
+      - cms_crm_network
 
   # Django Backend API
   backend:
     build:
       context: ./backend-django
       dockerfile: Dockerfile
-    image: vtcbuilder-backend:latest
-    container_name: vtcbuilder-backend
+    image: cms_crm_backend:latest
+    container_name: cms_crm_backend
     working_dir: /app
     volumes:
       - ./backend-django:/app
       - ./backend-django/logs:/var/log
     environment:
       DB_ENGINE: django_tenants.postgresql_backend
-      DB_NAME: vtcbuilder
-      DB_USER: vtcbuilder_user
-      DB_PASSWORD: vtcbuilder_password
+      DB_NAME: cms_crm_solutions
+      DB_USER: cms_crm_user
+      DB_PASSWORD: cms_crm_password
       DB_HOST: postgres
       DB_PORT: 5432
       REDIS_URL: redis://redis:6379/0
       SECRET_KEY: django-insecure-change-this-in-production-key
       DEBUG: 1
-      DJANGO_SETTINGS_MODULE: vtcbuilder.settings
+      DJANGO_SETTINGS_MODULE: core.settings
       ALLOWED_HOSTS: "*"
       # Email SMTP Configuration (OVH Mail)
       EMAIL_HOST: ssl0.ovh.net
@@ -67,7 +67,7 @@ services:
       EMAIL_USE_SSL: "False"
       EMAIL_HOST_USER: test@delhomme.ovh
       EMAIL_HOST_PASSWORD: t^^SAjZJ9!9kjPn#
-      DEFAULT_FROM_EMAIL: noreply@vtcbuilder.com
+      DEFAULT_FROM_EMAIL: noreply@cms-crm-solutions.com
       FRONTEND_URL: http://localhost:9494
     ports:
       - "9495:8000"  # Django sur le port 9495
@@ -77,15 +77,15 @@ services:
       redis:
         condition: service_started
     networks:
-      - vtcbuilder_network
+      - cms_crm_network
 
   # React/Next.js Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    image: vtcbuilder-frontend:latest
-    container_name: vtcbuilder-frontend
+    image: cms_crm_frontend:latest
+    container_name: cms_crm_frontend
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -96,14 +96,14 @@ services:
     ports:
       - "9494:3000"  # Next.js sur le port 9494
     networks:
-      - vtcbuilder_network
+      - cms_crm_network
 
   # PgAdmin (Development only)
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: vtcbuilder-pgadmin
+    container_name: cms_crm_pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@vtcbuilder.com
+      PGADMIN_DEFAULT_EMAIL: admin@cms-crm-solutions.com
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
@@ -111,7 +111,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - vtcbuilder_network
+      - cms_crm_network
 
 volumes:
   postgres_data:

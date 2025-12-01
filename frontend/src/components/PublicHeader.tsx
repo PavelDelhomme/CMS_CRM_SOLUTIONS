@@ -34,7 +34,7 @@ export default function PublicHeader({ showThemeToggle = false }: PublicHeaderPr
           <Link href="/" className="flex items-center space-x-2">
             <h1 className={`text-2xl font-bold ${
               resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>VTCBuilder</h1>
+            }`}>CMS_CRM_SOLUTIONS</h1>
             <span className={`text-xs ${
               resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             }`}>Beta</span>

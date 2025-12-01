@@ -7,8 +7,8 @@ import { FeaturesProvider } from '@/contexts/FeaturesContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'VTCBuilder - Le WordPress des Chauffeurs VTC',
-  description: 'Créez votre site VTC professionnel en 2 minutes',
+  title: 'CMS_CRM_SOLUTIONS - Plateforme générique CMS/CRM multi-tenant',
+  description: 'Plateforme générique CMS/CRM multi-tenant pour créer et gérer vos sites web',
 }
 
 export const viewport: Viewport = {

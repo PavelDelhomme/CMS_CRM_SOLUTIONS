@@ -21,23 +21,22 @@ function getApiUrl(): string {
     return process.env.NEXT_PUBLIC_API_URL;
   }
   
-  // En développement, toujours utiliser localhost:9495
+  // En développement, toujours utiliser localhost:9193
   // car le backend Django écoute sur ce port quel que soit le sous-domaine
   if (typeof window !== 'undefined') {
     // Détecte si on est sur un sous-domaine tenant ou localhost
     const hostname = window.location.hostname;
-    const port = window.location.port;
     
-    // Le backend Django est toujours accessible sur localhost:9495
+    // Le backend Django est toujours accessible sur localhost:9193
     // même si le frontend est sur un sous-domaine tenant
     if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-      // Utilise le même port pour le backend (9495)
-      return `http://localhost:9495`;
+      // Utilise le port 9193 pour le backend
+      return `http://localhost:9193`;
     }
   }
   
   // Fallback par défaut
-  return 'http://localhost:9495';
+  return 'http://localhost:9193';
 }
 
 const API_URL = getApiUrl();

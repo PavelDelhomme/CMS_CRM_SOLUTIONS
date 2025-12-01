@@ -28,7 +28,9 @@ export default function HomePage() {
 
   useEffect(() => {
     // Check maintenance mode first (only for public homepage, not tenant domains)
-    if (!isTenantSubdomain()) {
+    // For localhost, always treat as public homepage
+    const isTenant = typeof window !== 'undefined' && isTenantSubdomain()
+    if (!isTenant) {
       checkMaintenanceMode()
     } else {
       setIsTenantDomain(true)
@@ -36,7 +38,7 @@ export default function HomePage() {
     }
   }, [])
 
-  // Charger les blocs de la homepage publique (pour localhost:9494)
+  // Charger les blocs de la homepage publique (pour localhost:9194)
   useEffect(() => {
     const checkBlocks = async () => {
       try {
@@ -55,7 +57,9 @@ export default function HomePage() {
         setUseBlocks(false)
       }
     }
-    if (!isTenantSubdomain() && !isTenantDomain) {
+    // For localhost, always treat as public homepage
+    const isTenant = typeof window !== 'undefined' && isTenantSubdomain()
+    if (!isTenant && !isTenantDomain) {
       checkBlocks()
     }
   }, [isTenantDomain])
@@ -104,6 +108,8 @@ export default function HomePage() {
       setPricingPlans(Array.isArray(plans) ? plans : [])
     } catch (error) {
       console.error('Erreur chargement plans:', error)
+      // En cas d'erreur, on continue avec une liste vide pour afficher la page d'accueil
+      setPricingPlans([])
     } finally {
       setLoading(false)
     }
@@ -113,29 +119,18 @@ export default function HomePage() {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
   }
 
-  // Show loading while checking maintenance mode
-  if (!isTenantDomain && checkingMaintenance) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Chargement...</p>
-        </div>
-      </div>
-    )
-  }
-
   // Check maintenance mode before showing landing page
   // Allow admins to bypass maintenance mode
-  const isAdmin = authService.isSuperAdmin()
-  const isMaintenanceMode = systemSettings?.maintenance_mode && !isAdmin
+  // Only check if we're not on a tenant domain and window is available
+  const isAdmin = typeof window !== 'undefined' ? authService.isSuperAdmin() : false
+  const isMaintenanceMode = !isTenantDomain && systemSettings?.maintenance_mode && !isAdmin
 
   // Show maintenance page if maintenance mode is enabled (and user is not admin)
-  if (!isTenantDomain && isMaintenanceMode) {
+  if (isMaintenanceMode) {
     return (
       <MaintenancePage
         message={systemSettings?.maintenance_message || 'Le site est actuellement en maintenance. Nous serons de retour très bientôt !'}
-        siteName={systemSettings?.site_name || 'VTCBuilder'}
+        siteName={systemSettings?.site_name || 'CMS_CRM_SOLUTIONS'}
       />
     )
   }
@@ -280,7 +275,9 @@ export default function HomePage() {
     )
   }
   
-  // Sinon, utiliser l'ancienne version (backup)
+  // TOUJOURS afficher la page complète, même pendant le chargement initial
+  // La page complète inclut les sections Features, Pricing (vide si pas de plans), et CTA
+  // Ne pas attendre que checkingMaintenance ou loading soient false
   return <PublicHomePageContent pricingPlans={pricingPlans} loading={loading} />
 }
 
@@ -305,31 +302,41 @@ function PublicHomePageContent({ pricingPlans, loading }: { pricingPlans: Pricin
         <h1 className={`text-4xl md:text-6xl font-extrabold mb-6 ${
           resolvedTheme === 'dark' ? 'text-white' : 'text-white'
         }`}>
-          Le WordPress des Chauffeurs VTC
+          CMS_CRM_SOLUTIONS
         </h1>
         <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-          Créez votre site VTC professionnel en quelques minutes. Gestion complète, réservations, paiements, tout inclus.
+          Plateforme générique CMS/CRM multi-tenant. Créez et gérez vos sites web, contenu, utilisateurs et facturation en toute simplicité.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            href="/register"
+            href="/login"
             className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
               resolvedTheme === 'dark'
                 ? 'bg-white text-gray-900 hover:bg-gray-100'
                 : 'bg-white text-blue-600 hover:bg-blue-50'
             }`}
           >
-            🚀 Démarrer gratuitement
+            🔐 Se connecter
           </Link>
           <Link
-            href="#pricing"
+            href="/admin"
             className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors ${
               resolvedTheme === 'dark'
                 ? 'bg-gray-800/80 backdrop-blur-md text-white hover:bg-gray-800 border border-gray-700'
                 : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30'
             }`}
           >
-            Voir les tarifs
+            ⚙️ Administration
+          </Link>
+          <Link
+            href="/register"
+            className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors ${
+              resolvedTheme === 'dark'
+                ? 'bg-gray-800/80 backdrop-blur-md text-white hover:bg-gray-800 border border-gray-700'
+                : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30'
+            }`}
+          >
+            🚀 Créer un compte
           </Link>
         </div>
       </section>
@@ -344,28 +351,28 @@ function PublicHomePageContent({ pricingPlans, loading }: { pricingPlans: Pricin
             {[
               {
                 icon: '🎨',
-                title: 'Site Professionnel',
-                description: 'Designs modernes et responsive. Personnalisez votre site sans coder.',
+                title: 'CMS Complet',
+                description: 'Gestion de contenu moderne et intuitive. Créez et gérez vos pages sans coder.',
               },
               {
-                icon: '📅',
-                title: 'Réservations en Ligne',
-                description: 'Système de réservation complet avec calendrier et notifications.',
+                icon: '👥',
+                title: 'Multi-tenant',
+                description: 'Architecture multi-tenant sécurisée. Chaque client a son propre espace isolé.',
               },
               {
                 icon: '💳',
-                title: 'Paiements Intégrés',
-                description: 'Acceptez les paiements en ligne. Cartes bancaires, virement, tout est possible.',
+                title: 'Facturation Intégrée',
+                description: 'Système de facturation complet avec plans tarifaires et abonnements.',
               },
               {
                 icon: '📱',
-                title: 'Mobile First',
+                title: 'Responsive Design',
                 description: 'Votre site s\'adapte automatiquement aux smartphones et tablettes.',
               },
               {
                 icon: '📊',
-                title: 'Analytics Inclus',
-                description: 'Suivez vos performances, réservations, revenus en temps réel.',
+                title: 'Analytics & Reporting',
+                description: 'Suivez vos performances, utilisateurs et revenus en temps réel.',
               },
               {
                 icon: '🔒',
@@ -396,6 +403,27 @@ function PublicHomePageContent({ pricingPlans, loading }: { pricingPlans: Pricin
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Chargement des plans tarifaires...</p>
+            </div>
+          ) : pricingPlans.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">
+                Aucun plan tarifaire disponible pour le moment.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/register"
+                  className="px-6 py-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                >
+                  Créer un compte gratuitement
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-6 py-3 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Se connecter
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -477,18 +505,30 @@ function PublicHomePageContent({ pricingPlans, loading }: { pricingPlans: Pricin
             Prêt à démarrer ?
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Créez votre site VTC professionnel dès aujourd'hui. Essai gratuit de 14 jours.
+            Créez votre plateforme CMS/CRM dès aujourd'hui. Essai gratuit disponible.
           </p>
-          <Link
-            href="/register"
-            className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
-              resolvedTheme === 'dark'
-                ? 'bg-white text-gray-900 hover:bg-gray-100'
-                : 'bg-white text-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            🚀 Créer mon compte gratuitement
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/login"
+              className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
+                resolvedTheme === 'dark'
+                  ? 'bg-white text-gray-900 hover:bg-gray-100'
+                  : 'bg-white text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              🔐 Se connecter
+            </Link>
+            <Link
+              href="/register"
+              className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
+                resolvedTheme === 'dark'
+                  ? 'bg-white text-gray-900 hover:bg-gray-100'
+                  : 'bg-white text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              🚀 Créer un compte
+            </Link>
+          </div>
         </div>
       </section>
 

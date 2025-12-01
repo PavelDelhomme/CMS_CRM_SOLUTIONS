@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -11,7 +9,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "9496:5432"
+      - "9191:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -24,7 +22,7 @@ services:
     image: redis:7-alpine
     container_name: cms_crm_redis
     ports:
-      - "9497:6379"
+      - "9192:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -46,7 +44,7 @@ services:
       - backend_static:/app/staticfiles
       - backend_media:/app/media
     ports:
-      - "9495:8000"
+      - "9193:8000"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
@@ -55,8 +53,6 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    env_file:
-      - .env
     depends_on:
       db:
         condition: service_healthy
@@ -77,11 +73,9 @@ services:
       - /app/node_modules
       - /app/.next
     ports:
-      - "9494:3000"
+      - "9194:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:9495/api
-    env_file:
-      - .env
+      - NEXT_PUBLIC_API_URL=http://localhost:9193/api
     depends_on:
       - backend
     networks:
@@ -96,8 +90,8 @@ services:
       - backend_static:/static:ro
       - backend_media:/media:ro
     ports:
-      - "80:80"
-      - "443:443"
+      - "9195:80"
+      - "9196:443"
     depends_on:
       - backend
       - frontend

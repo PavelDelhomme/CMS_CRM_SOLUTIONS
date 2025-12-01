@@ -1,0 +1,141 @@
+[
+  {
+    "model": "tenants.client",
+    "pk": 1,
+    "fields": {
+      "name": "Demo VTC Company",
+      "slug": "demo-vtc-company",
+      "email": "demo@vtccompany.com",
+      "plan": "business",
+      "status": "active",
+      "primary_color": "#3B82F6",
+      "secondary_color": "#10B981",
+      "settings": {
+        "timezone": "Europe/Paris",
+        "currency": "EUR",
+        "language": "fr"
+      },
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "tenants.user",
+    "pk": 1,
+    "fields": {
+      "username": "superadmin",
+      "email": "admin@vtcbuilder.com",
+      "first_name": "Super",
+      "last_name": "Admin",
+      "role": "super-admin",
+      "status": "active",
+      "is_staff": true,
+      "is_superuser": true,
+      "tenant": null,
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "tenants.user",
+    "pk": 2,
+    "fields": {
+      "username": "tenantadmin",
+      "email": "admin@demo-vtc-company.com",
+      "first_name": "Tenant",
+      "last_name": "Admin",
+      "role": "tenant-admin",
+      "status": "active",
+      "is_staff": false,
+      "is_superuser": false,
+      "tenant": 1,
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "media.template",
+    "pk": 1,
+    "fields": {
+      "name": "Classic VTC Template",
+      "slug": "classic-vtc",
+      "description": "Template classique pour entreprises VTC",
+      "category": "vtc",
+      "is_premium": false,
+      "price": "0.00",
+      "is_active": true,
+      "usage_count": 0,
+      "structure": {
+        "header": {
+          "logo": true,
+          "navigation": true,
+          "phone": true
+        },
+        "hero": {
+          "title": true,
+          "subtitle": true,
+          "cta_button": true
+        },
+        "services": {
+          "title": true,
+          "list": true,
+          "pricing": true
+        },
+        "footer": {
+          "contact": true,
+          "social": true
+        }
+      },
+      "default_settings": {
+        "primary_color": "#3B82F6",
+        "secondary_color": "#10B981",
+        "font_family": "Inter"
+      },
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "media.template",
+    "pk": 2,
+    "fields": {
+      "name": "Modern VTC Template",
+      "slug": "modern-vtc",
+      "description": "Template moderne et épuré",
+      "category": "modern",
+      "is_premium": true,
+      "price": "49.99",
+      "is_active": true,
+      "usage_count": 0,
+      "structure": {
+        "header": {
+          "logo": true,
+          "navigation": true,
+          "booking_button": true
+        },
+        "hero": {
+          "background_image": true,
+          "title": true,
+          "subtitle": true,
+          "booking_form": true
+        },
+        "features": {
+          "icons": true,
+          "descriptions": true
+        },
+        "testimonials": true,
+        "footer": {
+          "links": true,
+          "newsletter": true
+        }
+      },
+      "default_settings": {
+        "primary_color": "#8B5CF6",
+        "secondary_color": "#EC4899",
+        "font_family": "Poppins"
+      },
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  }
+]

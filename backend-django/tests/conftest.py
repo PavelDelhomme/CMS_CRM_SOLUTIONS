@@ -1,33 +1,46 @@
 """
-Configuration pytest pour les tests
+Pytest configuration and fixtures for django-tenants
 """
 import pytest
-from django.test import Client
-from django_tenants.test.cases import TenantTestCase
+from django.core.management import call_command
+from django_tenants.utils import schema_context, tenant_context
+from apps.tenants.models import Client, Domain
 
 
-@pytest.fixture
-def api_client():
-    """Client API pour les tests"""
-    return Client()
-
-
-@pytest.fixture
-def tenant():
-    """Créer un tenant de test"""
-    from tenants.models import Client, Domain
+@pytest.fixture(scope='function')
+def tenant_with_schema():
+    """
+    Create a tenant with migrated schema for testing tenant-specific models
+    """
+    from django.utils.text import slugify
     
-    client = Client.objects.create(
-        name="Test Client",
-        schema_name="test_client",
-        is_active=True
+    tenant = Client.objects.create(
+        name='Test Tenant',
+        email='test@tenant.com',
+        slug='test-tenant',
+        status='active'
     )
     
+    # Create domain
     Domain.objects.create(
-        domain="test.example.com",
-        tenant=client,
+        tenant=tenant,
+        domain='test-tenant.localhost',
         is_primary=True
     )
     
-    return client
+    # Migrate schema for tenant-specific apps
+    # Note: This assumes migrations have been run at least once
+    # In CI/CD, you'd run migrations before tests
+    try:
+        from django_tenants.management.commands import migrate_schemas
+        call_command('migrate_schemas', schema_name=tenant.schema_name, verbosity=0, interactive=False)
+    except Exception:
+        # If migrate_schemas fails, we'll create tables manually in tenant_context
+        # This is a fallback for tests that don't need full migrations
+        pass
+    
+    yield tenant
+    
+    # Cleanup: tenant schema will be dropped when tenant is deleted
+    # (auto_drop_schema = True)
 

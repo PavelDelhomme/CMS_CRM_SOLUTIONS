@@ -51,7 +51,7 @@ export default function LoginPage() {
       // Gérer les erreurs de réseau spécifiquement
       if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
         const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'unknown'
-        const apiUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9495') : 'http://localhost:9495'
+        const apiUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9193/api') : 'http://localhost:9193/api'
         
         toast.error(
           `Erreur de connexion au serveur.\n\n` +
@@ -88,10 +88,10 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-10 rounded-xl shadow-2xl">
         <div>
           <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900 dark:text-gray-100">
-            VTCBuilder
+            CMS_CRM_SOLUTIONS
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Le WordPress des Chauffeurs VTC
+            Plateforme générique CMS/CRM multi-tenant
           </p>
         </div>
         
@@ -186,10 +186,10 @@ export default function LoginPage() {
           <div className="mt-4 text-xs text-gray-600 dark:text-gray-400 space-y-2">
             <p className="font-semibold text-gray-700 dark:text-gray-300 mb-1">Comptes de test :</p>
             <div className="bg-gray-50 dark:bg-gray-900 rounded p-3 space-y-1">
-              <p><strong>Super Admin:</strong> <code className="text-blue-600">admin@vtcbuilder.com</code> / <code className="text-blue-600">admin123</code></p>
-              <p><strong>Tenant Test:</strong> <code className="text-blue-600">test@delhomme.ovh</code> / <code className="text-blue-600">admin123</code></p>
+              <p><strong>Super Admin:</strong> <code className="text-blue-600">admin@cms-crm-solutions.com</code> / <code className="text-blue-600">admin123</code></p>
+              <p><strong>Tenant Test:</strong> <code className="text-blue-600">test@example.com</code> / <code className="text-blue-600">admin123</code></p>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Le tenant de test est <strong>ma-societe-vtc</strong> (Ma Société VTC)</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Créez votre propre tenant via l'inscription</p>
           </div>
         </div>
       </div>
