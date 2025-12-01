@@ -197,88 +197,88 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
   const getDefaultBlockTypes = (): BlockType[] => {
     return [
       // Blocs de Contenu
-      { id: 1, name: 'heading', label: 'Titre', icon: '📝', category: 'content', description: 'Titre avec différents niveaux', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 1, created_at: '', updated_at: '' },
-      { id: 2, name: 'text', label: 'Texte', icon: '📄', category: 'content', description: 'Bloc de texte simple', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 2, created_at: '', updated_at: '' },
-      { id: 3, name: 'paragraph', label: 'Paragraphe', icon: '📝', category: 'content', description: 'Paragraphe formaté', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 3, created_at: '', updated_at: '' },
-      { id: 4, name: 'line', label: 'Ligne', icon: '➖', category: 'content', description: 'Texte sur une ligne', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 4, created_at: '', updated_at: '' },
-      { id: 5, name: 'button', label: 'Bouton', icon: '🔘', category: 'content', description: 'Bouton avec lien', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 5, created_at: '', updated_at: '' },
-      { id: 6, name: 'link', label: 'Lien', icon: '🔗', category: 'content', description: 'Lien hypertexte', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 6, created_at: '', updated_at: '' },
-      { id: 7, name: 'list', label: 'Liste', icon: '📋', category: 'content', description: 'Liste à puces ou numérotée', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 7, created_at: '', updated_at: '' },
-      { id: 8, name: 'quote', label: 'Citation', icon: '💬', category: 'content', description: 'Citation avec auteur', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 8, created_at: '', updated_at: '' },
-      { id: 9, name: 'code', label: 'Code', icon: '💻', category: 'content', description: 'Bloc de code avec coloration', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 9, created_at: '', updated_at: '' },
-      { id: 10, name: 'alert', label: 'Alerte', icon: '⚠️', category: 'content', description: 'Message d\'alerte', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 10, created_at: '', updated_at: '' },
-      { id: 11, name: 'divider', label: 'Séparateur', icon: '➖', category: 'content', description: 'Ligne de séparation', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 11, created_at: '', updated_at: '' },
-      { id: 12, name: 'spacer', label: 'Espaceur', icon: '⬜', category: 'content', description: 'Espace vertical ou horizontal', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 12, created_at: '', updated_at: '' },
-      { id: 13, name: 'breadcrumb', label: 'Fil d\'Ariane', icon: '🍞', category: 'content', description: 'Navigation breadcrumb', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 13, created_at: '', updated_at: '' },
-      { id: 14, name: 'pagination', label: 'Pagination', icon: '📄', category: 'content', description: 'Navigation pagination', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 14, created_at: '', updated_at: '' },
-      { id: 15, name: 'tags', label: 'Tags', icon: '🏷️', category: 'content', description: 'Tags/étiquettes', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 15, created_at: '', updated_at: '' },
-      { id: 16, name: 'badge', label: 'Badge', icon: '🏷️', category: 'content', description: 'Badge/étiquette simple', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 16, created_at: '', updated_at: '' },
+      { id: 1, name: 'heading', label: 'Titre', icon: '📝', category: 'content', description: 'Titre avec différents niveaux', schema: {}, default_styles: {}, is_active: true, order: 1, created_at: '', updated_at: '' },
+      { id: 2, name: 'text', label: 'Texte', icon: '📄', category: 'content', description: 'Bloc de texte simple', schema: {}, default_styles: {}, is_active: true, order: 2, created_at: '', updated_at: '' },
+      { id: 3, name: 'paragraph', label: 'Paragraphe', icon: '📝', category: 'content', description: 'Paragraphe formaté', schema: {}, default_styles: {}, is_active: true, order: 3, created_at: '', updated_at: '' },
+      { id: 4, name: 'line', label: 'Ligne', icon: '➖', category: 'content', description: 'Texte sur une ligne', schema: {}, default_styles: {}, is_active: true, order: 4, created_at: '', updated_at: '' },
+      { id: 5, name: 'button', label: 'Bouton', icon: '🔘', category: 'content', description: 'Bouton avec lien', schema: {}, default_styles: {}, is_active: true, order: 5, created_at: '', updated_at: '' },
+      { id: 6, name: 'link', label: 'Lien', icon: '🔗', category: 'content', description: 'Lien hypertexte', schema: {}, default_styles: {}, is_active: true, order: 6, created_at: '', updated_at: '' },
+      { id: 7, name: 'list', label: 'Liste', icon: '📋', category: 'content', description: 'Liste à puces ou numérotée', schema: {}, default_styles: {}, is_active: true, order: 7, created_at: '', updated_at: '' },
+      { id: 8, name: 'quote', label: 'Citation', icon: '💬', category: 'content', description: 'Citation avec auteur', schema: {}, default_styles: {}, is_active: true, order: 8, created_at: '', updated_at: '' },
+      { id: 9, name: 'code', label: 'Code', icon: '💻', category: 'content', description: 'Bloc de code avec coloration', schema: {}, default_styles: {}, is_active: true, order: 9, created_at: '', updated_at: '' },
+      { id: 10, name: 'alert', label: 'Alerte', icon: '⚠️', category: 'content', description: 'Message d\'alerte', schema: {}, default_styles: {}, is_active: true, order: 10, created_at: '', updated_at: '' },
+      { id: 11, name: 'divider', label: 'Séparateur', icon: '➖', category: 'content', description: 'Ligne de séparation', schema: {}, default_styles: {}, is_active: true, order: 11, created_at: '', updated_at: '' },
+      { id: 12, name: 'spacer', label: 'Espaceur', icon: '⬜', category: 'content', description: 'Espace vertical ou horizontal', schema: {}, default_styles: {}, is_active: true, order: 12, created_at: '', updated_at: '' },
+      { id: 13, name: 'breadcrumb', label: 'Fil d\'Ariane', icon: '🍞', category: 'content', description: 'Navigation breadcrumb', schema: {}, default_styles: {}, is_active: true, order: 13, created_at: '', updated_at: '' },
+      { id: 14, name: 'pagination', label: 'Pagination', icon: '📄', category: 'content', description: 'Navigation pagination', schema: {}, default_styles: {}, is_active: true, order: 14, created_at: '', updated_at: '' },
+      { id: 15, name: 'tags', label: 'Tags', icon: '🏷️', category: 'content', description: 'Tags/étiquettes', schema: {}, default_styles: {}, is_active: true, order: 15, created_at: '', updated_at: '' },
+      { id: 16, name: 'badge', label: 'Badge', icon: '🏷️', category: 'content', description: 'Badge/étiquette simple', schema: {}, default_styles: {}, is_active: true, order: 16, created_at: '', updated_at: '' },
       
       // Blocs de Mise en Page
-      { id: 20, name: 'columns', label: 'Colonnes', icon: '📊', category: 'layout', description: 'Colonnes avec blocs imbriqués', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 20, created_at: '', updated_at: '' },
-      { id: 21, name: 'rows', label: 'Lignes', icon: '📐', category: 'layout', description: 'Lignes pour colonnes', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 21, created_at: '', updated_at: '' },
-      { id: 22, name: 'section', label: 'Section', icon: '📦', category: 'layout', description: 'Section avec fond personnalisé', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 22, created_at: '', updated_at: '' },
+      { id: 20, name: 'columns', label: 'Colonnes', icon: '📊', category: 'layout', description: 'Colonnes avec blocs imbriqués', schema: {}, default_styles: {}, is_active: true, order: 20, created_at: '', updated_at: '' },
+      { id: 21, name: 'rows', label: 'Lignes', icon: '📐', category: 'layout', description: 'Lignes pour colonnes', schema: {}, default_styles: {}, is_active: true, order: 21, created_at: '', updated_at: '' },
+      { id: 22, name: 'section', label: 'Section', icon: '📦', category: 'layout', description: 'Section avec fond personnalisé', schema: {}, default_styles: {}, is_active: true, order: 22, created_at: '', updated_at: '' },
       
       // Blocs Médias
-      { id: 30, name: 'image', label: 'Image', icon: '🖼️', category: 'media', description: 'Image avec légende', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 30, created_at: '', updated_at: '' },
-      { id: 31, name: 'video', label: 'Vidéo', icon: '🎥', category: 'media', description: 'Vidéo intégrée', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 31, created_at: '', updated_at: '' },
-      { id: 32, name: 'video-embed', label: 'Vidéo Embed', icon: '📺', category: 'media', description: 'YouTube, Vimeo, etc.', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 32, created_at: '', updated_at: '' },
-      { id: 33, name: 'gallery', label: 'Galerie', icon: '🖼️', category: 'media', description: 'Galerie d\'images', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 33, created_at: '', updated_at: '' },
-      { id: 34, name: 'audio-player', label: 'Lecteur Audio', icon: '🎵', category: 'media', description: 'Lecteur audio', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 34, created_at: '', updated_at: '' },
-      { id: 35, name: 'map', label: 'Carte', icon: '🗺️', category: 'media', description: 'Carte interactive', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 35, created_at: '', updated_at: '' },
-      { id: 36, name: 'carousel', label: 'Carrousel', icon: '🎠', category: 'media', description: 'Carrousel d\'images', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 36, created_at: '', updated_at: '' },
+      { id: 30, name: 'image', label: 'Image', icon: '🖼️', category: 'media', description: 'Image avec légende', schema: {}, default_styles: {}, is_active: true, order: 30, created_at: '', updated_at: '' },
+      { id: 31, name: 'video', label: 'Vidéo', icon: '🎥', category: 'media', description: 'Vidéo intégrée', schema: {}, default_styles: {}, is_active: true, order: 31, created_at: '', updated_at: '' },
+      { id: 32, name: 'video-embed', label: 'Vidéo Embed', icon: '📺', category: 'media', description: 'YouTube, Vimeo, etc.', schema: {}, default_styles: {}, is_active: true, order: 32, created_at: '', updated_at: '' },
+      { id: 33, name: 'gallery', label: 'Galerie', icon: '🖼️', category: 'media', description: 'Galerie d\'images', schema: {}, default_styles: {}, is_active: true, order: 33, created_at: '', updated_at: '' },
+      { id: 34, name: 'audio-player', label: 'Lecteur Audio', icon: '🎵', category: 'media', description: 'Lecteur audio', schema: {}, default_styles: {}, is_active: true, order: 34, created_at: '', updated_at: '' },
+      { id: 35, name: 'map', label: 'Carte', icon: '🗺️', category: 'media', description: 'Carte interactive', schema: {}, default_styles: {}, is_active: true, order: 35, created_at: '', updated_at: '' },
+      { id: 36, name: 'carousel', label: 'Carrousel', icon: '🎠', category: 'media', description: 'Carrousel d\'images', schema: {}, default_styles: {}, is_active: true, order: 36, created_at: '', updated_at: '' },
       
       // Blocs de Données (Premium)
-      { id: 40, name: 'table', label: 'Tableau', icon: '📊', category: 'custom', description: 'Tableau interactif', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 40, created_at: '', updated_at: '' },
-      { id: 41, name: 'chart', label: 'Graphique', icon: '📈', category: 'custom', description: 'Graphiques Chart.js', schema: {}, default_styles: {}, is_active: true, requires_premium: true, order: 41, created_at: '', updated_at: '' },
-      { id: 42, name: 'stats', label: 'Statistiques', icon: '📊', category: 'custom', description: 'Affichage de statistiques', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 42, created_at: '', updated_at: '' },
-      { id: 43, name: 'progress-bar', label: 'Barre de Progression', icon: '📊', category: 'custom', description: 'Barre de progression horizontale', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 43, created_at: '', updated_at: '' },
-      { id: 44, name: 'progress-circle', label: 'Cercle de Progression', icon: '⭕', category: 'custom', description: 'Cercle de progression', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 44, created_at: '', updated_at: '' },
-      { id: 45, name: 'timeline', label: 'Chronologie', icon: '⏱️', category: 'custom', description: 'Timeline d\'événements', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 45, created_at: '', updated_at: '' },
-      { id: 46, name: 'calendar', label: 'Calendrier', icon: '📅', category: 'custom', description: 'Calendrier avec événements', schema: {}, default_styles: {}, is_active: true, requires_premium: true, order: 46, created_at: '', updated_at: '' },
-      { id: 47, name: 'countdown', label: 'Compte à Rebours', icon: '⏰', category: 'custom', description: 'Compte à rebours', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 47, created_at: '', updated_at: '' },
+      { id: 40, name: 'table', label: 'Tableau', icon: '📊', category: 'custom', description: 'Tableau interactif', schema: {}, default_styles: {}, is_active: true, order: 40, created_at: '', updated_at: '' },
+      { id: 41, name: 'chart', label: 'Graphique', icon: '📈', category: 'custom', description: 'Graphiques Chart.js', schema: {}, default_styles: {}, is_active: true, order: 41, created_at: '', updated_at: '' },
+      { id: 42, name: 'stats', label: 'Statistiques', icon: '📊', category: 'custom', description: 'Affichage de statistiques', schema: {}, default_styles: {}, is_active: true, order: 42, created_at: '', updated_at: '' },
+      { id: 43, name: 'progress-bar', label: 'Barre de Progression', icon: '📊', category: 'custom', description: 'Barre de progression horizontale', schema: {}, default_styles: {}, is_active: true, order: 43, created_at: '', updated_at: '' },
+      { id: 44, name: 'progress-circle', label: 'Cercle de Progression', icon: '⭕', category: 'custom', description: 'Cercle de progression', schema: {}, default_styles: {}, is_active: true, order: 44, created_at: '', updated_at: '' },
+      { id: 45, name: 'timeline', label: 'Chronologie', icon: '⏱️', category: 'custom', description: 'Timeline d\'événements', schema: {}, default_styles: {}, is_active: true, order: 45, created_at: '', updated_at: '' },
+      { id: 46, name: 'calendar', label: 'Calendrier', icon: '📅', category: 'custom', description: 'Calendrier avec événements', schema: {}, default_styles: {}, is_active: true, order: 46, created_at: '', updated_at: '' },
+      { id: 47, name: 'countdown', label: 'Compte à Rebours', icon: '⏰', category: 'custom', description: 'Compte à rebours', schema: {}, default_styles: {}, is_active: true, order: 47, created_at: '', updated_at: '' },
       
       // Blocs de Formulaire
-      { id: 50, name: 'form', label: 'Formulaire', icon: '📝', category: 'custom', description: 'Formulaire de contact', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 50, created_at: '', updated_at: '' },
-      { id: 51, name: 'form-newsletter', label: 'Newsletter', icon: '📧', category: 'custom', description: 'Formulaire newsletter', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 51, created_at: '', updated_at: '' },
-      { id: 52, name: 'form-search', label: 'Recherche', icon: '🔍', category: 'custom', description: 'Formulaire de recherche', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 52, created_at: '', updated_at: '' },
-      { id: 53, name: 'form-inscription', label: 'Inscription', icon: '✍️', category: 'custom', description: 'Formulaire d\'inscription', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 53, created_at: '', updated_at: '' },
-      { id: 54, name: 'booking-form', label: 'Réservation', icon: '📅', category: 'custom', description: 'Formulaire de réservation VTC', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 54, created_at: '', updated_at: '' },
+      { id: 50, name: 'form', label: 'Formulaire', icon: '📝', category: 'custom', description: 'Formulaire de contact', schema: {}, default_styles: {}, is_active: true, order: 50, created_at: '', updated_at: '' },
+      { id: 51, name: 'form-newsletter', label: 'Newsletter', icon: '📧', category: 'custom', description: 'Formulaire newsletter', schema: {}, default_styles: {}, is_active: true, order: 51, created_at: '', updated_at: '' },
+      { id: 52, name: 'form-search', label: 'Recherche', icon: '🔍', category: 'custom', description: 'Formulaire de recherche', schema: {}, default_styles: {}, is_active: true, order: 52, created_at: '', updated_at: '' },
+      { id: 53, name: 'form-inscription', label: 'Inscription', icon: '✍️', category: 'custom', description: 'Formulaire d\'inscription', schema: {}, default_styles: {}, is_active: true, order: 53, created_at: '', updated_at: '' },
+      { id: 54, name: 'booking-form', label: 'Réservation', icon: '📅', category: 'custom', description: 'Formulaire de réservation VTC', schema: {}, default_styles: {}, is_active: true, order: 54, created_at: '', updated_at: '' },
       
       // Blocs Interactifs
-      { id: 60, name: 'tabs', label: 'Onglets', icon: '📑', category: 'custom', description: 'Onglets interactifs', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 60, created_at: '', updated_at: '' },
-      { id: 61, name: 'accordion', label: 'Accordéon', icon: '📖', category: 'custom', description: 'Accordéon dépliable', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 61, created_at: '', updated_at: '' },
-      { id: 62, name: 'modal', label: 'Modal', icon: '🪟', category: 'custom', description: 'Popup modal', schema: {}, default_styles: {}, is_active: true, requires_premium: true, order: 62, created_at: '', updated_at: '' },
+      { id: 60, name: 'tabs', label: 'Onglets', icon: '📑', category: 'custom', description: 'Onglets interactifs', schema: {}, default_styles: {}, is_active: true, order: 60, created_at: '', updated_at: '' },
+      { id: 61, name: 'accordion', label: 'Accordéon', icon: '📖', category: 'custom', description: 'Accordéon dépliable', schema: {}, default_styles: {}, is_active: true, order: 61, created_at: '', updated_at: '' },
+      { id: 62, name: 'modal', label: 'Modal', icon: '🪟', category: 'custom', description: 'Popup modal', schema: {}, default_styles: {}, is_active: true, order: 62, created_at: '', updated_at: '' },
       
       // Blocs de Design
-      { id: 70, name: 'hero', label: 'Hero', icon: '🎯', category: 'custom', description: 'Section hero avec fond', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 70, created_at: '', updated_at: '' },
-      { id: 71, name: 'banner', label: 'Bannière', icon: '🎨', category: 'custom', description: 'Bannière avec image de fond', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 71, created_at: '', updated_at: '' },
-      { id: 72, name: 'cta-section', label: 'CTA Section', icon: '📢', category: 'custom', description: 'Section call-to-action', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 72, created_at: '', updated_at: '' },
-      { id: 73, name: 'feature-card', label: 'Carte Fonctionnalité', icon: '✨', category: 'custom', description: 'Carte de fonctionnalité', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 73, created_at: '', updated_at: '' },
-      { id: 74, name: 'icon-box', label: 'Boîte Icône', icon: '📦', category: 'custom', description: 'Boîte avec icône', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 74, created_at: '', updated_at: '' },
-      { id: 75, name: 'card', label: 'Carte', icon: '🃏', category: 'custom', description: 'Carte générique', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 75, created_at: '', updated_at: '' },
-      { id: 76, name: 'testimonials', label: 'Témoignages', icon: '💬', category: 'custom', description: 'Témoignages clients', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 76, created_at: '', updated_at: '' },
-      { id: 77, name: 'logo-grid', label: 'Grille de Logos', icon: '🏢', category: 'custom', description: 'Grille de logos partenaires', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 77, created_at: '', updated_at: '' },
-      { id: 78, name: 'team-member', label: 'Membre d\'Équipe', icon: '👤', category: 'custom', description: 'Carte membre d\'équipe', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 78, created_at: '', updated_at: '' },
-      { id: 79, name: 'features-grid', label: 'Grille Fonctionnalités', icon: '⭐', category: 'custom', description: 'Grille de fonctionnalités', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 79, created_at: '', updated_at: '' },
+      { id: 70, name: 'hero', label: 'Hero', icon: '🎯', category: 'custom', description: 'Section hero avec fond', schema: {}, default_styles: {}, is_active: true, order: 70, created_at: '', updated_at: '' },
+      { id: 71, name: 'banner', label: 'Bannière', icon: '🎨', category: 'custom', description: 'Bannière avec image de fond', schema: {}, default_styles: {}, is_active: true, order: 71, created_at: '', updated_at: '' },
+      { id: 72, name: 'cta-section', label: 'CTA Section', icon: '📢', category: 'custom', description: 'Section call-to-action', schema: {}, default_styles: {}, is_active: true, order: 72, created_at: '', updated_at: '' },
+      { id: 73, name: 'feature-card', label: 'Carte Fonctionnalité', icon: '✨', category: 'custom', description: 'Carte de fonctionnalité', schema: {}, default_styles: {}, is_active: true, order: 73, created_at: '', updated_at: '' },
+      { id: 74, name: 'icon-box', label: 'Boîte Icône', icon: '📦', category: 'custom', description: 'Boîte avec icône', schema: {}, default_styles: {}, is_active: true, order: 74, created_at: '', updated_at: '' },
+      { id: 75, name: 'card', label: 'Carte', icon: '🃏', category: 'custom', description: 'Carte générique', schema: {}, default_styles: {}, is_active: true, order: 75, created_at: '', updated_at: '' },
+      { id: 76, name: 'testimonials', label: 'Témoignages', icon: '💬', category: 'custom', description: 'Témoignages clients', schema: {}, default_styles: {}, is_active: true, order: 76, created_at: '', updated_at: '' },
+      { id: 77, name: 'logo-grid', label: 'Grille de Logos', icon: '🏢', category: 'custom', description: 'Grille de logos partenaires', schema: {}, default_styles: {}, is_active: true, order: 77, created_at: '', updated_at: '' },
+      { id: 78, name: 'team-member', label: 'Membre d\'Équipe', icon: '👤', category: 'custom', description: 'Carte membre d\'équipe', schema: {}, default_styles: {}, is_active: true, order: 78, created_at: '', updated_at: '' },
+      { id: 79, name: 'features-grid', label: 'Grille Fonctionnalités', icon: '⭐', category: 'custom', description: 'Grille de fonctionnalités', schema: {}, default_styles: {}, is_active: true, order: 79, created_at: '', updated_at: '' },
       
       // Blocs VTC
-      { id: 80, name: 'pricing-table-vtc', label: 'Tarifs VTC', icon: '💰', category: 'custom', description: 'Tableau de prix VTC', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 80, created_at: '', updated_at: '' },
-      { id: 81, name: 'service-zones', label: 'Zones de Service', icon: '📍', category: 'custom', description: 'Zones de service VTC', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 81, created_at: '', updated_at: '' },
-      { id: 82, name: 'vehicle-gallery', label: 'Galerie Véhicules', icon: '🚗', category: 'custom', description: 'Galerie de véhicules', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 82, created_at: '', updated_at: '' },
-      { id: 83, name: 'contact-buttons', label: 'Boutons Contact', icon: '📞', category: 'custom', description: 'Boutons de contact VTC', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 83, created_at: '', updated_at: '' },
-      { id: 84, name: 'badges', label: 'Badges', icon: '🏅', category: 'custom', description: 'Badges et certifications', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 84, created_at: '', updated_at: '' },
-      { id: 85, name: 'pricing', label: 'Tarifs', icon: '💳', category: 'custom', description: 'Tableau de tarifs', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 85, created_at: '', updated_at: '' },
+      { id: 80, name: 'pricing-table-vtc', label: 'Tarifs VTC', icon: '💰', category: 'custom', description: 'Tableau de prix VTC', schema: {}, default_styles: {}, is_active: true, order: 80, created_at: '', updated_at: '' },
+      { id: 81, name: 'service-zones', label: 'Zones de Service', icon: '📍', category: 'custom', description: 'Zones de service VTC', schema: {}, default_styles: {}, is_active: true, order: 81, created_at: '', updated_at: '' },
+      { id: 82, name: 'vehicle-gallery', label: 'Galerie Véhicules', icon: '🚗', category: 'custom', description: 'Galerie de véhicules', schema: {}, default_styles: {}, is_active: true, order: 82, created_at: '', updated_at: '' },
+      { id: 83, name: 'contact-buttons', label: 'Boutons Contact', icon: '📞', category: 'custom', description: 'Boutons de contact VTC', schema: {}, default_styles: {}, is_active: true, order: 83, created_at: '', updated_at: '' },
+      { id: 84, name: 'badges', label: 'Badges', icon: '🏅', category: 'custom', description: 'Badges et certifications', schema: {}, default_styles: {}, is_active: true, order: 84, created_at: '', updated_at: '' },
+      { id: 85, name: 'pricing', label: 'Tarifs', icon: '💳', category: 'custom', description: 'Tableau de tarifs', schema: {}, default_styles: {}, is_active: true, order: 85, created_at: '', updated_at: '' },
       
       // Blocs Utilitaires
-      { id: 90, name: 'search-bar', label: 'Barre de Recherche', icon: '🔍', category: 'custom', description: 'Barre de recherche', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 90, created_at: '', updated_at: '' },
-      { id: 91, name: 'rating', label: 'Évaluation', icon: '⭐', category: 'custom', description: 'Système d\'évaluation', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 91, created_at: '', updated_at: '' },
-      { id: 92, name: 'social-links', label: 'Liens Sociaux', icon: '🔗', category: 'custom', description: 'Liens réseaux sociaux', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 92, created_at: '', updated_at: '' },
+      { id: 90, name: 'search-bar', label: 'Barre de Recherche', icon: '🔍', category: 'custom', description: 'Barre de recherche', schema: {}, default_styles: {}, is_active: true, order: 90, created_at: '', updated_at: '' },
+      { id: 91, name: 'rating', label: 'Évaluation', icon: '⭐', category: 'custom', description: 'Système d\'évaluation', schema: {}, default_styles: {}, is_active: true, order: 91, created_at: '', updated_at: '' },
+      { id: 92, name: 'social-links', label: 'Liens Sociaux', icon: '🔗', category: 'custom', description: 'Liens réseaux sociaux', schema: {}, default_styles: {}, is_active: true, order: 92, created_at: '', updated_at: '' },
       
       // Blocs Footer/Header
-      { id: 100, name: 'footer', label: 'Pied de Page', icon: '⬇️', category: 'custom', description: 'Footer personnalisé', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 100, created_at: '', updated_at: '' },
-      { id: 101, name: 'contact-form', label: 'Formulaire Contact', icon: '📧', category: 'custom', description: 'Formulaire de contact', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 101, created_at: '', updated_at: '' },
-      { id: 102, name: 'faq-section', label: 'Section FAQ', icon: '❓', category: 'custom', description: 'Section FAQ', schema: {}, default_styles: {}, is_active: true, requires_premium: false, order: 102, created_at: '', updated_at: '' },
+      { id: 100, name: 'footer', label: 'Pied de Page', icon: '⬇️', category: 'custom', description: 'Footer personnalisé', schema: {}, default_styles: {}, is_active: true, order: 100, created_at: '', updated_at: '' },
+      { id: 101, name: 'contact-form', label: 'Formulaire Contact', icon: '📧', category: 'custom', description: 'Formulaire de contact', schema: {}, default_styles: {}, is_active: true, order: 101, created_at: '', updated_at: '' },
+      { id: 102, name: 'faq-section', label: 'Section FAQ', icon: '❓', category: 'custom', description: 'Section FAQ', schema: {}, default_styles: {}, is_active: true, order: 102, created_at: '', updated_at: '' },
     ]
   }
 
@@ -829,7 +829,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
               </h4>
               <div className="space-y-2.5">
                 {categoryBlocks.map((blockType: BlockType) => {
-                  const isPremium = blockType.requires_premium
+                  const isPremium = !!(blockType.available_plans && blockType.available_plans.length > 0)
                   const canUse = canUseBlockType(blockType.name, isPremium)
                   
                   return (
@@ -1121,8 +1121,8 @@ const SortableBlock = React.memo(function SortableBlock({
     <div
       ref={(node) => {
         setNodeRef(node)
-        if (node) {
-          blockRef.current = node
+        if (node && blockRef) {
+          (blockRef as React.MutableRefObject<HTMLDivElement | null>).current = node
         }
       }}
       style={style}
@@ -1797,13 +1797,13 @@ function BlockRenderer({
       }
       
       const addColumn = () => {
-        const newData = tableData.map(row => [...row, ''])
+        const newData = tableData.map((row: string[]) => [...row, ''])
         onUpdate({ data: { ...block.data, columns: cols + 1, table_data: newData } })
       }
       
       const removeColumn = () => {
         if (cols > 1) {
-          const newData = tableData.map(row => row.slice(0, -1))
+          const newData = tableData.map((row: string[]) => row.slice(0, -1))
           onUpdate({ data: { ...block.data, columns: cols - 1, table_data: newData } })
         }
       }
@@ -1838,7 +1838,7 @@ function BlockRenderer({
                   value={cols}
                   onChange={(e) => {
                     const newCols = parseInt(e.target.value) || 1
-                    const newData = tableData.map(row => [...row.slice(0, newCols), ...Array(Math.max(0, newCols - row.length)).fill('')])
+                    const newData = tableData.map((row: string[]) => [...row.slice(0, newCols), ...Array(Math.max(0, newCols - row.length)).fill('')])
                     onUpdate({ data: { ...block.data, columns: newCols, table_data: newData } })
                   }}
                   className="flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -5384,6 +5384,7 @@ function BlockStylePanel({
                     type="button"
                     onClick={() => onUpdate({
                       position: {
+                        type: block.position?.type || 'static',
                         ...block.position,
                         align: align.value as 'left' | 'center' | 'right' | 'stretch'
                       }
@@ -5415,6 +5416,7 @@ function BlockStylePanel({
                       value={block.position?.top || ''}
                       onChange={(e) => onUpdate({
                         position: {
+                          type: block.position?.type || 'absolute',
                           ...block.position,
                           top: e.target.value
                         },
@@ -5434,6 +5436,7 @@ function BlockStylePanel({
                       value={block.position?.right || ''}
                       onChange={(e) => onUpdate({
                         position: {
+                          type: block.position?.type || 'absolute',
                           ...block.position,
                           right: e.target.value
                         },
@@ -5453,6 +5456,7 @@ function BlockStylePanel({
                       value={block.position?.bottom || ''}
                       onChange={(e) => onUpdate({
                         position: {
+                          type: block.position?.type || 'absolute',
                           ...block.position,
                           bottom: e.target.value
                         },
@@ -5472,6 +5476,7 @@ function BlockStylePanel({
                       value={block.position?.left || ''}
                       onChange={(e) => onUpdate({
                         position: {
+                          type: block.position?.type || 'absolute',
                           ...block.position,
                           left: e.target.value
                         },
@@ -5498,6 +5503,7 @@ function BlockStylePanel({
                   value={block.position?.alignTo || ''}
                   onChange={(e) => onUpdate({
                     position: {
+                      type: block.position?.type || 'relative',
                       ...block.position,
                       alignTo: e.target.value || undefined
                     }

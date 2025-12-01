@@ -45,6 +45,9 @@ interface FeaturesContextType {
 
 const FeaturesContext = createContext<FeaturesContextType | undefined>(undefined)
 
+// Flag pour éviter les logs répétés
+let hasLoggedBlockedError = false
+
 export function FeaturesProvider({ children }: { children: ReactNode }) {
   const [features, setFeatures] = useState<TenantFeatures | null>(null)
   const [loading, setLoading] = useState(true)
@@ -113,8 +116,28 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
           available_block_types: featureNames.includes('advanced-blocks') ? ['*'] : ['heading', 'text', 'image', 'button', 'video', 'spacer', 'divider'],
         })
       } catch (error: any) {
-        // Si l'endpoint n'existe pas encore, utiliser des valeurs par défaut
-        console.warn('Features endpoint not available, using defaults')
+        // Si l'endpoint n'existe pas encore ou erreur réseau, utiliser des valeurs par défaut
+        // Ne pas logger les erreurs ERR_BLOCKED_BY_CLIENT (bloqueur de pub) comme des erreurs critiques
+        const isBlockedError = error.code === 'ERR_BLOCKED_BY_CLIENT' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')
+        const isNetworkError = error.code === 'ERR_NETWORK'
+        
+        // Logger une seule fois pour les erreurs bloquées
+        if (isBlockedError && !hasLoggedBlockedError) {
+          console.warn('⚠️ Requête bloquée par un bloqueur de publicité. Les fonctionnalités utilisent des valeurs par défaut.')
+          console.warn('💡 Solution: Désactivez temporairement votre bloqueur de publicité pour localhost:9495')
+          hasLoggedBlockedError = true
+        } else if (!isBlockedError && !isNetworkError) {
+          // Logger les autres erreurs une seule fois
+          if (!hasLoggedBlockedError) {
+            console.error('Error loading features:', error)
+            hasLoggedBlockedError = true
+          }
+        }
+        
+        // Ne pas logger le warning si c'est une erreur bloquée
+        if (!isBlockedError) {
+          console.warn('Features endpoint not available, using defaults')
+        }
         setFeatures({
           can_use_premium_blocks: false,
           can_use_custom_domain: false,
@@ -128,7 +151,7 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
           can_use_advanced_forms: false,
           can_use_ecommerce: false,
           can_use_membership: false,
-          can_use_booking_system: false,
+          can_use_booking_system: true, // Toujours disponible même en cas d'erreur
           can_use_email_marketing: false,
           can_use_social_integration: false,
           can_use_api_access: false,
@@ -148,10 +171,20 @@ export function FeaturesProvider({ children }: { children: ReactNode }) {
         can_use_analytics: false,
         can_use_multiple_sites: false,
         can_use_white_label: false,
-        max_pages: 10,
-        max_storage_gb: 1,
-        max_users: 1,
-        available_block_types: ['heading', 'text', 'image', 'button', 'video', 'spacer', 'divider'],
+        can_use_advanced_styling: false,
+        can_use_custom_code: false,
+        can_use_ai_content: false,
+        can_use_advanced_forms: false,
+        can_use_ecommerce: false,
+        can_use_membership: false,
+        can_use_booking_system: false,
+        can_use_email_marketing: false,
+        can_use_social_integration: false,
+        can_use_api_access: false,
+        max_pages: 0,
+        max_storage_gb: 0,
+        max_users: 0,
+        available_block_types: [],
       })
     } finally {
       setLoading(false)

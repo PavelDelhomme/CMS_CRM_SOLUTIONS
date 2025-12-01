@@ -9,7 +9,7 @@ export interface Tenant {
   subdomain?: string;
   plan: 'starter' | 'business' | 'enterprise';
   status: 'active' | 'suspended' | 'trial' | 'cancelled' | 'deleted';
-  trial_ends_at?: string;
+  trial_ends_at?: string | null;
   subscribed_at?: string;
   settings?: any;
   primary_color: string;

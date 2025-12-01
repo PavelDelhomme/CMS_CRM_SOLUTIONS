@@ -106,6 +106,23 @@ class Subscription(models.Model):
     
     def is_trial(self):
         return self.status == 'trial'
+    
+    def is_trial_expired(self):
+        """Check if trial has expired"""
+        if not self.is_trial():
+            return False
+        if not self.trial_end:
+            return False
+        return timezone.now() > self.trial_end
+    
+    def get_trial_days_remaining(self):
+        """Get number of days remaining in trial"""
+        if not self.is_trial() or not self.trial_end:
+            return None
+        now = timezone.now()
+        if now > self.trial_end:
+            return 0
+        return (self.trial_end - now).days
 
 
 class Invoice(models.Model):
@@ -255,4 +272,75 @@ class PaymentMethod(models.Model):
     def is_available(self):
         """Check if payment method is available"""
         return self.is_active and self.is_enabled
+
+
+class InvoiceTemplate(models.Model):
+    """
+    Template model for invoice generation (HTML/CSS)
+    """
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    
+    # Template content
+    html_template = models.TextField(help_text="Template HTML avec variables {{ variable_name }}")
+    css_styles = models.TextField(blank=True, help_text="Styles CSS pour le template")
+    
+    # Configuration
+    is_default = models.BooleanField(default=False, help_text="Template par défaut pour les nouvelles factures")
+    is_active = models.BooleanField(default=True)
+    
+    # Variables disponibles dans le template
+    # {{ invoice_number }}, {{ tenant_name }}, {{ tenant_email }}, {{ issue_date }}, {{ due_date }}, {{ paid_at }}
+    # {{ subtotal }}, {{ tax }}, {{ total }}, {{ currency }}, {{ status }}
+    # {{ plan_name }}, {{ subscription_id }}
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'invoice_templates'
+        ordering = ['-is_default', 'name']
+        verbose_name = 'Template de facture'
+        verbose_name_plural = 'Templates de factures'
+    
+    def __str__(self):
+        return self.name
+    
+    def render(self, invoice):
+        """Render template with invoice data"""
+        from django.template import Template, Context
+        from django.template.defaultfilters import date as date_filter
+        
+        template = Template(self.html_template)
+        context = Context({
+            'invoice_number': invoice.invoice_number,
+            'tenant_name': invoice.tenant.name,
+            'tenant_email': invoice.tenant.email,
+            'issue_date': invoice.issue_date.strftime('%d/%m/%Y'),
+            'due_date': invoice.due_date.strftime('%d/%m/%Y'),
+            'paid_at': invoice.paid_at.strftime('%d/%m/%Y') if invoice.paid_at else None,
+            'subtotal': float(invoice.subtotal),
+            'tax': float(invoice.tax),
+            'total': float(invoice.total),
+            'currency': invoice.currency,
+            'status': invoice.get_status_display(),
+            'plan_name': invoice.subscription.plan.name if invoice.subscription else 'N/A',
+            'subscription_id': invoice.subscription.id if invoice.subscription else None,
+        })
+        
+        try:
+            html = template.render(context)
+        except Exception as e:
+            # If template rendering fails, return error message
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error rendering invoice template {self.id}: {e}")
+            html = f"<html><body><h1>Erreur de rendu du template</h1><p>{str(e)}</p></body></html>"
+        
+        # Add CSS styles
+        if self.css_styles:
+            html = f'<style>{self.css_styles}</style>\n{html}'
+        
+        return html
 

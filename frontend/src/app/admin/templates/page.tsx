@@ -398,7 +398,7 @@ export default function AdminTemplatesPage() {
                 <select
                   required
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value as 'vtc' | 'business' | 'minimal' | 'modern' | 'classic' })}
                   className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="vtc">VTC</option>
@@ -512,6 +512,9 @@ export default function AdminTemplatesPage() {
                   />
                   <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     💡 Utilisez {'{{variable_name}}'} pour créer des variables dynamiques
+                  </p>
+                  <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                    🔧 Utilisez {'{% block block_name %}'} pour intégrer des blocs de contenu
                   </p>
                 </div>
               </div>
@@ -693,6 +696,9 @@ export default function AdminTemplatesPage() {
                   />
                   <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     💡 Utilisez {'{{variable_name}}'} pour créer des variables dynamiques (couleurs, tailles, etc.)
+                  </p>
+                  <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                    🔧 Utilisez {'{% block block_name %}'} pour intégrer des blocs de contenu dans votre template
                   </p>
                 </div>
               </div>

@@ -281,4 +281,60 @@ class StripeService:
             ]
         except stripe.error.StripeError as e:
             raise Exception(f"Erreur récupération payment methods: {str(e)}")
+    
+    @staticmethod
+    def create_setup_intent(customer_id: str) -> dict:
+        """
+        Create a Stripe Setup Intent to collect payment method without charging
+        Returns setup intent with client_secret
+        """
+        try:
+            setup_intent = stripe.SetupIntent.create(
+                customer=customer_id,
+                payment_method_types=['card'],
+                usage='off_session',  # For future payments
+            )
+            return {
+                'client_secret': setup_intent.client_secret,
+                'setup_intent_id': setup_intent.id,
+            }
+        except stripe.error.StripeError as e:
+            raise Exception(f"Erreur création Setup Intent: {str(e)}")
+    
+    @staticmethod
+    def attach_payment_method_to_subscription(
+        subscription: Subscription,
+        payment_method_id: str
+    ) -> dict:
+        """
+        Attach a payment method to a subscription for future payments
+        """
+        try:
+            if not subscription.stripe_customer_id:
+                raise Exception("Pas de customer Stripe pour cet abonnement")
+            
+            # Attach payment method to customer
+            StripeService.attach_payment_method(subscription.stripe_customer_id, payment_method_id)
+            
+            # Set as default payment method for customer
+            stripe.Customer.modify(
+                subscription.stripe_customer_id,
+                invoice_settings={
+                    'default_payment_method': payment_method_id,
+                }
+            )
+            
+            # If subscription exists in Stripe, update it
+            if subscription.stripe_subscription_id:
+                stripe.Subscription.modify(
+                    subscription.stripe_subscription_id,
+                    default_payment_method=payment_method_id,
+                )
+            
+            return {
+                'success': True,
+                'payment_method_id': payment_method_id,
+            }
+        except stripe.error.StripeError as e:
+            raise Exception(f"Erreur attachement payment method: {str(e)}")
 

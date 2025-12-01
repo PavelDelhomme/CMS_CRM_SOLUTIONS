@@ -2,7 +2,7 @@
 Serializers for billing models
 """
 from rest_framework import serializers
-from .models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod
+from .models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod, InvoiceTemplate
 from tenants.serializers import TenantSerializer
 from tenants.models import Tenant
 
@@ -161,4 +161,25 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class InvoiceTemplateSerializer(serializers.ModelSerializer):
+    """Serializer for InvoiceTemplate"""
+    
+    class Meta:
+        model = InvoiceTemplate
+        fields = [
+            'id', 'name', 'description',
+            'html_template', 'css_styles',
+            'is_default', 'is_active',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def validate(self, data):
+        """Ensure only one default template"""
+        if data.get('is_default'):
+            # If setting as default, unset other defaults
+            InvoiceTemplate.objects.filter(is_default=True).update(is_default=False)
+        return data
 

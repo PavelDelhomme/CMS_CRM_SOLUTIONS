@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import AdminLayout from '@/components/AdminLayout'
 import blocksService, { BlockType } from '@/services/blocks.service'
+import billingService, { PricingPlan } from '@/services/billing.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import toast from 'react-hot-toast'
 import PageLoader from '@/components/PageLoader'
@@ -15,6 +16,11 @@ export default function AdminBlocksPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingBlock, setEditingBlock] = useState<BlockType | null>(null)
+  const [filters, setFilters] = useState({
+    status: 'all' as 'all' | 'active' | 'inactive',
+    premium: 'all' as 'all' | 'premium' | 'free',
+    category: 'all' as 'all' | 'content' | 'layout' | 'media' | 'custom',
+  })
   const [formData, setFormData] = useState({
     name: '',
     label: '',
@@ -23,14 +29,17 @@ export default function AdminBlocksPage() {
     description: '',
     schema: '{}',
     default_styles: '{}',
+    call_to_action: '{}',
+    available_plans: [] as number[],
     is_active: true,
-    requires_premium: false,
     order: 0,
   })
-  const [activeTab, setActiveTab] = useState<'info' | 'schema' | 'styles' | 'preview'>('info')
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
+  const [activeTab, setActiveTab] = useState<'info' | 'schema' | 'styles' | 'cta' | 'preview'>('info')
   const [previewData, setPreviewData] = useState<Record<string, any>>({})
   const [schemaError, setSchemaError] = useState<string | null>(null)
   const [stylesError, setStylesError] = useState<string | null>(null)
+  const [ctaError, setCtaError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -38,7 +47,17 @@ export default function AdminBlocksPage() {
       return
     }
     loadBlocks()
+    loadPricingPlans()
   }, [router])
+
+  const loadPricingPlans = async () => {
+    try {
+      const plans = await billingService.getPricingPlans()
+      setPricingPlans(Array.isArray(plans) ? plans : plans.results || [])
+    } catch (error: any) {
+      console.error('Erreur chargement plans tarifaires:', error)
+    }
+  }
 
   const loadBlocks = async () => {
     try {
@@ -83,6 +102,14 @@ export default function AdminBlocksPage() {
     }
     setStylesError(null)
 
+    const ctaValidation = validateJSON(formData.call_to_action)
+    if (!ctaValidation.valid) {
+      setCtaError(ctaValidation.error || 'JSON invalide')
+      toast.error('Le call-to-action JSON est invalide')
+      return
+    }
+    setCtaError(null)
+
     try {
       const dataToSend = {
         name: formData.name,
@@ -92,8 +119,9 @@ export default function AdminBlocksPage() {
         description: formData.description || '',
         schema: schemaValidation.data,
         default_styles: stylesValidation.data,
+        call_to_action: ctaValidation.data,
+        available_plans: formData.available_plans,
         is_active: formData.is_active,
-        requires_premium: formData.requires_premium,
         order: formData.order,
       }
 
@@ -123,8 +151,9 @@ export default function AdminBlocksPage() {
       description: block.description || '',
       schema: JSON.stringify(block.schema || {}, null, 2),
       default_styles: JSON.stringify(block.default_styles || {}, null, 2),
+      call_to_action: JSON.stringify(block.call_to_action || {}, null, 2),
+      available_plans: block.available_plans || [],
       is_active: block.is_active,
-      requires_premium: block.requires_premium,
       order: block.order,
     })
     setPreviewData(block.schema || {})
@@ -162,14 +191,16 @@ export default function AdminBlocksPage() {
       description: '',
       schema: '{}',
       default_styles: '{}',
+      call_to_action: '{}',
+      available_plans: [],
       is_active: true,
-      requires_premium: false,
       order: 0,
     })
     setActiveTab('info')
     setPreviewData({})
     setSchemaError(null)
     setStylesError(null)
+    setCtaError(null)
   }
 
   const updatePreview = () => {
@@ -201,6 +232,23 @@ export default function AdminBlocksPage() {
     }
     return labels[category] || category
   }
+
+  // Filter blocks based on filters
+  const filteredBlocks = blocks.filter((block) => {
+    // Status filter
+    if (filters.status === 'active' && !block.is_active) return false
+    if (filters.status === 'inactive' && block.is_active) return false
+
+    // Premium filter
+    const isPremium = block.available_plans && block.available_plans.length > 0
+    if (filters.premium === 'premium' && !isPremium) return false
+    if (filters.premium === 'free' && isPremium) return false
+
+    // Category filter
+    if (filters.category !== 'all' && block.category !== filters.category) return false
+
+    return true
+  })
 
   // Render preview based on schema
   const renderPreview = () => {
@@ -323,6 +371,17 @@ export default function AdminBlocksPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setActiveTab('cta')}
+                  className={`py-2 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
+                    activeTab === 'cta'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                  }`}
+                >
+                  Call-to-Action
+                </button>
+                <button
+                  type="button"
                   onClick={() => {
                     setActiveTab('preview')
                     updatePreview()
@@ -421,19 +480,46 @@ export default function AdminBlocksPage() {
                     className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Premium
+                    Plans tarifaires requis
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.requires_premium}
-                      onChange={(e) => setFormData({ ...formData, requires_premium: e.target.checked })}
-                      className="mr-2"
-                    />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Nécessite un plan premium</span>
-                  </label>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                    Si aucun plan n'est sélectionné, le bloc est gratuit (accessible à tous)
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {pricingPlans.map((plan) => (
+                      <label key={plan.id} className="flex items-center p-3 border dark:bg-gray-700 dark:border-gray-600 border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.available_plans.includes(plan.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({
+                                ...formData,
+                                available_plans: [...formData.available_plans, plan.id],
+                              })
+                            } else {
+                              setFormData({
+                                ...formData,
+                                available_plans: formData.available_plans.filter(id => id !== plan.id),
+                              })
+                            }
+                          }}
+                          className="mr-2"
+                        />
+                        <div>
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{plan.name}</span>
+                          <span className="block text-xs text-gray-500 dark:text-gray-400">{plan.price_monthly}€/mois</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  {pricingPlans.length === 0 && (
+                    <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                      ⚠️ Aucun plan tarifaire trouvé. Créez des plans dans la section Facturation.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -535,6 +621,65 @@ export default function AdminBlocksPage() {
               </div>
             )}
 
+            {/* Call-to-Action Tab */}
+            {activeTab === 'cta' && (
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Configuration Call-to-Action (JSON)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const validation = validateJSON(formData.call_to_action)
+                        if (!validation.valid) {
+                          setCtaError(validation.error || 'JSON invalide')
+                        } else {
+                          setCtaError(null)
+                        }
+                      }}
+                      className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Valider JSON
+                    </button>
+                  </div>
+                  {ctaError && (
+                    <div className="mb-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-600 dark:text-red-400">
+                      Erreur JSON: {ctaError}
+                    </div>
+                  )}
+                  <textarea
+                    value={formData.call_to_action}
+                    onChange={(e) => {
+                      setFormData({ ...formData, call_to_action: e.target.value })
+                      setCtaError(null)
+                    }}
+                    rows={20}
+                    className="w-full px-3 sm:px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-xs sm:text-sm"
+                    placeholder='{"enabled": true, "type": "button", "default_text": "Cliquez ici", "default_url": "#", "styles": {"primary": {"background": "#3B82F6", "color": "#FFFFFF"}}}'
+                  />
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    💡 Configurez les call-to-action (boutons, liens) pour ce bloc. Exemple pour un bouton :
+                  </p>
+                  <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-x-auto">
+{`{
+  "enabled": true,
+  "type": "button",
+  "default_text": "Cliquez ici",
+  "default_url": "#",
+  "styles": {
+    "primary": {
+      "background": "#3B82F6",
+      "color": "#FFFFFF"
+    }
+  }
+}`}
+                  </pre>
+                </div>
+              </div>
+            )}
+
             {/* Preview Tab */}
             {activeTab === 'preview' && (
               <div className="space-y-4">
@@ -573,20 +718,78 @@ export default function AdminBlocksPage() {
         </div>
       )}
 
+      {/* Filters */}
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-6 mb-6">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Filtres</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Status Filter */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Statut
+            </label>
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value as 'all' | 'active' | 'inactive' })}
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">Tous</option>
+              <option value="active">Actifs</option>
+              <option value="inactive">Inactifs</option>
+            </select>
+          </div>
+
+          {/* Premium Filter */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Premium
+            </label>
+            <select
+              value={filters.premium}
+              onChange={(e) => setFilters({ ...filters, premium: e.target.value as 'all' | 'premium' | 'free' })}
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">Tous</option>
+              <option value="premium">Premium (avec plans requis)</option>
+              <option value="free">Gratuit (sans plans requis)</option>
+            </select>
+          </div>
+
+          {/* Category Filter */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Catégorie
+            </label>
+            <select
+              value={filters.category}
+              onChange={(e) => setFilters({ ...filters, category: e.target.value as 'all' | 'content' | 'layout' | 'media' | 'custom' })}
+              className="w-full px-3 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">Toutes</option>
+              <option value="content">Contenu</option>
+              <option value="layout">Mise en page</option>
+              <option value="media">Médias</option>
+              <option value="custom">Personnalisé</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Blocks List */}
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
         <ResponsiveTable
-          headers={['Nom', 'Label', 'Catégorie', 'Icône', 'Premium', 'Statut', 'Ordre', 'Actions']}
+          headers={['Nom', 'Label', 'Catégorie', 'Icône', 'Plans requis', 'Statut', 'Ordre', 'Actions']}
           emptyMessage="Aucun bloc pour le moment"
         >
-          {blocks.length === 0 ? (
+          {filteredBlocks.length === 0 ? (
             <tr>
               <td colSpan={8} className="px-3 sm:px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                Aucun bloc pour le moment. Créez-en un nouveau !
+                {blocks.length === 0 
+                  ? "Aucun bloc pour le moment. Créez-en un nouveau !"
+                  : "Aucun bloc ne correspond aux filtres sélectionnés."}
               </td>
             </tr>
           ) : (
-            blocks.map((block) => (
+            filteredBlocks.map((block) => (
               <tr key={block.id} className="hover:bg-gray-50 dark:bg-gray-900">
                 <td className="px-3 sm:px-6 py-4">
                   <code className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded break-all">
@@ -614,11 +817,15 @@ export default function AdminBlocksPage() {
                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-2xl">
                   {block.icon}
                 </td>
-                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                  {block.requires_premium ? (
-                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                      Premium
-                    </span>
+                <td className="px-3 sm:px-6 py-4">
+                  {block.plan_names && block.plan_names.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {block.plan_names.map((planName, idx) => (
+                        <span key={idx} className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {planName}
+                        </span>
+                      ))}
+                    </div>
                   ) : (
                     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                       Gratuit

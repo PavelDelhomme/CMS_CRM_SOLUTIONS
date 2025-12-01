@@ -17,7 +17,7 @@ class Tenant(TenantMixin):
     PLAN_CHOICES = [
         ('starter', 'Starter'),
         ('business', 'Business'),
-        ('enterprise', 'Enterprise'),
+        ('enterprise', 'Entreprise'),
     ]
     
     STATUS_CHOICES = [
@@ -112,6 +112,23 @@ class Tenant(TenantMixin):
 
     def is_trial(self):
         return self.status == 'trial'
+    
+    def is_trial_expired(self):
+        """Check if trial has expired"""
+        if not self.is_trial():
+            return False
+        if not self.trial_ends_at:
+            return False
+        return timezone.now() > self.trial_ends_at
+    
+    def get_trial_days_remaining(self):
+        """Get number of days remaining in trial"""
+        if not self.is_trial() or not self.trial_ends_at:
+            return None
+        now = timezone.now()
+        if now > self.trial_ends_at:
+            return 0
+        return (self.trial_ends_at - now).days
 
 
 class User(GuardianUserMixin, AbstractUser):

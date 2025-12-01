@@ -80,9 +80,9 @@ export default function TenantBillingPage() {
       // Direct subscription creation/update
       // Note: createSubscription will update if subscription already exists
       await billingService.createSubscription({
-        plan_id: planId,
+        plan: { id: planId } as any,
         // tenant_id not needed - backend uses user's tenant automatically
-      })
+      } as any)
       loadBillingData()
       toast.success('Plan mis à jour avec succès !')
     } catch (error: any) {
@@ -95,9 +95,9 @@ export default function TenantBillingPage() {
       try {
         // Note: createSubscription will update if subscription already exists
         await billingService.createSubscription({
-          plan_id: checkoutPlanId,
+          plan: { id: checkoutPlanId } as any,
           // tenant_id not needed - backend uses user's tenant automatically
-        })
+        } as any)
         loadBillingData()
         toast.success('Plan mis à jour avec succès !')
       } catch (error: any) {

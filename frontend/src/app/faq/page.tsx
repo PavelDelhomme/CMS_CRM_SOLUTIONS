@@ -22,7 +22,7 @@ export default function FAQPage() {
     {
       category: 'general',
       question: 'Combien coûte VTCBuilder ?',
-      answer: 'Nous proposons plusieurs plans tarifaires adaptés à vos besoins, allant de 19€/mois pour le plan Starter jusqu\'à 79€/mois pour le plan Enterprise. Tous les plans incluent un essai gratuit de 14 jours, sans engagement.'
+      answer: 'Nous proposons plusieurs plans tarifaires adaptés à vos besoins, allant de 19€/mois pour le plan Starter jusqu\'à 79€/mois pour le plan Entreprise. Tous les plans incluent un essai gratuit de 14 jours, sans engagement.'
     },
     {
       category: 'account',
@@ -42,12 +42,12 @@ export default function FAQPage() {
     {
       category: 'features',
       question: 'Puis-je utiliser mon propre nom de domaine ?',
-      answer: 'Oui, c\'est possible avec les plans Business et Enterprise. Vous pouvez acheter un nom de domaine directement depuis l\'interface ou connecter un domaine existant. Nous incluons le certificat SSL gratuitement.'
+      answer: 'Oui, c\'est possible avec les plans Business et Entreprise. Vous pouvez acheter un nom de domaine directement depuis l\'interface ou connecter un domaine existant. Nous incluons le certificat SSL gratuitement.'
     },
     {
       category: 'features',
       question: 'Combien d\'utilisateurs puis-je ajouter ?',
-      answer: 'Le nombre d\'utilisateurs dépend de votre plan : Starter (1 utilisateur), Business (5 utilisateurs), Enterprise (illimité). Chaque plan peut être adapté selon vos besoins spécifiques.'
+      answer: 'Le nombre d\'utilisateurs dépend de votre plan : Starter (1 utilisateur), Business (5 utilisateurs), Entreprise (illimité). Chaque plan peut être adapté selon vos besoins spécifiques.'
     },
     {
       category: 'features',
@@ -87,7 +87,7 @@ export default function FAQPage() {
     {
       category: 'support',
       question: 'Quel type de support proposez-vous ?',
-      answer: 'Nous offrons un support par email pour tous les utilisateurs, avec réponse sous 24h. Les plans Business et Enterprise bénéficient d\'un support prioritaire et d\'une assistance téléphonique.'
+      answer: 'Nous offrons un support par email pour tous les utilisateurs, avec réponse sous 24h. Les plans Business et Entreprise bénéficient d\'un support prioritaire et d\'une assistance téléphonique.'
     },
     {
       category: 'support',

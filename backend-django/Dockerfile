@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     pkg-config \
     netcat-openbsd \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Create system user
@@ -30,7 +31,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Create necessary directories
-RUN mkdir -p /app/media /app/static /app/logs
+RUN mkdir -p /app/media /app/static /app/logs /var/log
 
 # Set ownership
 RUN chown -R $user:$user /app

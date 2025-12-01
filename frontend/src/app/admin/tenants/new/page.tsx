@@ -101,7 +101,7 @@ export default function NewTenantPage() {
                 >
                   <option value="starter">Starter</option>
                   <option value="business">Business</option>
-                  <option value="enterprise">Enterprise</option>
+                  <option value="enterprise">Entreprise</option>
                 </select>
               </div>
 

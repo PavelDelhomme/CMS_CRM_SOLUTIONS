@@ -27,14 +27,38 @@ class BlockType(models.Model):
     # Styles par défaut
     default_styles = models.JSONField(default=dict, blank=True, help_text="Styles par défaut du bloc")
     
+    # Call-to-action configuration (pour les boutons, liens, etc.)
+    call_to_action = models.JSONField(
+        default=dict, 
+        blank=True, 
+        help_text="Configuration des call-to-action (boutons, liens, etc.)"
+    )
+    
+    # Plans tarifaires qui donnent accès à ce bloc
+    # Si vide, accessible à tous (gratuit)
+    available_plans = models.ManyToManyField(
+        'billing.PricingPlan',
+        related_name='available_blocks',
+        blank=True,
+        help_text="Plans tarifaires qui donnent accès à ce bloc. Si vide, accessible à tous."
+    )
+    
     # Configuration
     is_active = models.BooleanField(default=True, help_text="Activer/désactiver ce type de bloc")
-    requires_premium = models.BooleanField(default=False, help_text="Nécessite un plan premium")
     order = models.IntegerField(default=0, help_text="Ordre d'affichage dans la palette")
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def is_available_for_plan(self, plan):
+        """
+        Vérifie si ce bloc est disponible pour un plan donné.
+        Si aucun plan n'est associé, le bloc est gratuit (accessible à tous).
+        """
+        if not self.available_plans.exists():
+            return True
+        return self.available_plans.filter(id=plan.id).exists()
     
     class Meta:
         app_label = 'blocks'

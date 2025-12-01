@@ -169,7 +169,7 @@ export default function EditUserPage() {
     try {
       await userService.update(userId, {
         password: passwordData.new_password,
-      })
+      } as any)
       setSuccess('Mot de passe changé avec succès !')
       setPasswordData({ new_password: '', confirm_password: '' })
     } catch (error: any) {

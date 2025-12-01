@@ -53,6 +53,22 @@ const DEFAULT_PUBLIC_PAGES: Omit<PublicPage, 'id'>[] = [
     is_active: true,
     order: 4,
   },
+  {
+    slug: 'legal/terms',
+    title: 'Conditions Générales de Vente',
+    description: 'CGV de VTCBuilder',
+    blocks: [],
+    is_active: true,
+    order: 5,
+  },
+  {
+    slug: 'legal/privacy',
+    title: 'Politique de Confidentialité',
+    description: 'Politique de confidentialité de VTCBuilder',
+    blocks: [],
+    is_active: true,
+    order: 6,
+  },
 ]
 
 export default function PublicPagesManagement() {

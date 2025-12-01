@@ -12,8 +12,10 @@ export interface BlockType {
   description?: string;
   schema: Record<string, any>;
   default_styles: Record<string, any>;
+  call_to_action?: Record<string, any>;
+  available_plans?: number[];
+  plan_names?: string[];
   is_active: boolean;
-  requires_premium: boolean;
   order: number;
   created_at: string;
   updated_at: string;

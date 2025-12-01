@@ -17,6 +17,8 @@ const PAGE_TITLES: Record<string, string> = {
   docs: 'Documentation',
   contact: 'Contact',
   faq: 'FAQ',
+  'legal/terms': 'Conditions Générales de Vente',
+  'legal/privacy': 'Politique de Confidentialité',
 }
 
 export default function EditPublicPage() {
@@ -29,17 +31,19 @@ export default function EditPublicPage() {
   const [blockTypes, setBlockTypes] = useState<BlockType[]>([])
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDescription, setMetaDescription] = useState('')
+  const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [showPreview, setShowPreview] = useState(true)
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
 
   // Sauvegarde automatique
   const { isSaving: isAutoSaving, lastSaved, updateLastSaved } = useAutoSave({
-    data: { blocks, metaTitle, metaDescription },
+    data: { blocks, metaTitle, metaDescription, status },
     onSave: async (data) => {
       const settingsData: any = {}
       
       if (pageSlug === 'home') {
         settingsData.public_homepage_blocks = data.blocks
+        settingsData.public_homepage_status = data.status
         settingsData.public_homepage_meta_title = data.metaTitle
         settingsData.public_homepage_meta_description = data.metaDescription
       } else {
@@ -88,6 +92,7 @@ export default function EditPublicPage() {
       // Load page data based on slug
       if (pageSlug === 'home') {
         setBlocks(data.public_homepage_blocks || [])
+        setStatus(data.public_homepage_status || 'draft')
         setMetaTitle(data.public_homepage_meta_title || 'VTCBuilder - Le WordPress des chauffeurs VTC')
         setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site VTC professionnel')
       } else {
@@ -113,6 +118,7 @@ export default function EditPublicPage() {
       
       if (pageSlug === 'home') {
         settingsData.public_homepage_blocks = blocks
+        settingsData.public_homepage_status = status
         settingsData.public_homepage_meta_title = metaTitle
         settingsData.public_homepage_meta_description = metaDescription
       } else {
@@ -143,7 +149,7 @@ export default function EditPublicPage() {
     } finally {
       setSaving(false)
     }
-  }, [blocks, metaTitle, metaDescription, pageSlug, updateLastSaved])
+  }, [blocks, metaTitle, metaDescription, status, pageSlug, updateLastSaved])
 
   if (loading) {
     return (
@@ -274,6 +280,22 @@ export default function EditPublicPage() {
       <div className="flex flex-col h-[calc(100vh-180px)]">
         {/* SEO Settings Bar */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex gap-4 items-center flex-wrap">
+          {pageSlug === 'home' && (
+            <div className="min-w-[150px]">
+              <label htmlFor="status" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Statut
+              </label>
+              <select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
+                className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="draft">Brouillon</option>
+                <option value="published">Publié</option>
+              </select>
+            </div>
+          )}
           <div className="flex-1 min-w-[200px]">
             <label htmlFor="meta_title" className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
               Titre SEO

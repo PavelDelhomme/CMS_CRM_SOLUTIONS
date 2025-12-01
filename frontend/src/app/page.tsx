@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import authService from '@/services/auth.service'
 import billingService, { PricingPlan } from '@/services/billing.service'
@@ -15,7 +14,6 @@ import { useTheme } from '@/contexts/ThemeContext'
 import BlockPreview from '@/components/editor/BlockPreview'
 
 export default function HomePage() {
-  const router = useRouter()
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [isTenantDomain, setIsTenantDomain] = useState(false)
@@ -48,9 +46,13 @@ export default function HomePage() {
           setHomepageStatus(settings.public_homepage_status || 'draft')
           // Utiliser les blocs seulement si publié
           setUseBlocks(settings.public_homepage_status === 'published')
+        } else {
+          // Si pas de blocs, ne pas utiliser l'éditeur
+          setUseBlocks(false)
         }
       } catch (error) {
         console.error('Erreur chargement blocs homepage:', error)
+        setUseBlocks(false)
       }
     }
     if (!isTenantSubdomain() && !isTenantDomain) {

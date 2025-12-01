@@ -109,6 +109,14 @@ export default function RegisterPage() {
         localStorage.setItem('user', JSON.stringify(result.user))
       }
 
+      // If setup intent is provided, redirect to card registration
+      if (result.setup_intent_client_secret && result.subscription_id) {
+        localStorage.setItem('setup_intent_client_secret', result.setup_intent_client_secret)
+        localStorage.setItem('subscription_id', result.subscription_id.toString())
+        router.push(`/register/complete-payment?client_secret=${result.setup_intent_client_secret}&subscription_id=${result.subscription_id}`)
+        return
+      }
+
       toast.success('Inscription réussie ! Un email de confirmation a été envoyé.')
       
       // Redirect to tenant admin
@@ -158,7 +166,7 @@ export default function RegisterPage() {
             Créez votre site VTC en quelques minutes
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Choisissez votre plan et démarrez votre essai gratuit de 14 jours. Aucune carte bancaire requise.
+            Choisissez votre plan et démarrez votre essai gratuit de 14 jours. Vous devrez enregistrer votre carte bancaire, mais aucun prélèvement ne sera effectué pendant l'essai.
           </p>
         </div>
 
@@ -307,7 +315,7 @@ export default function RegisterPage() {
                   <p className={`text-sm ${
                     resolvedTheme === 'dark' ? 'text-blue-200' : 'text-blue-800'
                   }`}>
-                    <strong>Essai gratuit de 14 jours</strong> - Aucune carte bancaire requise. Vous pouvez annuler à tout moment.
+                    <strong>Essai gratuit de 14 jours</strong> - Enregistrez votre carte bancaire, mais aucun prélèvement ne sera effectué pendant l'essai. Vous pouvez annuler à tout moment.
                   </p>
                 </div>
               </div>

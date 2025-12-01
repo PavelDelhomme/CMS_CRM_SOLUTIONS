@@ -25,6 +25,8 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             'email_from',
             'default_trial_days',
             'enable_trial',
+            'trial_notification_days',
+            'trial_auto_expire',
             'password_min_length',
             'require_email_verification',
             'session_timeout_minutes',
@@ -43,8 +45,10 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             'maintenance_mode',
             'maintenance_message',
             'public_homepage_blocks',
+            'public_homepage_status',
             'public_homepage_meta_title',
             'public_homepage_meta_description',
+            'public_pages',
             'stripe_enabled',
             'stripe_public_key',
             'stripe_secret_key',
@@ -77,6 +81,26 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
             _ = instance.public_homepage_meta_description
         except (AttributeError, Exception):
             data['public_homepage_meta_description'] = 'Plateforme complète pour créer et gérer votre site VTC professionnel'
+        
+        try:
+            _ = instance.public_homepage_status
+        except (AttributeError, Exception):
+            data['public_homepage_status'] = 'draft'
+        
+        try:
+            _ = instance.trial_notification_days
+        except (AttributeError, Exception):
+            data['trial_notification_days'] = [7, 3, 1, 0]
+        
+        try:
+            _ = instance.trial_auto_expire
+        except (AttributeError, Exception):
+            data['trial_auto_expire'] = True
+        
+        try:
+            _ = instance.public_pages
+        except (AttributeError, Exception):
+            data['public_pages'] = {}
         
         # Handle Stripe fields gracefully
         try:

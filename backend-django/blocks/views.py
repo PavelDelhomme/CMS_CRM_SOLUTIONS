@@ -68,7 +68,10 @@ class BlockTypeViewSet(CORSMixin, viewsets.ModelViewSet):
             if not (hasattr(user, 'is_super_admin') and user.is_super_admin()):
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("Only super admin can create block types")
-            serializer.save()
+            instance = serializer.save()
+            # Handle available_plans ManyToMany
+            if 'available_plans' in serializer.validated_data:
+                instance.available_plans.set(serializer.validated_data['available_plans'])
         except Exception as e:
             logger.error(f"Error in BlockTypeViewSet.perform_create: {e}", exc_info=True)
             raise
@@ -80,7 +83,10 @@ class BlockTypeViewSet(CORSMixin, viewsets.ModelViewSet):
             if not (hasattr(user, 'is_super_admin') and user.is_super_admin()):
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("Only super admin can update block types")
-            serializer.save()
+            instance = serializer.save()
+            # Handle available_plans ManyToMany
+            if 'available_plans' in serializer.validated_data:
+                instance.available_plans.set(serializer.validated_data['available_plans'])
         except Exception as e:
             logger.error(f"Error in BlockTypeViewSet.perform_update: {e}", exc_info=True)
             raise

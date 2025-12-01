@@ -52,10 +52,13 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
       }
     }
 
-    if (user) {
+    if (user && user.tenant_id) {
       loadEnabledFeatures()
+    } else if (user) {
+      // User without tenant_id, enable all features by default
+      setEnabledFeatures(['pages', 'media', 'services', 'bookings', 'users', 'templates', 'billing'])
     }
-  }, [user])
+  }, [user?.tenant_id]) // Only depend on tenant_id to avoid infinite loops
 
   const menuItems: MenuItem[] = [
     {

@@ -800,10 +800,8 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
               <div key={childBlock.id || i} className="min-h-[100px]">
                 <BlockPreviewRenderer
                   block={childBlock}
-                  blockType={blockTypes.find((bt: BlockType) => bt.name === childBlock.type)}
-                  isSelected={false}
-                  isInteractive={false}
-                  onClick={() => {}}
+                  blockType={blockTypes?.find((bt: BlockType) => bt.name === childBlock.type)}
+                  blockTypes={blockTypes}
                 />
               </div>
             ))
@@ -1960,7 +1958,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
       return (
         <div
           style={{
-            ...blockStyles,
+            ...wrapperStyles,
             backgroundImage: block.data.background_image ? `url(${block.data.background_image})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -2057,7 +2055,7 @@ function BlockPreviewRenderer({ block, blockType, blockTypes }: { block: Block; 
                 <div key={childBlock.id || i}>
                   <BlockPreviewRenderer
                     block={childBlock}
-                    blockType={blockTypes.find((bt: BlockType) => bt.name === childBlock.type)}
+                    blockType={blockTypes?.find((bt: BlockType) => bt.name === childBlock.type)}
                     blockTypes={blockTypes}
                   />
                 </div>

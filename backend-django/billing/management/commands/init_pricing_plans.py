@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 'is_featured': True,  # Plan populaire/recommandé
             },
             {
-                'name': 'Enterprise',
+                'name': 'Entreprise',
                 'slug': 'enterprise',
                 'description': 'Pour les grandes entreprises VTC. Tout ce dont vous avez besoin pour gérer une flotte importante.',
                 'price_monthly': 129.90,

@@ -11,10 +11,10 @@ from datetime import timedelta
 from decimal import Decimal
 import logging
 from django.conf import settings
-from .models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod
+from .models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod, InvoiceTemplate
 from .serializers import (
     PricingPlanSerializer, SubscriptionSerializer,
-    InvoiceSerializer, PaymentSerializer, PaymentMethodSerializer
+    InvoiceSerializer, PaymentSerializer, PaymentMethodSerializer, InvoiceTemplateSerializer
 )
 from tenants.models import Tenant
 
@@ -27,11 +27,17 @@ def add_cors_headers(response, request):
         origin = request.META.get('HTTP_ORIGIN')
         if origin:
             if settings.DEBUG:
-                if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                # En développement, autoriser tous les localhost, 127.0.0.1 et 192.168.1.134
+                if (origin.startswith('http://localhost') or 
+                    origin.startswith('http://127.0.0.1') or
+                    origin.startswith('http://192.168.1.134') or
+                    origin.startswith('https://localhost') or
+                    origin.startswith('https://127.0.0.1') or
+                    origin.startswith('https://192.168.1.134')):
                     response['Access-Control-Allow-Origin'] = origin
                     response['Access-Control-Allow-Credentials'] = 'true'
-                    response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
-                    response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+                    response['Access-Control-Allow-Methods'] = ', '.join(settings.CORS_ALLOW_METHODS)
+                    response['Access-Control-Allow-Headers'] = ', '.join(settings.CORS_ALLOW_HEADERS)
             else:
                 if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
                     response['Access-Control-Allow-Origin'] = origin
@@ -162,19 +168,68 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Filter subscriptions based on user role"""
+        """Filter subscriptions based on user role and query parameters"""
         try:
             user = self.request.user
+            queryset = None
             
             try:
                 if user.is_super_admin():
-                    return Subscription.objects.all().order_by('-created_at', '-id')
+                    queryset = Subscription.objects.all()
                 elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
-                    return Subscription.objects.filter(tenant=user.tenant).order_by('-created_at', '-id')
+                    queryset = Subscription.objects.filter(tenant=user.tenant)
+                else:
+                    return Subscription.objects.none()
             except Exception as e:
                 logger.error(f"Error checking user permissions in SubscriptionViewSet: {e}", exc_info=True)
+                return Subscription.objects.none()
             
-            return Subscription.objects.none()
+            if queryset is None:
+                return Subscription.objects.none()
+            
+            # Apply filters from query parameters
+            tenant_id = self.request.query_params.get('tenant_id')
+            if tenant_id:
+                try:
+                    queryset = queryset.filter(tenant_id=int(tenant_id))
+                except (ValueError, TypeError):
+                    pass
+            
+            status = self.request.query_params.get('status')
+            if status:
+                queryset = queryset.filter(status=status)
+            
+            plan_id = self.request.query_params.get('plan_id')
+            if plan_id:
+                try:
+                    queryset = queryset.filter(plan_id=int(plan_id))
+                except (ValueError, TypeError):
+                    pass
+            
+            billing_cycle = self.request.query_params.get('billing_cycle')
+            if billing_cycle:
+                queryset = queryset.filter(billing_cycle=billing_cycle)
+            
+            # Apply sorting
+            order_by = self.request.query_params.get('order_by', '-created_at')
+            ordering = self.request.query_params.get('ordering', 'desc')
+            
+            # Validate order_by field
+            allowed_order_fields = ['created_at', 'current_period_start', 'current_period_end', 'status', 'billing_cycle']
+            if order_by.lstrip('-') not in allowed_order_fields:
+                order_by = '-created_at'
+            
+            # Apply ordering direction
+            if ordering == 'asc':
+                if order_by.startswith('-'):
+                    order_by = order_by.lstrip('-')
+            elif ordering == 'desc':
+                if not order_by.startswith('-'):
+                    order_by = f'-{order_by}'
+            
+            queryset = queryset.order_by(order_by, '-id')
+            
+            return queryset
         except Exception as e:
             logger.error(f"Error in SubscriptionViewSet.get_queryset: {e}", exc_info=True)
             return Subscription.objects.none()
@@ -335,9 +390,16 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
                 return error_response
             
             # Check if tenant already has a subscription
-            if Subscription.objects.filter(tenant=tenant).exists():
-                # If subscription exists, update it instead (change plan)
+            # Un tenant ne peut avoir qu'un seul abonnement à la fois (OneToOneField)
+            existing_subscription = None
+            try:
                 existing_subscription = Subscription.objects.get(tenant=tenant)
+            except Subscription.DoesNotExist:
+                pass
+            
+            if existing_subscription:
+                # Si un abonnement existe déjà, on le met à jour au lieu d'en créer un nouveau
+                # Cela permet de changer de plan ou de réactiver un abonnement annulé
                 plan = serializer.validated_data.get('plan')
                 if not plan:
                     error_response = Response(
@@ -347,36 +409,78 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
                     add_cors_headers(error_response, request)
                     return error_response
                 
-                # Update existing subscription
-                existing_subscription.plan = plan
-                billing_cycle = serializer.validated_data.get('billing_cycle', existing_subscription.billing_cycle)
-                existing_subscription.billing_cycle = billing_cycle
-                
-                # Reset dates if starting new billing cycle
-                now = timezone.now()
-                if billing_cycle == 'monthly':
-                    existing_subscription.current_period_end = now + timedelta(days=30)
+                # Si l'abonnement est actif ou en trial, on ne peut que le mettre à jour (changement de plan)
+                if existing_subscription.status in ['active', 'trial']:
+                    # Mise à jour du plan et du cycle de facturation
+                    existing_subscription.plan = plan
+                    billing_cycle = serializer.validated_data.get('billing_cycle', existing_subscription.billing_cycle)
+                    existing_subscription.billing_cycle = billing_cycle
+                    
+                    # Réinitialiser les dates si changement de cycle
+                    now = timezone.now()
+                    if billing_cycle == 'monthly':
+                        existing_subscription.current_period_end = now + timedelta(days=30)
+                    else:
+                        existing_subscription.current_period_end = now + timedelta(days=365)
+                    existing_subscription.current_period_start = now
+                    
+                    existing_subscription.save()
+                    
+                    headers = self.get_success_headers(serializer.data)
+                    response = Response(
+                        SubscriptionSerializer(existing_subscription).data,
+                        status=status.HTTP_200_OK,
+                        headers=headers
+                    )
+                    add_cors_headers(response, request)
+                    return response
                 else:
-                    existing_subscription.current_period_end = now + timedelta(days=365)
-                existing_subscription.current_period_start = now
-                
-                # Reactivate if cancelled
-                if existing_subscription.status == 'cancelled':
-                    existing_subscription.status = serializer.validated_data.get('status', 'active')
+                    # Si l'abonnement est annulé ou expiré, on peut le réactiver
+                    # Réactiver l'abonnement avec le nouveau plan
+                    existing_subscription.plan = plan
+                    billing_cycle = serializer.validated_data.get('billing_cycle', 'monthly')
+                    existing_subscription.billing_cycle = billing_cycle
+                    
+                    # Réinitialiser les dates
+                    now = timezone.now()
+                    status_value = serializer.validated_data.get('status', 'active')
+                    
+                    # Set trial dates if status is trial
+                    trial_start = None
+                    trial_end = None
+                    if status_value == 'trial':
+                        try:
+                            from settings_app.models import SystemSettings
+                            settings = SystemSettings.get_settings()
+                            trial_days = settings.default_trial_days if settings.enable_trial else 0
+                        except Exception:
+                            trial_days = 14
+                        
+                        trial_start = now
+                        trial_end = now + timedelta(days=trial_days)
+                        existing_subscription.trial_start = trial_start
+                        existing_subscription.trial_end = trial_end
+                        existing_subscription.current_period_start = trial_start
+                        existing_subscription.current_period_end = trial_end
+                    else:
+                        if billing_cycle == 'monthly':
+                            existing_subscription.current_period_end = now + timedelta(days=30)
+                        else:
+                            existing_subscription.current_period_end = now + timedelta(days=365)
+                        existing_subscription.current_period_start = now
+                    
+                    existing_subscription.status = status_value
                     existing_subscription.cancelled_at = None
-                else:
-                    existing_subscription.status = serializer.validated_data.get('status', existing_subscription.status)
-                
-                existing_subscription.save()
-                
-                headers = self.get_success_headers(serializer.data)
-                response = Response(
-                    SubscriptionSerializer(existing_subscription).data,
-                    status=status.HTTP_200_OK,
-                    headers=headers
-                )
-                add_cors_headers(response, request)
-                return response
+                    existing_subscription.save()
+                    
+                    headers = self.get_success_headers(serializer.data)
+                    response = Response(
+                        SubscriptionSerializer(existing_subscription).data,
+                        status=status.HTTP_200_OK,
+                        headers=headers
+                    )
+                    add_cors_headers(response, request)
+                    return response
             
             # Get plan from validated data
             plan = serializer.validated_data.get('plan')
@@ -400,8 +504,16 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             current_period_end = now
             
             if status_value == 'trial':
+                # Get trial days from SystemSettings
+                try:
+                    from settings_app.models import SystemSettings
+                    settings = SystemSettings.get_settings()
+                    trial_days = settings.default_trial_days if settings.enable_trial else 0
+                except Exception:
+                    trial_days = 14  # Fallback to 14 days
+                
                 trial_start = now
-                trial_end = now + timedelta(days=14)
+                trial_end = now + timedelta(days=trial_days)
                 current_period_start = trial_start
                 current_period_end = trial_end
             else:
@@ -683,19 +795,75 @@ class InvoiceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Filter invoices based on user role"""
+        """Filter invoices based on user role and query parameters"""
         try:
             user = self.request.user
+            queryset = None
             
             try:
                 if user.is_super_admin():
-                    return Invoice.objects.all()
+                    queryset = Invoice.objects.all()
                 elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
-                    return Invoice.objects.filter(tenant=user.tenant)
+                    queryset = Invoice.objects.filter(tenant=user.tenant)
+                else:
+                    return Invoice.objects.none()
             except Exception as e:
                 logger.error(f"Error checking user permissions in InvoiceViewSet: {e}", exc_info=True)
+                return Invoice.objects.none()
             
-            return Invoice.objects.none()
+            if queryset is None:
+                return Invoice.objects.none()
+            
+            # Apply filters from query parameters
+            tenant_id = self.request.query_params.get('tenant_id')
+            if tenant_id:
+                try:
+                    queryset = queryset.filter(tenant_id=int(tenant_id))
+                except (ValueError, TypeError):
+                    pass
+            
+            status = self.request.query_params.get('status')
+            if status:
+                queryset = queryset.filter(status=status)
+            
+            date_from = self.request.query_params.get('date_from')
+            if date_from:
+                try:
+                    from datetime import datetime
+                    date_from_obj = datetime.strptime(date_from, '%Y-%m-%d')
+                    queryset = queryset.filter(issue_date__gte=date_from_obj)
+                except (ValueError, TypeError):
+                    pass
+            
+            date_to = self.request.query_params.get('date_to')
+            if date_to:
+                try:
+                    from datetime import datetime
+                    date_to_obj = datetime.strptime(date_to, '%Y-%m-%d')
+                    queryset = queryset.filter(issue_date__lte=date_to_obj)
+                except (ValueError, TypeError):
+                    pass
+            
+            # Apply sorting
+            order_by = self.request.query_params.get('order_by', '-created_at')
+            ordering = self.request.query_params.get('ordering', 'desc')
+            
+            # Validate order_by field
+            allowed_order_fields = ['created_at', 'issue_date', 'due_date', 'total', 'status', 'invoice_number']
+            if order_by.lstrip('-') not in allowed_order_fields:
+                order_by = '-created_at'
+            
+            # Apply ordering direction
+            if ordering == 'asc':
+                if order_by.startswith('-'):
+                    order_by = order_by.lstrip('-')
+            elif ordering == 'desc':
+                if not order_by.startswith('-'):
+                    order_by = f'-{order_by}'
+            
+            queryset = queryset.order_by(order_by)
+            
+            return queryset.order_by('-created_at', '-id')
         except Exception as e:
             logger.error(f"Error in InvoiceViewSet.get_queryset: {e}", exc_info=True)
             return Invoice.objects.none()
@@ -830,7 +998,29 @@ L'équipe VTCBuilder
                     status=status.HTTP_403_FORBIDDEN
                 )
         
-        # Generate HTML invoice (can be printed as PDF by browser)
+        # Try to use custom template if available
+        template_id = request.query_params.get('template_id')
+        if template_id:
+            try:
+                template = InvoiceTemplate.objects.get(id=template_id, is_active=True)
+                html_content = template.render(invoice)
+                response = HttpResponse(html_content, content_type='text/html')
+                response['Content-Disposition'] = f'inline; filename="facture-{invoice.invoice_number}.html"'
+                add_cors_headers(response, request)
+                return response
+            except InvoiceTemplate.DoesNotExist:
+                pass  # Fall back to default template
+        
+        # Use default template or system default
+        default_template = InvoiceTemplate.objects.filter(is_default=True, is_active=True).first()
+        if default_template:
+            html_content = default_template.render(invoice)
+            response = HttpResponse(html_content, content_type='text/html')
+            response['Content-Disposition'] = f'inline; filename="facture-{invoice.invoice_number}.html"'
+            add_cors_headers(response, request)
+            return response
+        
+        # Generate HTML invoice (can be printed as PDF by browser) - Default template
         html_content = f"""
 <!DOCTYPE html>
 <html>
@@ -990,6 +1180,7 @@ L'équipe VTCBuilder
         
         response = HttpResponse(html_content, content_type='text/html')
         response['Content-Disposition'] = f'inline; filename="facture-{invoice.invoice_number}.html"'
+        add_cors_headers(response, request)
         return response
 
     @action(detail=False, methods=['post'])
@@ -1065,19 +1256,79 @@ class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Filter payments based on user role"""
+        """Filter payments based on user role and query parameters"""
         try:
             user = self.request.user
+            queryset = None
             
             try:
                 if user.is_super_admin():
-                    return Payment.objects.all()
+                    queryset = Payment.objects.all()
                 elif hasattr(user, 'is_tenant_admin') and user.is_tenant_admin() and hasattr(user, 'tenant') and user.tenant:
-                    return Payment.objects.filter(tenant=user.tenant)
+                    queryset = Payment.objects.filter(tenant=user.tenant)
+                else:
+                    return Payment.objects.none()
             except Exception as e:
                 logger.error(f"Error checking user permissions in PaymentViewSet: {e}", exc_info=True)
+                return Payment.objects.none()
             
-            return Payment.objects.none()
+            if queryset is None:
+                return Payment.objects.none()
+            
+            # Apply filters from query parameters
+            tenant_id = self.request.query_params.get('tenant_id')
+            if tenant_id:
+                try:
+                    queryset = queryset.filter(tenant_id=int(tenant_id))
+                except (ValueError, TypeError):
+                    pass
+            
+            status = self.request.query_params.get('status')
+            if status:
+                queryset = queryset.filter(status=status)
+            
+            payment_method = self.request.query_params.get('payment_method')
+            if payment_method:
+                queryset = queryset.filter(payment_method=payment_method)
+            
+            date_from = self.request.query_params.get('date_from')
+            if date_from:
+                try:
+                    from datetime import datetime
+                    date_from_obj = datetime.strptime(date_from, '%Y-%m-%d')
+                    queryset = queryset.filter(created_at__gte=date_from_obj)
+                except (ValueError, TypeError):
+                    pass
+            
+            date_to = self.request.query_params.get('date_to')
+            if date_to:
+                try:
+                    from datetime import datetime
+                    date_to_obj = datetime.strptime(date_to, '%Y-%m-%d')
+                    queryset = queryset.filter(created_at__lte=date_to_obj)
+                except (ValueError, TypeError):
+                    pass
+            
+            # Apply sorting
+            order_by = self.request.query_params.get('order_by', '-created_at')
+            ordering = self.request.query_params.get('ordering', 'desc')
+            
+            # Validate order_by field
+            allowed_order_fields = ['created_at', 'amount', 'status', 'payment_method']
+            if order_by.lstrip('-') not in allowed_order_fields:
+                order_by = '-created_at'
+            
+            # Apply ordering direction
+            if ordering == 'asc':
+                if order_by.startswith('-'):
+                    order_by = order_by.lstrip('-')
+            elif ordering == 'desc':
+                if not order_by.startswith('-'):
+                    order_by = f'-{order_by}'
+            
+            queryset = queryset.order_by(order_by, '-id')
+            
+            return queryset
         except Exception as e:
             logger.error(f"Error in PaymentViewSet.get_queryset: {e}", exc_info=True)
             return Payment.objects.none()
@@ -1265,7 +1516,7 @@ def billing_stats(request):
             {
                 'method': pm['method'],
                 'count': pm['count'],
-                'total_amount': float(pm['total_amount'] or 0),
+                'total_amount': float(pm.get('total_amount', 0) or 0),
             }
             for pm in payment_methods_dist
         ]
@@ -1407,4 +1658,218 @@ def unpaid_items(request):
             ),
         }
     })
+
+
+class InvoiceTemplateViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing invoice templates"""
+    queryset = InvoiceTemplate.objects.all()
+    serializer_class = InvoiceTemplateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Filter templates based on user role"""
+        try:
+            user = self.request.user
+            
+            if user.is_super_admin():
+                return InvoiceTemplate.objects.all()
+            
+            # Tenant users see only active templates
+            return InvoiceTemplate.objects.filter(is_active=True)
+        except Exception as e:
+            logger.error(f"Error in InvoiceTemplateViewSet.get_queryset: {e}", exc_info=True)
+            return InvoiceTemplate.objects.none()
+    
+    def list(self, request, *args, **kwargs):
+        """List templates with error handling"""
+        try:
+            response = super().list(request, *args, **kwargs)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error in InvoiceTemplateViewSet.list: {e}", exc_info=True)
+            error_response = Response({
+                'error': 'An error occurred while fetching invoice templates',
+                'message': str(e) if settings.DEBUG else 'Unable to load templates'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            add_cors_headers(error_response, request)
+            return error_response
+    
+    def create(self, request, *args, **kwargs):
+        """Only super admin can create templates"""
+        if not request.user.is_super_admin():
+            error_response = Response(
+                {'error': 'Only super admin can create invoice templates'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        response = super().create(request, *args, **kwargs)
+        add_cors_headers(response, request)
+        return response
+    
+    def update(self, request, *args, **kwargs):
+        """Only super admin can update templates"""
+        if not request.user.is_super_admin():
+            error_response = Response(
+                {'error': 'Only super admin can update invoice templates'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        response = super().update(request, *args, **kwargs)
+        add_cors_headers(response, request)
+        return response
+    
+    def destroy(self, request, *args, **kwargs):
+        """Only super admin can delete templates"""
+        if not request.user.is_super_admin():
+            error_response = Response(
+                {'error': 'Only super admin can delete invoice templates'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        response = super().destroy(request, *args, **kwargs)
+        add_cors_headers(response, request)
+        return response
+    
+    @action(detail=True, methods=['post'])
+    def set_default(self, request, pk=None):
+        """Set template as default"""
+        if not request.user.is_super_admin():
+            error_response = Response(
+                {'error': 'Only super admin can set default template'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        template = self.get_object()
+        # Unset other defaults
+        InvoiceTemplate.objects.filter(is_default=True).update(is_default=False)
+        template.is_default = True
+        template.save()
+        
+        response = Response({
+            'status': 'Template set as default',
+            'template': InvoiceTemplateSerializer(template).data
+        })
+        add_cors_headers(response, request)
+        return response
+    
+    @action(detail=True, methods=['get'])
+    def preview(self, request, pk=None):
+        """Preview template with sample invoice data"""
+        template = self.get_object()
+        
+        # Create sample invoice data
+        sample_data = {
+            'invoice_number': 'INV-SAMPLE-001',
+            'tenant_name': 'Exemple Tenant',
+            'tenant_email': 'exemple@tenant.com',
+            'issue_date': '01/01/2024',
+            'due_date': '31/01/2024',
+            'paid_at': None,
+            'subtotal': 100.0,
+            'tax': 20.0,
+            'total': 120.0,
+            'currency': 'EUR',
+            'status': 'Ouverte',
+            'plan_name': 'Plan Business',
+            'subscription_id': 1,
+        }
+        
+        from django.template import Template, Context
+        template_obj = Template(template.html_template)
+        context = Context(sample_data)
+        html = template_obj.render(context)
+        
+        if template.css_styles:
+            html = f'<style>{template.css_styles}</style>\n{html}'
+        
+        response = Response({
+            'html': html,
+            'template': InvoiceTemplateSerializer(template).data
+        })
+        add_cors_headers(response, request)
+        return response
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def complete_card_registration(request):
+    """
+    Complete card registration after setup intent confirmation
+    Attaches payment method to subscription for future payments
+    """
+    try:
+        subscription_id = request.data.get('subscription_id')
+        payment_method_id = request.data.get('payment_method_id')
+        
+        if not subscription_id or not payment_method_id:
+            error_response = Response(
+                {'error': 'subscription_id et payment_method_id sont requis'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        # Get subscription
+        try:
+            subscription = Subscription.objects.get(id=subscription_id)
+        except Subscription.DoesNotExist:
+            error_response = Response(
+                {'error': 'Abonnement non trouvé'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+        
+        # Check user has access to this subscription
+        user = request.user
+        if not user.is_super_admin():
+            if not hasattr(user, 'tenant') or user.tenant != subscription.tenant:
+                error_response = Response(
+                    {'error': 'Accès non autorisé à cet abonnement'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+                add_cors_headers(error_response, request)
+                return error_response
+        
+        # Attach payment method to subscription
+        try:
+            from .stripe_service import StripeService
+            result = StripeService.attach_payment_method_to_subscription(
+                subscription,
+                payment_method_id
+            )
+            
+            response = Response({
+                'message': 'Carte bancaire enregistrée avec succès ! Aucun prélèvement ne sera effectué pendant votre essai gratuit.',
+                'success': True,
+                'subscription': SubscriptionSerializer(subscription).data,
+            }, status=status.HTTP_200_OK)
+            add_cors_headers(response, request)
+            return response
+        except Exception as e:
+            logger.error(f"Error attaching payment method: {e}", exc_info=True)
+            error_response = Response(
+                {'error': f'Erreur lors de l\'enregistrement de la carte : {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            add_cors_headers(error_response, request)
+            return error_response
+            
+    except Exception as e:
+        logger.error(f"Error in complete_card_registration: {e}", exc_info=True)
+        error_response = Response(
+            {'error': f'Erreur lors de l\'enregistrement de la carte : {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+        add_cors_headers(error_response, request)
+        return error_response
 

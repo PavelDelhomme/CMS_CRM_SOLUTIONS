@@ -67,6 +67,7 @@ export interface Payment {
   method: 'card' | 'bank_transfer' | 'paypal' | 'other';
   stripe_payment_intent_id?: string;
   paid_at?: string;
+  created_at?: string;
 }
 
 export interface PaymentMethod {
@@ -134,8 +135,15 @@ class BillingService {
   }
 
   // Subscriptions
-  async getSubscriptions() {
-    const response = await api.get('/subscriptions/');
+  async getSubscriptions(params?: {
+    tenant_id?: string;
+    status?: string;
+    plan_id?: string;
+    billing_cycle?: string;
+    order_by?: string;
+    ordering?: 'asc' | 'desc';
+  }) {
+    const response = await api.get('/subscriptions/', { params });
     return Array.isArray(response.data) ? response.data : response.data.results || [];
   }
 
@@ -190,8 +198,15 @@ class BillingService {
   }
 
   // Invoices
-  async getInvoices() {
-    const response = await api.get('/invoices/');
+  async getInvoices(params?: { 
+    tenant_id?: string; 
+    status?: string; 
+    date_from?: string; 
+    date_to?: string;
+    order_by?: string;
+    ordering?: 'asc' | 'desc';
+  }) {
+    const response = await api.get('/invoices/', { params });
     return Array.isArray(response.data) ? response.data : response.data.results || [];
   }
 
@@ -215,14 +230,19 @@ class BillingService {
     return response.data;
   }
 
-  async downloadInvoicePdf(id: number) {
+  async downloadInvoicePdf(id: number, templateId?: number) {
     // Get token for authentication
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const apiUrl = typeof window !== 'undefined' 
       ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9495')
       : 'http://localhost:9495';
     
-    const response = await fetch(`${apiUrl}/api/invoices/${id}/download_pdf/`, {
+    let url = `${apiUrl}/api/invoices/${id}/download_pdf/`;
+    if (templateId) {
+      url += `?template_id=${templateId}`;
+    }
+    
+    const response = await fetch(url, {
       headers: {
         'Authorization': token ? `Bearer ${token}` : '',
       },
@@ -235,9 +255,53 @@ class BillingService {
     return response.blob();
   }
 
+  // Invoice Templates
+  async getInvoiceTemplates() {
+    const response = await api.get('/invoice-templates/');
+    return Array.isArray(response.data) ? response.data : response.data.results || [];
+  }
+
+  async getInvoiceTemplate(id: number) {
+    const response = await api.get(`/invoice-templates/${id}/`);
+    return response.data;
+  }
+
+  async createInvoiceTemplate(data: Partial<any>) {
+    const response = await api.post('/invoice-templates/', data);
+    return response.data;
+  }
+
+  async updateInvoiceTemplate(id: number, data: Partial<any>) {
+    const response = await api.put(`/invoice-templates/${id}/`, data);
+    return response.data;
+  }
+
+  async deleteInvoiceTemplate(id: number) {
+    const response = await api.delete(`/invoice-templates/${id}/`);
+    return response.data;
+  }
+
+  async setDefaultInvoiceTemplate(id: number) {
+    const response = await api.post(`/invoice-templates/${id}/set_default/`);
+    return response.data;
+  }
+
+  async previewInvoiceTemplate(id: number) {
+    const response = await api.get(`/invoice-templates/${id}/preview/`);
+    return response.data;
+  }
+
   // Payments
-  async getPayments() {
-    const response = await api.get('/payments/');
+  async getPayments(params?: {
+    tenant_id?: string;
+    status?: string;
+    payment_method?: string;
+    date_from?: string;
+    date_to?: string;
+    order_by?: string;
+    ordering?: 'asc' | 'desc';
+  }) {
+    const response = await api.get('/payments/', { params });
     return Array.isArray(response.data) ? response.data : response.data.results || [];
   }
 
@@ -253,7 +317,7 @@ class BillingService {
   }
 
   // Unpaid items (super admin only)
-  async getUnpaidItems(): Promise<UnpaidItems> {
+  async getUnpaidItems(): Promise<any> {
     try {
       const response = await api.get('/billing/unpaid-items/');
       return response.data;

@@ -243,7 +243,7 @@ function TenantUsersTab({ tenantId, tenantName }: { tenantId: number; tenantName
     try {
       await userService.update(userId, {
         password: pwdData.new_password
-      })
+      } as any)
       toast.success('Mot de passe modifié avec succès !')
       handleCancelEditPassword(userId)
       // Optionnel: forcer reconnexion utilisateur si besoin

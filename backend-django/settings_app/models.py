@@ -30,6 +30,15 @@ class SystemSettings(models.Model):
     # Trial Settings
     default_trial_days = models.IntegerField(default=14)
     enable_trial = models.BooleanField(default=True)
+    trial_notification_days = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Jours avant expiration pour envoyer des notifications (ex: [7, 3, 1, 0])"
+    )
+    trial_auto_expire = models.BooleanField(
+        default=True,
+        help_text="Passer automatiquement les trials expirés au statut 'expired'"
+    )
     
     # Security Settings
     password_min_length = models.IntegerField(default=8)
@@ -67,8 +76,21 @@ class SystemSettings(models.Model):
     
     # Public Homepage Content (stored as blocks like WordPress)
     public_homepage_blocks = models.JSONField(default=list, blank=True, help_text="Blocs de contenu pour la page d'accueil publique")
+    public_homepage_status = models.CharField(
+        max_length=20, 
+        choices=[('draft', 'Brouillon'), ('published', 'Publié')], 
+        default='draft',
+        help_text="Statut de publication de la page d'accueil publique"
+    )
     public_homepage_meta_title = models.CharField(max_length=255, blank=True, default='VTCBuilder - Le WordPress des chauffeurs VTC')
     public_homepage_meta_description = models.TextField(blank=True, default='Plateforme complète pour créer et gérer votre site VTC professionnel')
+    
+    # Public Pages (stored as JSON like WordPress)
+    public_pages = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Pages publiques du site (docs, contact, faq, legal/terms, legal/privacy)"
+    )
     
     # Additional Settings (JSON for flexibility)
     extra_settings = models.JSONField(default=dict, blank=True)

@@ -33,11 +33,13 @@ class CORSAlwaysMiddleware(MiddlewareMixin):
             allowed = False
             
             if settings.DEBUG:
-                # En développement, autoriser tous les localhost et 127.0.0.1
+                # En développement, autoriser tous les localhost, 127.0.0.1 et 192.168.1.134
                 if (origin.startswith('http://localhost') or 
                     origin.startswith('http://127.0.0.1') or
+                    origin.startswith('http://192.168.1.134') or
                     origin.startswith('https://localhost') or
-                    origin.startswith('https://127.0.0.1')):
+                    origin.startswith('https://127.0.0.1') or
+                    origin.startswith('https://192.168.1.134')):
                     allowed = True
             else:
                 # En production, vérifier les origines autorisées

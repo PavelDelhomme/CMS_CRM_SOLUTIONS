@@ -178,7 +178,7 @@ def reset_database():
             'is_featured': True
         },
         {
-            'name': 'Enterprise',
+            'name': 'Entreprise',
             'slug': 'enterprise',
             'description': 'Pour les grandes entreprises',
             'price_monthly': 199.99,

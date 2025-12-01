@@ -7,7 +7,8 @@ from django.utils import timezone
 from datetime import timedelta
 from tenants.models import Tenant, User
 from billing.models import PricingPlan, Subscription
-from ...permissions import assign_role_permissions
+from tenants.permissions import assign_role_permissions
+from tenants.utils import enable_features_for_tenant
 
 
 class Command(BaseCommand):
@@ -150,6 +151,25 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(
                         self.style.SUCCESS(f'  ✅ Abonnement créé: {plan.name}')
+                    )
+                
+                # Activer automatiquement les fonctionnalités du plan
+                try:
+                    result = enable_features_for_tenant(tenant, plan)
+                    if 'error' in result:
+                        self.stdout.write(
+                            self.style.WARNING(f'  ⚠️  Erreur activation features: {result["error"]}')
+                        )
+                    else:
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f'  ✅ Fonctionnalités activées: {result["enabled"]} activées, '
+                                f'{result["features_count"]} features disponibles pour {result["users_count"]} utilisateurs'
+                            )
+                        )
+                except Exception as e:
+                    self.stdout.write(
+                        self.style.WARNING(f'  ⚠️  Erreur activation features: {e}')
                     )
             except Exception as e:
                 self.stdout.write(

@@ -12,8 +12,15 @@ interface DashboardStats {
   active_tenants: number
   trial_tenants: number
   total_users: number
-  total_bookings: number
-  monthly_revenue: number
+  monthly_revenue?: number
+  trials_expiring_soon?: number
+  trials_expiring_soon_list?: Array<{
+    tenant_id: number
+    tenant_name: string
+    plan_name: string
+    trial_end: string
+    days_remaining: number
+  }>
 }
 
 interface DetailedStatsSummary {
@@ -24,6 +31,7 @@ interface DetailedStatsSummary {
     total_users: number
     active_subscriptions: number
     trial_subscriptions: number
+    trials_expiring_soon?: number
   }
   activity: {
     users_today: number
@@ -40,6 +48,13 @@ interface DetailedStatsSummary {
     severity: 'high' | 'medium' | 'low'
     title: string
     count: number
+  }>
+  trials_expiring_soon_list?: Array<{
+    tenant_id: number
+    tenant_name: string
+    plan_name: string
+    trial_end: string
+    days_remaining: number
   }>
 }
 
@@ -62,13 +77,16 @@ export default function AdminDashboard() {
     try {
       // Load basic dashboard stats
       const response = await api.get('/dashboard/')
-      setStats(response.data.stats || {
-        total_tenants: 0,
-        active_tenants: 0,
-        trial_tenants: 0,
-        total_users: 0,
-        total_bookings: 0,
-        monthly_revenue: 0,
+      // Le backend retourne directement les stats, pas dans un objet 'stats'
+      const statsData = response.data.stats || response.data || {}
+      setStats({
+        total_tenants: statsData.total_tenants || 0,
+        active_tenants: statsData.active_tenants || 0,
+        trial_tenants: statsData.trial_tenants || 0,
+        total_users: statsData.total_users || 0,
+        monthly_revenue: statsData.monthly_revenue || 0,
+        trials_expiring_soon: statsData.trials_expiring_soon || 0,
+        trials_expiring_soon_list: statsData.trials_expiring_soon_list || [],
       })
 
       // Load detailed stats summary
@@ -102,14 +120,13 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Erreur chargement dashboard:', error)
-      setStats({
-        total_tenants: 0,
-        active_tenants: 0,
-        trial_tenants: 0,
-        total_users: 0,
-        total_bookings: 0,
-        monthly_revenue: 0,
-      })
+          setStats({
+            total_tenants: 0,
+            active_tenants: 0,
+            trial_tenants: 0,
+            total_users: 0,
+            monthly_revenue: 0,
+          })
     } finally {
       setLoading(false)
     }
@@ -129,7 +146,7 @@ export default function AdminDashboard() {
       subtitle="Gestion complète de la plateforme VTCBuilder"
     >
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-5">
           <div className="card">
             <div className="flex items-center">
               <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
@@ -168,6 +185,11 @@ export default function AdminDashboard() {
               <div className="ml-5">
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">En Trial</p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.trial_tenants || 0}</p>
+                {stats?.trials_expiring_soon && stats.trials_expiring_soon > 0 && (
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                    {stats.trials_expiring_soon} expire{stats.trials_expiring_soon > 1 ? 'nt' : ''} bientôt
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -182,20 +204,6 @@ export default function AdminDashboard() {
               <div className="ml-5">
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Utilisateurs</p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.total_users || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Réservations</p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats?.total_bookings || 0}</p>
               </div>
             </div>
           </div>
@@ -285,14 +293,14 @@ export default function AdminDashboard() {
             </div>
 
             {/* Alertes */}
-            {detailedStats.alerts && detailedStats.alerts.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-red-500">
+            {((detailedStats.alerts && detailedStats.alerts.length > 0) || (detailedStats.trials_expiring_soon_list && detailedStats.trials_expiring_soon_list.length > 0)) && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-yellow-500">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                    <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
-                    Alertes ({detailedStats.alerts.length})
+                    Alertes ({(detailedStats.alerts?.length || 0) + (detailedStats.trials_expiring_soon_list?.length || 0)})
                   </h3>
                   <button
                     onClick={() => router.push('/admin/stats')}
@@ -302,7 +310,50 @@ export default function AdminDashboard() {
                   </button>
                 </div>
                 <div className="space-y-2">
-                  {detailedStats.alerts.slice(0, 3).map((alert, index) => (
+                  {/* Trials expiring soon */}
+                  {detailedStats.trials_expiring_soon_list && detailedStats.trials_expiring_soon_list.length > 0 && (
+                    <>
+                      {detailedStats.trials_expiring_soon_list.slice(0, 5).map((trial, index) => {
+                        const trialEndDate = new Date(trial.trial_end)
+                        const formattedDate = trialEndDate.toLocaleDateString('fr-FR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })
+                        return (
+                          <div key={index} className="flex items-center justify-between text-sm py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                            <div className="flex-1">
+                              <span className="text-yellow-700 dark:text-yellow-400 font-medium">
+                                {trial.tenant_name}
+                              </span>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <span>Plan: {trial.plan_name}</span>
+                                <span className="mx-2">•</span>
+                                <span>Expire le {formattedDate}</span>
+                                <span className="mx-2">•</span>
+                                <span className={trial.days_remaining <= 1 ? 'text-red-600 font-semibold' : ''}>
+                                  {trial.days_remaining} jour{trial.days_remaining > 1 ? 's' : ''} restant{trial.days_remaining > 1 ? 's' : ''}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => router.push(`/admin/tenants/${trial.tenant_id}`)}
+                              className="text-xs text-blue-600 hover:text-blue-800 ml-4"
+                            >
+                              Voir →
+                            </button>
+                          </div>
+                        )
+                      })}
+                      {detailedStats.trials_expiring_soon_list.length > 5 && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                          + {detailedStats.trials_expiring_soon_list.length - 5} autre{detailedStats.trials_expiring_soon_list.length - 5 > 1 ? 's' : ''}...
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {/* Other alerts */}
+                  {detailedStats.alerts && detailedStats.alerts.slice(0, 3).map((alert, index) => (
                     <div key={index} className="flex items-center justify-between text-sm">
                       <span className={`${
                         alert.severity === 'high' ? 'text-red-700' :
@@ -314,11 +365,6 @@ export default function AdminDashboard() {
                       <span className="font-semibold text-gray-900 dark:text-gray-100">{alert.count}</span>
                     </div>
                   ))}
-                  {detailedStats.alerts.length > 3 && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                      + {detailedStats.alerts.length - 3} autre(s) alerte(s)
-                    </p>
-                  )}
                 </div>
               </div>
             )}

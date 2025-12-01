@@ -250,6 +250,74 @@ verify-features: ## Vérifier l'accès aux features selon les plans
 	@docker exec $(BACKEND_CONTAINER) python -c "import os, django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings'); django.setup(); from tenants.models import User, Feature; from billing.models import PricingPlan; super_admin = User.objects.filter(role='super-admin').first(); all_features = Feature.objects.filter(is_active=True); accessible = sum(1 for f in all_features if super_admin.can_use_feature(f)) if super_admin else 0; print(f'Super Admin: {accessible}/{all_features.count()} features accessibles'); plans = PricingPlan.objects.all(); print(f'Plans: {plans.count()}'); [print(f'  - {p.name}: {Feature.objects.filter(available_plans=p, is_active=True).count()} features') for p in plans]"
 	@echo "$(GREEN)✅ Vérification terminée !$(NC)"
 
+setup-test-env: ## Configurer l'environnement de test complet (tenants, abonnements, factures, paiements)
+	@echo "$(GREEN)🚀 Configuration de l'environnement de test...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py setup_test_environment
+	@echo "$(GREEN)✅ Environnement de test configuré !$(NC)"
+
+setup-test-env-reset: ## Réinitialiser et configurer l'environnement de test (supprime les données existantes)
+	@echo "$(GREEN)🚀 Réinitialisation de l'environnement de test...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py setup_test_environment --reset
+	@echo "$(GREEN)✅ Environnement de test réinitialisé !$(NC)"
+
+init-defaults: ## Initialiser les blocs et templates de base
+	@echo "$(GREEN)🚀 Initialisation des blocs et templates de base...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py create_default_block_types
+	@docker exec $(BACKEND_CONTAINER) python manage.py create_default_templates
+	@echo "$(GREEN)✅ Blocs et templates initialisés !$(NC)"
+
+init-blocks: ## Initialiser uniquement les blocs de base
+	@echo "$(GREEN)📦 Initialisation des blocs de base...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py create_default_block_types
+	@echo "$(GREEN)✅ Blocs initialisés !$(NC)"
+
+init-templates: ## Initialiser uniquement les templates de base
+	@echo "$(GREEN)📄 Initialisation des templates de base...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py create_default_templates
+	@echo "$(GREEN)✅ Templates initialisés !$(NC)"
+
+init-features: ## Initialiser les fonctionnalités avec leurs plans associés
+	@echo "$(GREEN)🎯 Initialisation des fonctionnalités...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py init_features
+	@echo "$(GREEN)✅ Fonctionnalités initialisées !$(NC)"
+
+sync-features: ## Synchroniser les fonctionnalités de tous les tenants avec leurs plans
+	@echo "$(GREEN)🔄 Synchronisation des fonctionnalités des tenants...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py sync_tenant_features
+	@echo "$(GREEN)✅ Synchronisation terminée !$(NC)"
+
+sync-features-tenant: ## Synchroniser les fonctionnalités d'un tenant spécifique (usage: make sync-features-tenant TENANT_ID=5)
+	@echo "$(GREEN)🔄 Synchronisation des fonctionnalités d'un tenant...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@if [ -z "$(TENANT_ID)" ]; then \
+		echo "$(RED)❌ Usage: make sync-features-tenant TENANT_ID=5$(NC)"; \
+	else \
+		docker exec $(BACKEND_CONTAINER) python manage.py sync_tenant_features --tenant-id=$(TENANT_ID); \
+	fi
+	@echo "$(GREEN)✅ Synchronisation terminée !$(NC)"
+
+test-features: ## Tester l'accès aux fonctionnalités pour tous les tenants de test
+	@echo "$(GREEN)🧪 Test d'accès aux fonctionnalités...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py test_feature_access
+	@echo "$(GREEN)✅ Test terminé !$(NC)"
+
 ##@ Tests Billing spécifiques
 
 test-subscriptions-internal: ## Tester les abonnements (interne)
@@ -335,6 +403,35 @@ install-playwright: ## Installer Playwright pour les captures d'écran
 	@docker exec $(BACKEND_CONTAINER) python manage.py install_playwright
 	@echo "$(GREEN)✅ Playwright installé !$(NC)"
 
+check-trial-expiration: ## Vérifier et mettre à jour les trials expirés
+	@echo "$(GREEN)🔄 Vérification des trials expirés...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py check_trial_expiration
+	@echo "$(GREEN)✅ Vérification terminée !$(NC)"
+
+check-trial-expiration-dry-run: ## Vérifier les trials expirés sans appliquer les changements
+	@echo "$(GREEN)🔄 Vérification des trials expirés (dry-run)...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py check_trial_expiration --dry-run
+	@echo "$(GREEN)✅ Vérification terminée !$(NC)"
+
+check-trial-expiration-with-notifications: ## Vérifier les trials expirés et envoyer les notifications
+	@echo "$(GREEN)🔄 Vérification des trials expirés avec notifications...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py check_trial_expiration --send-notifications
+	@echo "$(GREEN)✅ Vérification terminée !$(NC)"
+
+setup-trial-cron: ## Configurer la tâche cron pour vérifier les trials automatiquement (tous les jours à 2h)
+	@echo "$(GREEN)⏰ Configuration de la tâche cron pour les trials...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) bash -c "echo '0 2 * * * cd /app && python manage.py check_trial_expiration --send-notifications >> /var/log/trial_check.log 2>&1' | crontab -"
+	@echo "$(GREEN)✅ Tâche cron configurée !$(NC)"
+	@echo "$(YELLOW)💡 La vérification s'exécutera tous les jours à 2h du matin$(NC)"
+
 ##@ URLs
 
 urls: ## Afficher les URLs importantes
@@ -348,5 +445,29 @@ urls: ## Afficher les URLs importantes
 	@echo "  $(YELLOW)PostgreSQL:$(NC)        localhost:5434"
 	@echo "  $(YELLOW)Redis:$(NC)             localhost:6381"
 	@echo "$(BLUE)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+
+init-public-pages: ## Initialiser les pages publiques de documentation
+	@echo "$(GREEN)📄 Initialisation des pages publiques...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py init_public_pages
+	@echo "$(GREEN)✅ Pages publiques initialisées !$(NC)"
+
+create-public-pages-blocks: ## Créer les blocs et initialiser les pages publiques avec le contenu exact des pages existantes
+	@echo "$(GREEN)🚀 Création des blocs et initialisation des pages publiques...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py create_public_pages_blocks
+	@echo "$(GREEN)✅ Blocs et pages publiques créés !$(NC)"
+	@echo "$(BLUE)💡 Les pages sont disponibles dans /admin/pages-public$(NC)"
+
+init-templates: ## Initialiser les templates de base (VTC Minimaliste, Moderne, Classique) avec intégration blocs
+	@echo "$(GREEN)🎨 Initialisation des templates de base...$(NC)"
+	@$(DOCKER_COMPOSE) up -d postgres redis backend
+	@sleep 5
+	@docker exec $(BACKEND_CONTAINER) python manage.py create_default_templates
+	@echo "$(GREEN)✅ Templates de base initialisés !$(NC)"
+	@echo "$(BLUE)💡 Les templates sont maintenant disponibles dans /admin/templates$(NC)"
+	@echo "$(BLUE)💡 Les templates s'intègrent avec les blocs via {% block block_name %} dans le HTML$(NC)"
 
 .DEFAULT_GOAL := help

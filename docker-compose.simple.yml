@@ -47,6 +47,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend-django:/app
+      - ./backend-django/logs:/var/log
     environment:
       DB_ENGINE: django_tenants.postgresql_backend
       DB_NAME: vtcbuilder

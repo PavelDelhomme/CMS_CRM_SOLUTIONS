@@ -94,7 +94,7 @@ class AuthService {
     return user.roles.some((role: any) => {
       const roleValue = typeof role === 'string' ? role : role.name || role.role;
       return roleValue === 'super-admin';
-    }) || user.role === 'super-admin';
+    }) || (user as any).role === 'super-admin';
   }
 
   isTenantAdmin(): boolean {
@@ -104,7 +104,7 @@ class AuthService {
     return user.roles.some((role: any) => {
       const roleValue = typeof role === 'string' ? role : role.name || role.role;
       return roleValue === 'tenant-admin';
-    }) || user.role === 'tenant-admin';
+    }) || (user as any).role === 'tenant-admin';
   }
 }
 

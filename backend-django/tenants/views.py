@@ -29,11 +29,17 @@ def add_cors_headers(response, request):
         origin = request.META.get('HTTP_ORIGIN')
         if origin:
             if settings.DEBUG:
-                if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                # En développement, autoriser tous les localhost, 127.0.0.1 et 192.168.1.134
+                if (origin.startswith('http://localhost') or 
+                    origin.startswith('http://127.0.0.1') or
+                    origin.startswith('http://192.168.1.134') or
+                    origin.startswith('https://localhost') or
+                    origin.startswith('https://127.0.0.1') or
+                    origin.startswith('https://192.168.1.134')):
                     response['Access-Control-Allow-Origin'] = origin
                     response['Access-Control-Allow-Credentials'] = 'true'
-                    response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
-                    response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+                    response['Access-Control-Allow-Methods'] = ', '.join(settings.CORS_ALLOW_METHODS)
+                    response['Access-Control-Allow-Headers'] = ', '.join(settings.CORS_ALLOW_HEADERS)
             else:
                 if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
                     response['Access-Control-Allow-Origin'] = origin
@@ -106,37 +112,46 @@ class TenantViewSet(viewsets.ModelViewSet):
         Get all available features for the current user's tenant based on their subscription plan.
         Super admin has access to all features.
         """
-        user = request.user
-        
-        # Super admin a accès à toutes les features
-        if user.is_super_admin():
-            features = Feature.objects.filter(is_active=True)
-            serializer = FeatureSerializer(features, many=True)
+        try:
+            user = request.user
+            
+            # Super admin a accès à toutes les features
+            if user.is_super_admin():
+                features = Feature.objects.filter(is_active=True)
+                serializer = FeatureSerializer(features, many=True)
+                response = Response(serializer.data)
+                add_cors_headers(response, request)
+                return response
+            
+            # Pour les autres utilisateurs, filtrer selon leur plan
+            if not user.tenant:
+                response = Response(
+                    {'error': 'User has no tenant associated'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                add_cors_headers(response, request)
+                return response
+            
+            # Récupérer toutes les features actives
+            all_features = Feature.objects.filter(is_active=True)
+            available_features = []
+            
+            for feature in all_features:
+                if user.can_use_feature(feature):
+                    available_features.append(feature)
+            
+            serializer = FeatureSerializer(available_features, many=True)
             response = Response(serializer.data)
             add_cors_headers(response, request)
             return response
-        
-        # Pour les autres utilisateurs, filtrer selon leur plan
-        if not user.tenant:
+        except Exception as e:
+            logger.error(f"Error in tenants/features endpoint: {e}", exc_info=True)
             response = Response(
-                {'error': 'User has no tenant associated'},
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': 'Internal server error', 'details': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
             add_cors_headers(response, request)
             return response
-        
-        # Récupérer toutes les features actives
-        all_features = Feature.objects.filter(is_active=True)
-        available_features = []
-        
-        for feature in all_features:
-            if user.can_use_feature(feature):
-                available_features.append(feature)
-        
-        serializer = FeatureSerializer(available_features, many=True)
-        response = Response(serializer.data)
-        add_cors_headers(response, request)
-        return response
     
     @action(detail=True, methods=['post'])
     def activate(self, request, pk=None):
@@ -819,11 +834,17 @@ class UserViewSet(viewsets.ModelViewSet):
                 if origin:
                     from django.conf import settings
                     if settings.DEBUG:
-                        if origin.startswith('http://localhost') or origin.startswith('http://127.0.0.1'):
+                        # En développement, autoriser tous les localhost, 127.0.0.1 et 192.168.1.134
+                        if (origin.startswith('http://localhost') or 
+                            origin.startswith('http://127.0.0.1') or
+                            origin.startswith('http://192.168.1.134') or
+                            origin.startswith('https://localhost') or
+                            origin.startswith('https://127.0.0.1') or
+                            origin.startswith('https://192.168.1.134')):
                             response['Access-Control-Allow-Origin'] = origin
                             response['Access-Control-Allow-Credentials'] = 'true'
-                            response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
-                            response['Access-Control-Allow-Headers'] = 'accept, accept-encoding, authorization, content-type, dnt, origin, user-agent, x-csrftoken, x-requested-with'
+                            response['Access-Control-Allow-Methods'] = ', '.join(settings.CORS_ALLOW_METHODS)
+                            response['Access-Control-Allow-Headers'] = ', '.join(settings.CORS_ALLOW_HEADERS)
                     else:
                         if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
                             response['Access-Control-Allow-Origin'] = origin
@@ -1123,6 +1144,23 @@ def register_with_plan_view(request):
             current_period_end=current_period_end
         )
         
+        # Create Stripe customer and setup intent for card registration
+        setup_intent_client_secret = None
+        try:
+            from billing.stripe_service import StripeService
+            customer_id = StripeService.create_customer(tenant, tenant_email)
+            subscription.stripe_customer_id = customer_id
+            subscription.save(update_fields=['stripe_customer_id'])
+            
+            # Create setup intent for card registration (no charge during trial)
+            setup_intent = StripeService.create_setup_intent(customer_id)
+            setup_intent_client_secret = setup_intent['client_secret']
+        except Exception as e:
+            # Log error but don't fail registration
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error creating Stripe customer/setup intent: {e}")
+        
         # Generate tokens for the new user
         refresh = RefreshToken.for_user(admin_user)
         
@@ -1194,7 +1232,7 @@ L'équipe VTCBuilder
             logger.error(f"Error sending welcome email: {e}")
         
         return Response({
-            'message': 'Inscription réussie ! Un email de confirmation a été envoyé.',
+            'message': 'Inscription réussie ! Veuillez enregistrer votre carte bancaire pour continuer.',
             'user': UserSerializer(admin_user).data,
             'tenant': TenantSerializer(tenant).data,
             'subscription': {
@@ -1207,6 +1245,8 @@ L'équipe VTCBuilder
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             },
+            'setup_intent_client_secret': setup_intent_client_secret,
+            'subscription_id': subscription.id,
             'tenant_url': tenant_url,
             'admin_url': admin_url,
         }, status=status.HTTP_201_CREATED)

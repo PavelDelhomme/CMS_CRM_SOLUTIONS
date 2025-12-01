@@ -14,7 +14,7 @@ interface BlockUsage {
  */
 export function useBlockTracking() {
   const trackingQueue = useRef<BlockUsage[]>([])
-  const flushTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const flushTimeout = useRef<number | null>(null)
 
   // Fonction pour ajouter un événement au queue
   const trackBlockAction = (blockType: string, action: 'add' | 'update' | 'delete' | 'view') => {

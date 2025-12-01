@@ -6,6 +6,154 @@
 
 ## 🚨 PRIORITÉS ACTUELLES - EN COURS DE TRAITEMENT
 
+### 📋 Tenant de Référence (Reference-Tenant) - Documentation
+
+**Qu'est-ce que le tenant de référence ?**
+
+Le tenant de référence (`reference-tenant`) est un tenant spécial créé automatiquement par le système pour permettre au super administrateur de gérer les templates sans avoir besoin d'un tenant spécifique.
+
+**Pourquoi a-t-il été créé ?**
+
+Dans un système multi-tenant avec `django-tenants`, chaque tenant a son propre schéma de base de données. Les templates sont stockés dans le schéma du tenant. Cependant, le super administrateur doit pouvoir créer et gérer des templates globaux (disponibles pour tous les tenants) sans être lié à un tenant particulier.
+
+**Comment fonctionne-t-il ?**
+
+1. **Création automatique** : Si aucun tenant actif n'existe, le système crée automatiquement un tenant de référence avec :
+   - Slug : `reference-tenant`
+   - Nom : `Reference Tenant`
+   - Email : `reference@vtcbuilder.com`
+   - Statut : `active`
+
+2. **Utilisation** : Le tenant de référence est utilisé dans `TemplateViewSet` (`media/views.py`) :
+   - Lorsque le super admin crée un template → stocké dans le schéma du tenant de référence
+   - Lorsque le super admin liste les templates → récupérés depuis le tenant de référence
+   - Lorsque le super admin modifie/supprime un template → opérations dans le contexte du tenant de référence
+
+3. **Méthode `_get_reference_tenant()`** :
+   - Cherche d'abord un tenant actif existant
+   - Sinon, cherche n'importe quel tenant (même inactif)
+   - Sinon, crée automatiquement le tenant de référence
+
+**Où est-il utilisé ?**
+
+- `backend-django/media/views.py` - `TemplateViewSet` :
+  - `create()` : Création de templates par super admin
+  - `update()` : Modification de templates par super admin
+  - `destroy()` : Suppression de templates par super admin
+  - `list()` : Liste des templates pour super admin
+
+**Important pour le super admin :**
+
+- Le tenant de référence est **invisible** dans l'interface admin normale
+- Il sert uniquement de **contexte technique** pour stocker les templates globaux
+- Les templates créés par le super admin sont accessibles à tous les tenants
+- Ne pas supprimer ce tenant manuellement, il est nécessaire au fonctionnement du système
+
+**Note** : Ce tenant est créé automatiquement si nécessaire et ne nécessite aucune action manuelle de la part de l'administrateur.
+
+### ✅ Templates par Défaut - COMPLÉTÉ
+
+**État Actuel** :
+- ✅ Fichiers JSON créés dans `backend-django/media/templates/default/`
+  - `vtc-classique.json` : Template classique et professionnel
+  - `vtc-moderne.json` : Template moderne avec animations
+  - `vtc-minimaliste.json` : Template épuré et minimaliste
+- ✅ Commande `create_default_templates` fonctionnelle
+  - Charge automatiquement les templates depuis les fichiers JSON
+  - Fallback sur templates hardcodés si fichiers absents
+  - Création/mise à jour automatique dans la base de données
+- ✅ Commande Makefile `init-templates` disponible
+  - `make init-templates` : Initialise les templates de base
+  - `make init-defaults` : Initialise blocs ET templates
+- ✅ Corrections apportées
+  - Suppression du champ `metadata` non supporté par le modèle Template
+  - Correction de `template_storage.py` pour ne pas inclure `metadata`
+
+**Fonctionnalités** :
+1. ✅ Stockage des templates en fichiers JSON (système de fichiers)
+2. ✅ Chargement automatique depuis `media/templates/default/`
+3. ✅ Création automatique dans la base de données via commande
+4. ✅ Gestion complète via l'API (création, modification, suppression)
+5. ✅ Système de variables pour personnalisation ({{variable_name}})
+6. ✅ Prévisualisation avec images uploadées
+
+**Utilisation** :
+```bash
+# Initialiser les templates par défaut
+make init-templates
+
+# Initialiser blocs ET templates
+make init-defaults
+```
+
+**Fichiers Modifiés/Créés** :
+- `backend-django/media/templates/default/vtc-classique.json` : Template classique
+- `backend-django/media/templates/default/vtc-moderne.json` : Template moderne (nouveau)
+- `backend-django/media/templates/default/vtc-minimaliste.json` : Template minimaliste (nouveau)
+- `backend-django/media/management/commands/create_default_templates.py` : Commande de création
+- `backend-django/media/template_storage.py` : Gestionnaire de stockage (corrigé)
+- `backend-django/Makefile` : Commande `init-templates` (déjà présente)
+
+### ✅ Système de Trial - COMPLÉTÉ
+
+**État Actuel** :
+- ✅ Modèles : `Subscription` et `Tenant` ont le statut 'trial' par défaut
+- ✅ Champs : `trial_start`, `trial_end` (Subscription), `trial_ends_at` (Tenant)
+- ✅ Configuration : `SystemSettings.default_trial_days=14` et `enable_trial=True`
+- ✅ **CORRIGÉ** : Les dates de trial sont maintenant définies automatiquement lors de la création
+  - `Subscription.trial_start` et `trial_end` définis dans `SubscriptionViewSet.create()`
+  - `Tenant.trial_ends_at` défini dans `TenantSerializer.create()`
+  - Utilise `SystemSettings.default_trial_days` au lieu de 14 jours hardcodés
+- ✅ **NOUVEAU** : Commande management `check_trial_expiration` créée
+  - Vérifie et met à jour automatiquement les trials expirés
+  - Option `--dry-run` pour prévisualiser les changements
+  - Option `--send-notifications` pour envoyer des emails avant expiration
+- ✅ **NOUVEAU** : Méthodes ajoutées aux modèles
+  - `Subscription.is_trial_expired()` : Vérifie si le trial a expiré
+  - `Subscription.get_trial_days_remaining()` : Retourne le nombre de jours restants
+  - `Tenant.is_trial_expired()` : Vérifie si le trial du tenant a expiré
+  - `Tenant.get_trial_days_remaining()` : Retourne le nombre de jours restants
+- ✅ **NOUVEAU** : Affichage amélioré dans le dashboard admin
+  - Compteur de trials expirant bientôt (dans 7 jours) dans la carte "Trials expirant bientôt"
+  - Liste des trials expirant bientôt avec jours restants dans les alertes
+  - Alertes visuelles pour les trials proches de l'expiration avec liens directs vers les tenants
+  - Statistiques détaillées dans `DetailedStatsView` avec `trials_expiring_soon` et `trials_expiring_soon_list`
+- ✅ **NOUVEAU** : Affichage dans la liste des tenants
+  - Date d'expiration affichée pour les tenants en trial
+  - Statut "En Trial" au lieu de "trial"
+  - Jours restants calculés et affichés
+
+**Fonctionnalités Complètes** :
+1. ✅ Définir automatiquement `trial_start` et `trial_end` lors de la création d'une Subscription
+2. ✅ Définir automatiquement `trial_ends_at` lors de la création d'un Tenant
+3. ✅ Commande management `check_trial_expiration` pour vérifier l'expiration
+4. ✅ Passage automatique de 'trial' à 'expired' lors de l'expiration
+5. ✅ Affichage correct des tenants en trial dans les statistiques (avec dates)
+6. ✅ Système de notifications avant expiration (3 jours, 1 jour, jour J)
+7. ✅ Dashboard admin avec alertes et statistiques en temps réel
+8. ✅ Commandes Makefile pour faciliter l'utilisation
+
+**Utilisation** :
+```bash
+# Vérifier les trials expirés (dry-run)
+make check-trial-expiration-dry-run
+
+# Vérifier et mettre à jour les trials expirés
+make check-trial-expiration
+
+# Vérifier et envoyer les notifications
+make check-trial-expiration-with-notifications
+```
+
+**Fichiers Modifiés/Créés** :
+- `backend-django/billing/management/commands/check_trial_expiration.py` : Commande management
+- `backend-django/billing/models.py` : Méthodes `is_trial_expired()` et `get_trial_days_remaining()` sur `Subscription`
+- `backend-django/tenants/models.py` : Méthodes `is_trial_expired()` et `get_trial_days_remaining()` sur `Tenant`
+- `backend-django/api/views.py` : Ajout de `trials_expiring_soon` et `trials_expiring_soon_list` dans `DashboardView` et `DetailedStatsView`
+- `frontend/src/app/admin/dashboard/page.tsx` : Carte "Trials expirant bientôt" et alertes
+- `frontend/src/app/admin/tenants/page.tsx` : Affichage de la date d'expiration
+- `backend-django/Makefile` : Commandes `check-trial-expiration`, `check-trial-expiration-dry-run`, `check-trial-expiration-with-notifications`
+
 ## ✅ État Actuel du Projet - Vérifications Complètes (01/12/2025)
 
 ### ✅ Vérifications Effectuées
@@ -1057,6 +1205,40 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - [ ] **Vérification couverture de code** - Atteindre minimum 70% de couverture
 - [ ] **Intégration CI/CD** - Automatiser l'exécution des tests
 
+### 🚨 Priorité Haute - Système de Trial (À Faire Urgemment)
+
+#### Système de Trial - Implémentation Complète
+- [ ] **Définition automatique des dates de trial**
+  - Lors de la création d'une `Subscription` :
+    - Définir `trial_start = timezone.now()`
+    - Définir `trial_end = timezone.now() + timedelta(days=SystemSettings.default_trial_days)`
+  - Lors de la création d'un `Tenant` :
+    - Définir `trial_ends_at = timezone.now() + timedelta(days=SystemSettings.default_trial_days)`
+  - Modifier `SubscriptionViewSet.create()` et `TenantSerializer.create()`
+
+- [ ] **Vérification automatique de l'expiration**
+  - Créer une commande management `check_trial_expiration`
+  - Vérifier tous les tenants/subscriptions avec `status='trial'`
+  - Si `trial_end < now()` :
+    - Passer `status='expired'` si pas de paiement
+    - Ou passer `status='active'` si paiement effectué
+  - Mettre à jour `Tenant.trial_ends_at` et `Subscription.trial_end` si nécessaire
+
+- [ ] **Affichage correct dans les statistiques**
+  - Vérifier que `trial_tenants` compte correctement les tenants avec `status='trial'`
+  - Afficher le nombre de jours restants dans le trial
+  - Afficher les tenants dont le trial expire bientôt (7 jours)
+
+- [ ] **Notifications avant expiration**
+  - Envoyer un email 3 jours avant l'expiration
+  - Envoyer un email 1 jour avant l'expiration
+  - Envoyer un email le jour de l'expiration
+
+- [ ] **Interface frontend**
+  - Afficher le statut "En trial" avec date d'expiration
+  - Afficher un compteur de jours restants
+  - Afficher un avertissement si expiration proche
+
 ### Priorité Haute (Après tests et vérifications)
 
 #### 🎨 Système de Thèmes WordPress-like
@@ -1101,6 +1283,28 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
   - Dropdown ou toggle pour changer le statut directement depuis la liste
   - Feedback visuel immédiat
 
+#### 🌐 Gestion des Pages de Documentation du Site VTCBuilder (À Faire Plus Tard)
+
+**📋 Contexte** :
+- Le site de présentation VTCBuilder (`localhost:9494`) doit être conservé tel quel pour le moment
+- Les pages de documentation actuelles (docs, contact, FAQ, CGV, confidentialité) sont statiques
+- À terme, toutes les pages devront être gérées via le système de blocs et le site builder
+
+**🎯 Objectif Futur** :
+- Permettre la création/modification/ajout/suppression des pages de documentation via l'interface admin
+- Utiliser le système de blocs WordPress-like pour éditer le contenu
+- Gérer ces pages via le système de "Pages Publiques" (à implémenter)
+- Conserver le site actuel fonctionnel pendant la transition
+
+**📝 Pages Concernées** :
+- `/docs` - Documentation
+- `/contact` - Formulaire de contact
+- `/faq` - Questions fréquentes
+- `/legal/terms` - Conditions générales de vente (CGV)
+- `/legal/privacy` - Politique de confidentialité
+
+**⚠️ Note** : Cette fonctionnalité sera implémentée plus tard, une fois le système de Pages Publiques complètement opérationnel. Pour le moment, le site de présentation reste statique.
+
 #### 🎨 Améliorations Éditeur WordPress-like
 - [ ] **Édition directe dans prévisualisation** - Double-clic pour éditer
   - Double-clic sur un bloc dans la prévisualisation ouvre les paramètres
@@ -1125,6 +1329,16 @@ Voir [docs/project/COUTS_PROJET.md](./docs/project/COUTS_PROJET.md) pour plus de
 - [ ] **Pages publiques manquantes** - Documentation, Contact, FAQ, CGV, Confidentialité
 
 ### Priorité Moyenne
+
+#### 🌐 Gestion Pages Documentation Site VTCBuilder (Planifié pour Plus Tard)
+- [ ] **Interface admin pour gérer pages documentation**
+  - Créer/modifier/ajouter/supprimer pages docs, contact, FAQ, CGV, confidentialité
+  - Utiliser le système de blocs WordPress-like pour éditer le contenu
+  - Gérer via le système de Pages Publiques (une fois complètement opérationnel)
+- [ ] **Migration pages statiques vers système de blocs**
+  - Convertir les pages actuelles en utilisant le BlockEditor
+  - Conserver le site actuel fonctionnel pendant la transition
+- [ ] **Note** : Le site de présentation (`localhost:9494`) reste statique pour le moment
 
 #### 📰 Système d'Articles/Blog
 - [ ] **Modèle Article/Post** - Créer modèle pour articles de blog
@@ -1240,6 +1454,13 @@ cd frontend && npm install  # Installer Jest et dépendances
 - **Domains** : Chaque tenant a un domaine (`ma-societe-vtc.localhost`)
 - **Schémas** : PostgreSQL séparés par tenant (`t_ma_societe_vtc`)
 
+### Tenant de Référence (Reference-Tenant)
+- **Rôle** : Tenant technique créé automatiquement pour permettre au super admin de gérer les templates globaux
+- **Création** : Automatique si aucun tenant actif n'existe (slug: `reference-tenant`)
+- **Utilisation** : Contexte technique pour stocker les templates créés par le super admin
+- **Important** : Ne pas supprimer manuellement, nécessaire au fonctionnement du système
+- **Voir** : Section "Tenant de Référence" dans les priorités actuelles pour plus de détails
+
 ---
 
 ## 📈 Progression Globale
@@ -1260,7 +1481,39 @@ cd frontend && npm install  # Installer Jest et dépendances
 ## 🔄 Dernière Mise à Jour
 
 **Date** : 2025-12-01  
-**Focus Actuel** : Corrections erreurs + Création tenants pour tous les plans + Améliorations éditeur
+**Focus Actuel** : Corrections erreurs + Système de trial + Améliorations éditeur
+
+### ✅ Corrections Récentes (2025-12-01)
+
+#### Configuration CORS - IP Réseau Local
+1. ✅ **Ajout IP 192.168.1.134 aux CORS**
+   - Ajouté dans `CORS_ALLOWED_ORIGINS` (production)
+   - Ajouté dans `CORS_ALLOWED_ORIGIN_REGEXES` (développement)
+   - Ajouté dans tous les fichiers avec gestion CORS :
+     - `vtcbuilder/settings.py`
+     - `vtcbuilder/cors_middleware.py`
+     - `api/utils.py`
+     - `settings_app/views.py`
+     - `billing/views.py`
+     - `tenants/views.py`
+     - `api/exceptions.py`
+   - Permet l'accès à l'admin depuis `http://192.168.1.134:9494`
+
+#### Page Statistiques Admin
+2. ✅ **Suppression sections non pertinentes de `/admin/stats`**
+   - ❌ Retiré : "Tenants par Plan"
+   - ❌ Retiré : "Utilisateurs par Rôle"
+   - ❌ Retiré : "Tenants Récemment Créés"
+   - ❌ Retiré : "Utilisateurs Récemment Inscrits"
+   - ✅ Conservé : Alertes, Activité Récente, Demandes d'inscription, Overview Cards, Statuts, Revenu
+
+#### Système de Stockage Templates
+3. ✅ **Système de stockage fichiers pour templates**
+   - Création `TemplateStorage` pour gérer templates en JSON
+   - Structure : `media/templates/default/` (système) et `media/templates/custom/` (admin)
+   - Commandes : `export_template`, `import_template`, `sync_templates`
+   - Sauvegarde automatique lors de création/modification via API
+   - Documentation complète dans `TEMPLATE_STORAGE.md`
 
 **Statut actuel** :
 - ✅ Toutes les corrections CORS et 500 sont terminées (dashboard, tenants, users, billing, templates, settings)

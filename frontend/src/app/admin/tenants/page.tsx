@@ -14,6 +14,9 @@ export default function TenantsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [actionLoading, setActionLoading] = useState<{ [key: number]: string }>({})
+  const [navigating, setNavigating] = useState(false)
+  const [sortField, setSortField] = useState<'name' | 'plan' | 'status' | 'email' | 'created_at' | null>(null)
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
     if (!authService.isSuperAdmin()) {
@@ -116,18 +119,84 @@ export default function TenantsPage() {
     return badges[plan as keyof typeof badges] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
-  const filteredTenants = tenants.filter(tenant =>
-    tenant.name.toLowerCase().includes(search.toLowerCase()) ||
-    tenant.email.toLowerCase().includes(search.toLowerCase())
-  )
+  const handleSort = (field: 'name' | 'plan' | 'status' | 'email' | 'created_at') => {
+    if (sortField === field) {
+      // Si on clique sur la même colonne, inverser la direction
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      // Nouvelle colonne, trier par ordre croissant
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
 
-  if (loading) {
+  const filteredAndSortedTenants = tenants
+    .filter((tenant: Tenant) =>
+      tenant.name.toLowerCase().includes(search.toLowerCase()) ||
+      tenant.email.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a: Tenant, b: Tenant) => {
+      if (!sortField) return 0
+
+      let aValue: any
+      let bValue: any
+
+      switch (sortField) {
+        case 'name':
+          aValue = a.name.toLowerCase()
+          bValue = b.name.toLowerCase()
+          break
+        case 'plan':
+          aValue = a.plan.toLowerCase()
+          bValue = b.plan.toLowerCase()
+          break
+        case 'status':
+          aValue = a.status.toLowerCase()
+          bValue = b.status.toLowerCase()
+          break
+        case 'email':
+          aValue = a.email.toLowerCase()
+          bValue = b.email.toLowerCase()
+          break
+        case 'created_at':
+          aValue = new Date(a.created_at).getTime()
+          bValue = new Date(b.created_at).getTime()
+          break
+        default:
+          return 0
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+
+  const SortIcon = ({ field }: { field: 'name' | 'plan' | 'status' | 'email' | 'created_at' }) => {
+    if (sortField !== field) {
+      return (
+        <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      )
+    }
+    return sortDirection === 'asc' ? (
+      <svg className="w-4 h-4 ml-1 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 ml-1 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    )
+  }
+
+  if (loading || navigating) {
     return (
       <AdminLayout
         title="Gestion des Tenants"
         subtitle="Gérez tous vos clients et leurs sites"
       >
-        <PageLoader text="Chargement des tenants..." />
+        <PageLoader text={navigating ? "Chargement des détails..." : "Chargement des tenants..."} />
       </AdminLayout>
     )
   }
@@ -164,20 +233,50 @@ export default function TenantsPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Tenant
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => handleSort('name')}
+                  >
+                    <div className="flex items-center">
+                      Tenant
+                      <SortIcon field="name" />
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Plan
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => handleSort('plan')}
+                  >
+                    <div className="flex items-center">
+                      Plan
+                      <SortIcon field="plan" />
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center">
+                      Status
+                      <SortIcon field="status" />
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Email
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => handleSort('email')}
+                  >
+                    <div className="flex items-center">
+                      Email
+                      <SortIcon field="email" />
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Créé le
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => handleSort('created_at')}
+                  >
+                    <div className="flex items-center">
+                      Créé le
+                      <SortIcon field="created_at" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Actions
@@ -185,15 +284,26 @@ export default function TenantsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
-                {filteredTenants.length === 0 ? (
+                {filteredAndSortedTenants.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                       {search ? 'Aucun tenant trouvé' : 'Aucun tenant pour le moment'}
                     </td>
                   </tr>
                 ) : (
-                  filteredTenants.map((tenant) => (
-                    <tr key={tenant.id} className="hover:bg-gray-50 dark:bg-gray-900">
+                  filteredAndSortedTenants.map((tenant) => (
+                    <tr 
+                      key={tenant.id} 
+                      className="hover:bg-gray-50 dark:bg-gray-900 cursor-pointer"
+                      onClick={(e) => {
+                        // Ne pas naviguer si on clique sur un bouton d'action
+                        if ((e.target as HTMLElement).closest('button')) {
+                          return
+                        }
+                        setNavigating(true)
+                        router.push(`/admin/tenants/${tenant.id}`)
+                      }}
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div>
@@ -210,9 +320,16 @@ export default function TenantsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(tenant.status)}`}>
-                          {tenant.status}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(tenant.status)}`}>
+                            {tenant.status === 'trial' ? 'En Trial' : tenant.status}
+                          </span>
+                          {tenant.status === 'trial' && tenant.trial_ends_at && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Expire: {new Date(tenant.trial_ends_at).toLocaleDateString('fr-FR')}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {tenant.email}
@@ -223,7 +340,11 @@ export default function TenantsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => router.push(`/admin/tenants/${tenant.id}`)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setNavigating(true)
+                              router.push(`/admin/tenants/${tenant.id}`)
+                            }}
                             className="text-blue-600 hover:text-blue-900"
                             title="Voir détails"
                           >

@@ -55,6 +55,20 @@ class TenantSerializer(serializers.ModelSerializer):
         if not validated_data.get('slug'):
             validated_data['slug'] = slugify(validated_data['name'])
         
+        # Set trial_ends_at if status is trial and enable_trial is True
+        tenant_status = validated_data.get('status', 'trial')  # Default is 'trial' from model
+        if tenant_status == 'trial':
+            try:
+                from settings_app.models import SystemSettings
+                settings = SystemSettings.get_settings()
+                if settings.enable_trial:
+                    if not validated_data.get('trial_ends_at'):
+                        validated_data['trial_ends_at'] = timezone.now() + timedelta(days=settings.default_trial_days)
+            except Exception:
+                # Fallback to 14 days if SystemSettings not available
+                if not validated_data.get('trial_ends_at'):
+                    validated_data['trial_ends_at'] = timezone.now() + timedelta(days=14)
+        
         tenant = super().create(validated_data)
         
         # Use the email provided in tenant.email to create the admin user

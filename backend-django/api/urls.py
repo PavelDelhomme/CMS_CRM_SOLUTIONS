@@ -27,7 +27,8 @@ except (ImportError, RuntimeError) as e:
 
 from billing.views import (
     PricingPlanViewSet, SubscriptionViewSet,
-    InvoiceViewSet, PaymentViewSet, PaymentMethodViewSet, billing_stats, unpaid_items
+    InvoiceViewSet, PaymentViewSet, PaymentMethodViewSet, InvoiceTemplateViewSet,
+    billing_stats, unpaid_items, complete_card_registration
 )
 from settings_app.views import system_settings_view, system_settings_test_email_view, system_settings_test_stripe_view
 from billing.webhooks import stripe_webhook
@@ -52,6 +53,7 @@ router.register(r'subscriptions', SubscriptionViewSet, basename='subscription')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
 router.register(r'payments', PaymentViewSet, basename='payment')
 router.register(r'payment-methods', PaymentMethodViewSet, basename='payment-method')
+router.register(r'invoice-templates', InvoiceTemplateViewSet, basename='invoice-template')
 # System settings is handled as a singleton with a direct view function above
 
 urlpatterns = [

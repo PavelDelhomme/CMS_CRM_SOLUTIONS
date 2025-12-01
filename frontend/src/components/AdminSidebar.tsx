@@ -116,12 +116,25 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
         </svg>
       ),
     },
+    {
+      name: 'Voir le site',
+      href: '/',
+      icon: (
+        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      ),
+    },
   ]
 
   const isActive = (href: string) => {
     // Exact match for dashboard
     if (href === '/admin/dashboard') {
       return pathname === '/admin/dashboard'
+    }
+    // Don't mark "Voir le site" as active when in admin
+    if (href === '/') {
+      return false
     }
     // For other routes, check if pathname starts with href
     return pathname.startsWith(href)

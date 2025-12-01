@@ -148,7 +148,7 @@ export default function TemplatesPage() {
             <div>
               <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Templates Premium</h4>
               <p className="text-gray-600 dark:text-gray-400">
-                Designs professionnels avancés avec plus d'options de personnalisation. Disponibles avec les plans Business et Enterprise.
+                Designs professionnels avancés avec plus d'options de personnalisation. Disponibles avec les plans Business et Entreprise.
               </p>
             </div>
           </div>

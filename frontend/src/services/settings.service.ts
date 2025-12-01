@@ -33,6 +33,7 @@ export interface SystemSettings {
   maintenance_mode: boolean;
   maintenance_message: string;
   public_homepage_blocks?: any[];
+  public_homepage_status?: 'draft' | 'published';
   public_homepage_meta_title?: string;
   public_homepage_meta_description?: string;
   stripe_enabled?: boolean;

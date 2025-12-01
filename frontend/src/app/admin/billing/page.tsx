@@ -8,6 +8,7 @@ import billingService, { Subscription, Invoice, Payment, PricingPlan, PaymentMet
 import tenantService, { Tenant } from '@/services/tenant.service'
 import ResponsiveTable from '@/components/ResponsiveTable'
 import CreateSubscriptionModal from './CreateSubscriptionModal'
+import InvoicesTab from './InvoicesTab'
 import toast from 'react-hot-toast'
 import PageLoader from '@/components/PageLoader'
 import FeaturesListEditor from '@/components/FeaturesListEditor'
@@ -287,7 +288,7 @@ export default function BillingPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [payments, setPayments] = useState<Payment[]>([])
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
-  const [activeTab, setActiveTab] = useState<'overview' | 'subscriptions' | 'invoices' | 'payments' | 'plans' | 'payment-methods' | 'unpaid'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'subscriptions' | 'invoices' | 'payments' | 'plans' | 'payment-methods' | 'invoice-templates' | 'unpaid'>('overview')
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [unpaidItems, setUnpaidItems] = useState<any>(null)
   const [loadingUnpaid, setLoadingUnpaid] = useState(false)
@@ -482,6 +483,16 @@ export default function BillingPage() {
             }`}
           >
             Paiements ({payments.length})
+          </button>
+          <button
+            onClick={() => router.push('/admin/billing/invoice-templates')}
+            className={`py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
+              activeTab === 'invoice-templates'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
+            }`}
+          >
+            Templates Factures
           </button>
           <button
             onClick={() => setActiveTab('plans')}
@@ -844,91 +855,52 @@ export default function BillingPage() {
 
       {/* Subscriptions Tab */}
       {activeTab === 'subscriptions' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Gestion des Abonnements</h2>
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Abonnements</h2>
             <button
               onClick={() => setShowCreateSubscriptionModal(true)}
-              className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm whitespace-nowrap"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              + Nouvel Abonnement
+              + Créer un abonnement
             </button>
           </div>
-          <ResponsiveTable
-            headers={['Tenant', 'Plan', 'Statut', 'Cycle', 'Période', 'Impayé', 'Actions']}
-            emptyMessage="Aucun abonnement"
-          >
-            {subscriptions.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                  Aucun abonnement
-                </td>
-              </tr>
-            ) : (
-              subscriptions.map((sub) => (
-                <SubscriptionRow
-                  key={sub.id}
-                  subscription={sub}
-                  getStatusBadge={getStatusBadge}
-                  billingService={billingService}
-                  pricingPlans={pricingPlans}
-                  onUpdate={loadBillingData}
-                  router={router}
-                />
-              ))
-            )}
-          </ResponsiveTable>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <ResponsiveTable
+              headers={['Tenant', 'Plan', 'Statut', 'Début', 'Fin', 'Montant', 'Actions']}
+              emptyMessage="Aucun abonnement"
+            >
+              {subscriptions.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    Aucun abonnement trouvé
+                  </td>
+                </tr>
+              ) : (
+                subscriptions.map((subscription) => (
+                  <SubscriptionRow
+                    key={subscription.id}
+                    subscription={subscription}
+                    getStatusBadge={getStatusBadge}
+                    billingService={billingService}
+                    pricingPlans={pricingPlans}
+                    onUpdate={loadBillingData}
+                    router={router}
+                  />
+                ))
+              )}
+            </ResponsiveTable>
+          </div>
         </div>
       )}
 
       {/* Invoices Tab */}
       {activeTab === 'invoices' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <ResponsiveTable
-            headers={['N° Facture', 'Tenant', 'Date', 'Montant', 'Statut', 'Actions']}
-            emptyMessage="Aucune facture"
-          >
-            {invoices.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                  Aucune facture
-                </td>
-              </tr>
-            ) : (
-              invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50 dark:bg-gray-900">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {invoice.invoice_number}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {invoice.tenant?.name || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(invoice.issue_date).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {invoice.total} {invoice.currency}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(invoice.status)}`}>
-                      {invoice.status === 'paid' ? 'Payée' : invoice.status === 'open' ? 'En attente' : invoice.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    {invoice.status !== 'paid' && (
-                      <button
-                        onClick={() => handleMarkInvoicePaid(invoice.id)}
-                        className="text-green-600 hover:text-green-900"
-                      >
-                        Marquer payée
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </ResponsiveTable>
-        </div>
+        <InvoicesTab
+          invoices={invoices}
+          getStatusBadge={getStatusBadge}
+          onUpdate={loadBillingData}
+        />
       )}
 
       {/* Payments Tab */}
@@ -1021,7 +993,7 @@ export default function BillingPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-600">
                           {sub.unpaid_amount?.toFixed(2) || '0.00'}€
-                          {sub.unpaid_invoices_count > 0 && (
+                          {sub.unpaid_invoices_count && sub.unpaid_invoices_count > 0 && (
                             <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1">
                               ({sub.unpaid_invoices_count} facture{sub.unpaid_invoices_count > 1 ? 's' : ''})
                             </span>
@@ -1785,32 +1757,32 @@ function PaymentsHistoryTab({
 
   // Filter and sort payments
   const filteredPayments = payments
-    .filter((p) => {
-      if (filterStatus !== 'all' && p.status !== filterStatus) return false
-      if (filterMethod !== 'all' && p.method !== filterMethod) return false
+    .filter((payment: Payment) => {
+      if (filterStatus !== 'all' && payment.status !== filterStatus) return false
+      if (filterMethod !== 'all' && payment.method !== filterMethod) return false
       return true
     })
-    .sort((a, b) => {
-      let aValue: any, bValue: any
+    .sort((a: Payment, b: Payment) => {
+      let comparison = 0
       if (sortBy === 'date') {
-        aValue = new Date(a.paid_at || a.created_at).getTime()
-        bValue = new Date(b.paid_at || b.created_at).getTime()
-      } else {
-        aValue = parseFloat(a.amount.toString())
-        bValue = parseFloat(b.amount.toString())
+        const dateA = a.paid_at ? new Date(a.paid_at).getTime() : 0
+        const dateB = b.paid_at ? new Date(b.paid_at).getTime() : 0
+        comparison = dateA - dateB
+      } else if (sortBy === 'amount') {
+        comparison = parseFloat(a.amount.toString()) - parseFloat(b.amount.toString())
       }
-      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+      return sortOrder === 'asc' ? comparison : -comparison
     })
 
   // Calculate statistics
   const stats = {
     total: filteredPayments.length,
     totalAmount: filteredPayments
-      .filter((p) => p.status === 'succeeded')
-      .reduce((sum, p) => sum + parseFloat(p.amount.toString()), 0),
-    succeeded: filteredPayments.filter((p) => p.status === 'succeeded').length,
-    failed: filteredPayments.filter((p) => p.status === 'failed').length,
-    pending: filteredPayments.filter((p) => p.status === 'pending').length,
+      .filter((p: Payment) => p.status === 'succeeded')
+      .reduce((sum: number, p: Payment) => sum + parseFloat(p.amount.toString()), 0),
+    succeeded: filteredPayments.filter((p: Payment) => p.status === 'succeeded').length,
+    failed: filteredPayments.filter((p: Payment) => p.status === 'failed').length,
+    pending: filteredPayments.filter((p: Payment) => p.status === 'pending').length,
   }
 
   return (

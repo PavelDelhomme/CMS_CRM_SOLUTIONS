@@ -1,5 +1,13 @@
 import axios from 'axios';
 
+// Déclaration pour les flags globaux
+declare global {
+  interface Window {
+    __hasLoggedBlockedError?: boolean;
+    __hasLoggedNetworkError?: boolean;
+  }
+}
+
 /**
  * Détermine dynamiquement l'URL de l'API selon l'environnement
  * - En production : utilise l'URL configurée
@@ -69,17 +77,48 @@ api.interceptors.response.use(
     const status = error.response?.status;
     
     // ERR_BLOCKED_BY_CLIENT est généralement causé par un bloqueur de publicité
-    if (error.code === 'ERR_NETWORK' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
-      console.warn(`⚠️ Requête bloquée (probablement par un bloqueur de publicité): ${url}`);
-      console.warn('💡 Solution: Désactivez temporairement votre bloqueur de publicité pour localhost:9495');
+    // Ne pas logger ces erreurs comme des erreurs critiques pour certains endpoints
+    const silentEndpoints = ['/tenants/features/', '/auth/login/']
+    const isSilentEndpoint = silentEndpoints.some(endpoint => url.includes(endpoint))
+    
+    // Gérer les erreurs bloquées par le client (bloqueur de pub)
+    if (error.code === 'ERR_BLOCKED_BY_CLIENT' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
+      // Pour les endpoints silencieux, ne rien logger (géré dans FeaturesContext)
+      // Pour les autres, logger une seule fois
+      if (!isSilentEndpoint) {
+        // Utiliser un flag pour éviter les logs répétés
+        if (!window.__hasLoggedBlockedError) {
+          console.warn(`⚠️ Requête bloquée (probablement par un bloqueur de publicité): ${url}`);
+          console.warn('💡 Solution: Désactivez temporairement votre bloqueur de publicité pour localhost:9495');
+          window.__hasLoggedBlockedError = true;
+        }
+      }
+    } else if (error.code === 'ERR_NETWORK') {
+      // Erreurs réseau normales
+      if (!isSilentEndpoint && !window.__hasLoggedNetworkError) {
+        console.warn(`⚠️ Erreur réseau: ${url}`);
+        window.__hasLoggedNetworkError = true;
+      }
     }
     
     // Ne pas logger les erreurs attendues pour certains endpoints
     const isSilentError = SILENT_ERROR_ENDPOINTS.some(endpoint => url.includes(endpoint));
     
+    // Liste des routes publiques où on ne doit PAS rediriger vers /login
+    const publicRoutes = ['/', '/templates', '/pricing', '/about', '/contact'];
+    const isPublicRoute = typeof window !== 'undefined' && publicRoutes.some(route => 
+      window.location.pathname === route || window.location.pathname.startsWith(route + '/')
+    );
+    
     if (status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Ne rediriger vers /login que si on n'est pas sur une page publique
+      // et qu'il y a un token (ce qui signifie qu'il a expiré)
+      const hasToken = localStorage.getItem('token');
+      if (hasToken && !isPublicRoute) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+      // Si pas de token et page publique, c'est normal, ne pas rediriger
     } else if (!isSilentError && status) {
       // Ne logger que les erreurs non attendues
       // (Les erreurs attendues sont gérées gracieusement dans les composants)

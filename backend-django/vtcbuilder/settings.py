@@ -181,6 +181,7 @@ if DEBUG:
         r"^http(s)?://.*\.localhost:\d+$",  # Tous les sous-domaines localhost
         r"^http(s)?://localhost:\d+$",  # localhost direct
         r"^http(s)?://127\.0\.0\.1:\d+$",  # 127.0.0.1
+        r"^http(s)?://192\.168\.1\.134:\d+$",  # IP réseau local 192.168.1.134
     ]
 else:
     # En production, lister explicitement les origines autorisées
@@ -189,6 +190,8 @@ else:
         "http://127.0.0.1:9494",
         "http://localhost:9495",
         "http://127.0.0.1:9495",
+        "http://192.168.1.134:9494",
+        "http://192.168.1.134:9495",
         "http://api.localhost:9400",
     ]
     CORS_ALLOWED_ORIGIN_REGEXES = [

@@ -31,7 +31,7 @@ export default function TermsPage() {
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
                 <li><strong>Plan Starter :</strong> Formule de base avec fonctionnalités essentielles</li>
                 <li><strong>Plan Business :</strong> Formule complète avec fonctionnalités avancées</li>
-                <li><strong>Plan Enterprise :</strong> Formule premium avec toutes les fonctionnalités et support prioritaire</li>
+                <li><strong>Plan Entreprise :</strong> Formule premium avec toutes les fonctionnalités et support prioritaire</li>
               </ul>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
                 Les caractéristiques détaillées de chaque plan sont disponibles sur notre site web à l'adresse{' '}

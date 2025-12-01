@@ -53,6 +53,8 @@ export default function CreateSubscriptionModal({
   const loadTenantsWithoutSubscription = async () => {
     setLoadingTenants(true)
     try {
+      // Charger uniquement les tenants qui n'ont PAS d'abonnement actif
+      // Un tenant ne peut avoir qu'un seul abonnement à la fois
       const tenants = await billingService.getTenantsWithoutSubscription()
       setTenantsWithoutSubscription(tenants)
     } catch (error: any) {
@@ -247,7 +249,7 @@ export default function CreateSubscriptionModal({
                         >
                           <option value="starter">Starter</option>
                           <option value="business">Business</option>
-                          <option value="enterprise">Enterprise</option>
+                          <option value="enterprise">Entreprise</option>
                         </select>
                       </div>
                       <div>

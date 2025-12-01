@@ -3,6 +3,7 @@ Management command to create default block types
 """
 from django.core.management.base import BaseCommand
 from blocks.models import BlockType
+from billing.models import PricingPlan
 
 
 class Command(BaseCommand):
@@ -10,6 +11,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Creating default block types...'))
+
+        # Get pricing plans
+        try:
+            starter_plan = PricingPlan.objects.filter(slug='starter').first()
+            business_plan = PricingPlan.objects.filter(slug='business').first()
+            enterprise_plan = PricingPlan.objects.filter(slug='enterprise').first()
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f'⚠️  Could not load pricing plans: {e}'))
+            starter_plan = None
+            business_plan = None
+            enterprise_plan = None
 
         default_blocks = [
             {
@@ -43,6 +55,10 @@ class Command(BaseCommand):
                     'font_size': '1rem',
                     'line_height': '1.6',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 2,
             },
             {
@@ -61,6 +77,10 @@ class Command(BaseCommand):
                     'max_width': '100%',
                     'height': 'auto',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 3,
             },
             {
@@ -79,6 +99,18 @@ class Command(BaseCommand):
                     'padding': '0.75rem 1.5rem',
                     'border_radius': '0.5rem',
                 },
+                'call_to_action': {
+                    'enabled': True,
+                    'type': 'button',
+                    'default_text': 'Cliquez ici',
+                    'default_url': '#',
+                    'styles': {
+                        'primary': {'background': '#3B82F6', 'color': '#FFFFFF'},
+                        'secondary': {'background': '#6B7280', 'color': '#FFFFFF'},
+                        'outline': {'border': '2px solid #3B82F6', 'color': '#3B82F6'},
+                    },
+                },
+                'available_plans': [],  # Gratuit
                 'order': 4,
             },
             {
@@ -94,6 +126,10 @@ class Command(BaseCommand):
                     'display': 'grid',
                     'gap': '1rem',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 5,
             },
             {
@@ -111,6 +147,10 @@ class Command(BaseCommand):
                     'width': '100%',
                     'aspect_ratio': '16/9',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 6,
             },
             {
@@ -126,6 +166,10 @@ class Command(BaseCommand):
                     'display': 'block',
                     'height': '40px',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 7,
             },
             {
@@ -142,6 +186,10 @@ class Command(BaseCommand):
                     'border_top': '1px solid #e5e7eb',
                     'margin': '2rem 0',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 8,
             },
             {
@@ -155,7 +203,13 @@ class Command(BaseCommand):
                     'submit_text': {'type': 'text', 'label': 'Texte du bouton', 'default': 'Envoyer'},
                 },
                 'default_styles': {},
-                'requires_premium': True,
+                'call_to_action': {
+                    'enabled': True,
+                    'type': 'submit',
+                    'default_text': 'Envoyer',
+                    'action': 'submit_form',
+                },
+                'available_plans': ['starter'],  # Nécessite au moins Starter
                 'order': 9,
             },
             {
@@ -172,7 +226,10 @@ class Command(BaseCommand):
                     'width': '100%',
                     'height': '400px',
                 },
-                'requires_premium': True,
+                'call_to_action': {
+                    'enabled': False,  # Pas de CTA pour une carte
+                },
+                'available_plans': ['business'],  # Nécessite au moins Business
                 'order': 10,
             },
             {
@@ -190,6 +247,10 @@ class Command(BaseCommand):
                     'display': 'grid',
                     'gap': '1rem',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 11,
             },
             {
@@ -206,6 +267,10 @@ class Command(BaseCommand):
                 'default_styles': {
                     'padding_left': '1.5rem',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 12,
             },
             {
@@ -224,6 +289,10 @@ class Command(BaseCommand):
                     'border_left': '4px solid #3B82F6',
                     'padding_left': '1rem',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 13,
             },
             {
@@ -236,6 +305,10 @@ class Command(BaseCommand):
                     'items': {'type': 'json', 'label': 'Éléments (array avec title et content)'},
                 },
                 'default_styles': {},
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 14,
             },
             {
@@ -253,6 +326,10 @@ class Command(BaseCommand):
                     'border': '1px solid #e5e7eb',
                     'border_collapse': 'collapse',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 15,
             },
             {
@@ -270,6 +347,10 @@ class Command(BaseCommand):
                     'padding': '1rem',
                     'border_radius': '0.5rem',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 16,
             },
             {
@@ -287,6 +368,10 @@ class Command(BaseCommand):
                     'background': '#f3f4f6',
                     'padding': '1rem',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 17,
             },
             {
@@ -303,6 +388,10 @@ class Command(BaseCommand):
                     'width': '100%',
                     'border': 'none',
                 },
+                'call_to_action': {
+                    'enabled': False,
+                },
+                'available_plans': [],  # Gratuit
                 'order': 18,
             },
             {
@@ -323,6 +412,17 @@ class Command(BaseCommand):
                     'padding': '4rem 2rem',
                     'text_align': 'center',
                 },
+                'call_to_action': {
+                    'enabled': True,
+                    'type': 'button',
+                    'default_text': 'Découvrir',
+                    'default_url': '#',
+                    'position': 'center',
+                    'styles': {
+                        'primary': {'background': '#3B82F6', 'color': '#FFFFFF', 'size': 'large'},
+                    },
+                },
+                'available_plans': [],  # Gratuit
                 'order': 0,
             },
         ]
@@ -331,20 +431,48 @@ class Command(BaseCommand):
         updated_count = 0
 
         for block_data in default_blocks:
+            # Extract available_plans slugs
+            plan_slugs = block_data.get('available_plans', [])
+            call_to_action = block_data.get('call_to_action', {})
+            
+            # Remove these from defaults dict
+            defaults = {
+                'label': block_data['label'],
+                'icon': block_data['icon'],
+                'category': block_data['category'],
+                'description': block_data.get('description', ''),
+                'schema': block_data.get('schema', {}),
+                'default_styles': block_data.get('default_styles', {}),
+                'call_to_action': call_to_action,
+                'order': block_data.get('order', 0),
+                'is_active': True,
+            }
+            
             block_type, created = BlockType.objects.update_or_create(
                 name=block_data['name'],
-                defaults={
-                    'label': block_data['label'],
-                    'icon': block_data['icon'],
-                    'category': block_data['category'],
-                    'description': block_data['description'],
-                    'schema': block_data['schema'],
-                    'default_styles': block_data['default_styles'],
-                    'order': block_data['order'],
-                    'requires_premium': block_data.get('requires_premium', False),
-                    'is_active': True,
-                }
+                defaults=defaults
             )
+            
+            # Set available plans
+            if plan_slugs:
+                plans_to_add = []
+                for slug in plan_slugs:
+                    if slug == 'starter' and starter_plan:
+                        plans_to_add.append(starter_plan)
+                    elif slug == 'business' and business_plan:
+                        plans_to_add.append(business_plan)
+                    elif slug == 'enterprise' and enterprise_plan:
+                        plans_to_add.append(enterprise_plan)
+                
+                if plans_to_add:
+                    block_type.available_plans.set(plans_to_add)
+                    plan_names = ', '.join([p.name for p in plans_to_add])
+                    self.stdout.write(f'    📋 Plans associés: {plan_names}')
+                else:
+                    self.stdout.write(self.style.WARNING(f'    ⚠️  Plans non trouvés pour: {", ".join(plan_slugs)}'))
+            else:
+                # Si aucun plan, c'est gratuit - on s'assure que la liste est vide
+                block_type.available_plans.clear()
             
             if created:
                 created_count += 1

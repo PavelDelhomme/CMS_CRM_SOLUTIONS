@@ -15,7 +15,7 @@ export function useAutoSave({ data, onSave, debounceMs = 2000, enabled = true }:
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const lastSavedDataRef = useRef<any>(null)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timeoutRef = useRef<number | null>(null)
   const isInitialMount = useRef(true)
 
   // Fonction pour comparer deux objets (comparaison profonde simplifiée)

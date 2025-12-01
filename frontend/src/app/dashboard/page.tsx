@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import authService from '@/services/auth.service'
 import TenantLayout from '@/components/TenantLayout'
@@ -9,17 +9,18 @@ import PageLoader from '@/components/PageLoader'
 export default function TenantDashboard() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Le layout gère déjà l'authentification, on récupère juste l'utilisateur
     const currentUser = authService.getStoredUser()
-    if (!currentUser || authService.isSuperAdmin()) {
-      router.push('/admin/dashboard')
-      return
+    if (currentUser) {
+      setUser(currentUser)
     }
-    setUser(currentUser)
-  }, [router])
+    setLoading(false)
+  }, [])
 
-  if (!user) {
+  if (loading || !user) {
     return (
       <TenantLayout title="Dashboard">
         <PageLoader text="Chargement du dashboard..." />
