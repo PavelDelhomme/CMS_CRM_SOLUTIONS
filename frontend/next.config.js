@@ -6,7 +6,8 @@ const nextConfig = {
     domains: ['localhost'],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9193/api',
+    // URL de base sans /api (sera ajouté dans api.ts)
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9193',
   },
 }
 

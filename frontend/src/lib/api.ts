@@ -9,16 +9,23 @@ declare global {
 }
 
 /**
- * Détermine dynamiquement l'URL de l'API selon l'environnement
- * - En production : utilise l'URL configurée
+ * Détermine dynamiquement l'URL de base de l'API (sans /api) selon l'environnement
+ * - En production : utilise l'URL configurée (sans /api)
  * - En développement : détecte automatiquement selon le hostname
- *   - Sur localhost : http://localhost:9495
- *   - Sur sous-domaine tenant : http://localhost:9495 (même backend)
+ *   - Sur localhost : http://localhost:9193
+ *   - Sur sous-domaine tenant : http://localhost:9193 (même backend)
  */
-function getApiUrl(): string {
-  // Si l'URL est définie via env, l'utiliser
+function getApiBaseUrl(): string {
+  // Si l'URL est définie via env, l'utiliser mais retirer /api si présent
   if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
+    let url = process.env.NEXT_PUBLIC_API_URL;
+    // Retirer /api à la fin si présent
+    if (url.endsWith('/api')) {
+      url = url.slice(0, -4);
+    } else if (url.endsWith('/api/')) {
+      url = url.slice(0, -5);
+    }
+    return url;
   }
   
   // En développement, toujours utiliser localhost:9193
@@ -39,10 +46,10 @@ function getApiUrl(): string {
   return 'http://localhost:9193';
 }
 
-const API_URL = getApiUrl();
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
