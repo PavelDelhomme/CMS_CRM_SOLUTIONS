@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import BlockEditor, { Block } from '@/components/editor/BlockEditor'
 import pageService from '@/services/page.service'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 // Templates de pages prédéfinis
 const PAGE_TEMPLATES = [
@@ -128,13 +130,13 @@ export default function NewPage() {
         setTitle(template.name)
       }
       setShowTemplateSelector(false)
-      // Template appliqué
+      toast.success(`Template "${template.name}" appliqué`)
     }
   }
 
   const handleSave = async () => {
     if (!title.trim()) {
-      alert('Le titre est requis')
+      toast.error('Le titre est requis')
       return
     }
 
@@ -157,13 +159,12 @@ export default function NewPage() {
       }
 
       await pageService.create(pageData)
-      alert('Page créée avec succès !')
+      toast.success('Page créée avec succès !')
       router.push('/dashboard/pages')
     } catch (error: any) {
       console.error('Erreur création page:', error)
       
       // Handle validation errors with details
-      let errorMessage = 'Erreur lors de la création de la page'
       if (error.response?.data?.fields) {
         const fields = error.response.data.fields
         const errorMessages = Object.entries(fields)
@@ -172,19 +173,19 @@ export default function NewPage() {
             return `${field}: ${msgs.join(', ')}`
           })
           .join('\n')
-        errorMessage = `Erreurs de validation:\n${errorMessages}`
+        toast.error(`Erreurs de validation:\n${errorMessages}`)
       } else if (error.response?.data?.details) {
         const details = Array.isArray(error.response.data.details) 
           ? error.response.data.details 
           : [error.response.data.details]
-        errorMessage = `Erreurs:\n${details.join('\n')}`
+        toast.error(`Erreurs:\n${details.join('\n')}`)
       } else {
-        errorMessage = error.response?.data?.error || 
+        const errorMessage = error.response?.data?.error || 
                             error.response?.data?.message ||
                             error.message ||
                             'Erreur lors de la création de la page'
+        toast.error(errorMessage)
       }
-      alert(errorMessage)
     } finally {
       setSaving(false)
     }
@@ -202,7 +203,9 @@ export default function NewPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
+    <>
+      <Toaster position="top-right" />
+      <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
       {/* Header */}
       <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '1rem 0' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -442,6 +445,7 @@ export default function NewPage() {
         )}
       </div>
     </div>
+    </>
   )
 }
 
