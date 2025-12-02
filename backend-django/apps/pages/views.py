@@ -541,3 +541,66 @@ class PageViewSet(CORSMixin, viewsets.ModelViewSet):
         )
         add_cors_headers(response, request)
         return response
+
+    @action(detail=False, methods=['get'], url_path='public/(?P<slug>[^/.]+)', permission_classes=[])
+    def public_by_slug(self, request, slug=None):
+        """Get a published page by slug (public access, no authentication required)"""
+        from django_tenants.utils import tenant_context
+        
+        try:
+            # First, try to get from request's tenant context if available
+            from django_tenants.middleware import get_current_tenant
+            current_tenant = get_current_tenant(request)
+            
+            if current_tenant:
+                with tenant_context(current_tenant):
+                    try:
+                        page = Page.objects.get(
+                            slug=slug,
+                            status='published',
+                            published_at__lte=timezone.now()
+                        )
+                        serializer = PageContentSerializer(page)
+                        response = Response(serializer.data)
+                        add_cors_headers(response, request)
+                        return response
+                    except Page.DoesNotExist:
+                        pass
+            
+            # If no tenant context, try to find in any tenant (for development/testing)
+            from apps.tenants.models import Client
+            tenants = Client.objects.filter(is_active=True)
+            
+            for tenant in tenants:
+                try:
+                    with tenant_context(tenant):
+                        page = Page.objects.get(
+                            slug=slug,
+                            status='published',
+                            published_at__lte=timezone.now()
+                        )
+                        serializer = PageContentSerializer(page)
+                        response = Response(serializer.data)
+                        add_cors_headers(response, request)
+                        return response
+                except Page.DoesNotExist:
+                    continue
+            
+            # Page not found
+            response = Response(
+                {'error': 'Page not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+            add_cors_headers(response, request)
+            return response
+            
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error getting public page by slug: {e}", exc_info=True)
+            response = Response(
+                {'error': 'Error loading page'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            add_cors_headers(response, request)
+            return response
