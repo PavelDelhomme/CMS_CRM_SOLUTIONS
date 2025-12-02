@@ -61,6 +61,12 @@ class PageService {
     const response = await api.post(`/pages/${id}/duplicate/`);
     return response.data;
   }
+
+  async getBySlug(slug: string) {
+    // Récupérer une page publiée par slug (sans authentification pour l'affichage public)
+    const response = await api.get(`/pages/public/${slug}/`);
+    return response.data;
+  }
 }
 
 export default new PageService();
