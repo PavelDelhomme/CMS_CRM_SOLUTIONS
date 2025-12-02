@@ -2,7 +2,8 @@ import api from '@/lib/api';
 
 export interface Page {
   id: number;
-  tenant_id: number;
+  tenant?: number;
+  tenant_name?: string;
   title: string;
   slug: string;
   content?: string;
@@ -63,4 +64,3 @@ class PageService {
 }
 
 export default new PageService();
-

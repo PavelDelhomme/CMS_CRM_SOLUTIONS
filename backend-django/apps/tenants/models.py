@@ -16,7 +16,7 @@ class Client(TenantMixin):
     """
     name = models.CharField(max_length=100, verbose_name=_("Nom"))
     description = models.TextField(blank=True, verbose_name=_("Description"))
-    created_on = models.DateField(auto_now_add=True, verbose_name=_("Créé le"))
+    # Note: created_on est géré par TenantMixin qui utilise created_at
     is_active = models.BooleanField(default=True, verbose_name=_("Actif"))
     
     # Configuration
@@ -86,11 +86,18 @@ class InvitationToken(models.Model):
 class Feature(models.Model):
     """Fonctionnalités disponibles pour les tenants"""
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)  # Temporairement nullable pour migration
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def save(self, *args, **kwargs):
+        """Auto-générer le slug à partir du nom si vide"""
+        if not self.slug and self.name:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
     
     class Meta:
         db_table = 'features'
@@ -112,7 +119,7 @@ class UserFeature(models.Model):
         on_delete=models.CASCADE,
         related_name='user_features'
     )
-    granted_at = models.DateTimeField(auto_now_add=True)
+    granted_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)  # Temporairement nullable pour migration
     
     class Meta:
         db_table = 'user_features'

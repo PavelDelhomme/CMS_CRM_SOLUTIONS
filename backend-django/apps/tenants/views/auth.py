@@ -40,7 +40,9 @@ def login_view(request):
 
     if user:
         # Check user status and provide specific error messages
-        if user.status == 'suspended':
+        # Vérifier si l'utilisateur a un attribut status (modèle personnalisé)
+        user_status = getattr(user, 'status', None)
+        if user_status == 'suspended':
             return Response(
                 {
                     'error': 'Compte suspendu',
@@ -49,7 +51,7 @@ def login_view(request):
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
-        elif user.status == 'inactive':
+        elif user_status == 'inactive':
             return Response(
                 {
                     'error': 'Compte désactivé',
@@ -58,7 +60,7 @@ def login_view(request):
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
-        elif not user.is_active_user():
+        elif not user.is_active:
             return Response(
                 {
                     'error': 'Compte non actif',

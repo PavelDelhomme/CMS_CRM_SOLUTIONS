@@ -5,8 +5,8 @@ from .models import Client, Domain
 
 @admin.register(Client)
 class ClientAdmin(TenantAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'schema_name', 'is_active', 'created_on')
-    list_filter = ('is_active', 'created_on')
+    list_display = ('name', 'schema_name', 'is_active')
+    list_filter = ('is_active',)
     search_fields = ('name', 'schema_name')
 
 

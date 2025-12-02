@@ -1,43 +1,53 @@
 """
-Modèles génériques pour la gestion de pages CMS
+Page models for CMS functionality
 """
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.urls import reverse
+from django.utils.text import slugify
+from apps.tenants.models import Client
 
 
 class Page(models.Model):
     """
-    Modèle générique pour les pages du CMS
+    Page model for tenant CMS
     """
-    title = models.CharField(max_length=200, verbose_name=_("Titre"))
-    slug = models.SlugField(unique=True, verbose_name=_("Slug"))
-    content = models.TextField(blank=True, verbose_name=_("Contenu"))
-    meta_description = models.CharField(max_length=255, blank=True, verbose_name=_("Meta description"))
-    meta_keywords = models.CharField(max_length=255, blank=True, verbose_name=_("Meta keywords"))
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('published', 'Published'),
+        ('scheduled', 'Scheduled'),
+    ]
+
+    tenant = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='pages')
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
+    content = models.TextField(blank=True, null=True)
+    blocks = models.JSONField(default=list, blank=True)
     
-    # Statut
-    is_published = models.BooleanField(default=False, verbose_name=_("Publié"))
-    is_homepage = models.BooleanField(default=False, verbose_name=_("Page d'accueil"))
+    # SEO
+    meta_title = models.CharField(max_length=255, blank=True, null=True)
+    meta_description = models.TextField(blank=True, null=True)
+    featured_image = models.CharField(max_length=500, blank=True, null=True)
     
-    # Dates
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Créé le"))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Modifié le"))
-    published_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Publié le"))
+    # Publishing
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    published_at = models.DateTimeField(blank=True, null=True)
     
-    # Ordre
-    order = models.IntegerField(default=0, verbose_name=_("Ordre"))
+    # Order & Homepage
+    order = models.IntegerField(default=0)
+    is_homepage = models.BooleanField(default=False)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = _("Page")
-        verbose_name_plural = _("Pages")
-        ordering = ['order', 'title']
+        db_table = 'pages'
+        ordering = ['order', '-created_at']
+        unique_together = [['tenant', 'slug']]  # Slug unique par tenant
     
     def __str__(self):
         return self.title
     
-    def get_absolute_url(self):
-        if self.is_homepage:
-            return reverse('home')
-        return reverse('page', kwargs={'slug': self.slug})
-
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)

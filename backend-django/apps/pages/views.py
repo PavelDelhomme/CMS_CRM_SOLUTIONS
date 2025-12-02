@@ -485,3 +485,59 @@ class PageViewSet(CORSMixin, viewsets.ModelViewSet):
         )
         add_cors_headers(response, request)
         return response
+
+    @action(detail=True, methods=['post'])
+    def duplicate(self, request, pk=None):
+        """Duplicate a page"""
+        from django_tenants.utils import tenant_context
+        from django.utils.text import slugify
+        
+        user = request.user
+        if hasattr(user, 'tenant') and user.tenant:
+            try:
+                with tenant_context(user.tenant):
+                    original_page = Page.objects.get(pk=pk, tenant=user.tenant)
+                    
+                    # Create a copy
+                    new_page = Page.objects.create(
+                        tenant=user.tenant,
+                        title=f"{original_page.title} (Copie)",
+                        slug=slugify(f"{original_page.slug}-copie"),
+                        content=original_page.content,
+                        blocks=original_page.blocks.copy() if original_page.blocks else [],
+                        meta_title=original_page.meta_title,
+                        meta_description=original_page.meta_description,
+                        featured_image=original_page.featured_image,
+                        status='draft',  # Duplicated pages start as draft
+                        order=original_page.order,
+                        is_homepage=False,  # Don't duplicate homepage status
+                    )
+                    
+                    serializer = PageSerializer(new_page)
+                    response = Response(serializer.data, status=status.HTTP_201_CREATED)
+                    add_cors_headers(response, request)
+                    return response
+            except Page.DoesNotExist:
+                response = Response(
+                    {'error': 'Page not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+                add_cors_headers(response, request)
+                return response
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Error duplicating page: {e}", exc_info=True)
+                response = Response(
+                    {'error': f'Erreur lors de la duplication: {str(e)}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+                add_cors_headers(response, request)
+                return response
+        
+        response = Response(
+            {'error': 'Aucun tenant associé à votre compte'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        add_cors_headers(response, request)
+        return response

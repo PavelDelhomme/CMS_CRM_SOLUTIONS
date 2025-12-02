@@ -1,524 +1,119 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+// Version ultra-simplifiée - Pas de 'use client' pour forcer le SSR
 import Link from 'next/link'
-import authService from '@/services/auth.service'
-import billingService, { PricingPlan } from '@/services/billing.service'
-import PublicHeader from '@/components/PublicHeader'
-import PublicFooter from '@/components/PublicFooter'
-import { isTenantSubdomain } from '@/lib/tenant-utils'
-import pageService, { Page } from '@/services/page.service'
-import settingsService, { SystemSettings } from '@/services/settings.service'
-import MaintenancePage from '@/components/MaintenancePage'
-import { useTheme } from '@/contexts/ThemeContext'
-import BlockPreview from '@/components/editor/BlockPreview'
 
 export default function HomePage() {
-  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([])
-  const [loading, setLoading] = useState(false) // false pour afficher immédiatement
-  const [isTenantDomain, setIsTenantDomain] = useState(false)
-  const [tenantPage, setTenantPage] = useState<Page | null>(null)
-  const [systemSettings, setSystemSettings] = useState<SystemSettings | null>(null)
-  const [checkingMaintenance, setCheckingMaintenance] = useState(false) // false pour afficher immédiatement
-  // VTCBuilder landing page (for localhost:9494)
-  // Vérifier si on doit utiliser les blocs de l'éditeur ou l'ancienne version
-  const [useBlocks, setUseBlocks] = useState(false)
-  const [homepageBlocks, setHomepageBlocks] = useState<any[]>([])
-  const [homepageStatus, setHomepageStatus] = useState<string>('draft')
-
-  useEffect(() => {
-    // Check maintenance mode first (only for public homepage, not tenant domains)
-    // For localhost, always treat as public homepage
-    const isTenant = typeof window !== 'undefined' && isTenantSubdomain()
-    if (!isTenant) {
-      checkMaintenanceMode()
-    } else {
-      setIsTenantDomain(true)
-      loadTenantHomePage()
-    }
-  }, [])
-
-  // Charger les blocs de la homepage publique (pour localhost:9194)
-  useEffect(() => {
-    const checkBlocks = async () => {
-      try {
-        const settings = await settingsService.getSettings()
-        if (settings.public_homepage_blocks && settings.public_homepage_blocks.length > 0) {
-          setHomepageBlocks(settings.public_homepage_blocks)
-          setHomepageStatus(settings.public_homepage_status || 'draft')
-          // Utiliser les blocs seulement si publié
-          setUseBlocks(settings.public_homepage_status === 'published')
-        } else {
-          // Si pas de blocs, ne pas utiliser l'éditeur
-          setUseBlocks(false)
-        }
-      } catch (error) {
-        console.error('Erreur chargement blocs homepage:', error)
-        setUseBlocks(false)
-      }
-    }
-    // For localhost, always treat as public homepage
-    const isTenant = typeof window !== 'undefined' && isTenantSubdomain()
-    if (!isTenant && !isTenantDomain) {
-      checkBlocks()
-    }
-  }, [isTenantDomain])
-
-  const checkMaintenanceMode = async () => {
-    try {
-      const settings = await settingsService.getSettings()
-      setSystemSettings(settings)
-      
-      // If maintenance mode is enabled, don't load other content
-      if (settings.maintenance_mode) {
-        setLoading(false)
-        setCheckingMaintenance(false)
-        return
-      }
-      
-      // If not in maintenance, load pricing plans
-      loadPricingPlans()
-    } catch (error) {
-      console.error('Erreur vérification mode maintenance:', error)
-      // Continue loading if error - IMPORTANT: Ne pas bloquer l'affichage
-      loadPricingPlans()
-    } finally {
-      setCheckingMaintenance(false)
-    }
-  }
-  
-  // IMPORTANT: Charger les pricing plans immédiatement, même si checkMaintenanceMode échoue
-  useEffect(() => {
-    // Charger les pricing plans en parallèle, sans attendre la vérification de maintenance
-    loadPricingPlans()
-  }, [])
-
-  const loadTenantHomePage = async () => {
-    try {
-      setLoading(true)
-      // Load published pages and find homepage
-      const pages = await pageService.getAll({ status: 'published' })
-      const homePage = pages.find((p: Page) => p.is_homepage || p.slug === 'home') || pages[0]
-      setTenantPage(homePage || null)
-    } catch (error) {
-      console.error('Erreur chargement page tenant:', error)
-      setTenantPage(null)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadPricingPlans = async () => {
-    try {
-      const plans = await billingService.getPricingPlans()
-      setPricingPlans(Array.isArray(plans) ? plans : [])
-    } catch (error) {
-      console.error('Erreur chargement plans:', error)
-      // En cas d'erreur, on continue avec une liste vide pour afficher la page d'accueil
-      setPricingPlans([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
-  }
-
-  // Check maintenance mode before showing landing page
-  // Allow admins to bypass maintenance mode
-  // Only check if we're not on a tenant domain and window is available
-  // IMPORTANT: Ne JAMAIS bloquer l'affichage pendant le SSR - toujours afficher le contenu
-  const isAdmin = typeof window !== 'undefined' ? authService.isSuperAdmin() : false
-  // Ne vérifier la maintenance que si on est côté client ET qu'on a fini de charger
-  const isMaintenanceMode = typeof window !== 'undefined' && !isTenantDomain && !checkingMaintenance && systemSettings?.maintenance_mode && !isAdmin
-
-  // Show maintenance page ONLY if maintenance mode is enabled AND we're client-side AND we've finished checking
-  // NEVER block during SSR or initial render
-  if (isMaintenanceMode && typeof window !== 'undefined') {
-    return (
-      <MaintenancePage
-        message={systemSettings?.maintenance_message || 'Le site est actuellement en maintenance. Nous serons de retour très bientôt !'}
-        siteName={systemSettings?.site_name || 'CMS_CRM_SOLUTIONS'}
-      />
-    )
-  }
-
-  // If on tenant subdomain, show tenant public site
-  // Mais seulement si on est côté client (pas pendant SSR)
-  if (isTenantDomain && typeof window !== 'undefined') {
-    if (loading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Chargement du site...</p>
-          </div>
-        </div>
-      )
-    }
-
-    if (!tenantPage) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-          <div className="max-w-md w-full mx-auto px-6 text-center">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 lg:p-12">
-              {/* Construction Icon */}
-              <div className="mb-6">
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-100 rounded-full">
-                  <svg 
-                    className="w-12 h-12 text-blue-600" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" 
-                    />
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" 
-                    />
-                  </svg>
-                </div>
-              </div>
-              
-              {/* Title */}
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                Site en Construction
-              </h1>
-              
-              {/* Description */}
-              <p className="text-gray-600 dark:text-gray-400 mb-2 text-lg">
-                Notre site est actuellement en cours de développement.
-              </p>
-              <p className="text-gray-500 dark:text-gray-400 mb-8 text-sm">
-                Revenez bientôt pour découvrir notre nouveau site web !
-              </p>
-              
-              {/* Divider */}
-              <div className="w-20 h-1 bg-blue-500 mx-auto mb-8 rounded-full"></div>
-              
-              {/* Actions */}
-              <div className="space-y-3">
-                <a
-                  href="/login"
-                  className="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
-                >
-                  🔐 Se connecter pour accéder à l'administration
-                </a>
-                <a
-                  href="/admin"
-                  className="block w-full bg-white dark:bg-gray-800 border-2 border-gray-300 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 dark:bg-gray-900 transition-colors"
-                >
-                  Accéder à l'administration (si connecté)
-                </a>
-              </div>
-              
-              {/* Progress indicator */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-75"></div>
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-150"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    // Render tenant public homepage
-    return (
-      <div className="min-h-screen bg-white dark:bg-gray-800">
-        {/* Simple header for tenant public site */}
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tenantPage.title}</h1>
-              <nav className="hidden md:flex items-center space-x-6">
-                <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Accueil</a>
-                <a href="/book" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Réserver</a>
-                <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100">Contact</a>
-                <a href="/admin" className="text-blue-600 hover:text-blue-800 font-medium">Administration</a>
-              </nav>
-            </div>
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <article>
-            {tenantPage.content && (
-              <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ __html: tenantPage.content }}
-              />
-            )}
-          </article>
-        </main>
-
-        {/* Simple footer */}
-        <footer className="bg-gray-900 text-white py-12 mt-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p>&copy; {new Date().getFullYear()} Tous droits réservés.</p>
-          </div>
-        </footer>
-      </div>
-    )
-  }
-  
-  // Si on utilise les blocs et que la page est publiée, afficher avec BlockPreview
-  if (useBlocks && homepageStatus === 'published' && homepageBlocks.length > 0) {
-    return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
-        <PublicHeader showThemeToggle={true} />
-        <BlockPreview blocks={homepageBlocks} blockTypes={[]} />
-        <PublicFooter />
-      </div>
-    )
-  }
-  
-  // TOUJOURS afficher la page complète immédiatement
-  // Ne pas attendre checkingMaintenance ou loading - afficher le contenu tout de suite
-  // La page complète inclut Header, Hero, Features, Pricing, CTA, Footer
-  // Forcer l'affichage même si loading est true
-  // IMPORTANT: Rendre directement le contenu complet pour éviter les problèmes SSR
-  // Utiliser un header simple pendant le SSR, PublicHeader s'hydratera côté client
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
-      {/* Header simple pour SSR - PublicHeader s'hydratera côté client */}
-      {typeof window !== 'undefined' ? (
-        <PublicHeader showThemeToggle={true} />
-      ) : (
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center space-x-2">
-                <h1 className="text-2xl font-bold text-gray-900">CMS_CRM_SOLUTIONS</h1>
-                <span className="text-xs text-gray-600">Beta</span>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #3b82f6, #9333ea, #ec4899)' }}>
+      {/* Header Simple */}
+      <header style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)', padding: '1rem 0' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>CMS_CRM_SOLUTIONS</h1>
+          <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <Link href="/login" style={{ color: 'white', textDecoration: 'none' }}>Connexion</Link>
+            <Link href="/register" style={{ padding: '0.5rem 1rem', background: 'white', color: '#2563eb', borderRadius: '0.5rem', textDecoration: 'none' }}>Créer un compte</Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '5rem 1rem', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '3rem', fontWeight: 'bold', color: 'white', marginBottom: '1.5rem' }}>
+          CMS_CRM_SOLUTIONS
+        </h1>
+        <p style={{ fontSize: '1.25rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '2rem', maxWidth: '768px', margin: '0 auto 2rem' }}>
+          Plateforme générique CMS/CRM multi-tenant. Créez et gérez vos sites web, contenu, utilisateurs et facturation en toute simplicité.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center', alignItems: 'center' }}>
+          <Link
+            href="/login"
+            style={{ padding: '1rem 2rem', borderRadius: '0.5rem', fontWeight: 'bold', fontSize: '1.125rem', background: 'white', color: '#2563eb', textDecoration: 'none', display: 'inline-block' }}
+          >
+            🔐 Se connecter
+          </Link>
+          <Link
+            href="/register"
+            style={{ padding: '1rem 2rem', borderRadius: '0.5rem', fontWeight: 'bold', fontSize: '1.125rem', background: 'rgba(255, 255, 255, 0.2)', color: 'white', textDecoration: 'none', display: 'inline-block', border: '1px solid rgba(255, 255, 255, 0.3)' }}
+          >
+            🚀 Créer un compte
+          </Link>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section style={{ background: 'white', padding: '5rem 1rem' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', textAlign: 'center', color: '#111827', marginBottom: '3rem' }}>
+            Tout ce dont vous avez besoin
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            {[
+              { icon: '🎨', title: 'CMS Complet', description: 'Gestion de contenu moderne et intuitive. Créez et gérez vos pages sans coder.' },
+              { icon: '👥', title: 'Multi-tenant', description: 'Architecture multi-tenant sécurisée. Chaque client a son propre espace isolé.' },
+              { icon: '💳', title: 'Facturation Intégrée', description: 'Système de facturation complet avec plans tarifaires et abonnements.' },
+              { icon: '📱', title: 'Responsive Design', description: 'Votre site s\'adapte automatiquement aux smartphones et tablettes.' },
+              { icon: '📊', title: 'Analytics & Reporting', description: 'Suivez vos performances, utilisateurs et revenus en temps réel.' },
+              { icon: '🔒', title: 'Sécurisé & Rapide', description: 'Hébergement sécurisé, sauvegardes automatiques, SSL inclus.' },
+            ].map((feature, index) => (
+              <div key={index} style={{ textAlign: 'center', padding: '1.5rem', borderRadius: '0.5rem' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{feature.icon}</div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>{feature.title}</h3>
+                <p style={{ color: '#4b5563' }}>{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section style={{ background: '#f9fafb', padding: '5rem 1rem' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', textAlign: 'center', color: '#111827', marginBottom: '1rem' }}>
+            Tarifs Transparents
+          </h2>
+          <p style={{ textAlign: 'center', color: '#4b5563', marginBottom: '3rem', maxWidth: '672px', margin: '0 auto 3rem' }}>
+            Choisissez le plan adapté à vos besoins. Pas d'engagement, changez de plan à tout moment.
+          </p>
+          <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+            <p style={{ color: '#4b5563', marginBottom: '1.5rem', fontSize: '1.125rem' }}>
+              Les plans tarifaires seront disponibles prochainement.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center', alignItems: 'center' }}>
+              <Link
+                href="/register"
+                style={{ padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: '500', background: '#2563eb', color: 'white', textDecoration: 'none', display: 'inline-block' }}
+              >
+                Créer un compte gratuitement
               </Link>
-              <div className="flex items-center space-x-4">
-                <Link href="/login" className="text-gray-700 hover:text-gray-900 font-medium">Connexion</Link>
-                <Link href="/register" className="px-4 py-2 rounded-lg font-medium bg-white text-blue-600 hover:bg-blue-50">Créer un compte</Link>
-              </div>
+              <Link
+                href="/login"
+                style={{ padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: '500', background: '#e5e7eb', color: '#111827', textDecoration: 'none', display: 'inline-block' }}
+              >
+                Se connecter
+              </Link>
             </div>
           </div>
-        </header>
-      )}
-      
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6">
-          CMS_CRM_SOLUTIONS
-        </h1>
-        <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-          Plateforme générique CMS/CRM multi-tenant. Créez et gérez vos sites web, contenu, utilisateurs et facturation en toute simplicité.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/login"
-            className="px-8 py-4 rounded-lg font-bold text-lg bg-white text-blue-600 hover:bg-blue-50 transition-colors shadow-xl"
-          >
-            🔐 Se connecter
-          </Link>
-          <Link
-            href="/admin"
-            className="px-8 py-4 rounded-lg font-bold text-lg bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30 transition-colors"
-          >
-            ⚙️ Administration
-          </Link>
-          <Link
-            href="/register"
-            className="px-8 py-4 rounded-lg font-bold text-lg bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30 transition-colors"
-          >
-            🚀 Créer un compte
-          </Link>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-white dark:bg-gray-800 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
-            Tout ce dont vous avez besoin
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: '🎨',
-                title: 'CMS Complet',
-                description: 'Gestion de contenu moderne et intuitive. Créez et gérez vos pages sans coder.',
-              },
-              {
-                icon: '👥',
-                title: 'Multi-tenant',
-                description: 'Architecture multi-tenant sécurisée. Chaque client a son propre espace isolé.',
-              },
-              {
-                icon: '💳',
-                title: 'Facturation Intégrée',
-                description: 'Système de facturation complet avec plans tarifaires et abonnements.',
-              },
-              {
-                icon: '📱',
-                title: 'Responsive Design',
-                description: 'Votre site s\'adapte automatiquement aux smartphones et tablettes.',
-              },
-              {
-                icon: '📊',
-                title: 'Analytics & Reporting',
-                description: 'Suivez vos performances, utilisateurs et revenus en temps réel.',
-              },
-              {
-                icon: '🔒',
-                title: 'Sécurisé & Rapide',
-                description: 'Hébergement sécurisé, sauvegardes automatiques, SSL inclus.',
-              },
-            ].map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="bg-gray-50 dark:bg-gray-900 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-4">
-            Tarifs Transparents
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-            Choisissez le plan adapté à vos besoins. Pas d'engagement, changez de plan à tout moment.
-          </p>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Chargement des plans tarifaires...</p>
-            </div>
-          ) : pricingPlans.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">
-                Aucun plan tarifaire disponible pour le moment.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/register"
-                  className="px-6 py-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                >
-                  Créer un compte gratuitement
-                </Link>
-                <Link
-                  href="/login"
-                  className="px-6 py-3 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                >
-                  Se connecter
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {pricingPlans
-                .filter(plan => plan.is_active)
-                .sort((a, b) => (a.order || 0) - (b.order || 0))
-                .map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 relative ${
-                    plan.is_featured ? 'ring-4 ring-blue-500 scale-105' : ''
-                  }`}
-                >
-                  {plan.is_featured && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-                        POPULAIRE
-                      </span>
-                    </div>
-                  )}
-                  
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">{plan.description}</p>
-                  
-                  <div className="mb-6">
-                    <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
-                      {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(plan.price_monthly)}
-                    </span>
-                    <span className="text-gray-600 dark:text-gray-400">/mois</span>
-                    {plan.price_yearly && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        ou {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(plan.price_yearly)}/an (-{Math.round((1 - (plan.price_yearly / (plan.price_monthly * 12))) * 100)}%)
-                      </div>
-                    )}
-                  </div>
-
-                  <ul className="space-y-3 mb-8">
-                    <li className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300">{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300">{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''} max</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300">{plan.max_storage_gb} GB de stockage</span>
-                    </li>
-                    {plan.features && plan.features.map((feature: string, idx: number) => (
-                      <li key={idx} className="flex items-center">
-                        <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href={`/register?plan=${plan.slug}`}
-                    className={`block w-full text-center py-3 rounded-lg font-bold transition-colors ${
-                      plan.is_featured
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
-                    }`}
-                  >
-                    Choisir {plan.name}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+      <section style={{ background: 'linear-gradient(to right, #2563eb, #9333ea)', padding: '5rem 1rem' }}>
+        <div style={{ maxWidth: '896px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', color: 'white', marginBottom: '1rem' }}>
             Prêt à démarrer ?
           </h2>
-          <p className="text-xl text-white/90 mb-8">
+          <p style={{ fontSize: '1.25rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '2rem' }}>
             Créez votre plateforme CMS/CRM dès aujourd'hui. Essai gratuit disponible.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center', alignItems: 'center' }}>
             <Link
               href="/login"
-              className="inline-block px-8 py-4 rounded-lg font-bold text-lg bg-white text-blue-600 hover:bg-blue-50 transition-colors shadow-xl"
+              style={{ padding: '1rem 2rem', borderRadius: '0.5rem', fontWeight: 'bold', fontSize: '1.125rem', background: 'white', color: '#2563eb', textDecoration: 'none', display: 'inline-block' }}
             >
               🔐 Se connecter
             </Link>
             <Link
               href="/register"
-              className="inline-block px-8 py-4 rounded-lg font-bold text-lg bg-white text-blue-600 hover:bg-blue-50 transition-colors shadow-xl"
+              style={{ padding: '1rem 2rem', borderRadius: '0.5rem', fontWeight: 'bold', fontSize: '1.125rem', background: 'white', color: '#2563eb', textDecoration: 'none', display: 'inline-block' }}
             >
               🚀 Créer un compte
             </Link>
@@ -527,264 +122,11 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <PublicFooter />
-    </div>
-  )
-}
-
-function PublicHomePageContent({ pricingPlans, loading }: { pricingPlans: PricingPlan[]; loading: boolean }) {
-  const { resolvedTheme, toggleTheme } = useTheme()
-  
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
-  }
-
-  return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      resolvedTheme === 'dark' 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500'
-    }`}>
-      {/* Header */}
-      <PublicHeader showThemeToggle={true} />
-
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
-        <h1 className={`text-4xl md:text-6xl font-extrabold mb-6 ${
-          resolvedTheme === 'dark' ? 'text-white' : 'text-white'
-        }`}>
-          CMS_CRM_SOLUTIONS
-        </h1>
-        <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-          Plateforme générique CMS/CRM multi-tenant. Créez et gérez vos sites web, contenu, utilisateurs et facturation en toute simplicité.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/login"
-            className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
-              resolvedTheme === 'dark'
-                ? 'bg-white text-gray-900 hover:bg-gray-100'
-                : 'bg-white text-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            🔐 Se connecter
-          </Link>
-          <Link
-            href="/admin"
-            className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors ${
-              resolvedTheme === 'dark'
-                ? 'bg-gray-800/80 backdrop-blur-md text-white hover:bg-gray-800 border border-gray-700'
-                : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30'
-            }`}
-          >
-            ⚙️ Administration
-          </Link>
-          <Link
-            href="/register"
-            className={`px-8 py-4 rounded-lg font-bold text-lg transition-colors ${
-              resolvedTheme === 'dark'
-                ? 'bg-gray-800/80 backdrop-blur-md text-white hover:bg-gray-800 border border-gray-700'
-                : 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30'
-            }`}
-          >
-            🚀 Créer un compte
-          </Link>
+      <footer style={{ background: '#111827', color: 'white', padding: '3rem 1rem' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', textAlign: 'center' }}>
+          <p>&copy; {new Date().getFullYear()} CMS_CRM_SOLUTIONS. Tous droits réservés.</p>
         </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-white dark:bg-gray-800 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-12">
-            Tout ce dont vous avez besoin
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: '🎨',
-                title: 'CMS Complet',
-                description: 'Gestion de contenu moderne et intuitive. Créez et gérez vos pages sans coder.',
-              },
-              {
-                icon: '👥',
-                title: 'Multi-tenant',
-                description: 'Architecture multi-tenant sécurisée. Chaque client a son propre espace isolé.',
-              },
-              {
-                icon: '💳',
-                title: 'Facturation Intégrée',
-                description: 'Système de facturation complet avec plans tarifaires et abonnements.',
-              },
-              {
-                icon: '📱',
-                title: 'Responsive Design',
-                description: 'Votre site s\'adapte automatiquement aux smartphones et tablettes.',
-              },
-              {
-                icon: '📊',
-                title: 'Analytics & Reporting',
-                description: 'Suivez vos performances, utilisateurs et revenus en temps réel.',
-              },
-              {
-                icon: '🔒',
-                title: 'Sécurisé & Rapide',
-                description: 'Hébergement sécurisé, sauvegardes automatiques, SSL inclus.',
-              },
-            ].map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="bg-gray-50 dark:bg-gray-900 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-gray-100 mb-4">
-            Tarifs Transparents
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-            Choisissez le plan adapté à vos besoins. Pas d'engagement, changez de plan à tout moment.
-          </p>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Chargement des plans tarifaires...</p>
-            </div>
-          ) : pricingPlans.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">
-                Aucun plan tarifaire disponible pour le moment.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/register"
-                  className="px-6 py-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                >
-                  Créer un compte gratuitement
-                </Link>
-                <Link
-                  href="/login"
-                  className="px-6 py-3 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                >
-                  Se connecter
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {pricingPlans
-                .filter(plan => plan.is_active)
-                .sort((a, b) => (a.order || 0) - (b.order || 0))
-                .map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 relative ${
-                    plan.is_featured ? 'ring-4 ring-blue-500 scale-105' : ''
-                  }`}
-                >
-                  {plan.is_featured && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-                        POPULAIRE
-                      </span>
-                    </div>
-                  )}
-                  
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">{plan.description}</p>
-                  
-                  <div className="mb-6">
-                    <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
-                      {formatPrice(plan.price_monthly)}
-                    </span>
-                    <span className="text-gray-600 dark:text-gray-400">/mois</span>
-                    {plan.price_yearly && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        ou {formatPrice(plan.price_yearly)}/an (-{Math.round((1 - (plan.price_yearly / (plan.price_monthly * 12))) * 100)}%)
-                      </div>
-                    )}
-                  </div>
-
-                  <ul className="space-y-3 mb-8">
-                    <li className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300">{plan.max_sites} site{plan.max_sites > 1 ? 's' : ''}</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300">{plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''} max</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span className="text-gray-700 dark:text-gray-300">{plan.max_storage_gb} GB de stockage</span>
-                    </li>
-                    {plan.features && plan.features.map((feature: string, idx: number) => (
-                      <li key={idx} className="flex items-center">
-                        <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href={`/register?plan=${plan.slug}`}
-                    className={`block w-full text-center py-3 rounded-lg font-bold transition-colors ${
-                      plan.is_featured
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
-                    }`}
-                  >
-                    Choisir {plan.name}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Prêt à démarrer ?
-          </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Créez votre plateforme CMS/CRM dès aujourd'hui. Essai gratuit disponible.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/login"
-              className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
-                resolvedTheme === 'dark'
-                  ? 'bg-white text-gray-900 hover:bg-gray-100'
-                  : 'bg-white text-blue-600 hover:bg-blue-50'
-              }`}
-            >
-              🔐 Se connecter
-            </Link>
-            <Link
-              href="/register"
-              className={`inline-block px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-xl ${
-                resolvedTheme === 'dark'
-                  ? 'bg-white text-gray-900 hover:bg-gray-100'
-                  : 'bg-white text-blue-600 hover:bg-blue-50'
-              }`}
-            >
-              🚀 Créer un compte
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <PublicFooter />
+      </footer>
     </div>
   )
 }

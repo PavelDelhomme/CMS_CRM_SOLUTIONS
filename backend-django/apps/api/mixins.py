@@ -2,7 +2,7 @@
 DRF Mixins for common functionality, including automatic CORS headers
 """
 from rest_framework.response import Response
-from api.utils import add_cors_headers
+from apps.api.utils import add_cors_headers
 
 
 class CORSMixin:

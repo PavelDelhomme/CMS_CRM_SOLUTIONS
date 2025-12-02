@@ -37,6 +37,7 @@ SHARED_APPS = [
     
     # Local apps (shared)
     'apps.tenants',
+    'apps.plugins',  # Système de plugins
 ]
 
 TENANT_APPS = [
@@ -60,11 +61,13 @@ INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in S
 
 # Authentication backends (including Guardian)
 AUTHENTICATION_BACKENDS = (
+    'apps.tenants.backends.EmailBackend',  # Authentification par email
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
 MIDDLEWARE = [
+    'apps.api.middleware.CORSResponseMiddleware',  # Intercepter OPTIONS avant TenantMainMiddleware
     'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -116,6 +119,7 @@ DATABASE_ROUTERS = (
 TENANT_MODEL = 'tenants.Client'
 TENANT_DOMAIN_MODEL = 'tenants.Domain'
 PUBLIC_SCHEMA_NAME = config('PUBLIC_SCHEMA_NAME', default='public')
+PUBLIC_SCHEMA_URLCONF = 'config.core.urls'  # URLs pour le schéma public
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -177,6 +181,30 @@ CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
     default='http://localhost:9194,http://localhost:3000,http://localhost:9494'
 ).split(',')
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
