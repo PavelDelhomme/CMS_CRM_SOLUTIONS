@@ -226,3 +226,25 @@ prod-start: ## Démarre en production
 prod-stop: ## Arrête la production
 	docker-compose -f docker-compose.prod.yml down
 
+# E2E Tests commands
+test-e2e: ## Run E2E tests with Playwright (via Docker)
+	@echo "🚀 Running E2E tests with Playwright..."
+	@docker-compose --profile test up --build playwright
+	@echo "✅ Tests completed. Check playwright-report/ for results."
+
+test-e2e-ui: ## Run E2E tests in UI mode (interactive)
+	@echo "🎨 Running E2E tests in UI mode..."
+	@docker-compose --profile test run --rm playwright npx playwright test --ui
+
+test-e2e-debug: ## Run E2E tests in debug mode
+	@echo "🐛 Running E2E tests in debug mode..."
+	@docker-compose --profile test run --rm playwright npx playwright test --debug
+
+test-e2e-report: ## Show E2E test report
+	@echo "📊 Opening E2E test report..."
+	@docker-compose --profile test run --rm playwright npx playwright show-report
+
+test-e2e-headless: ## Run E2E tests in headless mode (default)
+	@echo "🤖 Running E2E tests in headless mode..."
+	@docker-compose --profile test run --rm playwright npx playwright test --headed=false
+

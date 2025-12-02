@@ -42,7 +42,7 @@ export default defineConfig({
     
     /* Base URL to use in actions like `await page.goto('/')`. */
     /* In Docker, use service names; locally, use localhost */
-    baseURL: process.env.BASE_URL || 'http://localhost:9194',
+    baseURL: process.env.BASE_URL || process.env.CI ? 'http://frontend:3000' : 'http://localhost:9194',
     
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -84,9 +84,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   /* Disabled in Docker - services are managed by docker-compose */
-  webServer: process.env.CI ? undefined : {
+  webServer: (process.env.CI || process.env.BASE_URL) ? undefined : {
     command: 'echo "Frontend should be running. Use: make start"',
-    url: process.env.BASE_URL || 'http://localhost:9194',
+    url: 'http://localhost:9194',
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },

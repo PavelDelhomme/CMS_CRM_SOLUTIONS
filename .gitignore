@@ -1,4 +1,7 @@
 # Playwright
-/test-results/
-/playwright-report/
-/playwright/.cache/
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
+frontend/test-results/
+frontend/playwright-report/
+frontend/playwright/.cache/
