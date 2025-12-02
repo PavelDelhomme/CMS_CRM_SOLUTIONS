@@ -16,6 +16,7 @@ import logging
 
 from ..models import Client, PasswordResetToken, InvitationToken
 from ..serializers import UserSerializer, UserRegisterSerializer
+from ..utils import is_super_admin
 from .helpers import add_cors_headers
 
 User = get_user_model()
@@ -39,7 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
             
             # Super admin can filter by tenant_id parameter or see all users
             try:
-                if user.is_super_admin():
+                if is_super_admin(user):
                     tenant_id = self.request.query_params.get('tenant_id')
                     if tenant_id:
                         try:
@@ -124,7 +125,7 @@ class UserViewSet(viewsets.ModelViewSet):
         request_user = request.user
         
         # Check permissions
-        if not request_user.is_super_admin():
+        if not is_super_admin(request_user):
             # Tenant admin can only update users in their tenant
             if not request_user.is_tenant_admin() or request_user.tenant != user.tenant:
                 return Response(
@@ -134,7 +135,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # Prevent changing super-admin role unless you're super-admin
         if 'role' in request.data and request.data['role'] != 'super-admin':
-            if user.is_super_admin() and not request_user.is_super_admin():
+            if is_super_admin(user) and not is_super_admin(request_user):
                 return Response(
                     {'error': 'Seul un super admin peut modifier le rôle d\'un super admin'},
                     status=status.HTTP_403_FORBIDDEN
@@ -201,7 +202,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         
         # Prevent deletion of super-admin
-        if user.is_super_admin():
+        if is_super_admin(user):
             return Response(
                 {'error': 'Cannot delete super-admin user'},
                 status=status.HTTP_403_FORBIDDEN
@@ -244,7 +245,7 @@ class UserViewSet(viewsets.ModelViewSet):
         Super admin action to impersonate a user
         Creates a temporary token for the target user and stores the original admin ID
         """
-        if not request.user.is_super_admin():
+        if not is_super_admin(request.user):
             return Response(
                 {'error': 'Seul un super admin peut impersonner un utilisateur'},
                 status=status.HTTP_403_FORBIDDEN
@@ -253,7 +254,7 @@ class UserViewSet(viewsets.ModelViewSet):
         target_user = self.get_object()
         
         # Cannot impersonate another super admin
-        if target_user.is_super_admin():
+        if is_super_admin(target_user):
             return Response(
                 {'error': 'Impossible d\'impersonner un autre super admin'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -444,7 +445,7 @@ class UserViewSet(viewsets.ModelViewSet):
         request_user = request.user
         
         # Check permissions
-        if not request_user.is_super_admin():
+        if not is_super_admin(request_user):
             # Tenant admin can only reset passwords for users in their tenant
             if not request_user.is_tenant_admin() or request_user.tenant != user_to_reset.tenant:
                 return Response(

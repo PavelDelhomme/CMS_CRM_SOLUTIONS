@@ -26,7 +26,7 @@ def add_cors_headers(response, request):
     try:
         origin = request.META.get('HTTP_ORIGIN')
         if origin:
-            if settings.DEBUG:
+            if django_settings.DEBUG:
                 # En développement, autoriser tous les localhost, 127.0.0.1 et 192.168.1.134
                 if (origin.startswith('http://localhost') or 
                     origin.startswith('http://127.0.0.1') or
@@ -36,10 +36,10 @@ def add_cors_headers(response, request):
                     origin.startswith('https://192.168.1.134')):
                     response['Access-Control-Allow-Origin'] = origin
                     response['Access-Control-Allow-Credentials'] = 'true'
-                    response['Access-Control-Allow-Methods'] = ', '.join(settings.CORS_ALLOW_METHODS)
-                    response['Access-Control-Allow-Headers'] = ', '.join(settings.CORS_ALLOW_HEADERS)
+                    response['Access-Control-Allow-Methods'] = ', '.join(django_settings.CORS_ALLOW_METHODS)
+                    response['Access-Control-Allow-Headers'] = ', '.join(django_settings.CORS_ALLOW_HEADERS)
             else:
-                if hasattr(settings, 'CORS_ALLOWED_ORIGINS') and origin in settings.CORS_ALLOWED_ORIGINS:
+                if hasattr(django_settings, 'CORS_ALLOWED_ORIGINS') and origin in django_settings.CORS_ALLOWED_ORIGINS:
                     response['Access-Control-Allow-Origin'] = origin
                     response['Access-Control-Allow-Credentials'] = 'true'
     except Exception as e:
@@ -80,7 +80,7 @@ class PricingPlanViewSet(viewsets.ModelViewSet):
             logger.error(f"Error in PricingPlanViewSet.list: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching pricing plans',
-                'message': str(e) if settings.DEBUG else 'Unable to load pricing plans'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load pricing plans'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response
@@ -265,7 +265,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             logger.error(f"Error in tenants_without_subscription: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching tenants without subscription',
-                'message': str(e) if settings.DEBUG else 'Unable to load tenants'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load tenants'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response
@@ -280,7 +280,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             logger.error(f"Error in SubscriptionViewSet.list: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching subscriptions',
-                'message': str(e) if settings.DEBUG else 'Unable to load subscriptions'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load subscriptions'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response
@@ -549,7 +549,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             error_response = Response(
                 {
                     'error': 'An error occurred while creating the subscription',
-                    'message': str(e) if settings.DEBUG else 'Unable to create subscription'
+                    'message': str(e) if django_settings.DEBUG else 'Unable to create subscription'
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
@@ -878,7 +878,7 @@ class InvoiceViewSet(viewsets.ReadOnlyModelViewSet):
             logger.error(f"Error in InvoiceViewSet.list: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching invoices',
-                'message': str(e) if settings.DEBUG else 'Unable to load invoices'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load invoices'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response
@@ -1343,7 +1343,7 @@ class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
             logger.error(f"Error in PaymentViewSet.list: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching payments',
-                'message': str(e) if settings.DEBUG else 'Unable to load payments'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load payments'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response
@@ -1385,7 +1385,7 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
             logger.error(f"Error in PaymentMethodViewSet.list: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching payment methods',
-                'message': str(e) if settings.DEBUG else 'Unable to load payment methods'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load payment methods'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response
@@ -1603,7 +1603,7 @@ def billing_stats(request):
         logger.error(f"Error in billing_stats: {e}", exc_info=True)
         error_response = Response({
             'error': 'An error occurred while fetching billing statistics',
-            'message': str(e) if settings.DEBUG else 'Unable to load billing statistics',
+            'message': str(e) if django_settings.DEBUG else 'Unable to load billing statistics',
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         add_cors_headers(error_response, request)
         return error_response
@@ -1690,7 +1690,7 @@ class InvoiceTemplateViewSet(viewsets.ModelViewSet):
             logger.error(f"Error in InvoiceTemplateViewSet.list: {e}", exc_info=True)
             error_response = Response({
                 'error': 'An error occurred while fetching invoice templates',
-                'message': str(e) if settings.DEBUG else 'Unable to load templates'
+                'message': str(e) if django_settings.DEBUG else 'Unable to load templates'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             add_cors_headers(error_response, request)
             return error_response

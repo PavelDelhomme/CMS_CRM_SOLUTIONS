@@ -10,6 +10,13 @@ COPY playwright.config.ts ./
 # Installer les dépendances
 RUN npm ci
 
+# Installer curl pour les healthchecks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Installer les navigateurs Playwright (déjà inclus dans l'image, mais on s'assure qu'ils sont à jour)
+# Dans Docker, tous les navigateurs sont disponibles car l'image inclut toutes les dépendances
+RUN npx playwright install --with-deps chromium firefox webkit
+
 # Copier le reste du code
 COPY . .
 

@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from django.utils import timezone
 from apps.api.mixins import CORSMixin
 from apps.api.utils import add_cors_headers
+from apps.tenants.utils import is_super_admin
 from .models import Page
 from .serializers import PageSerializer, PageListSerializer, PageContentSerializer
 
@@ -63,7 +64,7 @@ class PageViewSet(CORSMixin, viewsets.ModelViewSet):
                 return response
         
         # Super admin with tenant_id
-        if user.is_super_admin():
+        if is_super_admin(user):
             tenant_id = request.query_params.get('tenant_id')
             if tenant_id:
                 try:

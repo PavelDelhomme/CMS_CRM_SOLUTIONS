@@ -6,6 +6,7 @@ import BlockEditor, { Block } from '@/components/editor/BlockEditor'
 import pageService from '@/services/page.service'
 import toast from 'react-hot-toast'
 import { Toaster } from 'react-hot-toast'
+import TenantLayout from '@/components/TenantLayout'
 
 // Templates de pages prédéfinis
 const PAGE_TEMPLATES = [
@@ -193,34 +194,57 @@ export default function NewPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
-          <p style={{ color: '#6b7280' }}>Chargement...</p>
+      <TenantLayout title="Nouvelle Page" subtitle="Chargement...">
+        <div className="flex items-center justify-center py-12 min-h-screen bg-gray-100 dark:bg-gray-900">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Chargement...</p>
+          </div>
         </div>
-      </div>
+      </TenantLayout>
     )
   }
 
-  return (
-    <>
-      <Toaster position="top-right" />
-      <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
-      {/* Header */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '1rem 0' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827' }}>CMS_CRM_SOLUTIONS</h1>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <a href="/dashboard" style={{ color: '#6b7280', textDecoration: 'none' }}>Dashboard</a>
-            <a href="/dashboard/pages" style={{ color: '#6b7280', textDecoration: 'none' }}>Pages</a>
-            <a href="/login" style={{ padding: '0.5rem 1rem', background: '#ef4444', color: 'white', borderRadius: '0.5rem', textDecoration: 'none' }}>
-              Déconnexion
-            </a>
-          </div>
-        </div>
-      </header>
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      {!showTemplateSelector && (
+        <button
+          onClick={() => {
+            setShowTemplateSelector(true)
+            setSelectedTemplate(null)
+            setBlocks([])
+          }}
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+        >
+          Changer de template
+        </button>
+      )}
+      <button
+        onClick={() => router.push('/dashboard/pages')}
+        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+      >
+        Annuler
+      </button>
+      {!showTemplateSelector && (
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {saving ? 'Création...' : 'Créer la page'}
+        </button>
+      )}
+    </div>
+  )
 
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1rem' }}>
+  return (
+    <TenantLayout 
+      title="Nouvelle Page" 
+      subtitle="Créez votre page avec l'éditeur visuel"
+      headerActions={headerActions}
+    >
+      <Toaster position="top-right" />
+      <div className="max-w-6xl mx-auto">
         {showTemplateSelector ? (
           /* Template Selector */
           <div style={{ background: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '2rem' }}>
@@ -444,8 +468,7 @@ export default function NewPage() {
           </div>
         )}
       </div>
-    </div>
-    </>
+    </TenantLayout>
   )
 }
 

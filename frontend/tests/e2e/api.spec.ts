@@ -10,7 +10,9 @@ test.describe('API Backend', () => {
   test('devrait pouvoir accéder à l\'API backend', async ({ request }) => {
     // Tester l'endpoint de l'API (sans authentification)
     // Dans Docker, utiliser le nom du service; localement, utiliser localhost
-    const apiUrl = process.env.API_URL || 'http://backend:8000/api/';
+    // Détecter si on est dans Docker (via CI ou API_URL)
+    const isDocker = process.env.CI === 'true' || process.env.API_URL?.includes('backend:8000');
+    const apiUrl = process.env.API_URL || (isDocker ? 'http://backend:8000/api/' : 'http://localhost:9193/api/');
     const response = await request.get(apiUrl);
     
     // L'API devrait répondre (même si c'est une erreur 401/404)

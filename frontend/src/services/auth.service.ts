@@ -18,9 +18,16 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
   tenant_id?: number;
+  tenant_name?: string;
   roles: any[];
   permissions: any[];
+  is_superuser?: boolean;
+  is_staff?: boolean;
+  is_active?: boolean;
 }
 
 class AuthService {
@@ -90,11 +97,23 @@ class AuthService {
   isSuperAdmin(): boolean {
     if (typeof window === 'undefined') return false; // SSR safety
     const user = this.getStoredUser();
-    if (!user || !user.roles) return false;
-    return user.roles.some((role: any) => {
-      const roleValue = typeof role === 'string' ? role : role.name || role.role;
-      return roleValue === 'super-admin';
-    }) || (user as any).role === 'super-admin';
+    if (!user) return false;
+    
+    // Vérifier is_superuser directement
+    if ((user as any).is_superuser === true) {
+      return true;
+    }
+    
+    // Vérifier dans les roles (supporte 'super_admin' et 'super-admin')
+    if (user.roles && Array.isArray(user.roles)) {
+      return user.roles.some((role: any) => {
+        const roleValue = typeof role === 'string' ? role : role.name || role.role;
+        return roleValue === 'super_admin' || roleValue === 'super-admin';
+      });
+    }
+    
+    // Fallback: vérifier l'ancien format role
+    return (user as any).role === 'super_admin' || (user as any).role === 'super-admin';
   }
 
   isTenantAdmin(): boolean {

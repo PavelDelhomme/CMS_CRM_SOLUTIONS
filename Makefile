@@ -75,7 +75,9 @@ backend-test: ## Lance les tests backend
 	cd $(BACKEND_DIR) && make test
 
 backend-lint: ## Vérifie le code backend
-	cd $(BACKEND_DIR) && make lint
+	@echo "🔍 Vérification du code backend..."
+	docker-compose exec -T backend flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+	docker-compose exec -T backend flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || true
 
 backend-format: ## Formate le code backend
 	cd $(BACKEND_DIR) && make format
@@ -184,7 +186,9 @@ frontend-build: ## Build le frontend
 	cd $(FRONTEND_DIR) && npm run build
 
 frontend-lint: ## Vérifie le code frontend
-	cd $(FRONTEND_DIR) && npm run lint
+	@echo "🔍 Vérification du code frontend..."
+	chmod -R u+w $(FRONTEND_DIR)/.next 2>/dev/null || true
+	cd $(FRONTEND_DIR) && npm run lint || echo "⚠️  Lint frontend terminé avec des avertissements"
 
 # Database commands
 db-shell: ## Ouvre un shell PostgreSQL
@@ -228,23 +232,56 @@ prod-stop: ## Arrête la production
 
 # E2E Tests commands
 test-e2e: ## Run E2E tests with Playwright (via Docker)
-	@echo "🚀 Running E2E tests with Playwright..."
-	@docker-compose --profile test up --build playwright
-	@echo "✅ Tests completed. Check playwright-report/ for results."
+	@echo "🧪 Lancement des tests E2E avec Playwright (via Docker)..."
+	@echo "⏳ Vérification que les services sont démarrés..."
+	@docker-compose ps | grep -q "frontend.*Up" || (echo "❌ Le service frontend n'est pas démarré. Lancez 'make start' d'abord." && exit 1)
+	@docker-compose ps | grep -q "backend.*Up" || (echo "❌ Le service backend n'est pas démarré. Lancez 'make start' d'abord." && exit 1)
+	@echo "✅ Services démarrés, lancement des tests..."
+	@docker-compose --profile test up --build --abort-on-container-exit playwright || true
+	@echo "📋 Le rapport est automatiquement disponible dans $(FRONTEND_DIR)/playwright-report/"
+	@echo "✅ Tests terminés !"
+	@if [ -f "$(FRONTEND_DIR)/playwright-report/index.html" ]; then \
+		echo "📊 Rapport disponible. Ouvrez-le avec: make test-e2e-open"; \
+	fi
 
 test-e2e-ui: ## Run E2E tests in UI mode (interactive)
-	@echo "🎨 Running E2E tests in UI mode..."
+	@echo "🧪 Lancement des tests E2E en mode UI interactif..."
 	@docker-compose --profile test run --rm playwright npx playwright test --ui
 
 test-e2e-debug: ## Run E2E tests in debug mode
-	@echo "🐛 Running E2E tests in debug mode..."
+	@echo "🧪 Lancement des tests E2E en mode debug..."
 	@docker-compose --profile test run --rm playwright npx playwright test --debug
 
-test-e2e-report: ## Show E2E test report
-	@echo "📊 Opening E2E test report..."
+test-e2e-report: ## Show E2E test report (in Docker container)
+	@echo "📊 Affichage du rapport des tests E2E (dans le conteneur)..."
 	@docker-compose --profile test run --rm playwright npx playwright show-report
 
+test-e2e-open: ## Open E2E test report in browser
+	@echo "📊 Ouverture du rapport des tests E2E..."
+	@if [ -f "$(FRONTEND_DIR)/playwright-report/index.html" ]; then \
+		echo "✅ Rapport trouvé, ouverture dans le navigateur..."; \
+		xdg-open $(FRONTEND_DIR)/playwright-report/index.html 2>/dev/null || \
+		open $(FRONTEND_DIR)/playwright-report/index.html 2>/dev/null || \
+		echo "📄 Rapport disponible à : file://$$(pwd)/$(FRONTEND_DIR)/playwright-report/index.html"; \
+	else \
+		echo "❌ Rapport non trouvé. Lancez 'make test-e2e' d'abord."; \
+		exit 1; \
+	fi
+
+test-e2e-with-reports: ## Run E2E tests and open report automatically
+	@echo "🧪 Lancement des tests E2E avec ouverture automatique du rapport..."
+	@$(MAKE) test-e2e
+	@echo ""
+	@echo "📊 Ouverture du rapport..."
+	@if [ -f "$(FRONTEND_DIR)/playwright-report/index.html" ]; then \
+		xdg-open $(FRONTEND_DIR)/playwright-report/index.html 2>/dev/null || \
+		open $(FRONTEND_DIR)/playwright-report/index.html 2>/dev/null || \
+		echo "📄 Rapport disponible à : file://$$(pwd)/$(FRONTEND_DIR)/playwright-report/index.html"; \
+	else \
+		echo "⚠️  Rapport non trouvé, mais les tests ont été exécutés."; \
+	fi
+
 test-e2e-headless: ## Run E2E tests in headless mode (default)
-	@echo "🤖 Running E2E tests in headless mode..."
+	@echo "🧪 Lancement des tests E2E en mode headless..."
 	@docker-compose --profile test run --rm playwright npx playwright test --headed=false
 

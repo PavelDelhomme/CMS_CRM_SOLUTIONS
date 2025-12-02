@@ -20,20 +20,24 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name', 'name',
-            'tenant', 'tenant_id', 'tenant_name', 'avatar', 'phone', 'role', 'roles', 'status',
-            'permissions', 'email_verified_at', 'created_at', 'updated_at', 'password'
+            'tenant_id', 'tenant_name', 'roles', 'permissions', 'is_superuser', 'is_staff', 'is_active',
+            'date_joined', 'last_login', 'password'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'tenant_name', 'tenant_id']
+        read_only_fields = ['id', 'date_joined', 'last_login', 'tenant_name', 'tenant_id', 'is_superuser', 'is_staff']
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
-            'tenant': {'required': False, 'allow_null': True},
             'username': {'required': False},  # Allow partial updates without username
             'email': {'required': False},  # Allow partial updates without email
         }
 
     def get_roles(self, obj):
-        """Return roles as array"""
-        return [obj.role] if obj.role else []
+        """Return roles as array - based on is_superuser and is_staff"""
+        roles = []
+        if obj.is_superuser:
+            roles.append('super_admin')
+        if obj.is_staff:
+            roles.append('staff')
+        return roles
 
     def get_permissions(self, obj):
         """Return user permissions"""
@@ -49,23 +53,23 @@ class UserSerializer(serializers.ModelSerializer):
         try:
             data = super().to_representation(instance)
             try:
-                if instance.tenant:
+                # Try to access tenant if it exists (may not exist for super admins)
+                if hasattr(instance, 'tenant') and instance.tenant:
                     data['tenant_id'] = instance.tenant.id
                     data['tenant_name'] = instance.tenant.name
                     # Also include tenant object for compatibility
-                    if 'tenant' not in data or not data.get('tenant'):
-                        data['tenant'] = {
-                            'id': instance.tenant.id,
-                            'name': instance.tenant.name,
-                        }
+                    data['tenant'] = {
+                        'id': instance.tenant.id,
+                        'name': instance.tenant.name,
+                    }
                 else:
                     data['tenant_id'] = None
                     data['tenant_name'] = None
                     data['tenant'] = None
-            except Exception as e:
-                # If tenant access fails, set to None
+            except (AttributeError, Exception) as e:
+                # If tenant access fails (e.g., no tenant field or no tenant), set to None
                 import logging
-                logging.getLogger(__name__).warning(f"Error accessing tenant for user {instance.id}: {e}")
+                logging.getLogger(__name__).debug(f"User {instance.id} has no tenant: {e}")
                 data['tenant_id'] = None
                 data['tenant_name'] = None
                 data['tenant'] = None
@@ -77,26 +81,22 @@ class UserSerializer(serializers.ModelSerializer):
             return {
                 'id': instance.id if instance else None,
                 'email': instance.email if instance and hasattr(instance, 'email') else None,
+                'username': instance.username if instance and hasattr(instance, 'username') else None,
+                'is_superuser': instance.is_superuser if instance and hasattr(instance, 'is_superuser') else False,
                 'error': 'Error serializing user data'
             }
 
     def create(self, validated_data):
         """Create user with encrypted password and quota check"""
-        # Check quota if user is being added to a tenant
-        tenant = validated_data.get('tenant')
-        if tenant:
-            from ..quota import check_user_quota
-            can_add, current_count, max_users, error_message = check_user_quota(tenant)
-            
-            if not can_add:
-                from rest_framework.exceptions import ValidationError
-                raise ValidationError({
-                    'tenant': error_message,
-                    'quota': {
-                        'current': current_count,
-                        'max': max_users,
-                    }
-                })
+        # Remove fields that don't exist on the User model
+        validated_data.pop('tenant', None)  # tenant is not a direct field on User model
+        
+        # Check quota if user is being added to a tenant (would need to be handled separately)
+        # tenant = validated_data.get('tenant')
+        # if tenant:
+        #     from ..quota import check_user_quota
+        #     can_add, current_count, max_users, error_message = check_user_quota(tenant)
+        #     ...
         
         password = validated_data.pop('password', None)
         user = super().create(validated_data)
@@ -134,7 +134,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 'email', 'first_name', 'last_name',
-            'password', 'password_confirm', 'phone', 'tenant'
+            'password', 'password_confirm'
         ]
 
     def validate(self, attrs):
@@ -155,9 +155,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'last_name', 'avatar', 'phone',
-            'email_verified_at'
+            'id', 'first_name', 'last_name', 'email'
         ]
-        read_only_fields = ['id', 'email_verified_at']
+        read_only_fields = ['id']
 
 

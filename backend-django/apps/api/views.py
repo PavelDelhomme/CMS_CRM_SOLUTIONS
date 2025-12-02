@@ -10,6 +10,7 @@ from django.db.models import Count, Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 from apps.tenants.models import Client, User
+from apps.tenants.utils import is_super_admin
 from apps.api.utils import add_cors_headers
 from apps.api.helpers import get_super_admin_stats, get_tenant_stats
 import logging
@@ -47,7 +48,7 @@ class DashboardView(APIView):
             user = request.user
             stats = self._get_base_stats()
 
-            if user.is_super_admin():
+            if is_super_admin(user):
                 stats.update(get_super_admin_stats())
             elif hasattr(user, 'tenant') and user.tenant:
                 stats.update(get_tenant_stats(user.tenant))
@@ -80,7 +81,7 @@ class DetailedStatsView(APIView):
             
             user = request.user
             
-            if not user.is_super_admin():
+            if not is_super_admin(user):
                 error_response = Response({
                     'error': 'Only super admin can access detailed statistics'
                 }, status=403)

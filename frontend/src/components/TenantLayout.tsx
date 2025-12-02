@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Sidebar from './Sidebar'
+import Drawer from './Drawer'
+import DesktopSidebar from './DesktopSidebar'
 import ImpersonationBanner from './ImpersonationBanner'
-import { useTheme } from '@/contexts/ThemeContext'
+import ThemeToggle from './ThemeToggle'
 
 interface TenantLayoutProps {
   children: React.ReactNode
@@ -13,11 +14,10 @@ interface TenantLayoutProps {
 }
 
 export default function TenantLayout({ children, title, subtitle, headerActions }: TenantLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { resolvedTheme, toggleTheme } = useTheme()
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
       {/* Impersonation Banner */}
       <ImpersonationBanner />
       
@@ -25,11 +25,12 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
       <header className="lg:hidden bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 sticky top-0 z-30">
         <div className="flex items-center justify-between px-4 py-3">
           <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100"
+            onClick={() => setDrawerOpen(true)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label="Ouvrir le menu"
+            type="button"
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
+            <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -39,71 +40,37 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
             {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 truncate px-2">{subtitle}</p>}
           </div>
           
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
-            aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-            title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-          >
-            {resolvedTheme === 'dark' ? (
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            ) : (
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            )}
-          </button>
+          <ThemeToggle />
         </div>
       </header>
 
       <div className="flex">
-        {/* Desktop Sidebar - Hidden on mobile, shown on desktop */}
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {/* Desktop Sidebar - Always visible on desktop */}
+        <DesktopSidebar />
 
-        {/* Mobile Sidebar */}
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        {/* Mobile Drawer - Controlled by state */}
+        <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
         {/* Main Content */}
-        <div className="flex-1 lg:ml-64">
+        <div className="flex-1 w-full min-w-0 lg:ml-64">
           {/* Desktop Header */}
-          <header className="hidden lg:block bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
+          <header className="hidden lg:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-20">
             <div className="w-full py-6 px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
-                  {subtitle && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>}
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight truncate">{title}</h1>
+                  {subtitle && <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mt-1 truncate">{subtitle}</p>}
                 </div>
-                <div className="flex items-center gap-4">
-                  {/* Dark Mode Toggle */}
-                  <button
-                    onClick={toggleTheme}
-                    className="text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors"
-                    aria-label={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                    title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                  >
-                    {resolvedTheme === 'dark' ? (
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                    ) : (
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                      </svg>
-                    )}
-                  </button>
-                  {headerActions && <div>{headerActions}</div>}
+                <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+                  <ThemeToggle />
+                  {headerActions && <div className="flex-shrink-0">{headerActions}</div>}
                 </div>
               </div>
             </div>
           </header>
 
           {/* Content */}
-          <main className="w-full py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
+          <main className="w-full py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 min-h-[calc(100vh-80px)]">
             {children}
           </main>
         </div>
@@ -111,4 +78,3 @@ export default function TenantLayout({ children, title, subtitle, headerActions 
     </div>
   )
 }
-

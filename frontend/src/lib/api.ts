@@ -75,16 +75,35 @@ const SILENT_ERROR_ENDPOINTS = [
   '/pricing-plans/', // Peut être en erreur temporaire
 ];
 
-// Intercepteur pour gérer les erreurs
+// Flag pour éviter les boucles infinies de refresh
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: any) => void;
+  reject: (reason?: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// Intercepteur pour gérer les erreurs et le refresh token
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
     const url = error.config?.url || '';
     const status = error.response?.status;
     
     // ERR_BLOCKED_BY_CLIENT est généralement causé par un bloqueur de publicité
     // Ne pas logger ces erreurs comme des erreurs critiques pour certains endpoints
-    const silentEndpoints = ['/tenants/features/', '/auth/login/']
+    const silentEndpoints = ['/tenants/features/', '/auth/login/', '/auth/refresh/']
     const isSilentEndpoint = silentEndpoints.some(endpoint => url.includes(endpoint))
     
     // Gérer les erreurs bloquées par le client (bloqueur de pub)
@@ -116,15 +135,81 @@ api.interceptors.response.use(
       window.location.pathname === route || window.location.pathname.startsWith(route + '/')
     );
     
-    if (status === 401) {
-      // Ne rediriger vers /login que si on n'est pas sur une page publique
-      // et qu'il y a un token (ce qui signifie qu'il a expiré)
+    // Gérer le refresh token automatique
+    if (status === 401 && originalRequest && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Si on est déjà en train de refresh, mettre en queue
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch(err => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshToken = localStorage.getItem('refresh_token');
+      
+      if (refreshToken) {
+        try {
+          const response = await axios.post(`${API_BASE_URL}/api/auth/refresh/`, {
+            refresh: refreshToken
+          });
+          
+          const { access } = response.data;
+          localStorage.setItem('token', access);
+          
+          // Mettre à jour le header de la requête originale
+          originalRequest.headers.Authorization = `Bearer ${access}`;
+          
+          // Traiter la queue
+          processQueue(null, access);
+          isRefreshing = false;
+          
+          // Réessayer la requête originale
+          return api(originalRequest);
+        } catch (refreshError) {
+          // Refresh token invalide ou expiré
+          processQueue(refreshError, null);
+          isRefreshing = false;
+          
+          // Nettoyer et rediriger vers login
+          localStorage.removeItem('token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          
+          if (!isPublicRoute) {
+            window.location.href = '/login';
+          }
+          
+          return Promise.reject(refreshError);
+        }
+      } else {
+        // Pas de refresh token
+        isRefreshing = false;
+        const hasToken = localStorage.getItem('token');
+        if (hasToken && !isPublicRoute) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
+      }
+    } else if (status === 401 && !isPublicRoute) {
+      // 401 sans refresh token possible
       const hasToken = localStorage.getItem('token');
-      if (hasToken && !isPublicRoute) {
+      if (hasToken) {
         localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
         window.location.href = '/login';
       }
-      // Si pas de token et page publique, c'est normal, ne pas rediriger
     } else if (!isSilentError && status) {
       // Ne logger que les erreurs non attendues
       // (Les erreurs attendues sont gérées gracieusement dans les composants)

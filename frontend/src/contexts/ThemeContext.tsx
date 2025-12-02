@@ -54,14 +54,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return
 
     const root = document.documentElement
-    root.classList.remove('light', 'dark')
-    root.classList.add(resolvedTheme)
+    // Utiliser requestAnimationFrame pour éviter les conflits avec React
+    requestAnimationFrame(() => {
+      root.classList.remove('light', 'dark')
+      root.classList.add(resolvedTheme)
 
-    // Update meta theme-color
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#1f2937' : '#ffffff')
-    }
+      // Update meta theme-color
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#1f2937' : '#ffffff')
+      }
+    })
   }, [resolvedTheme, mounted])
 
   const setTheme = (newTheme: Theme) => {

@@ -6,7 +6,6 @@ import { clsx } from 'clsx'
 import authService from '@/services/auth.service'
 import tenantService from '@/services/tenant.service'
 import { isFeatureEnabled } from '@/lib/tenant-features'
-import { useTheme } from '@/contexts/ThemeContext'
 
 interface MenuItem {
   name: string
@@ -26,11 +25,16 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
   const user = authService.getStoredUser()
   const [isOpen, setIsOpen] = useState(false)
   const [enabledFeatures, setEnabledFeatures] = useState<string[]>([])
-  const { resolvedTheme, toggleTheme } = useTheme()
 
   // Use external control if provided, otherwise use internal state
   const sidebarOpen = externalIsOpen !== undefined ? externalIsOpen : isOpen
-  const handleClose = onClose || (() => setIsOpen(false))
+  const handleClose = () => {
+    if (onClose) {
+      onClose()
+    } else {
+      setIsOpen(false)
+    }
+  }
 
   // Load enabled features for the tenant
   useEffect(() => {
@@ -82,7 +86,7 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
       ),
     },
     {
-      name: 'Services VTC',
+      name: 'Services',
       href: '/dashboard/services',
       featureId: 'services',
       icon: (
@@ -166,16 +170,30 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
 
   const handleItemClick = (href: string) => {
     router.push(href)
-    handleClose() // Close sidebar on mobile after navigation
+    // Close sidebar on mobile after navigation
+    if (onClose) {
+      handleClose()
+    }
   }
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile - only show when sidebar is open on mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={handleClose}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleClose()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              e.stopPropagation()
+              handleClose()
+            }
+          }}
         />
       )}
 
@@ -183,20 +201,27 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
       <aside
         className={clsx(
           'fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 dark:bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col',
-          'lg:translate-x-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          'lg:translate-x-0 lg:static lg:h-screen lg:shadow-none',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
+        role="navigation"
+        aria-label="Navigation principale"
       >
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
           <div>
-            <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">VTCBuilder</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Le WordPress des VTC</p>
+            <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">CMS_CRM</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Plateforme CMS/CRM</p>
           </div>
           {/* Close button for mobile */}
           <button
-            onClick={handleClose}
-            className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              handleClose()
+            }}
+            className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label="Fermer le menu"
+            type="button"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -204,22 +229,28 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
           </button>
         </div>
 
-        <nav className="flex-1 mt-6 overflow-y-auto">
+        <nav className="flex-1 mt-2 overflow-y-auto overflow-x-hidden px-2">
           {visibleMenuItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             
             return (
               <button
                 key={item.href}
-                onClick={() => handleItemClick(item.href)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleItemClick(item.href)
+                }}
+                type="button"
                 className={clsx(
                   'w-full flex items-center px-6 py-3 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-r-4 border-blue-700 dark:border-blue-400'
                     : 'text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100'
                 )}
+                type="button"
               >
-                <span className={clsx(isActive ? 'text-blue-700' : 'text-gray-400')}>
+                <span className={clsx(isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500')}>
                   {item.icon}
                 </span>
                 <span className="ml-3">{item.name}</span>
@@ -228,49 +259,28 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
           })}
         </nav>
 
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="space-y-3">
-            {/* Theme Toggle */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0 mt-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate" suppressHydrationWarning>
+                {user?.name || 'Utilisateur'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate" suppressHydrationWarning>
+                {user?.email || ''}
+              </p>
+            </div>
             <button
-              onClick={toggleTheme}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              title={resolvedTheme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+              onClick={() => {
+                authService.logout()
+                router.push('/login')
+              }}
+              className="ml-2 p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
+              title="Déconnexion"
             >
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">
-                {resolvedTheme === 'dark' ? '🌙 Mode sombre' : '☀️ Mode clair'}
-              </span>
-              <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {resolvedTheme === 'dark' ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                )}
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
-            
-            {/* User Info & Logout */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100" suppressHydrationWarning>
-                  {user?.name || 'Utilisateur'}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]" suppressHydrationWarning>
-                  {user?.email || ''}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  authService.logout()
-                  router.push('/login')
-                }}
-                className="text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
-                title="Déconnexion"
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
       </aside>

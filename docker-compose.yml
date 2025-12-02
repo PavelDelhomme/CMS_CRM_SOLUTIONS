@@ -58,6 +58,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
     networks:
       - cms_crm_network
     restart: unless-stopped
@@ -77,7 +83,14 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:9193/api
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     networks:
       - cms_crm_network
     restart: unless-stopped
@@ -108,28 +121,34 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-      - playwright-report:/app/playwright-report
-      - test-results:/app/test-results
+      - ./frontend/playwright-report:/app/playwright-report
+      - ./frontend/test-results:/app/test-results
     environment:
       - CI=true
       - BASE_URL=http://frontend:3000
       - API_URL=http://backend:8000/api
+      - DOCKER=true
     depends_on:
-      - frontend
-      - backend
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     networks:
       - cms_crm_network
     profiles:
       - test
-    command: ["npx", "playwright", "test", "--reporter=html"]
+    # Les services sont déjà healthy grâce aux healthchecks, on peut lancer directement
+    command: >
+      sh -c "
+        echo '✅ Services prêts (healthchecks passés), lancement des tests...' &&
+        npx playwright test --reporter=html
+      "
 
 volumes:
   postgres_data:
   redis_data:
   backend_static:
   backend_media:
-  playwright-report:
-  test-results:
 
 networks:
   cms_crm_network:

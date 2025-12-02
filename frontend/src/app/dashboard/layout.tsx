@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation'
 import authService from '@/services/auth.service'
 import { isTenantSubdomain } from '@/lib/tenant-utils'
 import PageLoader from '@/components/PageLoader'
+import TenantLayout from '@/components/TenantLayout'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export default function DashboardLayout({
   children,
@@ -65,6 +67,8 @@ export default function DashboardLayout({
     return null // La redirection est en cours
   }
 
+  // Les enfants sont déjà dans ThemeProvider via le layout principal
+  // Pas besoin de dupliquer ThemeProvider ici
   return <>{children}</>
 }
 

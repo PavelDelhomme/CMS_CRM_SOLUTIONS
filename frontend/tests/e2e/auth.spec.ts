@@ -9,7 +9,17 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentification', () => {
   test.beforeEach(async ({ page }) => {
     // Aller sur la page de connexion avant chaque test
-    await page.goto('/login');
+    // Timeout augmenté pour Mobile Safari qui peut être plus lent
+    // Utiliser 'domcontentloaded' au lieu de 'load' pour être plus rapide
+    await page.goto('/login', { 
+      waitUntil: 'domcontentloaded', 
+      timeout: 60000 
+    });
+    // Attendre que le formulaire soit visible
+    await page.waitForSelector('input[type="email"], input[name="email"]', { 
+      timeout: 30000,
+      state: 'visible'
+    });
   });
 
   test('devrait afficher le formulaire de connexion', async ({ page }) => {
@@ -59,7 +69,8 @@ test.describe('Inscription', () => {
     
     // Vérifier les champs du formulaire
     const emailInput = page.locator('input[type="email"], input[name="email"]');
-    const passwordInput = page.locator('input[type="password"], input[name="password"]');
+    // Utiliser un sélecteur plus spécifique pour éviter la violation du mode strict
+    const passwordInput = page.locator('input[name="password"]').first();
     
     await expect(emailInput).toBeVisible();
     await expect(passwordInput).toBeVisible();

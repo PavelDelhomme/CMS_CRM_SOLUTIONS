@@ -11,7 +11,7 @@ export default defineConfig({
   testDir: './tests/e2e',
   
   /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
+  timeout: 60 * 1000, // 60 secondes pour permettre aux tests lents (Mobile Safari) de se terminer
   
   expect: {
     /**
@@ -44,8 +44,10 @@ export default defineConfig({
     /* In Docker, use service names; locally, use localhost */
     baseURL: process.env.BASE_URL || (process.env.CI ? 'http://frontend:3000' : 'http://localhost:9194'),
     
-    /* API URL for direct API calls in tests */
-    extraHTTPHeaders: process.env.API_URL ? {} : {},
+    /* API URL for direct API calls in tests - stored in extraHTTPHeaders for access in tests */
+    extraHTTPHeaders: {
+      'X-API-BASE-URL': process.env.API_URL || (process.env.CI ? 'http://backend:8000/api' : 'http://localhost:9193/api'),
+    },
     
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -57,33 +59,36 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    /* Configure projects for major browsers */
+    projects: [
+      {
+        name: 'chromium',
+        use: { ...devices['Desktop Chrome'] },
+      },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+      {
+        name: 'firefox',
+        use: { ...devices['Desktop Firefox'] },
+      },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+      // WebKit/Safari désactivé (pas disponible sur le système)
+      // Pour l'activer, installer les dépendances avec: sudo npx playwright install-deps
+      // {
+      //   name: 'webkit',
+      //   use: { ...devices['Desktop Safari'] },
+      // },
 
-    /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
-  ],
+      /* Test against mobile viewports. */
+      {
+        name: 'Mobile Chrome',
+        use: { ...devices['Pixel 5'] },
+      },
+      // Mobile Safari désactivé (pas disponible sur le système)
+      // {
+      //   name: 'Mobile Safari',
+      //   use: { ...devices['iPhone 12'] },
+      // },
+    ],
 
   /* Run your local dev server before starting the tests */
   /* Disabled in Docker - services are managed by docker-compose */
