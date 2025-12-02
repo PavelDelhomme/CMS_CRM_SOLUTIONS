@@ -9,7 +9,9 @@ import { test, expect } from '@playwright/test';
 test.describe('API Backend', () => {
   test('devrait pouvoir accéder à l\'API backend', async ({ request }) => {
     // Tester l'endpoint de l'API (sans authentification)
-    const response = await request.get('http://localhost:9193/api/');
+    // Dans Docker, utiliser le nom du service; localement, utiliser localhost
+    const apiUrl = process.env.API_URL || 'http://backend:8000/api/';
+    const response = await request.get(apiUrl);
     
     // L'API devrait répondre (même si c'est une erreur 401/404)
     expect(response.status()).toBeLessThan(500);
@@ -20,7 +22,9 @@ test.describe('API Backend', () => {
     const responses: any[] = [];
     
     page.on('response', (response) => {
-      if (response.url().includes('localhost:9193')) {
+      const url = response.url();
+      // Dans Docker, vérifier les URLs backend ou frontend
+      if (url.includes('backend:8000') || url.includes('localhost:9193') || url.includes('frontend:3000') || url.includes('localhost:9194')) {
         responses.push({
           url: response.url(),
           status: response.status(),

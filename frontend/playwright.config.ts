@@ -44,6 +44,9 @@ export default defineConfig({
     /* In Docker, use service names; locally, use localhost */
     baseURL: process.env.BASE_URL || (process.env.CI ? 'http://frontend:3000' : 'http://localhost:9194'),
     
+    /* API URL for direct API calls in tests */
+    extraHTTPHeaders: process.env.API_URL ? {} : {},
+    
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     
