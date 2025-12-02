@@ -1,0 +1,70 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - heading "CMS_CRM_SOLUTIONS" [level=1] [ref=e5]
+        - navigation [ref=e6]:
+          - link "Connexion" [ref=e7] [cursor=pointer]:
+            - /url: /login
+          - link "Créer un compte" [ref=e8] [cursor=pointer]:
+            - /url: /register
+    - generic [ref=e9]:
+      - heading "CMS_CRM_SOLUTIONS" [level=1] [ref=e10]
+      - paragraph [ref=e11]: Plateforme générique CMS/CRM multi-tenant. Créez et gérez vos sites web, contenu, utilisateurs et facturation en toute simplicité.
+      - generic [ref=e12]:
+        - link "🔐 Se connecter" [ref=e13] [cursor=pointer]:
+          - /url: /login
+        - link "🚀 Créer un compte" [ref=e14] [cursor=pointer]:
+          - /url: /register
+    - generic [ref=e16]:
+      - heading "Tout ce dont vous avez besoin" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: 🎨
+          - heading "CMS Complet" [level=3] [ref=e21]
+          - paragraph [ref=e22]: Gestion de contenu moderne et intuitive. Créez et gérez vos pages sans coder.
+        - generic [ref=e23]:
+          - generic [ref=e24]: 👥
+          - heading "Multi-tenant" [level=3] [ref=e25]
+          - paragraph [ref=e26]: Architecture multi-tenant sécurisée. Chaque client a son propre espace isolé.
+        - generic [ref=e27]:
+          - generic [ref=e28]: 💳
+          - heading "Facturation Intégrée" [level=3] [ref=e29]
+          - paragraph [ref=e30]: Système de facturation complet avec plans tarifaires et abonnements.
+        - generic [ref=e31]:
+          - generic [ref=e32]: 📱
+          - heading "Responsive Design" [level=3] [ref=e33]
+          - paragraph [ref=e34]: Votre site s'adapte automatiquement aux smartphones et tablettes.
+        - generic [ref=e35]:
+          - generic [ref=e36]: 📊
+          - heading "Analytics & Reporting" [level=3] [ref=e37]
+          - paragraph [ref=e38]: Suivez vos performances, utilisateurs et revenus en temps réel.
+        - generic [ref=e39]:
+          - generic [ref=e40]: 🔒
+          - heading "Sécurisé & Rapide" [level=3] [ref=e41]
+          - paragraph [ref=e42]: Hébergement sécurisé, sauvegardes automatiques, SSL inclus.
+    - generic [ref=e44]:
+      - heading "Tarifs Transparents" [level=2] [ref=e45]
+      - paragraph [ref=e46]: Choisissez le plan adapté à vos besoins. Pas d'engagement, changez de plan à tout moment.
+      - generic [ref=e47]:
+        - paragraph [ref=e48]: Les plans tarifaires seront disponibles prochainement.
+        - generic [ref=e49]:
+          - link "Créer un compte gratuitement" [ref=e50] [cursor=pointer]:
+            - /url: /register
+          - link "Se connecter" [ref=e51] [cursor=pointer]:
+            - /url: /login
+    - generic [ref=e53]:
+      - heading "Prêt à démarrer ?" [level=2] [ref=e54]
+      - paragraph [ref=e55]: Créez votre plateforme CMS/CRM dès aujourd'hui. Essai gratuit disponible.
+      - generic [ref=e56]:
+        - link "🔐 Se connecter" [ref=e57] [cursor=pointer]:
+          - /url: /login
+        - link "🚀 Créer un compte" [ref=e58] [cursor=pointer]:
+          - /url: /register
+    - contentinfo [ref=e59]:
+      - paragraph [ref=e61]: © 2025 CMS_CRM_SOLUTIONS. Tous droits réservés.
+  - alert [ref=e62]
+```

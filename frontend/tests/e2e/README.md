@@ -1,12 +1,26 @@
 # Tests E2E avec Playwright
 
+## 🎯 Méthode recommandée : Docker
+
+**Pour Manjaro Linux et autres distributions**, utilisez Docker :
+
+```bash
+make test-e2e
+```
+
+Voir [DOCKER.md](./DOCKER.md) pour plus de détails.
+
+---
+
 ## 📋 Configuration
 
 Les tests E2E sont configurés pour utiliser :
-- **Frontend** : `http://localhost:9194`
-- **Backend API** : `http://localhost:9193/api`
+- **Frontend** : `http://localhost:9194` (ou `http://frontend:3000` dans Docker)
+- **Backend API** : `http://localhost:9193/api` (ou `http://backend:8000/api` dans Docker)
 
-## 🚀 Installation
+## 🚀 Installation locale (optionnel)
+
+Si vous voulez installer Playwright localement (non recommandé sur Manjaro) :
 
 Les dépendances sont déjà installées via `npm install`.
 
