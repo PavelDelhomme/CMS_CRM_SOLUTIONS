@@ -42,7 +42,7 @@ export default defineConfig({
     
     /* Base URL to use in actions like `await page.goto('/')`. */
     /* In Docker, use service names; locally, use localhost */
-    baseURL: process.env.BASE_URL || process.env.CI ? 'http://frontend:3000' : 'http://localhost:9194',
+    baseURL: process.env.BASE_URL || (process.env.CI ? 'http://frontend:3000' : 'http://localhost:9194'),
     
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
