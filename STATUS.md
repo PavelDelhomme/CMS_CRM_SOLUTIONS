@@ -1,99 +1,110 @@
-# 📊 Statut du Projet CMS_CRM_SOLUTIONS
+# STATUS - CMS_CRM_SOLUTIONS
 
-> Dernière mise à jour : 2024
+## 📊 État du Projet
 
-## ✅ État Actuel
+**Dernière mise à jour :** 2 décembre 2024
 
-### Infrastructure
-- [x] Structure de dossiers complète
-- [x] Configuration Docker (dev et prod)
-- [x] Configuration Nginx
-- [x] Makefile avec toutes les commandes
-- [x] Scripts d'automatisation
-- [x] Workflows GitHub Actions (CI/CD)
+### ✅ Fonctionnalités Implémentées
 
-### Backend Django
-- [x] Configuration Django de base
-- [x] Architecture multi-tenant (django-tenants)
-- [x] App Tenants (Client, Domain)
-- [x] App Pages (CMS)
-- [x] Apps de base (content, blocks, media, billing)
-- [x] API REST avec DRF
-- [x] Authentification JWT
-- [x] Configuration Redis
-- [ ] Migrations initiales
-- [ ] Serializers API complets
-- [ ] Views API complètes
+#### 🎨 Interface Utilisateur
+- ✅ **Nouveau système de drawer** (mobile) - Simple et fonctionnel
+- ✅ **Desktop Sidebar** - Toujours visible sur desktop
+- ✅ **Theme Toggle** - Toggle switch pour dark/light mode
+- ✅ **Favicon** - favicon.ico et favicon.svg créés et configurés
+- ✅ **Layout responsive** - Mobile et desktop optimisés
+- ✅ **Navigation** - Menu avec icônes et navigation fonctionnelle
 
-### Frontend Next.js
-- [x] Configuration Next.js 14
-- [x] TypeScript configuré
-- [x] Tailwind CSS configuré
-- [x] Structure de base (App Router)
-- [ ] Composants UI
-- [ ] Pages d'administration
-- [ ] Intégration API
-- [ ] Authentification frontend
+#### 🔧 Configuration
+- ✅ **Linters Backend** - flake8, black, pytest installés via Docker
+- ✅ **Linters Frontend** - ESLint configuré
+- ✅ **Makefile** - Commandes `make backend-lint` et `make frontend-lint` via Docker
+- ✅ **Permissions** - Frontend .next corrigées
 
-### Documentation
-- [x] README principal
-- [x] Guide d'installation
-- [x] Documentation architecture
-- [x] Documentation API
-- [x] Guide de contribution
-- [ ] Exemples d'utilisation
-- [ ] Tutoriels
+#### 🐛 Corrections Récentes
+- ✅ Erreur `toggleTheme is not defined` corrigée
+- ✅ Erreur 404 favicon.ico résolue
+- ✅ Erreurs de lint dans `billing/views.py` corrigées (imports settings)
+- ✅ Drawer mobile fonctionnel (ouverture/fermeture)
 
-### Tests
-- [x] Configuration pytest
-- [x] Tests de base (tenants, pages)
-- [ ] Tests API complets
-- [ ] Tests frontend
-- [ ] Tests d'intégration
+### 📁 Structure des Composants
 
-## 🚧 En Cours
+#### Composants de Navigation
+- `Drawer.tsx` - Drawer mobile avec ouverture/fermeture
+- `DesktopSidebar.tsx` - Sidebar desktop toujours visible
+- `TenantLayout.tsx` - Layout principal simplifié
 
-- Finalisation des migrations Django
-- Création des serializers et views API
-- Développement de l'interface frontend
+#### Composants UI
+- `ThemeToggle.tsx` - Toggle switch pour dark/light mode
+- `ImpersonationBanner.tsx` - Bannière d'impersonnification
 
-## 📋 Prochaines Étapes
+### 🎯 Fonctionnalités Drawer
 
-1. **Migrations Django**
-   - Créer et appliquer les migrations initiales
-   - Tester la création de tenants
+#### Mobile
+- ✅ Ouverture avec bouton hamburger
+- ✅ Fermeture avec bouton X
+- ✅ Fermeture avec overlay (clic à côté)
+- ✅ Fermeture avec touche `Escape`
+- ✅ Fermeture automatique après navigation
+- ✅ Scroll body bloqué quand ouvert
 
-2. **API Backend**
-   - Serializers pour toutes les apps
-   - Viewsets et views API
-   - Permissions et authentification
+#### Desktop
+- ✅ Sidebar toujours visible
+- ✅ Pas de logique d'ouverture/fermeture
+- ✅ Menu identique au drawer mobile
 
-3. **Frontend**
-   - Composants UI de base
-   - Pages d'authentification
-   - Dashboard admin
-   - Gestion des pages CMS
+### 🔍 Linters
 
-4. **Fonctionnalités Avancées**
-   - Système de blocs
-   - Gestion de contenu avancée
-   - Intégration Stripe
-   - Gestion des médias
+#### Backend
+- ✅ `flake8` 7.0.0 - Vérification du code Python
+- ✅ `black` 24.1.1 - Formatage automatique
+- ✅ `pytest` 7.4.4 - Tests unitaires
+- ✅ `pytest-django` 4.7.0 - Tests Django
+- ✅ `pytest-cov` 4.1.0 - Couverture de code
 
-## 🐛 Bugs Connus
+#### Frontend
+- ✅ `ESLint` - Vérification du code TypeScript/React
+- ✅ `Next.js` lint intégré
 
-Aucun bug connu pour le moment.
+### 📝 Commandes Disponibles
 
-## 💡 Améliorations Futures
+```bash
+# Linters
+make backend-lint    # Lint backend via Docker
+make frontend-lint   # Lint frontend
 
-- [ ] Éditeur WYSIWYG
-- [ ] Système de templates
-- [ ] Marketplace de blocs
-- [ ] Analytics intégrés
-- [ ] API GraphQL
-- [ ] Application mobile PWA
+# Tests
+make test            # Tests backend
+make test-e2e        # Tests E2E Playwright
 
-## 📝 Notes
+# Docker
+make up              # Démarrer les services
+make down            # Arrêter les services
+make logs            # Voir les logs
+```
 
-Le projet est maintenant structuré et prêt pour le développement. La base générique est en place et peut être étendue selon les besoins spécifiques.
+### 🚀 Prochaines Étapes
 
+- [ ] Améliorer les tests E2E
+- [ ] Ajouter plus de fonctionnalités CMS
+- [ ] Optimiser les performances
+- [ ] Documentation complète
+
+### 📦 Fichiers Importants
+
+- `frontend/public/favicon.ico` - Favicon principal
+- `frontend/public/favicon.svg` - Favicon vectoriel
+- `frontend/src/components/Drawer.tsx` - Drawer mobile
+- `frontend/src/components/DesktopSidebar.tsx` - Sidebar desktop
+- `frontend/src/components/ThemeToggle.tsx` - Toggle dark/light mode
+
+### 🔄 Dernières Modifications
+
+1. **Nouveau système de drawer** - Remplacement de l'ancien système par un drawer simple et fonctionnel
+2. **Theme Toggle** - Ajout d'un toggle switch moderne pour dark/light mode
+3. **Favicon** - Création et configuration du favicon
+4. **Linters** - Configuration complète des linters backend et frontend
+5. **Corrections** - Correction des erreurs de lint et des bugs
+
+---
+
+**Note :** Ce fichier est mis à jour régulièrement pour refléter l'état actuel du projet.
