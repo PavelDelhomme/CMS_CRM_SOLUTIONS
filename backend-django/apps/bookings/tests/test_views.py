@@ -8,8 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-from bookings.models import Booking
-from apps.tenants.models import Tenant, User
+from apps.bookings.models import Booking
+from apps.tenants.models import Client, User
 from apps.services.models import Service
 
 
@@ -24,7 +24,7 @@ class TestBookingViewSet:
 
     @pytest.fixture
     def tenant(self):
-        return Tenant.objects.create(
+        return Client.objects.create(
             name='Test Tenant',
             email='test@tenant.com',
             slug='test-tenant'

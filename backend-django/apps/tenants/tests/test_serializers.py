@@ -3,8 +3,8 @@ Unit tests for Tenant serializers
 """
 import pytest
 from django.utils import timezone
-from tenants.serializers import TenantSerializer, UserSerializer
-from tenants.models import Client, User
+from apps.tenants.serializers import ClientSerializer, UserSerializer
+from apps.tenants.models import Client, User
 
 
 @pytest.mark.django_db

@@ -7,8 +7,8 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from tenants.models import Client, User
-from tenants.middleware import UserStatusMiddleware
+from apps.tenants.models import Client, User
+from apps.tenants.middleware import UserStatusMiddleware
 from django.http import HttpRequest, JsonResponse
 from unittest.mock import Mock, patch
 

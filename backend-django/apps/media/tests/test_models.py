@@ -4,7 +4,7 @@ Unit tests for Template model
 import pytest
 from django.core.exceptions import ValidationError
 from django_tenants.utils import tenant_context
-from media.models import Template
+from apps.media.models import Template
 from apps.tenants.models import Client, Domain
 from conftest import tenant_with_schema
 

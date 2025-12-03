@@ -22,7 +22,7 @@ export interface Booking {
   payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
   payment_method?: string;
   status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-  notes?: string;
+  notes?: string | null;
   cancellation_reason?: string;
   created_at: string;
   updated_at: string;

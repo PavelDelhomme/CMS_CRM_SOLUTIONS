@@ -78,7 +78,8 @@ class MediaViewSet(viewsets.ModelViewSet):
                 return response
         
         # Super admin with tenant_id (optional for future use)
-        if user.is_super_admin():
+        from apps.tenants.utils import is_super_admin
+        if is_super_admin(user):
             tenant_id = request.query_params.get('tenant_id')
             if tenant_id:
                 try:
@@ -400,7 +401,8 @@ class TemplateViewSet(viewsets.ModelViewSet):
         user = request.user
         
         # Super admin creates template in reference tenant
-        if user.is_super_admin():
+        from apps.tenants.utils import is_super_admin
+        if is_super_admin(user):
             tenant = self._get_reference_tenant()
             if not tenant:
                 return Response(
@@ -491,10 +493,11 @@ class TemplateViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Update a template"""
         from django_tenants.utils import tenant_context
+        from apps.tenants.utils import is_super_admin
         
         user = request.user
         
-        if user.is_super_admin():
+        if is_super_admin(user):
             tenant = self._get_reference_tenant()
             if not tenant:
                 return Response(
@@ -599,7 +602,8 @@ class TemplateViewSet(viewsets.ModelViewSet):
         
         user = request.user
         
-        if user.is_super_admin():
+        from apps.tenants.utils import is_super_admin
+        if is_super_admin(user):
             tenant = self._get_reference_tenant()
             if not tenant:
                 return Response(
@@ -704,7 +708,8 @@ class TemplateViewSet(viewsets.ModelViewSet):
             
             # Super admin can access templates from reference tenant
             try:
-                if user.is_super_admin():
+                from apps.tenants.utils import is_super_admin
+                if is_super_admin(user):
                     tenant = self._get_reference_tenant()
                     if tenant:
                         try:
@@ -769,7 +774,8 @@ class TemplateViewSet(viewsets.ModelViewSet):
                 return Template.objects.get(pk=pk)
         
         # For super admin with reference tenant
-        if user.is_super_admin():
+        from apps.tenants.utils import is_super_admin
+        if is_super_admin(user):
             tenant = self._get_reference_tenant()
             if tenant:
                 with tenant_context(tenant):

@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.utils import timezone
 from datetime import timedelta
 from django_tenants.utils import schema_context
-from billing.models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod
+from apps.billing.models import PricingPlan, Subscription, Invoice, Payment, PaymentMethod
 from apps.tenants.models import Client
 
 

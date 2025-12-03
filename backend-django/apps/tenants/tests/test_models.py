@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from datetime import timedelta
 from django_tenants.utils import schema_context, tenant_context
-from tenants.models import Client, User, PasswordResetToken, InvitationToken, Domain
+from apps.tenants.models import Client, User, PasswordResetToken, InvitationToken, Domain
 
 
 @pytest.mark.django_db

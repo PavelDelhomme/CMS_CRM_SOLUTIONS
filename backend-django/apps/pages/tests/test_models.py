@@ -4,7 +4,7 @@ Unit tests for Page model
 import pytest
 from django.utils.text import slugify
 from django_tenants.utils import tenant_context
-from pages.models import Page
+from apps.pages.models import Page
 from apps.tenants.models import Client, Domain
 
 

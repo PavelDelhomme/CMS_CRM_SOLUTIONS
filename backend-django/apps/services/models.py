@@ -12,7 +12,7 @@ class Service(models.Model):
     """
     tenant = models.ForeignKey(Client, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, blank=True, null=True)  # Auto-généré si non fourni
     description = models.TextField(blank=True, null=True)
     icon = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(upload_to='services/', blank=True, null=True)
@@ -39,7 +39,10 @@ class Service(models.Model):
     class Meta:
         db_table = 'services'
         ordering = ['order', 'name']
-        unique_together = ['slug']
+        # unique_together supprimé car slug peut être null temporairement avant génération
+        constraints = [
+            models.UniqueConstraint(fields=['slug'], condition=models.Q(slug__isnull=False), name='unique_slug_when_not_null')
+        ]
     
     def __str__(self):
         return self.name

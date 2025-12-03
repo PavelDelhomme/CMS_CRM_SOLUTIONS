@@ -143,8 +143,16 @@ class BillingService {
     order_by?: string;
     ordering?: 'asc' | 'desc';
   }) {
-    const response = await api.get('/subscriptions/', { params });
-    return Array.isArray(response.data) ? response.data : response.data.results || [];
+    try {
+      const response = await api.get('/subscriptions/', { params });
+      return Array.isArray(response.data) ? response.data : response.data.results || [];
+    } catch (error: any) {
+      // Retourner un tableau vide en cas d'erreur 404 (endpoint non implémenté)
+      if (error.response?.status === 404 || error.response?.status === 500 || error.code === 'ERR_FAILED' || error.code === 'ERR_NETWORK' || error.code === 'ERR_SOCKET_NOT_CONNECTED' || error.code === 'ERR_CONNECTION_RESET') {
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getSubscription(id: number) {
@@ -206,8 +214,16 @@ class BillingService {
     order_by?: string;
     ordering?: 'asc' | 'desc';
   }) {
-    const response = await api.get('/invoices/', { params });
-    return Array.isArray(response.data) ? response.data : response.data.results || [];
+    try {
+      const response = await api.get('/invoices/', { params });
+      return Array.isArray(response.data) ? response.data : response.data.results || [];
+    } catch (error: any) {
+      // Retourner un tableau vide en cas d'erreur 404 (endpoint non implémenté)
+      if (error.response?.status === 404 || error.response?.status === 500 || error.code === 'ERR_FAILED' || error.code === 'ERR_NETWORK' || error.code === 'ERR_SOCKET_NOT_CONNECTED' || error.code === 'ERR_CONNECTION_RESET') {
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getInvoice(id: number) {

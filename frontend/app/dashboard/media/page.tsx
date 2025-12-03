@@ -4,8 +4,10 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import mediaService from '@/services/media.service'
 import type { Media } from '@/services/media.service'
-import Link from 'next/link'
+import TenantLayout from '@/components/TenantLayout'
+import PageLoader from '@/components/PageLoader'
 import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 export default function MediaManagement() {
   const router = useRouter()
@@ -40,8 +42,11 @@ export default function MediaManagement() {
       }
       const data = await mediaService.getAll(params)
       setMedia(data)
-    } catch (error) {
-      console.error('Erreur de chargement des médias:', error)
+    } catch (error: any) {
+      // Ne pas logger les erreurs réseau si le backend n'est pas disponible
+      if (error.code !== 'ERR_NETWORK' && error.code !== 'ERR_SOCKET_NOT_CONNECTED' && error.code !== 'ERR_CONNECTION_RESET') {
+        console.error('Erreur de chargement des médias:', error)
+      }
       toast.error('Erreur lors du chargement des médias')
     } finally {
       setLoading(false)
@@ -101,225 +106,142 @@ export default function MediaManagement() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p>Chargement des médias...</p>
-      </div>
+      <TenantLayout title="Médias" subtitle="Gérez vos fichiers">
+        <PageLoader text="Chargement des médias..." />
+      </TenantLayout>
     )
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
-      {/* Header */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '1rem 0' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827' }}>CMS_CRM_SOLUTIONS</h1>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <Link href="/dashboard" style={{ color: '#6b7280', textDecoration: 'none' }}>Dashboard</Link>
-            <Link href="/login" style={{ padding: '0.5rem 1rem', background: '#ef4444', color: 'white', borderRadius: '0.5rem', textDecoration: 'none' }}>
-              Déconnexion
-            </Link>
-          </div>
-        </div>
-      </header>
+    <TenantLayout 
+      title="Bibliothèque de Médias" 
+      subtitle="Gérez vos images, vidéos et documents"
+      headerActions={
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-medium transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? 'Upload en cours...' : '+ Uploader des fichiers'}
+        </button>
+      }
+    >
+      <Toaster position="top-right" />
 
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <div>
-            <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>
-              Bibliothèque de Médias
-            </h2>
-            <p style={{ color: '#6b7280' }}>
-              Gérez vos images, vidéos et documents
-            </p>
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        onChange={handleFileSelect}
+        className="hidden"
+        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+      />
+
+      {/* Filters */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Collection:</label>
+            <select
+              value={selectedCollection}
+              onChange={(e) => setSelectedCollection(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {collections.map((col) => (
+                <option key={col.value} value={col.value}>
+                  {col.label}
+                </option>
+              ))}
+            </select>
           </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-md">
             <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              style={{ display: 'none' }}
-              accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher un fichier..."
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: uploading ? '#9ca3af' : '#2563eb',
-                color: 'white',
-                borderRadius: '0.5rem',
-                border: 'none',
-                cursor: uploading ? 'not-allowed' : 'pointer',
-                fontSize: '1rem',
-                fontWeight: '500',
-              }}
+              type="submit"
+              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors"
             >
-              {uploading ? 'Upload en cours...' : '+ Uploader des fichiers'}
+              Rechercher
             </button>
-          </div>
+          </form>
         </div>
-
-        {/* Filters */}
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <label style={{ fontSize: '0.875rem', fontWeight: '500', color: '#374151' }}>Collection:</label>
-              <select
-                value={selectedCollection}
-                onChange={(e) => setSelectedCollection(e.target.value)}
-                style={{
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                {collections.map((col) => (
-                  <option key={col.value} value={col.value}>
-                    {col.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.5rem', flex: 1, maxWidth: '400px' }}>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un fichier..."
-                style={{
-                  flex: 1,
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#6b7280',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                }}
-              >
-                Rechercher
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Media Grid */}
-        {filteredMedia.length === 0 ? (
-          <div style={{ background: 'white', padding: '3rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-            <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</p>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Aucun fichier</h3>
-            <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Commencez par uploader vos premiers fichiers.</p>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: '#2563eb',
-                color: 'white',
-                borderRadius: '0.5rem',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: '500',
-              }}
-            >
-              + Uploader des fichiers
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
-            {filteredMedia.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  background: 'white',
-                  borderRadius: '0.5rem',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-              >
-                {/* Preview */}
-                <div style={{ width: '100%', aspectRatio: '1', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                  {item.is_image && item.url ? (
-                    <img
-                      src={item.url}
-                      alt={item.alt_text || item.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div style={{ textAlign: 'center', padding: '1rem' }}>
-                      <p style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-                        {item.collection === 'videos' ? '🎥' : item.collection === 'audio' ? '🎵' : item.collection === 'documents' ? '📄' : '📁'}
-                      </p>
-                      <p style={{ fontSize: '0.75rem', color: '#6b7280', wordBreak: 'break-word' }}>{item.file_extension.toUpperCase()}</p>
-                    </div>
-                  )}
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    style={{
-                      position: 'absolute',
-                      top: '0.5rem',
-                      right: '0.5rem',
-                      background: 'rgba(239, 68, 68, 0.9)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.25rem',
-                      padding: '0.25rem 0.5rem',
-                      cursor: 'pointer',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    🗑️
-                  </button>
-                </div>
-
-                {/* Info */}
-                <div style={{ padding: '0.75rem' }}>
-                  <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {item.name}
-                  </p>
-                  <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                    {(item.size / 1024).toFixed(1)} KB
-                  </p>
-                  {item.url && (
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(item.url || '')
-                        toast.success('URL copiée dans le presse-papier')
-                      }}
-                      style={{
-                        marginTop: '0.5rem',
-                        width: '100%',
-                        padding: '0.25rem',
-                        background: '#f3f4f6',
-                        color: '#374151',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '0.25rem',
-                        cursor: 'pointer',
-                        fontSize: '0.75rem',
-                      }}
-                    >
-                      Copier l'URL
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
-    </div>
+
+      {/* Media Grid */}
+      {filteredMedia.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+          <div className="text-6xl mb-4">📁</div>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Aucun fichier</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Commencez par uploader vos premiers fichiers.</p>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+          >
+            + Uploader des fichiers
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {filteredMedia.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow group"
+            >
+              {/* Preview */}
+              <div className="w-full aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center relative overflow-hidden">
+                {item.is_image && item.url ? (
+                  <img
+                    src={item.url}
+                    alt={item.alt_text || item.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center p-4">
+                    <div className="text-4xl mb-2">
+                      {item.collection === 'videos' ? '🎥' : item.collection === 'audio' ? '🎵' : item.collection === 'documents' ? '📄' : '📁'}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 break-words">
+                      {item.file_extension?.toUpperCase() || 'FILE'}
+                    </p>
+                  </div>
+                )}
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  🗑️
+                </button>
+              </div>
+
+              {/* Info */}
+              <div className="p-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1 truncate" title={item.name}>
+                  {item.name}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  {item.size ? `${(item.size / 1024).toFixed(1)} KB` : 'N/A'}
+                </p>
+                {item.url && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(item.url || '')
+                      toast.success('URL copiée dans le presse-papier')
+                    }}
+                    className="w-full px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded text-xs transition-colors"
+                  >
+                    Copier l'URL
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </TenantLayout>
   )
 }
-

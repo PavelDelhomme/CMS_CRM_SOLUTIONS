@@ -5,8 +5,8 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
-from services.models import Service
-from apps.tenants.models import Tenant, User
+from apps.services.models import Service
+from apps.tenants.models import Client, User
 
 
 @pytest.mark.django_db

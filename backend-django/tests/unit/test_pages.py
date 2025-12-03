@@ -3,7 +3,7 @@ Tests pour l'app pages
 """
 import pytest
 from django.urls import reverse
-from pages.models import Page
+from apps.pages.models import Page
 
 
 @pytest.mark.django_db

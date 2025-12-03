@@ -8,7 +8,7 @@ export interface Service {
   description?: string;
   icon?: string;
   image?: string;
-  base_price?: number;
+  base_price?: number | null;
   price_per_km?: number;
   price_per_minute?: number;
   min_price?: number;

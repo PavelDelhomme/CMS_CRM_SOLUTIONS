@@ -37,11 +37,17 @@ export default function TenantDashboard() {
             draftPages: pages.filter((p: any) => p.status === 'draft').length,
             totalUsers: 1, // TODO: Charger depuis l'API
           })
-        } catch (error) {
-          console.error('Erreur chargement stats:', error)
+        } catch (error: any) {
+          // Ne pas logger les erreurs réseau si le backend n'est pas disponible
+          if (error.code !== 'ERR_NETWORK' && error.code !== 'ERR_SOCKET_NOT_CONNECTED') {
+            console.error('Erreur chargement stats:', error)
+          }
         }
-      } catch (error) {
-        console.error('Erreur chargement dashboard:', error)
+      } catch (error: any) {
+        // Ne pas logger les erreurs réseau si le backend n'est pas disponible
+        if (error.code !== 'ERR_NETWORK' && error.code !== 'ERR_SOCKET_NOT_CONNECTED') {
+          console.error('Erreur chargement dashboard:', error)
+        }
       } finally {
         setLoading(false)
       }

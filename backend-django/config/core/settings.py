@@ -54,6 +54,8 @@ TENANT_APPS = [
     'apps.blocks',
     'apps.media',
     'apps.billing',
+    'apps.services',
+    'apps.bookings',
     'apps.api',
 ]
 

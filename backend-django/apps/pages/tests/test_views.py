@@ -5,7 +5,7 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
-from pages.models import Page
+from apps.pages.models import Page
 from apps.tenants.models import Client, User
 
 

@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from django_tenants.utils import schema_context
-from tenants.models import Client, User
+from apps.tenants.models import Client, User
 
 
 @pytest.mark.django_db

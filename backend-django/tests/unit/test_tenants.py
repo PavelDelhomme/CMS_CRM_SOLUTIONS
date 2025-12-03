@@ -2,7 +2,7 @@
 Tests pour l'app tenants
 """
 import pytest
-from tenants.models import Client, Domain
+from apps.tenants.models import Client, Domain
 
 
 @pytest.mark.django_db

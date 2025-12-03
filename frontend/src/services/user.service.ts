@@ -94,7 +94,13 @@ class UserService {
       return response.data;
     } catch (error: any) {
       // If endpoint doesn't exist (404), return default status
-      if (error.response?.status === 404) {
+      // If network error (backend not available), return default status silently
+      if (error.response?.status === 404 || 
+          error.code === 'ERR_NETWORK' || 
+          error.code === 'ERR_SOCKET_NOT_CONNECTED' ||
+          error.code === 'ERR_CONNECTION_RESET' ||
+          error.message?.includes('ERR_CONNECTION_RESET') ||
+          error.message?.includes('ERR_SOCKET_NOT_CONNECTED')) {
         return { is_impersonating: false, impersonating: false };
       }
       throw error;

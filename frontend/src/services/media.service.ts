@@ -14,6 +14,8 @@ export interface Media {
   order: number;
   metadata?: Record<string, any>;
   url?: string;
+  is_image?: boolean;
+  file_extension?: string;
   created_at: string;
   updated_at: string;
 }

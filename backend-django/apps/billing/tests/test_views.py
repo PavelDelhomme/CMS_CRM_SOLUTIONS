@@ -8,8 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-from billing.models import PricingPlan, Subscription, Invoice
-from apps.tenants.models import Tenant, User
+from apps.billing.models import PricingPlan, Subscription, Invoice
+from apps.tenants.models import Client, User
 
 
 @pytest.mark.django_db
@@ -111,7 +111,7 @@ class TestSubscriptionViewSet:
 
     @pytest.fixture
     def tenant(self):
-        return Tenant.objects.create(
+        return Client.objects.create(
             name='Test Tenant',
             email='test@tenant.com',
             slug='test-tenant'

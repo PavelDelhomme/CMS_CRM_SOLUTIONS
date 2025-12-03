@@ -14,7 +14,11 @@ export default function ImpersonationBanner() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    checkImpersonationStatus()
+    // Vérifier l'impersonnification uniquement si l'utilisateur est connecté
+    const user = authService.getStoredUser()
+    if (user) {
+      checkImpersonationStatus()
+    }
   }, [])
 
   const checkImpersonationStatus = async () => {
@@ -27,8 +31,13 @@ export default function ImpersonationBanner() {
       }
     } catch (error: any) {
       // Ignore 404 errors (endpoint might not be available or user not in impersonation mode)
-      // This is normal if the endpoint doesn't exist or user is not impersonating
-      if (error.response?.status !== 404) {
+      // Ignore network errors (backend not available, connection reset, etc.)
+      if (error.response?.status !== 404 && 
+          error.code !== 'ERR_NETWORK' && 
+          error.code !== 'ERR_SOCKET_NOT_CONNECTED' &&
+          error.code !== 'ERR_CONNECTION_RESET' &&
+          !error.message?.includes('ERR_CONNECTION_RESET') &&
+          !error.message?.includes('ERR_SOCKET_NOT_CONNECTED')) {
         console.error('Erreur vérification impersonnification:', error)
       }
       // Set not impersonating on any error

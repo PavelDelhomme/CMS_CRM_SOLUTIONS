@@ -5,7 +5,7 @@ Allows creating, expiring, and managing trial subscriptions for testing
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
-from billing.models import Subscription, PricingPlan
+from apps.billing.models import Subscription, PricingPlan
 from apps.tenants.models import Client
 from decimal import Decimal
 

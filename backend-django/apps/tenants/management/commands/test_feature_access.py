@@ -2,7 +2,7 @@
 Management command to test feature access for all test tenants
 """
 from django.core.management.base import BaseCommand
-from tenants.models import Client, User, Feature
+from apps.tenants.models import Client, User, Feature
 from apps.billing.models import PricingPlan, Subscription
 
 

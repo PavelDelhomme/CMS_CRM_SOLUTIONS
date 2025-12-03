@@ -248,7 +248,6 @@ export default function Sidebar({ isOpen: externalIsOpen, onClose }: SidebarProp
                     ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-r-4 border-blue-700 dark:border-blue-400'
                     : 'text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-gray-100'
                 )}
-                type="button"
               >
                 <span className={clsx(isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500')}>
                   {item.icon}

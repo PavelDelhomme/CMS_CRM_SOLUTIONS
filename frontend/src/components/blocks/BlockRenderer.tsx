@@ -9,6 +9,8 @@ export interface Block {
   styles?: any
   layout?: number
   position?: any
+  container?: 'full' | 'none' | 'default' | string
+  block_settings?: any
 }
 
 interface BlockRendererProps {
@@ -46,9 +48,10 @@ export default function BlockRenderer({ block }: BlockRendererProps) {
     borderRadius: block.styles?.border_radius || block.styles?.borderRadius,
   }
 
-  // Container class
-  const containerClass = block.container === 'full' ? 'w-full' :
-    block.container === 'none' ? '' : 'max-w-7xl mx-auto'
+  // Container class - use block_settings if available, otherwise default
+  const container = (block as any).container || block.block_settings?.container || 'default'
+  const containerClass = container === 'full' ? 'w-full' :
+    container === 'none' ? '' : 'max-w-7xl mx-auto'
 
   // Render based on block type
   switch (block.type) {

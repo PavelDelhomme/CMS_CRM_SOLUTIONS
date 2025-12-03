@@ -71,8 +71,14 @@ backend-migrate: ## Applique les migrations
 backend-migrations: ## Crée de nouvelles migrations
 	cd $(BACKEND_DIR) && make migrations
 
-backend-test: ## Lance les tests backend
-	cd $(BACKEND_DIR) && make test
+backend-test: ## Lance les tests backend (dans Docker)
+	@echo "🧪 Lancement des tests backend dans Docker..."
+	@if docker-compose -f $(COMPOSE_FILE) ps backend 2>/dev/null | grep -q "Up"; then \
+		docker-compose -f $(COMPOSE_FILE) exec -T backend pytest -v || exit 1; \
+	else \
+		echo "⚠️  Le conteneur backend n'est pas démarré. Démarrez-le avec 'make start' d'abord."; \
+		exit 1; \
+	fi
 
 backend-lint: ## Vérifie le code backend
 	@echo "🔍 Vérification du code backend..."
@@ -89,12 +95,10 @@ test: ## Lance tous les tests (backend + frontend)
 	@echo "📦 Tests Backend (via Docker)..."
 	@BACKEND_TEST_STATUS=0; \
 	if docker-compose -f $(COMPOSE_FILE) ps backend 2>/dev/null | grep -q "Up"; then \
-		docker-compose -f $(COMPOSE_FILE) exec -T backend pytest || BACKEND_TEST_STATUS=1; \
-	elif docker-compose -f $(COMPOSE_FILE) run --rm --no-deps backend pytest 2>/dev/null; then \
-		true; \
+		docker-compose -f $(COMPOSE_FILE) exec -T backend pytest -v || BACKEND_TEST_STATUS=1; \
 	else \
-		echo "⚠️  Backend non disponible dans Docker, tentative locale..."; \
-		cd $(BACKEND_DIR) && (make test || BACKEND_TEST_STATUS=1) || true; \
+		echo "⚠️  Le conteneur backend n'est pas démarré. Démarrez-le avec 'make start' d'abord."; \
+		BACKEND_TEST_STATUS=1; \
 	fi; \
 	if [ "$$BACKEND_TEST_STATUS" != "0" ]; then \
 		echo "❌ Tests backend échoués"; \

@@ -61,7 +61,8 @@ class BookingViewSet(CORSMixin, viewsets.ModelViewSet):
                 return Response([], status=status.HTTP_200_OK)
         
         # Super admin with tenant_id
-        if user.is_super_admin():
+        from apps.tenants.utils import is_super_admin
+        if is_super_admin(user):
             tenant_id = request.query_params.get('tenant_id')
             if tenant_id:
                 try:

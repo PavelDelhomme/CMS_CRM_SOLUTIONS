@@ -4,7 +4,7 @@ Unit tests for Service model
 import pytest
 from django.utils.text import slugify
 from django_tenants.utils import tenant_context
-from services.models import Service
+from apps.services.models import Service
 from apps.tenants.models import Client, Domain
 
 

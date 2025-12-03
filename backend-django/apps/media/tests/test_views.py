@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django_tenants.utils import tenant_context
-from media.models import Template
+from apps.media.models import Template
 from apps.tenants.models import User, Client, Domain
 from conftest import tenant_with_schema
 

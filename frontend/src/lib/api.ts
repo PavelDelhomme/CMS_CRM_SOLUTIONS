@@ -73,6 +73,8 @@ const SILENT_ERROR_ENDPOINTS = [
   '/billing/unpaid-items/',
   '/templates/',
   '/pricing-plans/', // Peut être en erreur temporaire
+  '/users/impersonation-status/', // Endpoint optionnel, erreurs réseau normales
+  '/pages/', // Erreurs réseau normales si backend non disponible
 ];
 
 // Flag pour éviter les boucles infinies de refresh
@@ -103,14 +105,24 @@ api.interceptors.response.use(
     
     // ERR_BLOCKED_BY_CLIENT est généralement causé par un bloqueur de publicité
     // Ne pas logger ces erreurs comme des erreurs critiques pour certains endpoints
-    const silentEndpoints = ['/tenants/features/', '/auth/login/', '/auth/refresh/']
+    const silentEndpoints = [
+      '/tenants/features/', 
+      '/auth/login/', 
+      '/auth/refresh/',
+      '/users/impersonation-status/', // Endpoint optionnel
+      '/pages/', // Erreurs réseau normales si backend non disponible
+    ]
     const isSilentEndpoint = silentEndpoints.some(endpoint => url.includes(endpoint))
+    
+    // Vérifier aussi dans SILENT_ERROR_ENDPOINTS
+    const isSilentErrorEndpoint = SILENT_ERROR_ENDPOINTS.some(endpoint => url.includes(endpoint))
+    const isSilent = isSilentEndpoint || isSilentErrorEndpoint
     
     // Gérer les erreurs bloquées par le client (bloqueur de pub)
     if (error.code === 'ERR_BLOCKED_BY_CLIENT' || error.message?.includes('ERR_BLOCKED_BY_CLIENT')) {
       // Pour les endpoints silencieux, ne rien logger (géré dans FeaturesContext)
       // Pour les autres, logger une seule fois
-      if (!isSilentEndpoint) {
+      if (!isSilent) {
         // Utiliser un flag pour éviter les logs répétés
         if (!window.__hasLoggedBlockedError) {
           console.warn(`⚠️ Requête bloquée (probablement par un bloqueur de publicité): ${url}`);
@@ -118,16 +130,23 @@ api.interceptors.response.use(
           window.__hasLoggedBlockedError = true;
         }
       }
-    } else if (error.code === 'ERR_NETWORK') {
-      // Erreurs réseau normales
-      if (!isSilentEndpoint && !window.__hasLoggedNetworkError) {
+    } else if (error.code === 'ERR_NETWORK' || 
+               error.code === 'ERR_SOCKET_NOT_CONNECTED' || 
+               error.code === 'ERR_CONNECTION_RESET' ||
+               error.message?.includes('ERR_CONNECTION_RESET') ||
+               error.message?.includes('ERR_SOCKET_NOT_CONNECTED')) {
+      // Erreurs réseau normales (backend non disponible, connexion réinitialisée, etc.)
+      // Ne pas logger pour les endpoints silencieux
+      if (!isSilent && !window.__hasLoggedNetworkError) {
         console.warn(`⚠️ Erreur réseau: ${url}`);
         window.__hasLoggedNetworkError = true;
       }
+      // Pour les endpoints silencieux, ne pas rejeter l'erreur (elle sera gérée par le composant)
+      // mais ne pas la logger non plus
     }
     
     // Ne pas logger les erreurs attendues pour certains endpoints
-    const isSilentError = SILENT_ERROR_ENDPOINTS.some(endpoint => url.includes(endpoint));
+    // (déjà calculé plus haut avec isSilent)
     
     // Liste des routes publiques où on ne doit PAS rediriger vers /login
     const publicRoutes = ['/', '/templates', '/pricing', '/about', '/contact'];
@@ -210,9 +229,26 @@ api.interceptors.response.use(
         localStorage.removeItem('user');
         window.location.href = '/login';
       }
-    } else if (!isSilentError && status) {
+    } else if (!isSilent && status) {
       // Ne logger que les erreurs non attendues
       // (Les erreurs attendues sont gérées gracieusement dans les composants)
+    }
+    
+    // Pour les endpoints silencieux avec erreurs réseau, créer une erreur silencieuse
+    // qui ne sera pas loggée dans la console par notre code
+    if (isSilent && (error.code === 'ERR_NETWORK' || 
+                     error.code === 'ERR_SOCKET_NOT_CONNECTED' || 
+                     error.code === 'ERR_CONNECTION_RESET' ||
+                     error.message?.includes('ERR_CONNECTION_RESET') ||
+                     error.message?.includes('ERR_SOCKET_NOT_CONNECTED'))) {
+      // Créer une erreur silencieuse qui ne sera pas loggée par notre code
+      const silentError = new Error('Network error (silent)');
+      silentError.name = 'SilentNetworkError';
+      // Marquer l'erreur comme silencieuse pour éviter les logs supplémentaires
+      (silentError as any).isSilent = true;
+      (silentError as any).code = error.code;
+      (silentError as any).config = error.config;
+      return Promise.reject(silentError);
     }
     
     return Promise.reject(error);

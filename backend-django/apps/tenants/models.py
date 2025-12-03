@@ -15,8 +15,18 @@ class Client(TenantMixin):
     Modèle générique pour les clients/tenants
     """
     name = models.CharField(max_length=100, verbose_name=_("Nom"))
+    slug = models.SlugField(max_length=100, unique=True, blank=True, null=True, verbose_name=_("Slug"))
+    email = models.EmailField(max_length=255, blank=True, null=True, verbose_name=_("Email"))
+    plan = models.CharField(max_length=50, blank=True, null=True, default='free', verbose_name=_("Plan"))
+    status = models.CharField(max_length=50, blank=True, null=True, default='active', verbose_name=_("Statut"))
+    primary_color = models.CharField(max_length=7, blank=True, null=True, default='#3B82F6', verbose_name=_("Couleur primaire"))
+    secondary_color = models.CharField(max_length=7, blank=True, null=True, default='#6B7280', verbose_name=_("Couleur secondaire"))
+    settings = models.JSONField(default=dict, blank=True, verbose_name=_("Paramètres"))
+    metadata = models.JSONField(default=dict, blank=True, verbose_name=_("Métadonnées"))
     description = models.TextField(blank=True, verbose_name=_("Description"))
-    # Note: created_on est géré par TenantMixin qui utilise created_at
+    # created_at est requis par la base de données (NOT NULL)
+    # TenantMixin peut ne pas le définir automatiquement, donc on l'ajoute explicitement
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Date de création"))
     is_active = models.BooleanField(default=True, verbose_name=_("Actif"))
     
     # Configuration
@@ -29,6 +39,40 @@ class Client(TenantMixin):
     
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        """Auto-generate slug from name if not provided"""
+        from django.utils.text import slugify
+        from django.utils import timezone
+        
+        if not self.slug and self.name:
+            self.slug = slugify(self.name)
+            # Ensure uniqueness
+            base_slug = self.slug
+            counter = 1
+            while Client.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{counter}"
+                counter += 1
+        # Set default values for required fields if not provided
+        if not self.plan:
+            self.plan = 'free'
+        if not self.status:
+            self.status = 'active'
+        if not self.primary_color:
+            self.primary_color = '#3B82F6'  # Blue
+        if not self.secondary_color:
+            self.secondary_color = '#6B7280'  # Gray
+        if not self.settings:
+            self.settings = {}  # Empty dict as default
+        if not self.metadata:
+            self.metadata = {}  # Empty dict as default
+        
+        # Set created_at if not set and this is a new object (pk is None)
+        # created_at is required (NOT NULL) in the database, so we ensure it's set
+        if self.pk is None and getattr(self, 'created_at', None) is None:
+            self.created_at = timezone.now()
+        
+        super().save(*args, **kwargs)
 
 
 class Domain(DomainMixin):

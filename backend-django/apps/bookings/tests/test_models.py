@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.utils import timezone
 from datetime import timedelta
 from django_tenants.utils import tenant_context
-from bookings.models import Booking
+from apps.bookings.models import Booking
 from apps.tenants.models import Client, Domain
 from apps.services.models import Service
 
