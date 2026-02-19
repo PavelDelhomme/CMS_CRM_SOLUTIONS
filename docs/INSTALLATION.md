@@ -32,21 +32,29 @@ Ou manuellement :
 ./scripts/setup.sh
 ```
 
-### 3. Configuration
+### 3. Configuration (obligatoire avant le premier démarrage)
 
-Éditez le fichier `.env` et configurez les variables d'environnement :
+Le fichier `.env` à la racine n’est **pas** versionné (il est dans `.gitignore`). Créez-le à partir de l’exemple :
 
 ```bash
 cp .env.example .env
 nano .env  # ou votre éditeur préféré
 ```
 
-Variables importantes à configurer :
-- `SECRET_KEY` : Clé secrète Django (générez-en une nouvelle pour la production)
-- `DB_PASSWORD` : Mot de passe PostgreSQL
-- `EMAIL_*` : Configuration email (si nécessaire)
+Les valeurs par défaut de `.env.example` permettent de lancer le projet en phase de test (DB `cmscrm` / `cmscrm_user` / `cmscrm_password`). À adapter pour la prod :
+- `SECRET_KEY` : clé secrète Django (générez-en une pour la production)
+- `DB_PASSWORD` : mot de passe PostgreSQL
+- `EMAIL_*` : configuration email (si envoi d’emails)
 
 ### 4. Démarrer les services
+
+Le fichier **.env** à la racine doit exister (les conteneurs backend et frontend le chargent). Si vous n’avez pas fait l’étape 3 :
+
+```bash
+cp .env.example .env
+```
+
+Puis :
 
 ```bash
 make start
@@ -57,6 +65,8 @@ Ou :
 ```bash
 docker-compose up -d
 ```
+
+Pour que le healthcheck PostgreSQL passe, utilisez dans `.env` les valeurs **DB_NAME=cmscrm** et **DB_USER=cmscrm_user** (déjà présentes dans `.env.example`).
 
 ### 5. Créer un super utilisateur
 
@@ -76,12 +86,12 @@ python manage.py createsuperuser
 
 Une fois démarré, vous pouvez accéder à :
 
-- **Frontend** : http://localhost:9494
-- **API** : http://localhost:9495/api
-- **Admin Django** : http://localhost:9495/admin
-- **Documentation API** : http://localhost:9495/api/docs
-- **PostgreSQL** : localhost:9496
-- **Redis** : localhost:9497
+- **Frontend** : http://localhost:9194
+- **API** : http://localhost:9193/api
+- **Admin Django** : http://localhost:9193/admin
+- **Documentation API** : http://localhost:9193/api/docs
+- **PostgreSQL** : localhost:9191
+- **Redis** : localhost:9192
 
 ## Créer un Tenant
 

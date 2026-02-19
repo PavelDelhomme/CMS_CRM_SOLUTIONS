@@ -11,7 +11,7 @@ services:
     ports:
       - "9191:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cmscrm_user -d cmscrm"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,7 +39,9 @@ services:
       dockerfile: Dockerfile
     container_name: cms_crm_backend
     command: python manage.py runserver 0.0.0.0:8000
-    # Limite optionnelle en dev pour éviter de saturer la machine (prod: voir docker-compose.prod.yml)
+    env_file:
+      - .env
+    # Limite optionnelle en dev (prod: voir docker-compose.prod.yml)
     deploy:
       resources:
         limits:
@@ -79,7 +81,8 @@ services:
       dockerfile: Dockerfile
     container_name: cms_crm_frontend
     command: npm run dev
-    # Limite optionnelle en dev (next dev est gourmand en RAM; prod: build + start dans docker-compose.prod.yml)
+    env_file:
+      - .env
     deploy:
       resources:
         limits:
@@ -91,7 +94,7 @@ services:
     ports:
       - "9194:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:9193/api
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:9193/api}
     depends_on:
       backend:
         condition: service_healthy

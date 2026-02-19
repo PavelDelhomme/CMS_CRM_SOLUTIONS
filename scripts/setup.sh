@@ -63,9 +63,9 @@ cd ..
 
 echo "✅ Installation terminée!"
 echo ""
-echo "🌐 Frontend: http://localhost:9494"
-echo "🔧 API: http://localhost:9495/api"
-echo "⚙️  Admin: http://localhost:9495/admin"
+echo "🌐 Frontend: http://localhost:9194"
+echo "🔧 API: http://localhost:9193/api"
+echo "⚙️  Admin: http://localhost:9193/admin"
 echo ""
 echo "Pour créer un super utilisateur:"
 echo "  cd backend-django && source venv/bin/activate && python manage.py createsuperuser"

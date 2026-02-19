@@ -137,12 +137,12 @@ Sans réécriture du projet (architecture et objectifs inchangés) :
 | **Cache** | **redis:7-alpine** + **maxmemory** | ✅ command Redis en prod |
 | **Orchestration** | **Docker Compose** + limites par service | ✅ deploy.resources en prod (et dev optionnel) |
 
-Si on envisage une **refonte complète** (hors scope actuel) :
+Si on envisage une **refonte complète** (backend bas niveau + frontend plus efficace, sans perdre de fonctionnalité, tout sous Docker) :
 
-- **Backend** le plus léger : **Go** (Gin/Fiber) ou **Rust** (Axum) — au prix d’une réécriture (multi-tenant, billing, admin).  
-- **Frontend** le plus léger en prod : **SvelteKit** ou SPA statique — au prix d’une réécriture.  
-- **DB** : PostgreSQL reste le plus adapté (schémas multi-tenant).  
-- **Orchestration** : Docker Compose reste le moins coûteux pour un petit nombre de services.
+- **Backend** le plus léger : **Rust** (Axum) ou **Go** (Gin/Fiber) — réécriture avec parité fonctionnelle.  
+- **Frontend** : **SvelteKit** (plus léger/fluide) ou **Next.js** conservé ; pas de HTML/CSS/JS pur (trop pénible pour dashboard + éditeur de blocs).  
+- **DB** : PostgreSQL (schémas multi-tenant). **Orchestration** : Docker Compose.  
+- **Plan détaillé** : voir **[docs/MIGRATION_STACK.md](MIGRATION_STACK.md)** (stratégie de migration, checklist zéro régression, Docker).
 
 ---
 

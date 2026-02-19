@@ -17,15 +17,15 @@ SECRET_KEY=$(generate_secret_key)
 # 1. .env à la racine
 echo "📝 Création/mise à jour de .env (racine)..."
 if [ ! -f .env ]; then
-    cp env.example .env
-    echo "  ✅ Fichier .env créé depuis env.example"
+    cp .env.example .env
+    echo "  ✅ Fichier .env créé depuis .env.example"
 else
     echo "  ℹ️  Fichier .env existe déjà"
 fi
 
 # Mettre à jour SECRET_KEY si nécessaire
-if grep -q "your-secret-key-change-in-production" .env 2>/dev/null; then
-    sed -i "s/your-secret-key-change-in-production/$SECRET_KEY/" .env
+if grep -q "changez-moi-en-production" .env 2>/dev/null; then
+    sed -i "s/changez-moi-en-production-50-caracteres-minimum/$SECRET_KEY/" .env
     echo "  ✅ SECRET_KEY générée et mise à jour"
 fi
 
@@ -38,17 +38,19 @@ if [ ! -f backend-django/.env ]; then
         echo "  ✅ Fichier créé depuis .env.example"
     else
         cat > backend-django/.env << EOF
-# Backend Django Configuration
+# Backend Django (aligné avec docker-compose)
 SECRET_KEY=$SECRET_KEY
+DB_ENGINE=django_tenants.postgresql_backend
+DB_NAME=cmscrm
+DB_USER=cmscrm_user
+DB_PASSWORD=cmscrm_password
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=cms_crm_solutions
-DB_USER=postgres
-DB_PASSWORD=postgres
 REDIS_HOST=localhost
 REDIS_PORT=6379
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
+FRONTEND_URL=http://localhost:9194
 EOF
         echo "  ✅ Fichier créé avec configuration par défaut"
     fi
@@ -71,7 +73,7 @@ if [ ! -f frontend/.env ]; then
     else
         cat > frontend/.env << EOF
 # Frontend Next.js Configuration
-NEXT_PUBLIC_API_URL=http://localhost:9495/api
+NEXT_PUBLIC_API_URL=http://localhost:9193/api
 NODE_ENV=development
 EOF
         echo "  ✅ Fichier créé avec configuration par défaut"
@@ -81,7 +83,7 @@ else
     # Vérifier si NEXT_PUBLIC_API_URL existe
     if ! grep -q "^NEXT_PUBLIC_API_URL=" frontend/.env 2>/dev/null; then
         echo "" >> frontend/.env
-        echo "NEXT_PUBLIC_API_URL=http://localhost:9495/api" >> frontend/.env
+        echo "NEXT_PUBLIC_API_URL=http://localhost:9193/api" >> frontend/.env
         echo "  ✅ NEXT_PUBLIC_API_URL ajouté"
     fi
 fi

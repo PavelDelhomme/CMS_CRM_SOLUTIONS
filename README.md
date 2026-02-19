@@ -38,7 +38,8 @@ CMS_CRM_SOLUTIONS est une plateforme complète et générique qui permet de dév
 
 Pour **minimiser l’usage CPU/RAM** et voir un **comparatif complet des technologies** (backend : Python, Go, Rust, Node… ; frontend : React, Next.js, Vue, Svelte… ; BDD : PostgreSQL, MySQL, MariaDB… ; cache, orchestration Docker), voir :
 
-- **[docs/PERFORMANCE_OPTIONS.md](docs/PERFORMANCE_OPTIONS.md)** — comparatif détaillé et recommandations (tout passe par Docker).
+- **[docs/PERFORMANCE_OPTIONS.md](docs/PERFORMANCE_OPTIONS.md)** — comparatif détaillé et recommandations (tout passe par Docker).  
+- **[docs/MIGRATION_STACK.md](docs/MIGRATION_STACK.md)** — plan de migration vers une stack plus performante (Rust/Go + frontend efficace), sans perte de fonctionnalité, sous Docker.
 
 En production : `docker-compose.prod.yml` (Gunicorn, Next.js build+start, limites mémoire). En dev : runserver + next dev (plus gourmand mais pratique).
 
@@ -79,25 +80,29 @@ CMS_CRM_SOLUTIONS (Core Générique)
 
 ```bash
 # 1. Cloner le projet
-git clone https://github.com/PavelDelhomme/CMS_CRM_SOLUTIONS.git
+git clone git@github.com:PavelDelhomme/CMS_CRM_SOLUTIONS.git
 cd CMS_CRM_SOLUTIONS
 
-# 2. Installation complète
+# 2. Créer le .env (obligatoire avant le premier démarrage)
+cp .env.example .env
+# Éditer .env si besoin (DB, SECRET_KEY, etc.)
+
+# 3. Installation complète (ou docker-compose up -d)
 make setup
 
-# 3. Démarrer les services
+# 4. Démarrer les services
 make start
 
-# 4. Créer un super utilisateur
+# 5. Créer un super utilisateur
 make superuser
 ```
 
 ## 🔐 Accès
 
-- **Frontend**: http://localhost:9494
-- **API**: http://localhost:9495/api
-- **Admin**: http://localhost:9495/admin
-- **API Docs**: http://localhost:9495/api/docs
+- **Frontend**: http://localhost:9194
+- **API**: http://localhost:9193/api
+- **Admin**: http://localhost:9193/admin
+- **API Docs**: http://localhost:9193/api/docs
 
 ## 📚 Documentation
 

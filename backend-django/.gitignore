@@ -1,0 +1,21 @@
+# Environment (ne pas committer les secrets)
+.env
+.env.local
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Django
+*.log
+local_settings.py
+staticfiles/
+media/
