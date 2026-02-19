@@ -76,5 +76,6 @@ Le projet contient actuellement :
 
 - [SYSTEM_OVERVIEW.md](https://github.com/PavelDelhomme/CMS_CRM_SOLUTIONS/blob/dev/SYSTEM_OVERVIEW.md) : Vue d'ensemble du système
 - [STATUS.md](https://github.com/PavelDelhomme/CMS_CRM_SOLUTIONS/blob/dev/STATUS.md) : État actuel du projet
+- [docs/PERFORMANCE_OPTIONS.md](docs/PERFORMANCE_OPTIONS.md) : Comparatif complet des options technologiques (backend, frontend, BDD, cache, Docker) et coût en ressources
 - Voir [EXTRACTION_PLAN.md](../VTCBuilder/EXTRACTION_PLAN.md) dans le projet VTCBuilder pour le plan d'extraction
 

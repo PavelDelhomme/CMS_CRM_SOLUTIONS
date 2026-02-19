@@ -36,11 +36,11 @@ CMS_CRM_SOLUTIONS est une plateforme complète et générique qui permet de dév
 
 ## ⚡ Performance et coût en ressources
 
-Pour **minimiser l’usage CPU/RAM** (choix backend/frontend, limites Docker, prod vs dev), voir :
+Pour **minimiser l’usage CPU/RAM** et voir un **comparatif complet des technologies** (backend : Python, Go, Rust, Node… ; frontend : React, Next.js, Vue, Svelte… ; BDD : PostgreSQL, MySQL, MariaDB… ; cache, orchestration Docker), voir :
 
-- **[docs/PERFORMANCE_OPTIONS.md](docs/PERFORMANCE_OPTIONS.md)** — comparatif des options et recommandations.
+- **[docs/PERFORMANCE_OPTIONS.md](docs/PERFORMANCE_OPTIONS.md)** — comparatif détaillé et recommandations (tout passe par Docker).
 
-En production, utiliser `docker-compose.prod.yml` (Gunicorn, Next.js build+start, limites mémoire). En dev, le stack actuel (runserver + next dev) reste pratique mais plus coûteux en ressources.
+En production : `docker-compose.prod.yml` (Gunicorn, Next.js build+start, limites mémoire). En dev : runserver + next dev (plus gourmand mais pratique).
 
 ---
 

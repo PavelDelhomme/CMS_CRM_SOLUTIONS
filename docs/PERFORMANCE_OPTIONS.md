@@ -1,149 +1,165 @@
-# ⚡ Options de performance et coût en ressources
+# ⚡ Comparatif complet : performance et coût en ressources
 
-Ce document compare les choix possibles pour **minimiser l’usage CPU/RAM** et le coût d’exécution des conteneurs (dev et prod), en s’appuyant sur la doc existante (`ARCHITECTURE.md`, `INSTALLATION.md`, `COUTS_PROJET.md`).
-
----
-
-## 1. État actuel (ce qui est utilisé)
-
-| Composant | Actuel | Problème côté ressources |
-|-----------|--------|---------------------------|
-| **Backend** | `python manage.py runserver` (docker-compose.yml) | Serveur de dev, **mono-thread**, pas pour la prod, pas de limite mémoire. |
-| **Frontend** | `npm run dev` (Next.js dev) | **Très coûteux** : HMR, pas de minification, Node + compilations à la volée. |
-| **DB** | `postgres:15-alpine` | Déjà léger (alpine). Aucune limite mémoire → peut tout prendre. |
-| **Redis** | `redis:7-alpine` | Déjà léger. Aucune limite → peut grossir. |
-| **Nginx** | `nginx:alpine` | Léger. OK. |
-| **Docker** | Aucune limite CPU/RAM | Un conteneur peut saturer la machine. |
-
-**Conclusion** : la config actuelle **n’est pas** la moins coûteuse en ressources. En dev on privilégie le confort (hot reload), en prod il faut utiliser les bons binaires et limiter les ressources.
+Ce document compare **toutes les options technologiques pertinentes** (backend, frontend, base de données, cache, orchestration) pour **minimiser l’usage CPU/RAM** et le coût d’exécution, en cohérence avec l’architecture visée décrite dans les `.md` à la racine et dans `docs/`. Tous les déploiements visés passent par **Docker** (conteneurisation et orchestration).
 
 ---
 
-## 2. Comparatif des options par composant
+## 1. Architecture visée (rappel)
 
-### 2.1 Backend (API Django)
+D’après **ARCHITECTURE.md**, **SYSTEM_OVERVIEW.md**, **CMS_CRM_SOLUTIONS_README.md**, **docs/architecture/** et **docs/PLUGINS_ARCHITECTURE.md** :
 
-| Option | RAM typique | CPU | Complexité | Usage recommandé |
-|--------|-------------|-----|------------|-------------------|
-| **runserver** | ~150–300 MB | 1 cœur | Très simple | **Dev uniquement** (déjà en place). |
-| **Gunicorn (workers sync)** | ~80–120 MB/worker | 1 cœur/worker | Simple | **Prod standard** : bon compromis. |
-| **Gunicorn (1 worker)** | ~80–120 MB | 1 cœur | Simple | **Prod minimal** : moins de concurrence, coût minimal. |
-| **Gunicorn + gevent** | ~100–150 MB/worker | partagé | Moyen | Plus de requêtes/worker, un peu plus complexe. |
-| **Uvicorn (ASGI)** | ~90–130 MB/worker | 1 cœur/worker | Moyen | Si on passe Django en ASGI (davantage de changements). |
-| **FastAPI à la place** | Moins que Django | Moins | Très élevée | Réécriture complète : **non recommandé** pour ce projet. |
+- **Produit** : plateforme **multi-tenant** type CMS/CRM (pages, blocs, réservations, facturation, utilisateurs par tenant).
+- **Multi-tenant** : schémas PostgreSQL par tenant (django-tenants), domaine/sous-domaine par client.
+- **Backend** : API REST, JWT, admin Django, Celery optionnel, intégration Stripe.
+- **Frontend** : dashboard tenant + super-admin, éditeur visuel de blocs (type Gutenberg/Elementor), SSR/SPA.
+- **Infra** : tout doit tourner sous **Docker** (Compose ou autre orchestration), reverse proxy (Nginx/Traefik).
 
-**Recommandation pour la prod (moins coûteux)**  
-- **Gunicorn** avec **1 worker** si la charge est faible (coût minimal).  
-- **2 workers** dès qu’il y a un peu de concurrence.  
-- **4 workers** (comme dans `docker-compose.prod.yml`) pour un petit serveur partagé.  
-- Utiliser **toujours** `config.core.wsgi` (et non `core.wsgi`) pour ce projet.
+Le comparatif ci‑dessous respecte ces contraintes (multi-tenant, REST, éditeur riche, Docker).
 
 ---
 
-### 2.2 Frontend (Next.js)
+## 2. État actuel du projet
 
-| Option | RAM typique | CPU | Complexité | Usage recommandé |
-|--------|-------------|-----|------------|-------------------|
-| **next dev** | ~400–800 MB | Élevé (HMR, recompilations) | Simple | **Dev uniquement** (déjà en place). |
-| **next build + next start** | ~150–250 MB | Faible | Simple | **Prod** : une seule instance Node qui sert le build. |
-| **next build + export statique** | 0 (servi par Nginx) | 0 (pas de Node) | Élevée | Impossible ici sans perte de fonctionnalités (auth, API, SSR). |
-| **Vite + build + nginx** | 0 (statique) | 0 | Très élevée | Réécriture front : **hors scope** pour “minimal sans tout casser”. |
+| Composant | Choix actuel | Problème côté ressources |
+|-----------|--------------|---------------------------|
+| **Backend** | Django 5 + `runserver` (dev) | runserver = dev uniquement, mono-thread, pas de limite mémoire. |
+| **Frontend** | Next.js 14 + `npm run dev` (dev) | Très gourmand : HMR, recompilations à la volée. |
+| **DB** | PostgreSQL 15 (alpine) | Déjà léger ; pas de limite mémoire. |
+| **Cache** | Redis 7 (alpine) | Léger ; pas de plafond mémoire. |
+| **Orchestration** | Docker Compose | Aucune limite CPU/RAM par service. |
 
-**Recommandation pour la prod (moins coûteux)**  
-- **next build** puis **next start** (déjà prévu dans `Dockerfile.prod` et `docker-compose.prod.yml`).  
-- Ne **jamais** utiliser `npm run dev` en prod.
+En **production** le projet utilise Gunicorn (Django) et `next build` + `next start` (voir `docker-compose.prod.yml` et **section 8**).
 
 ---
 
-### 2.3 Base de données (PostgreSQL)
+## 3. Comparatif Backend (langages et frameworks)
 
-| Option | RAM typique | CPU | Complexité | Usage recommandé |
-|--------|-------------|-----|------------|-------------------|
-| **postgres:15-alpine** | ~50–100 MB (vide) à 256 MB+ | Faible | Simple | **Déjà le bon choix** (image légère). |
-| **postgres:15** (non alpine) | Plus lourd | Idem | Simple | Moins bon pour “minimal”. |
-| **Limites + shared_buffers** | Capped (ex. 256 MB) | Capped | Moyen | **Recommandé** en prod pour ne pas déborder. |
+Critères : **RAM typique par instance**, **CPU**, **adéquation au projet** (multi-tenant, ORM, admin, écosystème), **complexité** (migration depuis Django = réécriture).
+
+| Langage / runtime | Framework / stack | RAM typique (prod) | CPU | Multi-tenant / ORM / Admin | Complexité migration | Moins coûteux ? |
+|-------------------|-------------------|--------------------|-----|----------------------------|----------------------|-----------------|
+| **Python** | **Django** (actuel) | ~80–120 MB/worker (Gunicorn) | 1 cœur/worker | ✅ Schémas PG, ORM, admin intégré | — | Bon compromis |
+| **Python** | FastAPI + SQLAlchemy | ~60–100 MB/worker | 1 cœur/worker | ⚠️ À coder (pas de schémas PG natifs) | Très élevée | Légèrement mieux RAM |
+| **Python** | Flask + SQLAlchemy | ~50–90 MB/worker | 1 cœur/worker | ⚠️ Tout à coder | Très élevée | Légèrement mieux RAM |
+| **Node.js** | Express / Fastify | ~40–80 MB/process | 1 process | ⚠️ Multi-tenant et admin à refaire | Très élevée | Moins de RAM qu’un worker Django |
+| **Node.js** | NestJS | ~80–150 MB/process | 1 process | ⚠️ Écosystème différent | Très élevée | Similaire à Django |
+| **Go** | Gin / Echo / Fiber | ~15–35 MB/process | Faible | ⚠️ Pas d’ORM/admin équivalent Django | Très élevée | **Très peu de RAM** |
+| **Rust** | Actix / Axum | ~10–25 MB/process | Très faible | ⚠️ Écosystème jeune pour CMS/CRM | Très élevée | **Minimum RAM** |
+| **C / C++** | Custom HTTP (ex. libcurl + serveur) | ~5–20 MB | Très faible | ❌ Inadapté (pas d’écosystème CMS/CRM) | Réécriture totale | Minimal mais irréaliste |
+| **Java / Kotlin** | Spring Boot | ~150–300 MB/JVM | Moyen | ✅ Possible (multi-tenant, ORM) | Très élevée | Plus lourd que Django |
+| **C#** | ASP.NET Core | ~80–150 MB/process | Moyen | ✅ Possible | Très élevée | Proche Django |
+
+**Recommandation pour ce projet**  
+- **Garder Django** : seul stack avec django-tenants (schémas PostgreSQL), admin, ORM et écosystème déjà en place.  
+- Pour **minimiser le coût** sans changer de langage : **Gunicorn** avec **1 ou 2 workers** (variable `GUNICORN_WORKERS`), et **limites mémoire** sur le conteneur (ex. 768 M en prod).  
+- **Go / Rust / Node** seraient plus légers en RAM mais imposeraient une **réécriture complète** (multi-tenant, billing, plugins, admin). Le comparatif sert pour une éventuelle refonte future, pas pour un simple tuning.
+
+---
+
+## 4. Comparatif Frontend (frameworks et runtimes)
+
+Critères : **RAM en dev**, **RAM en prod** (build servi), **adéquation** (SSR, auth, API, éditeur riche), **Docker**.
+
+| Techno | RAM dev typique | RAM prod typique | SSR / API / Auth | Complexité migration | Moins coûteux ? |
+|--------|------------------|-------------------|-------------------|------------------------|-----------------|
+| **Next.js** (actuel) | ~400–800 MB | ~150–250 MB (next start) | ✅ Oui | — | Bon compromis |
+| **React** (CRA / Vite) SPA | ~300–600 MB (dev) | 0 si export statique (Nginx) | ❌ Pas de SSR natif | Élevée | Prod très léger si tout statique (pas notre cas) |
+| **Remix** (React) | ~350–700 MB (dev) | ~120–200 MB (Node) | ✅ Oui | Élevée | Proche Next.js |
+| **Vue 3** (Vite) SPA | ~250–500 MB (dev) | 0 (statique) ou ~100–180 MB (Node) | Selon setup | Élevée | Similaire |
+| **Nuxt** (Vue) | ~400–750 MB (dev) | ~130–220 MB (Node) | ✅ Oui | Élevée | Proche Next.js |
+| **SvelteKit** | ~200–450 MB (dev) | ~80–150 MB (Node) | ✅ Oui | Élevée | **Un peu moins de RAM** en prod |
+| **Angular** | ~500–900 MB (dev) | ~150–280 MB (Node) | ✅ Oui | Très élevée | Plus lourd |
+| **Astro** (sites contenu) | ~200–400 MB (dev) | 0 (statique) ou peu (islands) | Partiel | Élevée | Léger si peu d’interactivité (pas adapté à un dashboard complet) |
+
+**Recommandation pour ce projet**  
+- **Garder Next.js** : SSR, API routes optionnelles, écosystème React (éditeur de blocs, formulaires) déjà en place.  
+- Pour **minimiser le coût** : en prod **next build** + **next start** (jamais `npm run dev`), avec **limite mémoire** (ex. 512 M).  
+- **SvelteKit** serait un peu plus léger en prod mais nécessiterait une réécriture complète du front. Le comparatif sert pour une refonte future.
+
+---
+
+## 5. Comparatif Bases de données
+
+Critères : **RAM typique**, **support multi-tenant** (schémas vs base par tenant), **adéquation** avec django-tenants et l’architecture actuelle.
+
+| Base de données | RAM typique (petit déploiement) | Multi-tenant (schémas) | django-tenants | Docker | Moins coûteux ? |
+|-----------------|----------------------------------|------------------------|----------------|--------|------------------|
+| **PostgreSQL** (actuel) | ~50–256 MB (alpine) | ✅ Schémas natifs | ✅ Support officiel | ✅ Image alpine | **Recommandé** |
+| **MySQL** | ~50–200 MB (alpine) | ⚠️ Par base (pas schémas comme PG) | ❌ Non compatible django-tenants | ✅ | Possible mais réécriture multi-tenant |
+| **MariaDB** | ~50–200 MB (alpine) | Idem MySQL | ❌ Idem | ✅ | Idem MySQL |
+| **SQLite** | ~5–20 MB | ❌ 1 fichier par tenant possible mais pas scalable | ❌ Pas adapté django-tenants prod | ✅ | Minimal RAM mais **inadapté** (concurrence, multi-tenant) |
 
 **Recommandation**  
-- Garder **postgres:15-alpine**.  
-- En prod, ajouter des **limites mémoire** côté Docker et, si besoin, un `shared_buffers` modéré dans une config Postgres dédiée (ex. 128–256 MB sur un petit VPS).
+- **Garder PostgreSQL** : schémas par tenant = modèle actuel (ARCHITECTURE.md), django-tenants, isolation et évolutivité.  
+- Pour **minimiser le coût** : image **postgres:15-alpine**, **limite mémoire** sur le conteneur (ex. 512 M en prod), et optionnellement `shared_buffers` modéré dans une config dédiée.
 
 ---
 
-### 2.4 Redis
+## 6. Comparatif Cache / session
 
-| Option | RAM typique | CPU | Complexité | Usage recommandé |
-|--------|-------------|-----|------------|-------------------|
-| **redis:7-alpine** | ~10–30 MB (vide) | Très faible | Simple | **Déjà le bon choix**. |
-| **redis + maxmemory** | Plafonné (ex. 64 MB) | Idem | Simple | **Recommandé** en prod pour éviter la pousse mémoire. |
+| Solution | RAM typique | Utilisation projet | Docker | Moins coûteux ? |
+|----------|-------------|--------------------|--------|------------------|
+| **Redis** (actuel) | ~10–30 MB (vide) ; plafonné avec maxmemory | Cache, sessions, Celery broker | ✅ redis:7-alpine | **Recommandé** avec maxmemory |
+| **Memcached** | ~10–25 MB (vide) | Cache simple uniquement | ✅ | Légèrement moins de features (pas broker Celery) |
+| **Pas de cache** (tout en DB) | 0 | Plus de charge DB | — | Économise un conteneur mais dégrade perfs |
 
 **Recommandation**  
-- Garder **redis:7-alpine**.  
-- En prod, définir **maxmemory** (ex. 64m ou 128m) et une politique **maxmemory-policy** (ex. `allkeys-lru`).
+- **Garder Redis** : sessions, cache, et broker Celery si utilisé. En prod : **maxmemory 64mb** (ou 128mb) + **maxmemory-policy allkeys-lru** et **limite mémoire** conteneur (ex. 128 M).
 
 ---
 
-### 2.5 Conteneurs Docker (limites globales)
+## 7. Comparatif Orchestration / déploiement (Docker)
 
-| Option | Effet | Complexité |
-|--------|--------|------------|
-| **Aucune limite** (actuel) | Un service peut consommer toute la RAM/CPU | Aucune |
-| **deploy.resources.limits** (mémoire + CPU) | Plafond par service, évite les saturations | Faible |
-| **deploy.resources.reservations** | Réserve minimale (optionnel) | Faible |
+Tout doit passer par **Docker** (conteneurisation). Comparatif sur l’**orchestration** et l’**overhead** ressources.
+
+| Option | Overhead RAM/CPU | Complexité | Adapté à la taille projet (VPS 4 CPU / 8 GB) | Moins coûteux ? |
+|--------|-------------------|------------|-----------------------------------------------|------------------|
+| **Docker Compose** (actuel) | Faible | Simple | ✅ Très adapté | **Recommandé** |
+| **Docker Swarm** | Faible à moyen | Moyenne | ✅ Possible | Proche Compose |
+| **Kubernetes** (K3s, minikube, etc.) | Élevé (control plane + etcd) | Élevée | ⚠️ Overkill pour un seul VPS | Moins adapté “moins coûteux” |
+| **Podman + Podman Compose** | Similaire à Docker | Simple | ✅ Possible | Alternative sans daemon Docker |
 
 **Recommandation**  
-- En **prod** (et optionnellement en dev) : définir des **limits** mémoire (et éventuellement CPU) pour chaque service pour que le total soit prévisible et “le moins coûteux” maîtrisé.
+- **Garder Docker Compose** : pas d’overhead inutile, cohérent avec **INSTALLATION.md** et **COUTS_PROJET.md** (VPS 4 CPU / 8 GB).  
+- Ajouter **deploy.resources.limits** (mémoire, optionnellement CPU) sur chaque service pour maîtriser le coût (déjà en place dans `docker-compose.prod.yml`).
 
 ---
 
-## 3. Synthèse : ce qui est le moins coûteux en ressources
+## 8. Synthèse : options les moins coûteuses en ressources
 
-- **Backend**  
-  - Dev : `runserver` (actuel).  
-  - Prod : **Gunicorn** avec **config.core.wsgi**, **1 ou 2 workers** pour un coût minimal, 4 workers si la charge augmente.
+Sans réécriture du projet (architecture et objectifs inchangés) :
 
-- **Frontend**  
-  - Dev : `npm run dev` (actuel).  
-  - Prod : **next build + next start** (pas de `npm run dev`).
+| Couche | Choix le moins coûteux raisonnable | Déjà en place / à faire |
+|--------|-------------------------------------|---------------------------|
+| **Backend** | Gunicorn + `config.core.wsgi`, **1 ou 2 workers** | ✅ Dockerfile.prod + `GUNICORN_WORKERS` |
+| **Frontend** | **next build** + **next start** (pas dev en prod) | ✅ docker-compose.prod.yml |
+| **DB** | **postgres:15-alpine** + limite mémoire | ✅ + limites dans prod |
+| **Cache** | **redis:7-alpine** + **maxmemory** | ✅ command Redis en prod |
+| **Orchestration** | **Docker Compose** + limites par service | ✅ deploy.resources en prod (et dev optionnel) |
 
-- **DB**  
-  - **postgres:15-alpine** + limites Docker en prod (+ optionnel `shared_buffers`).
+Si on envisage une **refonte complète** (hors scope actuel) :
 
-- **Redis**  
-  - **redis:7-alpine** + **maxmemory** en prod.
-
-- **Docker**  
-  - **Limites mémoire (et optionnellement CPU)** sur tous les services en prod (et éventuellement en dev pour éviter les surprises).
-
-Avec ça, l’utilisation actuelle **n’est pas** la moins coûteuse tant qu’on reste en `runserver` + `next dev` partout ; en revanche, en appliquant les choix ci‑dessus **en production** et en ajoutant les limites, on obtient la configuration **la moins coûteuse en ressources** raisonnable pour ce stack sans réécriture majeure.
+- **Backend** le plus léger : **Go** (Gin/Fiber) ou **Rust** (Axum) — au prix d’une réécriture (multi-tenant, billing, admin).  
+- **Frontend** le plus léger en prod : **SvelteKit** ou SPA statique — au prix d’une réécriture.  
+- **DB** : PostgreSQL reste le plus adapté (schémas multi-tenant).  
+- **Orchestration** : Docker Compose reste le moins coûteux pour un petit nombre de services.
 
 ---
 
-## 4. Références dans la doc existante
+## 9. Références dans la doc
 
-- **docs/ARCHITECTURE.md** : “Production : Gunicorn pour Django” → cohérent avec Gunicorn + `config.core.wsgi`.  
-- **docs/INSTALLATION.md** : “Production : docker-compose.prod.yml” → à utiliser avec les corrections ci‑dessus.  
-- **docs/project/COUTS_PROJET.md** : VPS 4 CPU / 8 GB RAM → les limites proposées permettent de rester dans ces bornes et d’avoir une marge pour le reste du système.
+- **docs/ARCHITECTURE.md** : stack actuel, production (Gunicorn, Next build+start), Docker.  
+- **docs/INSTALLATION.md** : démarrage avec Docker Compose, prod avec `docker-compose.prod.yml`.  
+- **docs/project/COUTS_PROJET.md** : VPS 4 CPU / 8 GB RAM — les limites appliquées en prod tiennent dans cette enveloppe.  
+- **docs/architecture/ARCHITECTURE_BLOCKS.md**, **docs/PLUGINS_ARCHITECTURE.md** : contraintes fonctionnelles (éditeur blocs, plugins) conservées quel que soit le choix de stack.
 
 ---
 
-## 5. Fichiers à adapter (résumé)
+## 10. Fichiers concernés (résumé)
 
-1. **docker-compose.prod.yml** (et Dockerfile.prod backend)  
-   - Commande Gunicorn : utiliser **config.core.wsgi:application** (pas `core.wsgi`).  
-   - Rendre le nombre de workers configurable (ex. env `GUNICORN_WORKERS=2`), avec une valeur par défaut faible (1 ou 2) pour le “moins coûteux”.
+- **docker-compose.prod.yml** : Gunicorn (`config.core.wsgi`), `GUNICORN_WORKERS`, limites mémoire, Redis `maxmemory`.  
+- **docker-compose.yml** (dev) : limites optionnelles (backend 1 G, frontend 1,5 G) pour éviter qu’un conteneur sature la machine.  
+- **backend-django/Dockerfile.prod** : CMD Gunicorn avec `config.core.wsgi` et workers configurables.  
+- **docs/ARCHITECTURE.md** : renvoi vers ce comparatif pour les options technologiques complètes.
 
-2. **docker-compose.yml** (optionnel pour dev)  
-   - Garder `runserver` et `npm run dev` pour le dev.  
-   - Possibilité d’ajouter des **deploy.resources.limits** même en dev pour éviter qu’un conteneur n’accapare toute la machine.
-
-3. **Prod : limites ressources**  
-   - Backend : ex. 512 MB–1 GB RAM.  
-   - Frontend : ex. 384–512 MB RAM.  
-   - DB : ex. 256–512 MB RAM.  
-   - Redis : ex. 64–128 MB RAM.  
-   - Nginx : ex. 64–128 MB RAM.
-
-4. **Redis**  
-   - En prod : option `maxmemory 64mb` (ou 128mb) + `maxmemory-policy allkeys-lru` (via config ou commande du conteneur).
-
-En suivant ces recommandations, tu utilises bien **les options les plus performantes / les moins coûteuses en ressources** pour ce projet, avec un comparatif clair et des changements ciblés (prod + limites) sans tout réécrire.
+Ce document couvre l’ensemble des options (langages backend, frameworks frontend, bases de données, cache, orchestration) pour un déploiement **Docker** et une cible **moins coûteuse en ressources**, tout en restant aligné avec l’architecture visée décrite dans les `.md` du projet.

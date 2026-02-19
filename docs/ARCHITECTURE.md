@@ -56,6 +56,8 @@ CMS_CRM_SOLUTIONS/
 
 ## Stack Technologique
 
+Stack actuel (choix cohérent avec l’architecture multi-tenant et le coût en ressources). Pour un **comparatif complet des alternatives** (Python, Go, Rust, Node, React, Vue, Svelte, PostgreSQL, MySQL, MariaDB, Redis, Docker Compose, Kubernetes, etc.) et le “moins coûteux en ressources”, voir **docs/PERFORMANCE_OPTIONS.md**.
+
 ### Backend
 
 - **Django 5.0.1** : Framework web Python
@@ -75,8 +77,8 @@ CMS_CRM_SOLUTIONS/
 
 ### Infrastructure
 
-- **Docker** : Conteneurisation
-- **Docker Compose** : Orchestration
+- **Docker** : Conteneurisation (obligatoire pour déploiement)
+- **Docker Compose** : Orchestration (recommandé ; voir PERFORMANCE_OPTIONS.md pour Kubernetes, Swarm, etc.)
 - **Nginx** : Reverse proxy
 - **Traefik** : Routage (production)
 
