@@ -12,6 +12,17 @@ CMS CRM Solutions utilise des variables d'environnement pour configurer :
 - La configuration SMTP pour l'envoi d'emails
 - Les clés de sécurité
 
+### Garder le `.env` hors du dépôt (recommandé)
+
+Le fichier **`.env`** est dans le **.gitignore** et ne doit jamais être commité. Si vous préférez le stocker ailleurs (ex. `~/Documents/Dev/Perso/.env`), créez un **lien symbolique** à la racine du projet pour que Docker Compose et les services le trouvent :
+
+```bash
+# À la racine du projet CMS_CRM_SOLUTIONS
+ln -s ~/Documents/Dev/Perso/.env .env
+```
+
+Sans ce lien (ou sans fichier `.env` à la racine), `docker-compose up` échouera car les services chargent `env_file: .env`. Vous pouvez aussi copier l’exemple : `cp .env.example .env`.
+
 ---
 
 ## 🚀 Configuration Développement

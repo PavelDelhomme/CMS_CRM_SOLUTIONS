@@ -45,7 +45,7 @@ Ce document décrit une **stratégie de migration** vers un backend plus léger 
 
 ---
 
-## 3. Stratégie de migration (sans perdre de fonctionnalités)
+## 3. Stratégies de migration (sans perdre de fonctionnalités)
 
 ### Option A : Migration progressive (recommandée)
 
@@ -65,6 +65,27 @@ Ce document décrit une **stratégie de migration** vers un backend plus léger 
 3. **Tester** : reprendre les tests E2E et les scénarios métier pour garantir zéro régression.
 4. **Frontend** : soit garder Next.js en ne changeant que l’URL de l’API, soit migrer vers SvelteKit/Vite en réutilisant les mêmes appels API.
 5. **Docker** : un seul `docker-compose` avec le nouveau backend + frontend + PostgreSQL + Redis.
+
+### Option C : Strangler fig (par domaine métier)
+
+1. Identifier des **bounded contexts** (ex. auth, pages/CMS, billing, bookings).
+2. Implémenter le nouveau backend **module par module** (ex. d’abord auth + JWT, puis pages, puis billing).
+3. Router (Nginx/Traefik) : envoyer `/api/auth/*` vers le nouveau backend, le reste vers Django ; étendre progressivement.
+4. Garder **une seule base PostgreSQL** (même schémas) ; le nouveau backend lit/écrit les mêmes tables/schémas que Django pendant la transition.
+5. Valider chaque module (tests E2E, Stripe webhooks) avant de passer au suivant.
+
+### Option D : Canary / pourcentage de trafic
+
+1. Nouveau backend déployé en parallèle (même API, même DB).
+2. Router : envoyer X % du trafic (ex. 5 %, puis 20 %, 50 %) vers le nouveau backend selon header ou cookie.
+3. Monitorer erreurs et perfs ; en cas de problème, revenir à 0 % vers le nouveau backend.
+4. Bascule 100 % quand la parité et la stabilité sont validées.
+
+### Option E : Migration frontend seule (backend Django conservé)
+
+1. Garder Django + PostgreSQL + Redis.
+2. Remplacer Next.js par **SvelteKit** (ou SolidStart / Qwik) en gardant la même API ; adapter les appels API et le rendu (SSR, auth, Stripe côté client).
+3. Réduit la RAM frontend (dev et prod) sans toucher au backend.
 
 ---
 
@@ -93,8 +114,8 @@ Ce document décrit une **stratégie de migration** vers un backend plus léger 
 
 ## 6. Références
 
-- **docs/PERFORMANCE_OPTIONS.md** : comparatif détaillé backend (Rust, Go, C++, Node, Django…), frontend (Next, SvelteKit, Vue…), BDD, cache, orchestration.
+- **docs/PERFORMANCE_OPTIONS.md** : comparatif détaillé backend, frontend, BDD, cache, orchestration, **RAM typique** et **solution de paiement (Stripe)**.
 - **docs/ARCHITECTURE.md** : architecture actuelle et contraintes (multi-tenant, blocs, plugins).
 - **docs/architecture/ARCHITECTURE_BLOCKS.md**, **docs/PLUGINS_ARCHITECTURE.md** : contraintes fonctionnelles à respecter lors de la migration.
 
-Ce plan permet d’envisager une migration vers une stack **Rust ou Go + frontend efficace** (SvelteKit ou Next conservé), **sans perdre de fonctionnalité** et en restant **100 % Docker**.
+Ce plan permet d’envisager une migration vers une stack **Rust ou Go + frontend efficace** (SvelteKit ou Next conservé), **sans perdre de fonctionnalité** et en restant **100 % Docker**. Détail options techniques, RAM et Stripe : **PERFORMANCE_OPTIONS.md**.

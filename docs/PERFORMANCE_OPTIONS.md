@@ -34,7 +34,9 @@ En **production** le projet utilise Gunicorn (Django) et `next build` + `next st
 
 ## 3. Comparatif Backend (langages et frameworks)
 
-Critères : **RAM typique par instance**, **CPU**, **adéquation au projet** (multi-tenant, ORM, admin, écosystème), **complexité** (migration depuis Django = réécriture).
+Critères : **RAM typique par instance** (prod), **CPU**, **adéquation au projet** (multi-tenant, ORM, admin), **paiement (Stripe)** : SDK / webhooks, **complexité** migration depuis Django.
+
+**RAM typique projet** : Backend Django + Gunicorn 2 workers ≈ 200–280 MB ; frontend Next.js `next start` ≈ 150–250 MB ; PostgreSQL 80–256 MB ; Redis 20–64 MB. **Total stack** ≈ 500 MB–1 GB (voir docker-compose.prod.yml). **Stripe** : non obligatoire en phase de test mais **très important** plus tard ; tous les stacks listés ci‑dessous ont un SDK ou une API REST Stripe (webhooks à prévoir en migration).
 
 | Langage / runtime | Framework / stack | RAM typique (prod) | CPU | Multi-tenant / ORM / Admin | Complexité migration | Moins coûteux ? |
 |-------------------|-------------------|--------------------|-----|----------------------------|----------------------|-----------------|
@@ -48,6 +50,9 @@ Critères : **RAM typique par instance**, **CPU**, **adéquation au projet** (mu
 | **C / C++** | Custom HTTP (ex. libcurl + serveur) | ~5–20 MB | Très faible | ❌ Inadapté (pas d’écosystème CMS/CRM) | Réécriture totale | Minimal mais irréaliste |
 | **Java / Kotlin** | Spring Boot | ~150–300 MB/JVM | Moyen | ✅ Possible (multi-tenant, ORM) | Très élevée | Plus lourd que Django |
 | **C#** | ASP.NET Core | ~80–150 MB/process | Moyen | ✅ Possible | Très élevée | Proche Django |
+| **Elixir** | Phoenix | ~40–80 MB/beam | ⚠️ Libs tierces / HTTP | ✅ Ecto, multi-tenant possible | Élevée | Bon compromis RAM |
+| **Ruby** | Rails (Puma) | ~80–150 MB/process | ✅ stripe-ruby | ✅ Acts-as-tenant, admin | Élevée | Proche Django |
+| **PHP** | Laravel | ~60–120 MB/worker | ✅ stripe-php, Cashier | ✅ Multi-tenant, Filament | Élevée | Légèrement moins de RAM |
 
 **Recommandation pour ce projet**  
 - **Garder Django** : seul stack avec django-tenants (schémas PostgreSQL), admin, ORM et écosystème déjà en place.  
@@ -58,7 +63,9 @@ Critères : **RAM typique par instance**, **CPU**, **adéquation au projet** (mu
 
 ## 4. Comparatif Frontend (frameworks et runtimes)
 
-Critères : **RAM en dev**, **RAM en prod** (build servi), **adéquation** (SSR, auth, API, éditeur riche), **Docker**.
+Critères : **RAM en dev**, **RAM en prod** (build servi), **adéquation** (SSR, auth, API, éditeur riche, **Stripe côté client** si besoin), **Docker**.
+
+**RAM frontend** : Dev Next.js ~400–800 MB ; prod `next start` ~150–250 MB. SvelteKit / SolidStart / Qwik = souvent moins en prod (~80–150 MB).
 
 | Techno | RAM dev typique | RAM prod typique | SSR / API / Auth | Complexité migration | Moins coûteux ? |
 |--------|------------------|-------------------|-------------------|------------------------|-----------------|
@@ -70,6 +77,9 @@ Critères : **RAM en dev**, **RAM en prod** (build servi), **adéquation** (SSR,
 | **SvelteKit** | ~200–450 MB (dev) | ~80–150 MB (Node) | ✅ Oui | Élevée | **Un peu moins de RAM** en prod |
 | **Angular** | ~500–900 MB (dev) | ~150–280 MB (Node) | ✅ Oui | Très élevée | Plus lourd |
 | **Astro** (sites contenu) | ~200–400 MB (dev) | 0 (statique) ou peu (islands) | Partiel | Élevée | Léger si peu d’interactivité (pas adapté à un dashboard complet) |
+
+| **SolidStart** (Solid.js) | ~250–500 MB (dev) | ~80–150 MB (Node) | ✅ Oui | Élevée | Moins de RAM en prod |
+| **Qwik** | ~200–450 MB (dev) | ~50–120 MB (résumable) | ✅ Oui | Élevée | Très peu de JS hydraté |
 
 **Recommandation pour ce projet**  
 - **Garder Next.js** : SSR, API routes optionnelles, écosystème React (éditeur de blocs, formulaires) déjà en place.  
