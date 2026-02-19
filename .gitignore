@@ -1,3 +1,8 @@
+# Environment (ne jamais committer les secrets)
+.env
+.env.local
+!.env.example
+
 # Playwright
 **/test-results/
 **/playwright-report/
