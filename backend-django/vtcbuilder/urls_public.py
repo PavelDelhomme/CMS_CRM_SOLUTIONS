@@ -6,9 +6,9 @@ from django.http import JsonResponse
 
 def home(request):
     return JsonResponse({
-        'app': 'VTCBuilder API',
+        'app': 'CMS CRM Solutions API',
         'version': '1.0.0',
-        'message': 'Welcome to VTCBuilder - Le WordPress des chauffeurs VTC',
+        'message': 'Welcome to CMS CRM Solutions - Votre site professionnel, simplifié',
         'docs': '/api/docs',
     })
 

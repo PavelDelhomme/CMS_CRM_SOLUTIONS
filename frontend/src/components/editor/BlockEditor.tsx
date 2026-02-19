@@ -243,7 +243,7 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
       { id: 51, name: 'form-newsletter', label: 'Newsletter', icon: '📧', category: 'custom', description: 'Formulaire newsletter', schema: {}, default_styles: {}, is_active: true, order: 51, created_at: '', updated_at: '' },
       { id: 52, name: 'form-search', label: 'Recherche', icon: '🔍', category: 'custom', description: 'Formulaire de recherche', schema: {}, default_styles: {}, is_active: true, order: 52, created_at: '', updated_at: '' },
       { id: 53, name: 'form-inscription', label: 'Inscription', icon: '✍️', category: 'custom', description: 'Formulaire d\'inscription', schema: {}, default_styles: {}, is_active: true, order: 53, created_at: '', updated_at: '' },
-      { id: 54, name: 'booking-form', label: 'Réservation', icon: '📅', category: 'custom', description: 'Formulaire de réservation VTC', schema: {}, default_styles: {}, is_active: true, order: 54, created_at: '', updated_at: '' },
+      { id: 54, name: 'booking-form', label: 'Réservation', icon: '📅', category: 'custom', description: 'Formulaire de réservation', schema: {}, default_styles: {}, is_active: true, order: 54, created_at: '', updated_at: '' },
       
       // Blocs Interactifs
       { id: 60, name: 'tabs', label: 'Onglets', icon: '📑', category: 'custom', description: 'Onglets interactifs', schema: {}, default_styles: {}, is_active: true, order: 60, created_at: '', updated_at: '' },
@@ -262,11 +262,11 @@ export default function BlockEditor({ blocks, onChange, availableBlockTypes, onB
       { id: 78, name: 'team-member', label: 'Membre d\'Équipe', icon: '👤', category: 'custom', description: 'Carte membre d\'équipe', schema: {}, default_styles: {}, is_active: true, order: 78, created_at: '', updated_at: '' },
       { id: 79, name: 'features-grid', label: 'Grille Fonctionnalités', icon: '⭐', category: 'custom', description: 'Grille de fonctionnalités', schema: {}, default_styles: {}, is_active: true, order: 79, created_at: '', updated_at: '' },
       
-      // Blocs VTC
-      { id: 80, name: 'pricing-table-vtc', label: 'Tarifs VTC', icon: '💰', category: 'custom', description: 'Tableau de prix VTC', schema: {}, default_styles: {}, is_active: true, order: 80, created_at: '', updated_at: '' },
-      { id: 81, name: 'service-zones', label: 'Zones de Service', icon: '📍', category: 'custom', description: 'Zones de service VTC', schema: {}, default_styles: {}, is_active: true, order: 81, created_at: '', updated_at: '' },
+      // Blocs Services & Tarifs
+      { id: 80, name: 'pricing-table-vtc', label: 'Tarifs', icon: '💰', category: 'custom', description: 'Tableau de prix', schema: {}, default_styles: {}, is_active: true, order: 80, created_at: '', updated_at: '' },
+      { id: 81, name: 'service-zones', label: 'Zones de Service', icon: '📍', category: 'custom', description: 'Zones de service', schema: {}, default_styles: {}, is_active: true, order: 81, created_at: '', updated_at: '' },
       { id: 82, name: 'vehicle-gallery', label: 'Galerie Véhicules', icon: '🚗', category: 'custom', description: 'Galerie de véhicules', schema: {}, default_styles: {}, is_active: true, order: 82, created_at: '', updated_at: '' },
-      { id: 83, name: 'contact-buttons', label: 'Boutons Contact', icon: '📞', category: 'custom', description: 'Boutons de contact VTC', schema: {}, default_styles: {}, is_active: true, order: 83, created_at: '', updated_at: '' },
+      { id: 83, name: 'contact-buttons', label: 'Boutons Contact', icon: '📞', category: 'custom', description: 'Boutons de contact', schema: {}, default_styles: {}, is_active: true, order: 83, created_at: '', updated_at: '' },
       { id: 84, name: 'badges', label: 'Badges', icon: '🏅', category: 'custom', description: 'Badges et certifications', schema: {}, default_styles: {}, is_active: true, order: 84, created_at: '', updated_at: '' },
       { id: 85, name: 'pricing', label: 'Tarifs', icon: '💳', category: 'custom', description: 'Tableau de tarifs', schema: {}, default_styles: {}, is_active: true, order: 85, created_at: '', updated_at: '' },
       

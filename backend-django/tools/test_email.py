@@ -10,7 +10,7 @@ import django
 
 # Setup Django
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.core.settings')
 django.setup()
 
 from django.core.mail import send_mail
@@ -37,29 +37,29 @@ def test_email():
         print(f"\n📤 Envoi d'un email de test à {recipient}...")
         
         send_mail(
-            subject='Test email VTCBuilder - Réinitialisation mot de passe',
+            subject='Test email CMS CRM Solutions - Réinitialisation mot de passe',
             message=f'''
 Bonjour,
 
-Ceci est un email de test pour vérifier la configuration SMTP de VTCBuilder.
+Ceci est un email de test pour vérifier la configuration SMTP de CMS CRM Solutions.
 
 Si vous recevez cet email, la configuration SMTP fonctionne correctement !
 
 Test réalisé à {settings.FRONTEND_URL}
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
             ''',
             html_message=f'''
             <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                <h2>Test email VTCBuilder</h2>
+                <h2>Test email CMS CRM Solutions</h2>
                 <p>Bonjour,</p>
-                <p>Ceci est un email de test pour vérifier la configuration SMTP de VTCBuilder.</p>
+                <p>Ceci est un email de test pour vérifier la configuration SMTP de CMS CRM Solutions.</p>
                 <p>Si vous recevez cet email, la configuration SMTP fonctionne correctement !</p>
                 <hr>
                 <p style="color: #666; font-size: 12px;">Test réalisé à {settings.FRONTEND_URL}</p>
-                <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe CMS CRM Solutions</p>
             </body>
             </html>
             ''',

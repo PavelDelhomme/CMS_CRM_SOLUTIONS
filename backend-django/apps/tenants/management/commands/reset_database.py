@@ -104,7 +104,7 @@ class Command(BaseCommand):
 
         # 6. Créer le super admin
         self.stdout.write("👤 Création du super admin...")
-        super_admin_email = "admin@vtcbuilder.com"
+        super_admin_email = "admin@cms-crm-solutions.com"
         super_admin_password = "admin123"
 
         super_admin = User.objects.create_user(
@@ -133,7 +133,7 @@ class Command(BaseCommand):
 
         # 7. Créer un tenant de démo avec son admin
         self.stdout.write("🏢 Création d'un tenant de démo...")
-        tenant_name = "Ma Société VTC"
+        tenant_name = "Mon Entreprise"
         tenant_email = "admin@masociete-vtc.com"
         tenant_slug = "ma-societe-vtc"
 

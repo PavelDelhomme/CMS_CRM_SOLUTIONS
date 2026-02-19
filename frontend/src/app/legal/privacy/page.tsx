@@ -14,7 +14,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">1. Introduction</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                VTCBuilder ("nous", "notre", "nos") s'engage à protéger la confidentialité de vos données personnelles.
+                CMS CRM Solutions ("nous", "notre", "nos") s'engage à protéger la confidentialité de vos données personnelles.
                 Cette Politique de Confidentialité explique comment nous collectons, utilisons, stockons et protégeons
                 vos informations personnelles conformément au Règlement Général sur la Protection des Données (RGPD).
               </p>
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
                 <li><strong>Droit de retirer votre consentement :</strong> À tout moment pour les traitements basés sur le consentement</li>
               </ul>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
-                Pour exercer ces droits, contactez-nous à l'adresse : <a href="mailto:privacy@vtcbuilder.com" className="text-blue-600 hover:underline">privacy@vtcbuilder.com</a>
+                Pour exercer ces droits, contactez-nous à l'adresse : <a href="mailto:privacy@cms-crm-solutions.com" className="text-blue-600 hover:underline">privacy@cms-crm-solutions.com</a>
               </p>
             </section>
 
@@ -153,8 +153,8 @@ export default function PrivacyPage() {
               <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                 <p className="text-gray-700 dark:text-gray-300">
                   <strong>Délégué à la Protection des Données (DPO)</strong><br />
-                  VTCBuilder<br />
-                  Email : privacy@vtcbuilder.com<br />
+                  CMS CRM Solutions<br />
+                  Email : privacy@cms-crm-solutions.com<br />
                   Adresse : 123 Avenue des Exemples, 75000 PARIS, France
                 </p>
               </div>

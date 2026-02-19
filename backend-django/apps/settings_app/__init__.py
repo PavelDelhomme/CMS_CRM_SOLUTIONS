@@ -1,4 +1,4 @@
 """
-Settings app for VTCBuilder
+Settings app for CMS CRM Solutions
 """
 

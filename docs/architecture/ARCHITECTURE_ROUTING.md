@@ -2,7 +2,7 @@
 
 ## 📋 Vue d'ensemble
 
-Le système VTCBuilder est une plateforme **multi-tenant** avec 3 types d'interfaces distinctes :
+Le système CMS CRM Solutions est une plateforme **multi-tenant** avec 3 types d'interfaces distinctes :
 
 ### 1. 🎯 Interface Super Admin
 **URL de base**: `localhost:9494/admin/`
@@ -29,9 +29,9 @@ Le système VTCBuilder est une plateforme **multi-tenant** avec 3 types d'interf
 
 **Objectif**: Gérer le site et les données du tenant (comme WordPress).
 
-**Exemple pour "Ma Société VTC"**:
-- Login: `ma-societe-vtc.localhost:9494/admin/login`
-- Dashboard: `ma-societe-vtc.localhost:9494/dashboard`
+**Exemple pour "Mon Entreprise"**:
+- Login: `mon-entreprise.localhost:9194/admin/login`
+- Dashboard: `mon-entreprise.localhost:9194/dashboard`
 
 ---
 
@@ -77,7 +77,7 @@ Le frontend doit :
 ## 🛠️ Configuration Actuelle
 
 ### Middleware django-tenants
-**Fichier**: `backend-django/vtcbuilder/settings.py`
+**Fichier**: `backend-django/config/core/settings.py`
 ```python
 MIDDLEWARE = [
     'django_tenants.middleware.main.TenantMainMiddleware',  # À ACTIVER
@@ -89,7 +89,7 @@ MIDDLEWARE = [
 
 ### Domains
 Chaque tenant a un domaine dans la table `domains`:
-- `ma-societe-vtc.localhost` → Tenant "Ma Société VTC"
+- `mon-entreprise.localhost` → Tenant "Mon Entreprise"
 - `localhost` → Public schema (super admin)
 
 ---
@@ -121,20 +121,20 @@ Chaque tenant a un domaine dans la table `domains`:
 ### Super Admin
 ```
 http://localhost:9494/admin/login
-→ Connexion avec admin@vtcbuilder.com
+→ Connexion avec admin@cms-crm-solutions.com
 → Redirection vers /admin/dashboard
 ```
 
 ### Tenant Admin
 ```
-http://ma-societe-vtc.localhost:9494/admin/login
+http://mon-entreprise.localhost:9194/admin/login
 → Connexion avec test@delhomme.ovh
 → Redirection vers /dashboard
 ```
 
 ### Site Public Tenant
 ```
-http://ma-societe-vtc.localhost:9494/
+http://mon-entreprise.localhost:9194/
 → Affichage du site public du tenant
 → Réservation, contact, etc.
 ```
@@ -142,7 +142,7 @@ http://ma-societe-vtc.localhost:9494/
 ### Landing Page
 ```
 http://localhost:9494/
-→ Page d'accueil VTCBuilder
+→ Page d'accueil CMS CRM Solutions
 → Bouton "Créer mon compte" → /register
 ```
 

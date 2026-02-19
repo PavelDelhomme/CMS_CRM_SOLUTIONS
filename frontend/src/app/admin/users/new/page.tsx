@@ -264,7 +264,7 @@ export default function NewUserPage() {
                 className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="operator">Opérateur</option>
-                <option value="driver">Chauffeur</option>
+                <option value="driver">Collaborateur</option>
                 <option value="tenant-admin">Administrateur Tenant</option>
                 <option value="super-admin">Super Administrateur</option>
               </select>

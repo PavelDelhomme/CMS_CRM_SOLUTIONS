@@ -137,7 +137,7 @@ export default function InvoiceDetailPage() {
           <div className="flex justify-between items-start mb-8 pb-8 border-b">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">FACTURE</h1>
-              <p className="text-gray-600 dark:text-gray-400">VTCBuilder</p>
+              <p className="text-gray-600 dark:text-gray-400">CMS CRM Solutions</p>
             </div>
             <div className="text-right">
               <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">N° {invoice.invoice_number}</p>
@@ -214,7 +214,7 @@ export default function InvoiceDetailPage() {
           {/* Footer */}
           <div className="pt-8 border-t border-gray-200 text-sm text-gray-600 dark:text-gray-400">
             <p className="mb-2">Merci de votre confiance !</p>
-            <p>Pour toute question concernant cette facture, contactez-nous à support@vtcbuilder.com</p>
+            <p>Pour toute question concernant cette facture, contactez-nous à support@cms-crm-solutions.com</p>
           </div>
         </div>
       </div>

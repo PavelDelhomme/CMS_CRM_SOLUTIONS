@@ -1,5 +1,5 @@
 """
-Permissions configuration for VTCBuilder
+Permissions configuration for CMS CRM Solutions
 """
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -186,7 +186,7 @@ def create_super_admin():
     Create or update super admin user
     """
     try:
-        super_admin = User.objects.get(email='admin@vtcbuilder.com')
+        super_admin = User.objects.get(email='admin@cms-crm-solutions.com')
         super_admin.role = 'super-admin'
         super_admin.is_staff = True
         super_admin.is_superuser = True
@@ -194,7 +194,7 @@ def create_super_admin():
     except User.DoesNotExist:
         super_admin = User.objects.create_superuser(
             username='superadmin',
-            email='admin@vtcbuilder.com',
+            email='admin@cms-crm-solutions.com',
             password='admin123',
             first_name='Super',
             last_name='Admin',

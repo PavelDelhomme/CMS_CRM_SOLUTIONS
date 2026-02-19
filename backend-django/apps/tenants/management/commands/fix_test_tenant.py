@@ -1,5 +1,5 @@
 """
-Management command to create or fix the test tenant "Ma Société VTC" with its admin user
+Management command to create or fix the test tenant "Mon Entreprise" with its admin user
 """
 from django.core.management.base import BaseCommand
 from tenants.models import Client, User, Domain
@@ -7,7 +7,7 @@ from tenants.permissions import assign_role_permissions
 
 
 class Command(BaseCommand):
-    help = 'Create or fix the test tenant "Ma Société VTC" with admin@masociete-vtc.com'
+    help = 'Create or fix the test tenant "Mon Entreprise" with admin@monentreprise.com'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         tenant_slug = 'ma-societe-vtc'
-        tenant_name = 'Ma Société VTC'
+        tenant_name = 'Mon Entreprise'
         admin_email = 'test@delhomme.ovh'
         password = options.get('password', 'admin123')
 
@@ -76,7 +76,7 @@ class Command(BaseCommand):
             admin_user.tenant = tenant
             admin_user.role = 'tenant-admin'
             admin_user.first_name = 'Admin'
-            admin_user.last_name = 'Ma Société VTC'
+            admin_user.last_name = 'Mon Entreprise'
             admin_user.set_password(password)
             admin_user.status = 'active'
             admin_user.is_active = True
@@ -84,14 +84,14 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f'✅ Utilisateur "{admin_email}" mis à jour avec mot de passe'))
         else:
             # Create new admin user
-            username = 'admin_masociete_vtc'
+            username = 'admin_mon_entreprise'
             
             admin_user = User.objects.create_user(
                 username=username,
                 email=admin_email,
                 password=password,
                 first_name='Admin',
-                last_name='Ma Société VTC',
+                last_name='Mon Entreprise',
                 tenant=tenant,
                 role='tenant-admin',
                 status='active',

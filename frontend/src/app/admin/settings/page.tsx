@@ -36,10 +36,10 @@ export default function SettingsPage() {
       // Si 404, créer avec valeurs par défaut (silencieux)
       if (error.response?.status === 404) {
         const defaultSettings = {
-          site_name: 'VTCBuilder',
-          site_url: 'http://localhost:9494',
-          contact_email: 'contact@vtcbuilder.com',
-          support_email: 'support@vtcbuilder.com',
+          site_name: 'CMS CRM Solutions',
+          site_url: 'http://localhost:9194',
+          contact_email: 'contact@cms-crm-solutions.com',
+          support_email: 'support@cms-crm-solutions.com',
         }
         try {
           await settingsService.updateSettings(defaultSettings)
@@ -124,7 +124,7 @@ export default function SettingsPage() {
   return (
     <AdminLayout
       title="Paramètres"
-      subtitle="Configuration de la plateforme VTCBuilder"
+      subtitle="Configuration de la plateforme CMS CRM Solutions"
     >
       <div className="space-y-6">
         {/* Tabs */}
@@ -252,7 +252,7 @@ export default function SettingsPage() {
                 <div className="text-sm text-blue-800">
                   <p className="font-medium mb-1">Configuration Email Automatique</p>
                   <p className="text-blue-700">
-                    Les emails sont envoyés automatiquement depuis <strong>noreply@vtcbuilder.com</strong> pour :
+                    Les emails sont envoyés automatiquement depuis <strong>noreply@cms-crm-solutions.com</strong> pour :
                   </p>
                   <ul className="list-disc list-inside mt-2 text-blue-700 space-y-1">
                     <li>Réinitialisation de mot de passe</li>

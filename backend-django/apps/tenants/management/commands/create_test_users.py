@@ -41,7 +41,7 @@ class Command(BaseCommand):
                     slug=tenant_slug,
                     plan=plan.slug,
                     status='active',
-                    email=f'test-{plan.slug}@vtcbuilder.test',
+                    email=f'test-{plan.slug}@cmscrm.test',
                 )
                 tenant.save()
                 tenant_created = True
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'✅ Tenant créé: {tenant.name}'))
             
             # Créer un utilisateur de test pour ce tenant
-            test_email = f'test-{plan.slug}@vtcbuilder.test'
+            test_email = f'test-{plan.slug}@cmscrm.test'
             test_password = 'test123'
             
             user, user_created = User.objects.get_or_create(

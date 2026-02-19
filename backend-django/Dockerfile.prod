@@ -43,6 +43,8 @@ RUN python manage.py collectstatic --noinput
 # Expose port
 EXPOSE 8000
 
-# Run with gunicorn
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2"]
+# Run with gunicorn (config.core.wsgi = projet CMS_CRM_SOLUTIONS)
+# Workers: 1 = minimal, 2 = léger, 4 = standard. Surcharger avec GUNICORN_WORKERS en prod.
+# Workers: 1 = minimal ressources, 2 = léger, 4 = standard (surcharger GUNICORN_WORKERS en prod)
+CMD ["sh", "-c", "exec gunicorn config.core.wsgi:application --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-2} --threads 2"]
 

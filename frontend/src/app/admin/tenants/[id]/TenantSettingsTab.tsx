@@ -44,7 +44,7 @@ const AVAILABLE_FEATURES: Feature[] = [
   // Business Features
   {
     id: 'services',
-    name: 'Services VTC',
+    name: 'Services',
     description: 'Gérer vos différents services (Berline, Van, etc.)',
     icon: '🚗',
     category: 'business',
@@ -66,7 +66,7 @@ const AVAILABLE_FEATURES: Feature[] = [
   {
     id: 'users',
     name: 'Gestion Utilisateurs',
-    description: 'Gérer les utilisateurs de votre tenant (chauffeurs, opérateurs)',
+    description: 'Gérer les utilisateurs de votre tenant (collaborateurs, opérateurs)',
     icon: '👥',
     category: 'business',
   },

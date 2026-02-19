@@ -87,7 +87,7 @@ export default function EditServicePage() {
     return (
       <TenantLayout 
         title="Édition Service" 
-        subtitle="Modifier un service VTC"
+        subtitle="Modifier un service"
       >
         <div className="flex items-center justify-center py-12">
           <div className="text-center">

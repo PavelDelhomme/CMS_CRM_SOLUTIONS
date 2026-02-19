@@ -1,6 +1,6 @@
 # Gestion des Fonctionnalités par Abonnement
 
-Ce document explique comment gérer les fonctionnalités selon les abonnements dans VTCBuilder.
+Ce document explique comment gérer les fonctionnalités selon les abonnements dans CMS CRM Solutions.
 
 ## Vue d'ensemble
 
@@ -211,12 +211,12 @@ def create_page(request):
 
 ### Initialiser les fonctionnalités
 ```bash
-docker exec vtcbuilder-backend python manage.py init_features
+docker exec cms_crm_backend python manage.py init_features
 ```
 
 ### Vérifier les fonctionnalités d'un tenant
 ```bash
-docker exec vtcbuilder-backend python manage.py shell
+docker exec cms_crm_backend python manage.py shell
 >>> from tenants.models import User, Tenant
 >>> tenant = Tenant.objects.get(slug='test-starter')
 >>> user = User.objects.filter(tenant=tenant).first()
@@ -228,7 +228,7 @@ True
 
 ### Lister toutes les fonctionnalités
 ```bash
-docker exec vtcbuilder-backend python manage.py shell
+docker exec cms_crm_backend python manage.py shell
 >>> from tenants.models import Feature
 >>> for f in Feature.objects.filter(is_active=True):
 ...     print(f"{f.name}: {[p.name for p in f.available_plans.all()]}")

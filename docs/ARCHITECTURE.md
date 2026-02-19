@@ -143,11 +143,16 @@ CMS_CRM_SOLUTIONS/
 
 ### Production
 
-- Docker Compose avec configuration optimisée
-- Gunicorn pour Django
+- Docker Compose avec configuration optimisée (`docker-compose.prod.yml`)
+- **Gunicorn** pour Django (`config.core.wsgi`), workers configurables via `GUNICORN_WORKERS`
+- **Next.js** : `npm run build` + `npm start` (jamais `npm run dev`)
 - Nginx pour reverse proxy
+- Limites mémoire sur les conteneurs (backend, frontend, db, redis, nginx)
+- Redis avec `maxmemory` pour limiter la RAM
 - Certificats SSL (Let's Encrypt)
 - Sauvegardes automatiques
+
+Voir **docs/PERFORMANCE_OPTIONS.md** pour le détail des options et le coût en ressources.
 
 ## Extensibilité
 

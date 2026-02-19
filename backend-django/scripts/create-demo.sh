@@ -9,7 +9,7 @@ echo "🏢 Création d'un tenant de démonstration..."
 
 # Étape 1: Créer le tenant dans le schéma public
 echo "📝 Création du tenant dans le schéma public..."
-docker exec vtcbuilder-backend python manage.py shell -c "
+docker exec cms_crm_backend python manage.py shell -c "
 from tenants.models import Tenant, User
 from django.utils.text import slugify
 
@@ -17,8 +17,8 @@ from django.utils.text import slugify
 tenant, created = Tenant.objects.get_or_create(
     email='demo@vtccompany.com',
     defaults={
-        'name': 'Demo VTC Company',
-        'slug': slugify('Demo VTC Company'),
+        'name': 'Demo Entreprise',
+        'slug': slugify('Demo Entreprise'),
         'plan': 'business',
         'status': 'active',
     }
@@ -54,7 +54,7 @@ echo "✅ Tenant et admin créés avec succès !"
 
 echo ""
 echo "📋 Informations du tenant de démonstration :"
-echo "  Tenant: Demo VTC Company"
+echo "  Tenant: Demo Entreprise"
 echo "  Email: demo@vtccompany.com"
 echo "  Admin Email: admin@demo-vtc-company.com"
 echo "  Admin Password: admin123"

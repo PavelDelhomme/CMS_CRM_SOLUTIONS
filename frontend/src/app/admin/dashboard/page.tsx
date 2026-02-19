@@ -143,7 +143,7 @@ export default function AdminDashboard() {
   return (
     <AdminLayout
       title="Dashboard Super Admin"
-      subtitle="Gestion complète de la plateforme VTCBuilder"
+      subtitle="Gestion complète de la plateforme CMS CRM Solutions"
     >
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-5">

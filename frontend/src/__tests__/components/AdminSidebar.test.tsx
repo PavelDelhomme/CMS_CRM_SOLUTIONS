@@ -39,7 +39,7 @@ describe('AdminSidebar', () => {
   it('should render sidebar with menu items', () => {
     render(<AdminSidebar isOpen={true} onClose={() => {}} />)
 
-    expect(screen.getByText('VTCBuilder')).toBeInTheDocument()
+    expect(screen.getByText('CMS CRM Solutions')).toBeInTheDocument()
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Tenants')).toBeInTheDocument()
     expect(screen.getByText('Utilisateurs')).toBeInTheDocument()

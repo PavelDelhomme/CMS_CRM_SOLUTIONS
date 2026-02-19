@@ -6,7 +6,7 @@ Ne garde que : 1 super admin + 1 tenant avec son admin
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.core.settings')
 django.setup()
 
 from django.db import connection
@@ -59,7 +59,7 @@ def reset_database():
     
     # 6. Créer le super admin
     print("👤 Création du super admin...")
-    super_admin_email = "admin@vtcbuilder.com"
+    super_admin_email = "admin@cms-crm-solutions.com"
     super_admin_password = "admin123"
     
     try:
@@ -96,7 +96,7 @@ def reset_database():
     
     # 7. Créer un tenant de démo avec son admin
     print("🏢 Création d'un tenant de démo...")
-    tenant_name = "Ma Société VTC"
+    tenant_name = "Mon Entreprise"
     tenant_email = "admin@masociete-vtc.com"
     tenant_slug = "ma-societe-vtc"
     

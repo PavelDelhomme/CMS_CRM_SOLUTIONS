@@ -49,7 +49,7 @@ class Command(BaseCommand):
             tenant_slug = f'test-{plan.slug}'
             try:
                 tenant = Client.objects.get(slug=tenant_slug)
-                user = User.objects.filter(tenant=tenant, email__endswith='@vtcbuilder.test').first()
+                user = User.objects.filter(tenant=tenant, email__endswith='@cmscrm.test').first()
                 subscription = Subscription.objects.filter(tenant=tenant).first()
                 
                 if not user:

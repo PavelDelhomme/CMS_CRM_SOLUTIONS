@@ -64,11 +64,11 @@ def request_password_reset_view(request):
         # Send email
         try:
             send_mail(
-                subject='Réinitialisation de votre mot de passe - VTCBuilder',
+                subject='Réinitialisation de votre mot de passe - CMS CRM Solutions',
                 message=f'''
 Bonjour {user.get_full_name() or user.email},
 
-Vous avez demandé à réinitialiser votre mot de passe pour votre compte VTCBuilder.
+Vous avez demandé à réinitialiser votre mot de passe pour votre compte CMS CRM Solutions.
 
 Cliquez sur le lien suivant pour réinitialiser votre mot de passe (valable 24 heures) :
 {reset_url}
@@ -76,14 +76,14 @@ Cliquez sur le lien suivant pour réinitialiser votre mot de passe (valable 24 h
 Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
                 ''',
                 html_message=f'''
                 <html>
                 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                     <h2>Réinitialisation de votre mot de passe</h2>
                     <p>Bonjour {user.get_full_name() or user.email},</p>
-                    <p>Vous avez demandé à réinitialiser votre mot de passe pour votre compte VTCBuilder.</p>
+                    <p>Vous avez demandé à réinitialiser votre mot de passe pour votre compte CMS CRM Solutions.</p>
                     <p>
                         <a href="{reset_url}" style="background-color: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
                             Réinitialiser mon mot de passe
@@ -94,11 +94,11 @@ L'équipe VTCBuilder
                     <p><small>Ce lien est valable pendant 24 heures.</small></p>
                     <p>Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.</p>
                     <hr>
-                    <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                    <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe CMS CRM Solutions</p>
                 </body>
                 </html>
                 ''',
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@cms-crm-solutions.com'),
                 recipient_list=[user.email],
                 fail_silently=False,
             )

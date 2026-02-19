@@ -1,2 +1,2 @@
-# VTCBuilder Django Application
+# CMS CRM Solutions (legacy vtcbuilder package)
 

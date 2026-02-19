@@ -9,7 +9,7 @@ export default function DocsPage() {
       title: 'Premiers pas',
       icon: '🚀',
       items: [
-        { title: 'Créer votre compte', description: 'Guide complet pour créer votre compte VTCBuilder', href: '/docs/getting-started' },
+        { title: 'Créer votre compte', description: 'Guide complet pour créer votre compte CMS CRM Solutions', href: '/docs/getting-started' },
         { title: 'Configuration initiale', description: 'Configurez votre premier site en quelques minutes', href: '/docs/initial-setup' },
         { title: 'Première réservation', description: 'Comment accepter et gérer votre première réservation', href: '/docs/first-booking' }
       ]
@@ -34,7 +34,7 @@ export default function DocsPage() {
       ]
     },
     {
-      title: 'Services VTC',
+      title: 'Services',
       icon: '🚗',
       items: [
         { title: 'Créer des services', description: 'Définissez vos offres et tarifs', href: '/docs/services' },
@@ -65,7 +65,7 @@ export default function DocsPage() {
       icon: '⚙️',
       items: [
         { title: 'Nom de domaine personnalisé', description: 'Connectez votre propre domaine', href: '/docs/custom-domain' },
-        { title: 'API et intégrations', description: 'Intégrez VTCBuilder avec vos outils', href: '/docs/api' },
+        { title: 'API et intégrations', description: 'Intégrez CMS CRM Solutions avec vos outils', href: '/docs/api' },
         { title: 'Personnalisation avancée', description: 'Options de personnalisation avancées', href: '/docs/advanced' }
       ]
     }
@@ -74,14 +74,14 @@ export default function DocsPage() {
   return (
     <PublicLayout
       title="Documentation"
-      description="Tout ce dont vous avez besoin pour utiliser VTCBuilder efficacement"
+      description="Tout ce dont vous avez besoin pour utiliser CMS CRM Solutions efficacement"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Quick Start */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 mb-12 text-white">
           <h2 className="text-3xl font-bold mb-4">🚀 Démarrage rapide</h2>
           <p className="text-xl text-white/90 mb-6">
-            Nouveau sur VTCBuilder ? Suivez notre guide de démarrage pour créer votre site en 10 minutes.
+            Nouveau sur CMS CRM Solutions ? Suivez notre guide de démarrage pour créer votre site en 10 minutes.
           </p>
           <Link
             href="/register"
@@ -137,12 +137,12 @@ export default function DocsPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">Contactez notre support</p>
             </Link>
             <a
-              href="mailto:support@vtcbuilder.com"
+              href="mailto:support@cms-crm-solutions.com"
               className="bg-white dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow text-center"
             >
               <div className="text-4xl mb-3">📧</div>
               <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Email</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">support@vtcbuilder.com</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">support@cms-crm-solutions.com</p>
             </a>
           </div>
         </div>

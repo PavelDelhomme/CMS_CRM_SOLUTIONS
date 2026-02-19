@@ -93,14 +93,14 @@ export default function EditPublicPage() {
       if (pageSlug === 'home') {
         setBlocks(data.public_homepage_blocks || [])
         setStatus(data.public_homepage_status || 'draft')
-        setMetaTitle(data.public_homepage_meta_title || 'VTCBuilder - Le WordPress des chauffeurs VTC')
-        setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site VTC professionnel')
+        setMetaTitle(data.public_homepage_meta_title || 'CMS CRM Solutions - Votre site professionnel, simplifié')
+        setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site professionnel')
       } else {
         // Load other public pages
         const publicPages = data.public_pages || {}
         const pageData = publicPages[pageSlug] || {}
         setBlocks(pageData.blocks || [])
-        setMetaTitle(pageData.meta_title || `${PAGE_TITLES[pageSlug] || pageSlug} - VTCBuilder`)
+        setMetaTitle(pageData.meta_title || `${PAGE_TITLES[pageSlug] || pageSlug} - CMS CRM Solutions`)
         setMetaDescription(pageData.meta_description || '')
       }
     } catch (error: any) {

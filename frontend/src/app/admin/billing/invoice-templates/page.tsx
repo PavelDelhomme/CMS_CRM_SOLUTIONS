@@ -334,7 +334,7 @@ function InvoiceTemplateModal({
     <div class="header">
         <div>
             <div class="invoice-title">FACTURE</div>
-            <div>VTCBuilder</div>
+            <div>CMS CRM Solutions</div>
         </div>
         <div>
             <div style="font-size: 18px; font-weight: bold;">N° {{ invoice_number }}</div>
@@ -381,7 +381,7 @@ function InvoiceTemplateModal({
     
     <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
         <p>Merci de votre confiance !</p>
-        <p>Pour toute question concernant cette facture, contactez-nous à support@vtcbuilder.com</p>
+        <p>Pour toute question concernant cette facture, contactez-nous à support@cms-crm-solutions.com</p>
     </div>
 </body>
 </html>`,

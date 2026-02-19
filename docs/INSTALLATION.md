@@ -158,6 +158,16 @@ make logs-frontend
 make logs-db
 ```
 
+## Performance et ressources
+
+Pour **minimiser l’usage CPU/RAM** (dev et prod) et voir les options (Gunicorn workers, Next.js build, limites Docker, Redis/Postgres), voir :
+
+- **[docs/PERFORMANCE_OPTIONS.md](PERFORMANCE_OPTIONS.md)** — comparatif des options et recommandations.
+
+En prod, le backend utilise Gunicorn (`config.core.wsgi`) avec un nombre de workers configurable via `GUNICORN_WORKERS` (défaut : 2 ; 1 pour le minimum de ressources).
+
+---
+
 ## Production
 
 Pour la production, utilisez `docker-compose.prod.yml` :

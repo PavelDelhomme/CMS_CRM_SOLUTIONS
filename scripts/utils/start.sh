@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}"
 echo "╔═══════════════════════════════════════════════════════════════╗"
 echo "║                                                               ║"
-echo "║              🚀 VTCBuilder - Démarrage Rapide                ║"
+echo "║              🚀 CMS CRM Solutions - Démarrage Rapide                ║"
 echo "║                                                               ║"
 echo "╚═══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -49,15 +49,15 @@ if [ ! -f .env ]; then
         cp .env.example .env
     else
         cat > .env << EOF
-APP_NAME=VTCBuilder
+APP_NAME=CMS CRM Solutions
 APP_ENV=local
 APP_DEBUG=true
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
-DB_DATABASE=vtcbuilder
-DB_USERNAME=vtcbuilder_user
-DB_PASSWORD=vtcbuilder_password
+DB_DATABASE=cmscrm
+DB_USERNAME=cmscrm_user
+DB_PASSWORD=cmscrm_password
 REDIS_HOST=redis
 EOF
     fi
@@ -90,16 +90,16 @@ case $choice in
             sleep 10
             
             echo -e "${BLUE}📦 Installation des dépendances Composer...${NC}"
-            docker exec vtcbuilder_backend composer install --no-interaction || true
+            docker exec cmscrm_backend composer install --no-interaction || true
             
             echo -e "${BLUE}🔑 Génération de la clé Laravel...${NC}"
-            docker exec vtcbuilder_backend php artisan key:generate || true
+            docker exec cmscrm_backend php artisan key:generate || true
             
             echo -e "${BLUE}🗄️  Exécution des migrations...${NC}"
-            docker exec vtcbuilder_backend php artisan migrate --force || true
+            docker exec cmscrm_backend php artisan migrate --force || true
             
             echo -e "${BLUE}🌱 Insertion des données de test...${NC}"
-            docker exec vtcbuilder_backend php artisan db:seed || true
+            docker exec cmscrm_backend php artisan db:seed || true
         fi
         ;;
     2)
@@ -114,17 +114,17 @@ case $choice in
         read -p "Appuyez sur Entrée pour continuer..."
         
         echo -e "${BLUE}📦 Étape 3/5 : Installation Composer...${NC}"
-        docker exec vtcbuilder_backend composer install --no-interaction || true
+        docker exec cmscrm_backend composer install --no-interaction || true
         
         read -p "Appuyez sur Entrée pour continuer..."
         
         echo -e "${BLUE}🗄️  Étape 4/5 : Migrations...${NC}"
-        docker exec vtcbuilder_backend php artisan migrate --force || true
+        docker exec cmscrm_backend php artisan migrate --force || true
         
         read -p "Appuyez sur Entrée pour continuer..."
         
         echo -e "${BLUE}🌱 Étape 5/5 : Seeders...${NC}"
-        docker exec vtcbuilder_backend php artisan db:seed || true
+        docker exec cmscrm_backend php artisan db:seed || true
         ;;
     3)
         echo -e "${GREEN}▶️  Démarrage des services...${NC}"

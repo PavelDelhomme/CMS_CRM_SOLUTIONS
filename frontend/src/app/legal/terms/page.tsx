@@ -14,19 +14,19 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">1. Objet</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Les présentes Conditions Générales de Vente (CGV) régissent l'utilisation de la plateforme VTCBuilder,
-                un service SaaS (Software as a Service) permettant aux professionnels du secteur VTC de créer et gérer
-                leur site web professionnel, leurs réservations, leur facturation et leur équipe.
+                Les présentes Conditions Générales de Vente (CGV) régissent l'utilisation de la plateforme CMS CRM Solutions,
+                un service SaaS (Software as a Service) permettant aux professionnels de créer et gérer
+                leur site web, leurs réservations, leur facturation et leur équipe.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
-                En souscrivant à un abonnement VTCBuilder, le Client accepte sans réserve les présentes CGV.
+                En souscrivant à un abonnement CMS CRM Solutions, le Client accepte sans réserve les présentes CGV.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">2. Services proposés</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                VTCBuilder propose plusieurs formules d'abonnement :
+                CMS CRM Solutions propose plusieurs formules d'abonnement :
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
                 <li><strong>Plan Starter :</strong> Formule de base avec fonctionnalités essentielles</li>
@@ -35,7 +35,7 @@ export default function TermsPage() {
               </ul>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
                 Les caractéristiques détaillées de chaque plan sont disponibles sur notre site web à l'adresse{' '}
-                <a href="/#pricing" className="text-blue-600 hover:underline">vtcbuilder.com/#pricing</a>.
+                <a href="/#pricing" className="text-blue-600 hover:underline">cms-crm-solutions.com/#pricing</a>.
               </p>
             </section>
 
@@ -58,7 +58,7 @@ export default function TermsPage() {
               <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 mt-6">3.3. Paiement</h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Le paiement s'effectue par carte bancaire, PayPal ou virement bancaire. Le paiement est prélevé
-                mensuellement ou annuellement selon le plan choisi. Le Client garantit à VTCBuilder qu'il dispose
+                mensuellement ou annuellement selon le plan choisi. Le Client garantit à CMS CRM Solutions qu'il dispose
                 des autorisations nécessaires pour utiliser le mode de paiement choisi.
               </p>
             </section>
@@ -73,14 +73,14 @@ export default function TermsPage() {
                 <li>Maintenir la confidentialité de ses identifiants de connexion</li>
                 <li>Utiliser la plateforme conformément à sa destination et aux lois en vigueur</li>
                 <li>Ne pas tenter de contourner les mesures de sécurité mises en place</li>
-                <li>Respecter les droits de propriété intellectuelle de VTCBuilder</li>
+                <li>Respecter les droits de propriété intellectuelle de CMS CRM Solutions</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">5. Obligations de VTCBuilder</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">5. Obligations de CMS CRM Solutions</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                VTCBuilder s'engage à :
+                CMS CRM Solutions s'engage à :
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
                 <li>Assurer la disponibilité et la sécurité de la plateforme dans les meilleures conditions</li>
@@ -97,7 +97,7 @@ export default function TermsPage() {
                 prend effet à la fin de la période payée. Aucun remboursement n'est effectué pour la période en cours.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
-                VTCBuilder se réserve le droit de suspendre ou résilier l'accès d'un Client en cas de manquement
+                CMS CRM Solutions se réserve le droit de suspendre ou résilier l'accès d'un Client en cas de manquement
                 grave aux présentes CGV, notamment en cas d'utilisation frauduleuse ou de non-paiement.
               </p>
             </section>
@@ -105,8 +105,8 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">7. Propriété intellectuelle</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                La plateforme VTCBuilder, ses composants, son code source, ses logos et marques sont la propriété
-                exclusive de VTCBuilder. Le Client dispose d'un droit d'utilisation non exclusif et non transférable
+                La plateforme CMS CRM Solutions, ses composants, son code source, ses logos et marques sont la propriété
+                exclusive de CMS CRM Solutions. Le Client dispose d'un droit d'utilisation non exclusif et non transférable
                 dans le cadre de son abonnement.
               </p>
             </section>
@@ -116,15 +116,15 @@ export default function TermsPage() {
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Le traitement des données personnelles est décrit dans notre{' '}
                 <a href="/legal/privacy" className="text-blue-600 hover:underline">Politique de Confidentialité</a>.
-                VTCBuilder s'engage à respecter le Règlement Général sur la Protection des Données (RGPD).
+                CMS CRM Solutions s'engage à respecter le Règlement Général sur la Protection des Données (RGPD).
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">9. Responsabilité</h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                VTCBuilder ne pourra être tenu responsable des dommages indirects résultant de l'utilisation ou
-                de l'impossibilité d'utiliser la plateforme. La responsabilité de VTCBuilder est limitée au montant
+                CMS CRM Solutions ne pourra être tenu responsable des dommages indirects résultant de l'utilisation ou
+                de l'impossibilité d'utiliser la plateforme. La responsabilité de CMS CRM Solutions est limitée au montant
                 des sommes versées par le Client au titre de l'abonnement en cours.
               </p>
             </section>
@@ -144,8 +144,8 @@ export default function TermsPage() {
               </p>
               <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mt-4">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>VTCBuilder</strong><br />
-                  Email : legal@vtcbuilder.com<br />
+                  <strong>CMS CRM Solutions</strong><br />
+                  Email : legal@cms-crm-solutions.com<br />
                   Adresse : 123 Avenue des Exemples, 75000 PARIS, France
                 </p>
               </div>

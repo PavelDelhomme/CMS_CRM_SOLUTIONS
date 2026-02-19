@@ -6,7 +6,7 @@ from django.core.management import call_command
 
 
 class Command(BaseCommand):
-    help = 'Initialize default blocks and templates for VTCBuilder'
+    help = 'Initialize default blocks and templates for CMS CRM Solutions'
 
     def add_arguments(self, parser):
         parser.add_argument(

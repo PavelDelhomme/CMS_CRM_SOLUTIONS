@@ -1,6 +1,6 @@
-# Django Backend - VTCBuilder
+# Django Backend - CMS CRM Solutions
 
-Backend Django avec multi-tenant pour VTCBuilder, utilisant Django REST Framework et django-tenants.
+Backend Django avec multi-tenant pour CMS CRM Solutions, utilisant Django REST Framework et django-tenants.
 
 ## 🚀 Démarrage rapide
 
@@ -39,7 +39,7 @@ Backend Django avec multi-tenant pour VTCBuilder, utilisant Django REST Framewor
 
    # Créer le tenant
    tenant = Tenant.objects.create(
-       name='Demo VTC Company',
+       name='Demo Entreprise',
        email='demo@vtccompany.com',
        plan='business',
        status='active'
@@ -95,7 +95,7 @@ Backend Django avec multi-tenant pour VTCBuilder, utilisant Django REST Framewor
 ### Utilisateurs créés par défaut
 
 1. **Super Admin**
-   - Email : `admin@vtcbuilder.com`
+   - Email : `admin@cms-crm-solutions.com`
    - Mot de passe : `admin123`
    - Rôle : Super Administrator (accès complet)
 
@@ -141,7 +141,7 @@ Le système utilise `django-tenants` pour le multi-tenant :
 ### Créer un nouveau tenant
 
 ```bash
-docker exec vtcbuilder-backend python manage.py create_demo_tenant --name="Mon Entreprise VTC" --email="contact@monvtc.com"
+docker exec cmscrm-backend python manage.py create_demo_tenant --name="Mon Entreprise" --email="contact@monvtc.com"
 ```
 
 ## 📚 API Endpoints
@@ -198,9 +198,9 @@ docker exec vtcbuilder-backend python manage.py create_demo_tenant --name="Mon E
 ```env
 SECRET_KEY=votre-cle-secrete
 DEBUG=True
-DB_NAME=vtcbuilder
-DB_USER=vtcbuilder_user
-DB_PASSWORD=vtcbuilder_password
+DB_NAME=cmscrm
+DB_USER=cmscrm_user
+DB_PASSWORD=cmscrm_password
 DB_HOST=postgres
 DB_PORT=5432
 REDIS_URL=redis://redis:6379/0
@@ -208,7 +208,7 @@ REDIS_URL=redis://redis:6379/0
 
 ### Settings Django
 
-Le fichier `vtcbuilder/settings.py` contient :
+Le fichier `cmscrm/settings.py` contient :
 
 - Configuration multi-tenant avec `django-tenants`
 - Configuration DRF avec authentification JWT
@@ -219,10 +219,10 @@ Le fichier `vtcbuilder/settings.py` contient :
 
 ```
 backend-django/
-├── vtcbuilder/          # Configuration Django
+├── cmscrm/          # Configuration Django
 ├── tenants/             # App tenants (utilisateurs, rôles)
 ├── pages/               # App pages (CMS)
-├── services/            # App services (services VTC)
+├── services/            # App services (services)
 ├── bookings/            # App bookings (réservations)
 ├── media/               # App media (fichiers médias)
 ├── api/                 # Configuration API

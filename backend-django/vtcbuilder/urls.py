@@ -1,5 +1,5 @@
 """
-VTCBuilder URL Configuration
+CMS CRM Solutions URL Configuration (legacy - see config.core.urls)
 """
 from django.contrib import admin
 from django.urls import path, include

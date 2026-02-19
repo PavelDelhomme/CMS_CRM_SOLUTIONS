@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Script de démarrage pour VTCBuilder Django
+# Script de démarrage pour CMS CRM Solutions Django
 # Ce script évite les problèmes de timing avec PostgreSQL
 
 set -e
 
-echo "🚀 Démarrage de VTCBuilder Django..."
+echo "🚀 Démarrage de CMS CRM Solutions Django..."
 
 # Fonction pour attendre qu'un service soit prêt
 wait_for_service() {
@@ -61,7 +61,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 user, created = User.objects.get_or_create(
-    email='admin@vtcbuilder.com',
+    email='admin@cms-crm-solutions.com',
     defaults={
         'is_superuser': True,
         'is_staff': True,
@@ -88,7 +88,7 @@ echo "🔧 Démarrage de PgAdmin..."
 docker-compose -f ../docker-compose.simple.yml up -d pgadmin
 
 echo ""
-echo "🎉 VTCBuilder Django est démarré !"
+echo "🎉 CMS CRM Solutions Django est démarré !"
 echo ""
 echo "📍 URLs d'accès :"
 echo "   Frontend:     http://localhost:9494"
@@ -99,7 +99,7 @@ echo "   PostgreSQL:   localhost:9496"
 echo "   Redis:        localhost:9497"
 echo ""
 echo "🔐 Comptes de test :"
-echo "   Super Admin: admin@vtcbuilder.com / admin123"
+echo "   Super Admin: admin@cms-crm-solutions.com / admin123"
 echo "   Demo Tenant: admin@demo-vtc-company.com / admin123"
 echo ""
 echo "💡 Utilisez 'make logs' pour voir les logs"

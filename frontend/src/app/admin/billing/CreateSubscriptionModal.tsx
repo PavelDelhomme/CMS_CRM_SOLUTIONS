@@ -221,7 +221,7 @@ export default function CreateSubscriptionModal({
                           value={newTenantData.name}
                           onChange={(e) => setNewTenantData({ ...newTenantData, name: e.target.value })}
                           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
-                          placeholder="Ma Société VTC"
+                          placeholder="Mon Entreprise"
                           required
                         />
                       </div>
@@ -234,7 +234,7 @@ export default function CreateSubscriptionModal({
                           value={newTenantData.email}
                           onChange={(e) => setNewTenantData({ ...newTenantData, email: e.target.value })}
                           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
-                          placeholder="admin@masociete-vtc.com"
+                          placeholder="admin@monentreprise.com"
                           required
                         />
                       </div>

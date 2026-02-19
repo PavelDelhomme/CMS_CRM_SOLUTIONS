@@ -1,5 +1,5 @@
 """
-Management command to initialize pricing plans for VTCBuilder
+Management command to initialize pricing plans for CMS CRM Solutions
 Creates realistic pricing plans adapted for VTC companies
 """
 from django.core.management.base import BaseCommand
@@ -7,7 +7,7 @@ from billing.models import PricingPlan
 
 
 class Command(BaseCommand):
-    help = 'Initialize pricing plans for VTCBuilder'
+    help = 'Initialize pricing plans for CMS CRM Solutions'
 
     def add_arguments(self, parser):
         parser.add_argument(

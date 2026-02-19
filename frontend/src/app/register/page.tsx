@@ -163,7 +163,7 @@ export default function RegisterPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-100 mb-4">
-            Créez votre site VTC en quelques minutes
+            Créez votre site professionnel en quelques minutes
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Choisissez votre plan et démarrez votre essai gratuit de 14 jours. Vous devrez enregistrer votre carte bancaire, mais aucun prélèvement ne sera effectué pendant l'essai.
@@ -340,7 +340,7 @@ export default function RegisterPage() {
                         ? 'bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400'
                         : 'border-gray-300 bg-white text-gray-900'
                     }`}
-                    placeholder="Ma Société VTC"
+                    placeholder="Mon Entreprise"
                   />
                   {errors.tenant_name && (
                     <p className="mt-1 text-sm text-red-600">{errors.tenant_name.message}</p>

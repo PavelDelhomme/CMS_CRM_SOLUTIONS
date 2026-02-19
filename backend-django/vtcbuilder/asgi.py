@@ -1,5 +1,5 @@
 """
-ASGI config for VTCBuilder project.
+ASGI config for CMS CRM Solutions project.
 """
 
 import os

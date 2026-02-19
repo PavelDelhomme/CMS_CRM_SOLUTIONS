@@ -1,4 +1,4 @@
-# 📚 Documentation VTCBuilder
+# 📚 Documentation CMS CRM Solutions
 
 Ce dossier contient toute la documentation du projet, organisée par catégories.
 

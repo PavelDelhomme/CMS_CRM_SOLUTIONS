@@ -37,6 +37,7 @@ SHARED_APPS = [
     
     # Local apps (shared)
     'apps.tenants',
+    'apps.settings_app',  # Paramètres système (singleton)
     'apps.plugins',  # Système de plugins
 ]
 
@@ -105,9 +106,9 @@ WSGI_APPLICATION = 'config.core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': config('DB_ENGINE', default='django_tenants.postgresql_backend'),
-        'NAME': config('DB_NAME', default='cms_crm_solutions'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='postgres'),
+        'NAME': config('DB_NAME', default='cmscrm'),
+        'USER': config('DB_USER', default='cmscrm_user'),
+        'PASSWORD': config('DB_PASSWORD', default='cmscrm_password'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
     }

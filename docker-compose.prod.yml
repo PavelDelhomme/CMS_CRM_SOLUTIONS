@@ -17,10 +17,15 @@ services:
     networks:
       - cms_crm_network_prod
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   redis:
     image: redis:7-alpine
     container_name: cms_crm_redis_prod
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data_prod:/data
     healthcheck:
@@ -31,16 +36,17 @@ services:
     networks:
       - cms_crm_network_prod
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
   backend:
     build:
       context: ./backend-django
       dockerfile: Dockerfile.prod
     container_name: cms_crm_backend_prod
-    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2
-    volumes:
-      - backend_static_prod:/app/staticfiles
-      - backend_media_prod:/app/media
+    # GUNICORN_WORKERS: 1 = minimal, 2 = léger, 4 = standard (voir docs/PERFORMANCE_OPTIONS.md)
     environment:
       - DB_HOST=db
       - DB_PORT=5432
@@ -50,6 +56,10 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - DEBUG=False
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}
+    volumes:
+      - backend_static_prod:/app/staticfiles
+      - backend_media_prod:/app/media
     depends_on:
       db:
         condition: service_healthy
@@ -58,6 +68,12 @@ services:
     networks:
       - cms_crm_network_prod
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 256M
 
   frontend:
     build:
@@ -75,6 +91,12 @@ services:
     networks:
       - cms_crm_network_prod
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
 
   nginx:
     image: nginx:alpine
@@ -93,6 +115,10 @@ services:
     networks:
       - cms_crm_network_prod
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
 volumes:
   postgres_data_prod:

@@ -54,7 +54,7 @@ class Command(BaseCommand):
             admin_email = tenant.email
             if not admin_email:
                 # Generate default email based on tenant slug
-                admin_email = f"admin@{tenant.slug}.vtcbuilder.local"
+                admin_email = f"admin@{tenant.slug}.cmscrm.local"
                 tenant.email = admin_email
                 tenant.save(update_fields=['email'])
 
@@ -105,7 +105,7 @@ class Command(BaseCommand):
                 # Send invitation email
                 try:
                     send_mail(
-                        subject=f'Configuration de votre compte VTCBuilder - {tenant.name}',
+                        subject=f'Configuration de votre compte CMS CRM Solutions - {tenant.name}',
                         message=f'''
 Bonjour,
 
@@ -117,12 +117,12 @@ Cliquez sur le lien suivant pour définir votre mot de passe et accéder à votr
 Email de connexion: {admin_email}
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
                         ''',
                         html_message=f'''
                         <html>
                         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                            <h2>Configuration de votre compte VTCBuilder</h2>
+                            <h2>Configuration de votre compte CMS CRM Solutions</h2>
                             <p>Bonjour,</p>
                             <p>Un compte administrateur a été créé pour votre tenant <strong>{tenant.name}</strong>.</p>
                             <p>
@@ -135,11 +135,11 @@ L'équipe VTCBuilder
                             <p><strong>Email de connexion:</strong> {admin_email}</p>
                             <p><small>Ce lien est valable pendant 30 jours.</small></p>
                             <hr>
-                            <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                            <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe CMS CRM Solutions</p>
                         </body>
                         </html>
                         ''',
-                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
+                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@cms-crm-solutions.com'),
                         recipient_list=[admin_email],
                         fail_silently=False,
                     )

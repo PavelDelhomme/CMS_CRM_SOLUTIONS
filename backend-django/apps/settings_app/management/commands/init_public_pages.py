@@ -1,5 +1,5 @@
 """
-Management command to initialize public pages for VTCBuilder
+Management command to initialize public pages for CMS CRM Solutions
 """
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -7,7 +7,7 @@ from settings_app.models import SystemSettings
 
 
 class Command(BaseCommand):
-    help = 'Initialise les pages publiques de documentation VTCBuilder'
+    help = 'Initialise les pages publiques de documentation CMS CRM Solutions'
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('📄 Initialisation des pages publiques...'))
@@ -19,18 +19,18 @@ class Command(BaseCommand):
         default_pages = {
             'docs': {
                 'title': 'Documentation',
-                'description': 'Documentation complète de VTCBuilder',
+                'description': 'Documentation complète de CMS CRM Solutions',
                 'slug': 'docs',
                 'blocks': [
                     {
                         'type': 'heading',
-                        'content': 'Documentation VTCBuilder',
+                        'content': 'Documentation CMS CRM Solutions',
                         'level': 1,
                         'style': {'textAlign': 'center', 'marginBottom': '2rem'}
                     },
                     {
                         'type': 'paragraph',
-                        'content': 'Bienvenue dans la documentation de VTCBuilder. Découvrez comment créer et gérer votre site VTC professionnel.',
+                        'content': 'Bienvenue dans la documentation de CMS CRM Solutions. Découvrez comment créer et gérer votre site professionnel.',
                         'style': {'textAlign': 'center', 'marginBottom': '2rem'}
                     },
                     {
@@ -41,12 +41,12 @@ class Command(BaseCommand):
                     },
                     {
                         'type': 'paragraph',
-                        'content': 'VTCBuilder est une plateforme complète pour créer et gérer votre site VTC professionnel. Suivez ce guide pour commencer.',
+                        'content': 'CMS CRM Solutions est une plateforme complète pour créer et gérer votre site professionnel. Suivez ce guide pour commencer.',
                         'style': {'marginBottom': '1rem'}
                     }
                 ],
-                'meta_title': 'Documentation - VTCBuilder',
-                'meta_description': 'Documentation complète pour utiliser VTCBuilder et créer votre site VTC professionnel',
+                'meta_title': 'Documentation - CMS CRM Solutions',
+                'meta_description': 'Documentation complète pour utiliser CMS CRM Solutions et créer votre site professionnel',
                 'is_active': True,
                 'order': 2
             },
@@ -72,8 +72,8 @@ class Command(BaseCommand):
                         'style': {'maxWidth': '600px', 'margin': '0 auto'}
                     }
                 ],
-                'meta_title': 'Contact - VTCBuilder',
-                'meta_description': 'Contactez l\'équipe VTCBuilder pour toute question ou demande d\'aide',
+                'meta_title': 'Contact - CMS CRM Solutions',
+                'meta_description': 'Contactez l\'équipe CMS CRM Solutions pour toute question ou demande d\'aide',
                 'is_active': True,
                 'order': 3
             },
@@ -92,8 +92,8 @@ class Command(BaseCommand):
                         'type': 'accordion',
                         'items': [
                             {
-                                'title': 'Qu\'est-ce que VTCBuilder ?',
-                                'content': 'VTCBuilder est une plateforme complète pour créer et gérer votre site VTC professionnel. C\'est le WordPress des chauffeurs VTC.'
+                                'title': 'Qu\'est-ce que CMS CRM Solutions ?',
+                                'content': 'CMS CRM Solutions est une plateforme complète pour créer et gérer votre site professionnel. C\'est le WordPress des chauffeurs VTC.'
                             },
                             {
                                 'title': 'Comment créer mon site ?',
@@ -101,20 +101,20 @@ class Command(BaseCommand):
                             },
                             {
                                 'title': 'Quels sont les tarifs ?',
-                                'content': 'VTCBuilder propose différents plans d\'abonnement adaptés à vos besoins. Consultez notre page de tarification pour plus d\'informations.'
+                                'content': 'CMS CRM Solutions propose différents plans d\'abonnement adaptés à vos besoins. Consultez notre page de tarification pour plus d\'informations.'
                             }
                         ],
                         'style': {'maxWidth': '800px', 'margin': '0 auto'}
                     }
                 ],
-                'meta_title': 'FAQ - VTCBuilder',
-                'meta_description': 'Réponses aux questions fréquemment posées sur VTCBuilder',
+                'meta_title': 'FAQ - CMS CRM Solutions',
+                'meta_description': 'Réponses aux questions fréquemment posées sur CMS CRM Solutions',
                 'is_active': True,
                 'order': 4
             },
             'legal/terms': {
                 'title': 'Conditions Générales de Vente',
-                'description': 'CGV de VTCBuilder',
+                'description': 'CGV de CMS CRM Solutions',
                 'slug': 'legal/terms',
                 'blocks': [
                     {
@@ -136,7 +136,7 @@ class Command(BaseCommand):
                     },
                     {
                         'type': 'paragraph',
-                        'content': 'Les présentes Conditions Générales de Vente (CGV) régissent l\'utilisation de la plateforme VTCBuilder et les services proposés.',
+                        'content': 'Les présentes Conditions Générales de Vente (CGV) régissent l\'utilisation de la plateforme CMS CRM Solutions et les services proposés.',
                         'style': {'marginBottom': '1rem'}
                     },
                     {
@@ -147,18 +147,18 @@ class Command(BaseCommand):
                     },
                     {
                         'type': 'paragraph',
-                        'content': 'En utilisant VTCBuilder, vous acceptez sans réserve les présentes CGV.',
+                        'content': 'En utilisant CMS CRM Solutions, vous acceptez sans réserve les présentes CGV.',
                         'style': {'marginBottom': '1rem'}
                     }
                 ],
-                'meta_title': 'Conditions Générales de Vente - VTCBuilder',
-                'meta_description': 'Conditions générales de vente de VTCBuilder',
+                'meta_title': 'Conditions Générales de Vente - CMS CRM Solutions',
+                'meta_description': 'Conditions générales de vente de CMS CRM Solutions',
                 'is_active': True,
                 'order': 5
             },
             'legal/privacy': {
                 'title': 'Politique de Confidentialité',
-                'description': 'Politique de confidentialité de VTCBuilder',
+                'description': 'Politique de confidentialité de CMS CRM Solutions',
                 'slug': 'legal/privacy',
                 'blocks': [
                     {
@@ -180,7 +180,7 @@ class Command(BaseCommand):
                     },
                     {
                         'type': 'paragraph',
-                        'content': 'VTCBuilder collecte uniquement les données nécessaires au fonctionnement de la plateforme et à la fourniture des services.',
+                        'content': 'CMS CRM Solutions collecte uniquement les données nécessaires au fonctionnement de la plateforme et à la fourniture des services.',
                         'style': {'marginBottom': '1rem'}
                     },
                     {
@@ -191,7 +191,7 @@ class Command(BaseCommand):
                     },
                     {
                         'type': 'paragraph',
-                        'content': 'Vos données sont utilisées uniquement dans le cadre de la fourniture des services VTCBuilder et ne sont jamais vendues à des tiers.',
+                        'content': 'Vos données sont utilisées uniquement dans le cadre de la fourniture des services CMS CRM Solutions et ne sont jamais vendues à des tiers.',
                         'style': {'marginBottom': '1rem'}
                     },
                     {
@@ -206,8 +206,8 @@ class Command(BaseCommand):
                         'style': {'marginBottom': '1rem'}
                     }
                 ],
-                'meta_title': 'Politique de Confidentialité - VTCBuilder',
-                'meta_description': 'Politique de confidentialité et protection des données personnelles de VTCBuilder',
+                'meta_title': 'Politique de Confidentialité - CMS CRM Solutions',
+                'meta_description': 'Politique de confidentialité et protection des données personnelles de CMS CRM Solutions',
                 'is_active': True,
                 'order': 6
             }

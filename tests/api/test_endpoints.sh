@@ -4,10 +4,10 @@
 # Usage: ./tests/api/test_endpoints.sh
 
 BASE_URL="${API_URL:-http://localhost:9495/api}"
-ADMIN_EMAIL="${ADMIN_EMAIL:-admin@vtcbuilder.com}"
+ADMIN_EMAIL="${ADMIN_EMAIL:-admin@cms-crm-solutions.com}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin123}"
 
-echo "🧪 Tests des endpoints API VTCBuilder"
+echo "🧪 Tests des endpoints API CMS CRM Solutions"
 echo "====================================="
 echo ""
 

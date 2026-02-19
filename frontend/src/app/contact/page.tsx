@@ -127,8 +127,8 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-4">
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Email</h3>
-                    <a href="mailto:support@vtcbuilder.com" className="text-blue-600 hover:underline">
-                      support@vtcbuilder.com
+                    <a href="mailto:support@cms-crm-solutions.com" className="text-blue-600 hover:underline">
+                      support@cms-crm-solutions.com
                     </a>
                   </div>
                 </div>

@@ -6,7 +6,7 @@
 
 ## 📋 Vue d'Ensemble
 
-VTCBuilder utilise des variables d'environnement pour configurer :
+CMS CRM Solutions utilise des variables d'environnement pour configurer :
 - Les URLs du frontend (pour les emails de reset password, invitations, etc.)
 - Les paramètres de base de données
 - La configuration SMTP pour l'envoi d'emails
@@ -67,13 +67,13 @@ VTCBuilder utilise des variables d'environnement pour configurer :
 1. **Créer le fichier `.env` dans `backend-django/`** :
    ```env
    # ============================================
-   # PRODUCTION - VTCBuilder Backend
+   # PRODUCTION - CMS CRM Solutions Backend
    # ============================================
    
    # Base de données
    DB_ENGINE=django_tenants.postgresql_backend
-   DB_NAME=vtcbuilder_prod
-   DB_USER=vtcbuilder_user
+   DB_NAME=cms_crm_solutions_prod
+   DB_USER=cms_crm_solutions_user
    DB_PASSWORD=CHANGEZ-MOI-EN-PRODUCTION
    DB_HOST=postgres
    DB_PORT=5432
@@ -84,7 +84,7 @@ VTCBuilder utilise des variables d'environnement pour configurer :
    # Sécurité
    SECRET_KEY=CHANGEZ-MOI-EN-PRODUCTION-MINIMUM-50-CARACTERES
    DEBUG=0
-   ALLOWED_HOSTS=vtcbuilder.com,www.vtcbuilder.com,api.vtcbuilder.com
+   ALLOWED_HOSTS=cms-crm-solutions.com,www.cms-crm-solutions.com,api.cms-crm-solutions.com
    
    # ============================================
    # URL FRONTEND (IMPORTANT POUR LES EMAILS)
@@ -93,7 +93,7 @@ VTCBuilder utilise des variables d'environnement pour configurer :
    # - Les emails de reset password
    # - Les emails d'invitation tenant
    # - Les liens de vérification
-   FRONTEND_URL=https://vtcbuilder.com
+   FRONTEND_URL=https://cms-crm-solutions.com
    
    # ============================================
    # CONFIGURATION EMAIL SMTP PRODUCTION
@@ -102,9 +102,9 @@ VTCBuilder utilise des variables d'environnement pour configurer :
    EMAIL_PORT=587
    EMAIL_USE_TLS=True
    EMAIL_USE_SSL=False
-   EMAIL_HOST_USER=noreply@vtcbuilder.com
+   EMAIL_HOST_USER=noreply@cms-crm-solutions.com
    EMAIL_HOST_PASSWORD=votre-mot-de-passe-email-production
-   DEFAULT_FROM_EMAIL=noreply@vtcbuilder.com
+   DEFAULT_FROM_EMAIL=noreply@cms-crm-solutions.com
    ```
 
 2. **Ou utiliser Docker Compose avec variables d'environnement** :
@@ -112,7 +112,7 @@ VTCBuilder utilise des variables d'environnement pour configurer :
    services:
      backend:
        environment:
-         FRONTEND_URL: ${FRONTEND_URL:-https://vtcbuilder.com}
+         FRONTEND_URL: ${FRONTEND_URL:-https://cms-crm-solutions.com}
          EMAIL_HOST: ${EMAIL_HOST}
          # ...
    ```
@@ -121,13 +121,13 @@ VTCBuilder utilise des variables d'environnement pour configurer :
 
 1. **Créer le fichier `.env.production`** :
    ```env
-   NEXT_PUBLIC_API_URL=https://api.vtcbuilder.com
+   NEXT_PUBLIC_API_URL=https://api.cms-crm-solutions.com
    NODE_ENV=production
    ```
 
 2. **Ou utiliser les variables d'environnement du système** :
    ```bash
-   export NEXT_PUBLIC_API_URL=https://api.vtcbuilder.com
+   export NEXT_PUBLIC_API_URL=https://api.cms-crm-solutions.com
    ```
 
 ---
@@ -143,7 +143,7 @@ EMAIL_USE_TLS=True
 EMAIL_USE_SSL=False
 EMAIL_HOST_USER=votre-email@votre-domaine.com
 EMAIL_HOST_PASSWORD=votre-mot-de-passe
-DEFAULT_FROM_EMAIL=noreply@vtcbuilder.com
+DEFAULT_FROM_EMAIL=noreply@cms-crm-solutions.com
 ```
 
 ### Test de Configuration Email
@@ -168,7 +168,7 @@ http://localhost:9494/reset-password?token=abc123&email=user@example.com
 
 **Exemple production** :
 ```
-https://vtcbuilder.com/reset-password?token=abc123&email=user@example.com
+https://cms-crm-solutions.com/reset-password?token=abc123&email=user@example.com
 ```
 
 ### Invitation Tenant
@@ -182,7 +182,7 @@ http://localhost:9494/setup?token=abc123&email=admin@tenant.com
 
 **Exemple production** :
 ```
-https://vtcbuilder.com/setup?token=abc123&email=admin@tenant.com
+https://cms-crm-solutions.com/setup?token=abc123&email=admin@tenant.com
 ```
 
 ---
@@ -236,7 +236,7 @@ https://vtcbuilder.com/setup?token=abc123&email=admin@tenant.com
 
 4. **Configurer ALLOWED_HOSTS** :
    ```env
-   ALLOWED_HOSTS=vtcbuilder.com,www.vtcbuilder.com,api.vtcbuilder.com
+   ALLOWED_HOSTS=cms-crm-solutions.com,www.cms-crm-solutions.com,api.cms-crm-solutions.com
    ```
 
 ---

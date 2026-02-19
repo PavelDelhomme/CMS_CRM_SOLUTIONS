@@ -244,7 +244,7 @@ export default function AdminTemplatesPage() {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      vtc: 'VTC',
+      vtc: 'Professionnel',
       business: 'Business',
       classic: 'Classique',
       minimal: 'Minimaliste',
@@ -377,7 +377,7 @@ export default function AdminTemplatesPage() {
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="ex: modern-vtc"
+                  placeholder="ex: modern-professional"
                 />
               </div>
               <div className="md:col-span-2">
@@ -401,7 +401,7 @@ export default function AdminTemplatesPage() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as 'vtc' | 'business' | 'minimal' | 'modern' | 'classic' })}
                   className="w-full px-4 py-2 border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="vtc">VTC</option>
+                  <option value="vtc">Professionnel</option>
                   <option value="business">Business</option>
                   <option value="modern">Moderne</option>
                   <option value="classic">Classique</option>

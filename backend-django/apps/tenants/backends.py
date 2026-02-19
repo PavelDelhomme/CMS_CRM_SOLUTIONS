@@ -1,5 +1,5 @@
 """
-Custom authentication backends for VTCBuilder
+Custom authentication backends for CMS CRM Solutions
 """
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model

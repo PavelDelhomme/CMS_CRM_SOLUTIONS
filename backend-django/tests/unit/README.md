@@ -11,7 +11,7 @@ Créez un fichier `.env` à la racine du projet `backend-django/` avec :
 ```env
 # Test Configuration
 TEST_API_URL=http://localhost:9495/api
-TEST_EMAIL=admin@vtcbuilder.com
+TEST_EMAIL=admin@cms-crm-solutions.com
 TEST_PASSWORD=admin123
 ```
 
@@ -19,7 +19,7 @@ TEST_PASSWORD=admin123
 
 ```bash
 export TEST_API_URL=http://localhost:9495/api
-export TEST_EMAIL=admin@vtcbuilder.com
+export TEST_EMAIL=admin@cms-crm-solutions.com
 export TEST_PASSWORD=admin123
 ```
 
@@ -28,7 +28,7 @@ export TEST_PASSWORD=admin123
 Si les variables ne sont pas définies, les valeurs par défaut suivantes seront utilisées :
 
 - `TEST_API_URL`: `http://localhost:9495/api`
-- `TEST_EMAIL`: `admin@vtcbuilder.com`
+- `TEST_EMAIL`: `admin@cms-crm-solutions.com`
 - `TEST_PASSWORD`: `admin123`
 
 ## Exécution des tests
@@ -43,7 +43,7 @@ python tests/api/test_endpoints.py
 | Variable | Description | Défaut |
 |----------|-------------|--------|
 | `TEST_API_URL` | URL de base de l'API à tester | `http://localhost:9495/api` |
-| `TEST_EMAIL` | Email de l'utilisateur de test | `admin@vtcbuilder.com` |
+| `TEST_EMAIL` | Email de l'utilisateur de test | `admin@cms-crm-solutions.com` |
 | `TEST_PASSWORD` | Mot de passe de l'utilisateur de test | `admin123` |
 
 ## Sécurité

@@ -236,7 +236,7 @@ class Command(BaseCommand):
             message = f'''
 Bonjour,
 
-Votre période d'essai pour VTCBuilder expire {days_text} ({trial_end_date}).
+Votre période d'essai pour CMS CRM Solutions expire {days_text} ({trial_end_date}).
 
 Pour continuer à utiliser nos services, veuillez souscrire à un plan d'abonnement {urgency}.
 
@@ -247,7 +247,7 @@ Accédez à votre espace de facturation pour souscrire:
 {billing_url}
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
             '''
             
             html_message = f'''
@@ -255,14 +255,14 @@ L'équipe VTCBuilder
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <h2>Votre période d'essai expire {days_text}</h2>
                 <p>Bonjour,</p>
-                <p>Votre période d'essai pour VTCBuilder expire <strong>{days_text}</strong> ({trial_end_date}).</p>
+                <p>Votre période d'essai pour CMS CRM Solutions expire <strong>{days_text}</strong> ({trial_end_date}).</p>
                 <p>Pour continuer à utiliser nos services, veuillez souscrire à un plan d'abonnement {urgency}.</p>
                 <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                     <p><strong>Plan actuel:</strong> {subscription.plan.name}</p>
                     <p><strong>Prix:</strong> {subscription.plan.price_monthly}€/mois</p>
                 </div>
                 <p><a href="{billing_url}" style="background-color: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Accéder à la facturation</a></p>
-                <p>Cordialement,<br>L'équipe VTCBuilder</p>
+                <p>Cordialement,<br>L'équipe CMS CRM Solutions</p>
             </body>
             </html>
             '''
@@ -309,7 +309,7 @@ L'équipe VTCBuilder
             message = f'''
 Bonjour,
 
-Votre période d'essai pour VTCBuilder expire {days_text} ({trial_end_date}).
+Votre période d'essai pour CMS CRM Solutions expire {days_text} ({trial_end_date}).
 
 Pour continuer à utiliser nos services, veuillez souscrire à un plan d'abonnement {urgency}.
 
@@ -317,7 +317,7 @@ Accédez à votre espace de facturation pour souscrire:
 {billing_url}
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
             '''
             
             send_mail(

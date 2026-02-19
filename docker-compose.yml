@@ -3,15 +3,15 @@ services:
     image: postgres:15-alpine
     container_name: cms_crm_db
     environment:
-      POSTGRES_DB: ${DB_NAME:-cms_crm_solutions}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-cmscrm}
+      POSTGRES_USER: ${DB_USER:-cmscrm_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cmscrm_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "9191:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U cmscrm_user -d cmscrm"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,6 +39,11 @@ services:
       dockerfile: Dockerfile
     container_name: cms_crm_backend
     command: python manage.py runserver 0.0.0.0:8000
+    # Limite optionnelle en dev pour éviter de saturer la machine (prod: voir docker-compose.prod.yml)
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
     volumes:
       - ./backend-django:/app
       - backend_static:/app/staticfiles
@@ -48,9 +53,9 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=${DB_NAME:-cms_crm_solutions}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_NAME=${DB_NAME:-cmscrm}
+      - DB_USER=${DB_USER:-cmscrm_user}
+      - DB_PASSWORD=${DB_PASSWORD:-cmscrm_password}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
@@ -74,6 +79,11 @@ services:
       dockerfile: Dockerfile
     container_name: cms_crm_frontend
     command: npm run dev
+    # Limite optionnelle en dev (next dev est gourmand en RAM; prod: build + start dans docker-compose.prod.yml)
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
     volumes:
       - ./frontend:/app
       - /app/node_modules

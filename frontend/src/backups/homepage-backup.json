@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "backup_date": "2025-01-27",
-  "description": "Backup de la homepage publique VTCBuilder avant conversion en blocs",
+  "description": "Backup de la homepage publique CMS CRM Solutions avant conversion en blocs",
   "original_structure": {
     "header": {
       "component": "PublicHeader",
@@ -10,8 +10,8 @@
     "sections": [
       {
         "type": "hero",
-        "title": "Le WordPress des Chauffeurs VTC",
-        "subtitle": "Créez votre site VTC professionnel en quelques minutes. Gestion complète, réservations, paiements, tout inclus.",
+        "title": "Votre site professionnel, simplifié",
+        "subtitle": "Créez votre site en quelques minutes. Gestion complète, réservations, paiements, tout inclus.",
         "buttons": [
           {
             "text": "🚀 Démarrer gratuitement",
@@ -72,7 +72,7 @@
       {
         "type": "cta",
         "title": "Prêt à démarrer ?",
-        "subtitle": "Créez votre site VTC professionnel dès aujourd'hui. Essai gratuit de 14 jours.",
+        "subtitle": "Créez votre site professionnel dès aujourd'hui. Essai gratuit de 14 jours.",
         "button": {
           "text": "🚀 Créer mon compte gratuitement",
           "url": "/register"

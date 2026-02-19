@@ -58,7 +58,7 @@ export default function NewServicePage() {
 
   return (
     <TenantLayout 
-      title="Nouveau Service VTC" 
+      title="Nouveau Service" 
       subtitle="Ajouter un nouveau service de transport"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

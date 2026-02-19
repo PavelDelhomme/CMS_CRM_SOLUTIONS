@@ -8,7 +8,7 @@ from django.utils.html import escape, mark_safe
 
 class TemplateRenderer:
     """
-    Template renderer for VTCBuilder templates
+    Template renderer for CMS CRM Solutions templates
     Supports:
     - Variable substitution: {{variable_name}}
     - Block/component inclusion: {% block block_name %}

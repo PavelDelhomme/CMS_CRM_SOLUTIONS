@@ -35,7 +35,7 @@ export default function TemplatesPage() {
   return (
     <PublicLayout
       title="Templates"
-      description="Choisissez parmi nos templates professionnels pour créer votre site VTC"
+      description="Choisissez parmi nos templates professionnels pour créer votre site"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Filters */}

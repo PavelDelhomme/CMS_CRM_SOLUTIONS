@@ -16,11 +16,11 @@ describe('PublicHeader', () => {
     jest.clearAllMocks()
   })
 
-  it('should render VTCBuilder logo', async () => {
+  it('should render CMS_CRM_SOLUTIONS logo', async () => {
     render(<PublicHeader />)
 
     await waitFor(() => {
-      expect(screen.getByText('VTCBuilder')).toBeInTheDocument()
+      expect(screen.getByText('CMS_CRM_SOLUTIONS')).toBeInTheDocument()
     })
   })
 

@@ -28,7 +28,7 @@ class TestUserStatusActions:
         """Create super admin user"""
         return User.objects.create_user(
             username='superadmin',
-            email='admin@vtcbuilder.com',
+            email='admin@cms-crm-solutions.com',
             password='admin123',
             role='super-admin',
             status='active',
@@ -342,7 +342,7 @@ class TestUserStatusMiddleware:
         """Test that middleware allows super admin even if status is not active"""
         super_admin = User.objects.create_user(
             username='superadmin',
-            email='admin@vtcbuilder.com',
+            email='admin@cms-crm-solutions.com',
             password='admin123',
             role='super-admin',
             status='suspended',  # Even if suspended

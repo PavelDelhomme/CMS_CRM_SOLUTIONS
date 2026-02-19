@@ -3,7 +3,7 @@
     "model": "tenants.client",
     "pk": 1,
     "fields": {
-      "name": "Demo VTC Company",
+      "name": "Demo Entreprise",
       "slug": "demo-vtc-company",
       "email": "demo@vtccompany.com",
       "plan": "business",
@@ -24,7 +24,7 @@
     "pk": 1,
     "fields": {
       "username": "superadmin",
-      "email": "admin@vtcbuilder.com",
+      "email": "admin@cms-crm-solutions.com",
       "first_name": "Super",
       "last_name": "Admin",
       "role": "super-admin",
@@ -57,9 +57,9 @@
     "model": "media.template",
     "pk": 1,
     "fields": {
-      "name": "Classic VTC Template",
+      "name": "Classic Professional Template",
       "slug": "classic-vtc",
-      "description": "Template classique pour entreprises VTC",
+      "description": "Template classique pour entreprises",
       "category": "vtc",
       "is_premium": false,
       "price": "0.00",
@@ -99,7 +99,7 @@
     "model": "media.template",
     "pk": 2,
     "fields": {
-      "name": "Modern VTC Template",
+      "name": "Modern Professional Template",
       "slug": "modern-vtc",
       "description": "Template moderne et épuré",
       "category": "modern",

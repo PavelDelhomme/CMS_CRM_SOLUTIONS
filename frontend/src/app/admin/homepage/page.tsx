@@ -27,8 +27,8 @@ function createDefaultHomepageBlocks(): Block[] {
       id: `block-${now}-1`,
       type: 'hero',
       data: {
-        title: 'Le WordPress des Chauffeurs VTC',
-        subtitle: 'Créez votre site VTC professionnel en quelques minutes. Gestion complète, réservations, paiements, tout inclus.',
+        title: 'Votre site professionnel, simplifié',
+        subtitle: 'Créez votre site en quelques minutes. Gestion complète, réservations, paiements, tout inclus.',
         buttons: [
           { text: '🚀 Démarrer gratuitement', url: '/register', style: 'primary' },
           { text: 'Voir les tarifs', url: '#pricing', style: 'secondary' }
@@ -163,7 +163,7 @@ function createDefaultHomepageBlocks(): Block[] {
       type: 'cta-section',
       data: {
         title: 'Prêt à démarrer ?',
-        subtitle: 'Créez votre site VTC professionnel dès aujourd\'hui. Essai gratuit de 14 jours.',
+        subtitle: 'Créez votre site professionnel dès aujourd\'hui. Essai gratuit de 14 jours.',
         button_text: '🚀 Créer mon compte gratuitement',
         button_url: '/register',
         background_type: 'gradient',
@@ -277,8 +277,8 @@ export default function HomepageEditorPage() {
         setBlocks([])
       }
       
-      setMetaTitle(data.public_homepage_meta_title || 'VTCBuilder - Le WordPress des chauffeurs VTC')
-      setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site VTC professionnel')
+      setMetaTitle(data.public_homepage_meta_title || 'CMS CRM Solutions - Votre site professionnel, simplifié')
+      setMetaDescription(data.public_homepage_meta_description || 'Plateforme complète pour créer et gérer votre site professionnel')
       setOgTitle(data.public_homepage_og_title || '')
       setOgDescription(data.public_homepage_og_description || '')
       setOgImage(data.public_homepage_og_image || '')
@@ -629,7 +629,7 @@ export default function HomepageEditorPage() {
                       value={metaKeywords || ''}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMetaKeywords(e.target.value)}
                       className="w-full px-3 py-1.5 text-sm border dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-lg"
-                      placeholder="vtc, chauffeur, transport..."
+                      placeholder="cms, crm, site, professionnel..."
                     />
                   </div>
                   <div>

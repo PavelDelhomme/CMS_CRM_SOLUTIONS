@@ -24,7 +24,7 @@ class TestTenantViewSet:
         """Create super admin user"""
         return User.objects.create_user(
             username='superadmin',
-            email='admin@vtcbuilder.com',
+            email='admin@cms-crm-solutions.com',
             password='admin123',
             role='super-admin',
             tenant=None
@@ -216,7 +216,7 @@ class TestUserViewSet:
         """Create super admin user"""
         return User.objects.create_user(
             username='superadmin',
-            email='admin@vtcbuilder.com',
+            email='admin@cms-crm-solutions.com',
             password='admin123',
             role='super-admin',
             tenant=None

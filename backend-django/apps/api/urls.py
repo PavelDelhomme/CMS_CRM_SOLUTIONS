@@ -10,8 +10,10 @@ from apps.api.views import DashboardView
 from apps.media.views import MediaViewSet
 from apps.services.views import ServiceViewSet
 from apps.bookings.views import BookingViewSet
+from apps.settings_app.views import SystemSettingsViewSet
 
 router = DefaultRouter()
+router.register(r'system-settings', SystemSettingsViewSet, basename='system-settings')
 router.register(r'pages', PageViewSet, basename='page')
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'tenants', TenantViewSet, basename='tenant')

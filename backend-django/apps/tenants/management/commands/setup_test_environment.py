@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 Payment.objects.filter(tenant__slug__startswith='test-').delete()
                 Invoice.objects.filter(tenant__slug__startswith='test-').delete()
                 Subscription.objects.filter(tenant__slug__startswith='test-').delete()
-                User.objects.filter(email__endswith='@vtcbuilder.test').delete()
+                User.objects.filter(email__endswith='@cmscrm.test').delete()
                 
                 # Supprimer les tenants (peut échouer si les schémas n'existent pas)
                 test_tenants = Client.objects.filter(slug__startswith='test-')
@@ -97,7 +97,7 @@ class Command(BaseCommand):
                     'name': f'Test {plan.name}',
                     'plan': plan.slug,
                     'status': 'active',
-                    'email': f'test-{plan.slug}@vtcbuilder.test',
+                    'email': f'test-{plan.slug}@cmscrm.test',
                 }
             )
             
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 self.stdout.write(f'   ℹ️  Tenant existant: {tenant.name}')
 
             # Créer l'utilisateur admin pour ce tenant
-            test_email = f'test-{plan.slug}@vtcbuilder.test'
+            test_email = f'test-{plan.slug}@cmscrm.test'
             test_password = 'test123'
             
             user, user_created = User.objects.get_or_create(
@@ -220,7 +220,7 @@ class Command(BaseCommand):
         
         self.stdout.write(f'\n👤 COMPTES DE TEST :')
         for plan in plans:
-            self.stdout.write(f'   📧 test-{plan.slug}@vtcbuilder.test / test123')
+            self.stdout.write(f'   📧 test-{plan.slug}@cmscrm.test / test123')
         
         self.stdout.write(f'\n💡 NOTE :')
         self.stdout.write(f'   • Les paiements sont simulés (statut: succeeded)')

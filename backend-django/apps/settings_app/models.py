@@ -1,5 +1,5 @@
 """
-System Settings models for VTCBuilder
+System Settings models for CMS CRM Solutions
 """
 from django.db import models
 from django.core.validators import EmailValidator, URLValidator
@@ -82,7 +82,7 @@ class SystemSettings(models.Model):
         default='draft',
         help_text="Statut de publication de la page d'accueil publique"
     )
-    public_homepage_meta_title = models.CharField(max_length=255, blank=True, default='VTCBuilder - Le WordPress des chauffeurs VTC')
+    public_homepage_meta_title = models.CharField(max_length=255, blank=True, default='CMS CRM Solutions - Votre site professionnel, simplifié')
     public_homepage_meta_description = models.TextField(blank=True, default='Plateforme complète pour créer et gérer votre site VTC professionnel')
     
     # Public Pages (stored as JSON like WordPress)

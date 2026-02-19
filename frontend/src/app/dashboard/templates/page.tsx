@@ -62,6 +62,17 @@ export default function TemplatesPage() {
     return badges[category] || 'bg-gray-100 dark:bg-gray-900 text-gray-800'
   }
 
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, string> = {
+      vtc: 'Professionnel',
+      business: 'Business',
+      classic: 'Classique',
+      minimal: 'Minimaliste',
+      modern: 'Moderne',
+    }
+    return labels[category] || category
+  }
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(price)
   }
@@ -82,7 +93,7 @@ export default function TemplatesPage() {
   return (
     <TenantLayout 
       title="Templates" 
-      subtitle="Choisissez le design de votre site VTC"
+      subtitle="Choisissez le design de votre site"
     >
       <div className="space-y-6">
         {/* Filters */}
@@ -122,14 +133,14 @@ export default function TemplatesPage() {
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${
-                  filter === cat
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+filter === cat
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
-                }`}
-              >
-                {cat}
-              </button>
+                  : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+              }`}
+            >
+              {getCategoryLabel(cat)}
+            </button>
             ))}
           </div>
         </div>
@@ -166,7 +177,7 @@ export default function TemplatesPage() {
                   {/* Badges */}
                   <div className="absolute top-2 right-2 flex gap-2 flex-wrap">
                     <span className={`px-2 py-1 rounded text-xs font-semibold ${getCategoryBadge(template.category)}`}>
-                      {template.category}
+                      {getCategoryLabel(template.category)}
                     </span>
                     {template.is_premium && (
                       <span className="px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800">

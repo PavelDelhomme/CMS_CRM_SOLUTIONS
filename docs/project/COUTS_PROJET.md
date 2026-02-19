@@ -1,8 +1,8 @@
-# 💰 Coûts du Projet VTCBuilder
+# 💰 Coûts du Projet CMS CRM Solutions
 
 ## 📊 Investissements Réalisés
 
-### 🏷️ Nom de Domaine - vtcbuilder.com
+### 🏷️ Nom de Domaine - cms-crm-solutions.com
 
 **Date d'achat** : 13 Octobre 2025  
 **Référence facture** : FR73203589  
@@ -12,8 +12,8 @@
 
 | Rubrique | Description | Prix HT | Prix TTC |
 |----------|-------------|---------|----------|
-| **Nom de domaine** | vtcbuilder.com (enregistrement 5 ans) | 53,96 € | - |
-| **Nom de domaine** | vtcbuilder.com (1ère année) | 7,99 € | - |
+| **Nom de domaine** | cms-crm-solutions.com (enregistrement 5 ans) | 53,96 € | - |
+| **Nom de domaine** | cms-crm-solutions.com (1ère année) | 7,99 € | - |
 | **DNS Anycast** | Zone DNS Anycast (5 ans) | 5,45 € | - |
 | **Zimbra Starter** | Email (1 mois) | 0,30 € | - |
 | **Remises** | Promotion .COM 5 ans: -50% 1ère année | -3,99 € | - |

@@ -88,15 +88,15 @@ def system_settings_view(request):
                     logger.error(f"Error creating default system settings: {create_error}", exc_info=True)
                     # Return default settings as fallback
                     default_data = {
-                        'site_name': 'VTCBuilder',
+                        'site_name': 'CMS CRM Solutions',
                         'site_url': 'http://localhost:9494',
-                        'contact_email': 'contact@vtcbuilder.com',
-                        'support_email': 'support@vtcbuilder.com',
+                        'contact_email': 'contact@cms-crm-solutions.com',
+                        'support_email': 'support@cms-crm-solutions.com',
                         'email_host': 'smtp.maily.ovh',
                         'email_port': 587,
                         'email_use_tls': True,
                         'email_use_ssl': False,
-                        'email_from': 'noreply@vtcbuilder.com',
+                        'email_from': 'noreply@cms-crm-solutions.com',
                         'default_trial_days': 14,
                         'enable_trial': True,
                         'password_min_length': 8,
@@ -117,7 +117,7 @@ def system_settings_view(request):
                         'maintenance_mode': False,
                         'maintenance_message': 'Le site est en maintenance.',
                         'public_homepage_blocks': [],
-                        'public_homepage_meta_title': 'VTCBuilder - Le WordPress des chauffeurs VTC',
+                        'public_homepage_meta_title': 'CMS CRM Solutions - Votre site professionnel, simplifié',
                         'public_homepage_meta_description': 'Plateforme complète pour créer et gérer votre site VTC professionnel',
                         'extra_settings': {},
                     }
@@ -153,15 +153,15 @@ def system_settings_view(request):
         if request.method == 'GET':
             # Return default settings on error
             default_data = {
-                'site_name': 'VTCBuilder',
+                'site_name': 'CMS CRM Solutions',
                 'site_url': 'http://localhost:9494',
-                'contact_email': 'contact@vtcbuilder.com',
-                'support_email': 'support@vtcbuilder.com',
+                'contact_email': 'contact@cms-crm-solutions.com',
+                'support_email': 'support@cms-crm-solutions.com',
                 'email_host': 'smtp.maily.ovh',
                 'email_port': 587,
                 'email_use_tls': True,
                 'email_use_ssl': False,
-                'email_from': 'noreply@vtcbuilder.com',
+                'email_from': 'noreply@cms-crm-solutions.com',
                 'default_trial_days': 14,
                 'enable_trial': True,
                 'password_min_length': 8,
@@ -182,7 +182,7 @@ def system_settings_view(request):
                 'maintenance_mode': False,
                 'maintenance_message': 'Le site est en maintenance.',
                 'public_homepage_blocks': [],
-                'public_homepage_meta_title': 'VTCBuilder - Le WordPress des chauffeurs VTC',
+                'public_homepage_meta_title': 'CMS CRM Solutions - Votre site professionnel, simplifié',
                 'public_homepage_meta_description': 'Plateforme complète pour créer et gérer votre site VTC professionnel',
                 'extra_settings': {},
             }
@@ -235,12 +235,12 @@ def system_settings_test_email_view(request):
             
             # Email from address - use env var or default
             from decouple import config
-            email_from = config('DEFAULT_FROM_EMAIL', default='noreply@vtcbuilder.com')
+            email_from = config('DEFAULT_FROM_EMAIL', default='noreply@cms-crm-solutions.com')
             
             # Send test email using Django's configured email backend
             send_mail(
-                subject='Test Email - VTCBuilder',
-                message='Ceci est un email de test depuis VTCBuilder.\n\nSi vous recevez ce message, la configuration email fonctionne correctement.\n\nLes emails automatiques (réinitialisation de mot de passe, activation de compte, factures) seront envoyés depuis noreply@vtcbuilder.com.',
+                subject='Test Email - CMS CRM Solutions',
+                message='Ceci est un email de test depuis CMS CRM Solutions.\n\nSi vous recevez ce message, la configuration email fonctionne correctement.\n\nLes emails automatiques (réinitialisation de mot de passe, activation de compte, factures) seront envoyés depuis noreply@cms-crm-solutions.com.',
                 from_email=email_from,
                 recipient_list=[recipient_email],
                 fail_silently=False,
@@ -457,8 +457,8 @@ class SystemSettingsViewSet(viewsets.ModelViewSet):
             
             # Send test email
             send_mail(
-                subject='Test Email - VTCBuilder',
-                message='Ceci est un email de test depuis VTCBuilder.',
+                subject='Test Email - CMS CRM Solutions',
+                message='Ceci est un email de test depuis CMS CRM Solutions.',
                 from_email=settings.email_from,
                 recipient_list=[request.user.email],
                 fail_silently=False,

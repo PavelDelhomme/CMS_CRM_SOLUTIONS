@@ -19,9 +19,9 @@ describe('SettingsService', () => {
     it('should fetch settings', async () => {
       const mockSettings = {
         id: 1,
-        site_name: 'VTCBuilder',
-        site_url: 'http://localhost:9494',
-        contact_email: 'contact@vtcbuilder.com',
+        site_name: 'CMS CRM Solutions',
+        site_url: 'http://localhost:9194',
+        contact_email: 'contact@cms-crm-solutions.com',
       }
       ;(api.get as jest.Mock).mockResolvedValue({ data: mockSettings })
 
@@ -37,9 +37,9 @@ describe('SettingsService', () => {
 
       const result = await settingsService.getSettings()
 
-      expect(result.site_name).toBe('VTCBuilder')
-      expect(result.site_url).toBe('http://localhost:9494')
-      expect(result.contact_email).toBe('contact@vtcbuilder.com')
+      expect(result.site_name).toBe('CMS CRM Solutions')
+      expect(result.site_url).toBe('http://localhost:9194')
+      expect(result.contact_email).toBe('contact@cms-crm-solutions.com')
     })
   })
 

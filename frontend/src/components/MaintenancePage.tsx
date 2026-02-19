@@ -7,7 +7,7 @@ interface MaintenancePageProps {
 
 export default function MaintenancePage({ 
   message = 'Le site est actuellement en maintenance. Nous serons de retour très bientôt !',
-  siteName = 'VTCBuilder'
+  siteName = 'CMS CRM Solutions'
 }: MaintenancePageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 flex items-center justify-center px-4">

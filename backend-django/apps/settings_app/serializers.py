@@ -75,12 +75,12 @@ class SystemSettingsSerializer(serializers.ModelSerializer):
         try:
             _ = instance.public_homepage_meta_title
         except (AttributeError, Exception):
-            data['public_homepage_meta_title'] = 'VTCBuilder - Le WordPress des chauffeurs VTC'
+            data['public_homepage_meta_title'] = 'CMS CRM Solutions - Votre site professionnel, simplifié'
         
         try:
             _ = instance.public_homepage_meta_description
         except (AttributeError, Exception):
-            data['public_homepage_meta_description'] = 'Plateforme complète pour créer et gérer votre site VTC professionnel'
+            data['public_homepage_meta_description'] = 'Plateforme complète pour créer et gérer votre site professionnel'
         
         try:
             _ = instance.public_homepage_status

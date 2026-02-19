@@ -34,8 +34,8 @@ class Command(BaseCommand):
                 'category': 'layout',
                 'description': 'Section hero avec titre, description et boutons CTA',
                 'schema': {
-                    'title': {'type': 'string', 'label': 'Titre', 'default': 'Le WordPress des Chauffeurs VTC'},
-                    'subtitle': {'type': 'string', 'label': 'Sous-titre', 'default': 'Créez votre site VTC professionnel en quelques minutes'},
+                    'title': {'type': 'string', 'label': 'Titre', 'default': 'Votre site professionnel, simplifié'},
+                    'subtitle': {'type': 'string', 'label': 'Sous-titre', 'default': 'Créez votre site en quelques minutes'},
                     'primary_button_text': {'type': 'string', 'label': 'Texte bouton principal', 'default': '🚀 Démarrer gratuitement'},
                     'primary_button_link': {'type': 'string', 'label': 'Lien bouton principal', 'default': '/register'},
                     'secondary_button_text': {'type': 'string', 'label': 'Texte bouton secondaire', 'default': 'Voir les tarifs'},
@@ -124,7 +124,7 @@ class Command(BaseCommand):
                         'type': 'array',
                         'label': 'Questions',
                         'default': [
-                            {'category': 'general', 'question': 'Qu\'est-ce que VTCBuilder ?', 'answer': 'VTCBuilder est une plateforme complète...'},
+                            {'category': 'general', 'question': 'Qu\'est-ce que CMS CRM Solutions ?', 'answer': 'CMS CRM Solutions est une plateforme complète...'},
                         ],
                         'itemSchema': {
                             'category': {'type': 'string'},
@@ -165,7 +165,7 @@ class Command(BaseCommand):
                 'description': 'Affichage des coordonnées et horaires',
                 'schema': {
                     'title': {'type': 'string', 'label': 'Titre', 'default': 'Nos coordonnées'},
-                    'email': {'type': 'string', 'label': 'Email', 'default': 'support@vtcbuilder.com'},
+                    'email': {'type': 'string', 'label': 'Email', 'default': 'support@cms-crm-solutions.com'},
                     'phone': {'type': 'string', 'label': 'Téléphone', 'default': '+33 1 23 45 67 89'},
                     'address': {'type': 'text', 'label': 'Adresse', 'default': '123 Avenue des Exemples\n75000 PARIS\nFrance'},
                     'show_hours': {'type': 'boolean', 'label': 'Afficher les horaires', 'default': True},
@@ -181,7 +181,7 @@ class Command(BaseCommand):
                 'schema': {
                     'title': {'type': 'string', 'label': 'Titre', 'default': 'Documentation'},
                     'quick_start_title': {'type': 'string', 'label': 'Titre démarrage rapide', 'default': '🚀 Démarrage rapide'},
-                    'quick_start_text': {'type': 'string', 'label': 'Texte démarrage rapide', 'default': 'Nouveau sur VTCBuilder ? Suivez notre guide...'},
+                    'quick_start_text': {'type': 'string', 'label': 'Texte démarrage rapide', 'default': 'Nouveau sur CMS CRM Solutions ? Suivez notre guide...'},
                     'quick_start_button_text': {'type': 'string', 'label': 'Texte bouton', 'default': 'Créer mon compte →'},
                     'quick_start_button_link': {'type': 'string', 'label': 'Lien bouton', 'default': '/register'},
                     'sections': {
@@ -302,7 +302,7 @@ class Command(BaseCommand):
             {
                 'type': 'hero',
                 'data': {
-                    'title': 'Le WordPress des Chauffeurs VTC',
+                    'title': 'Votre site professionnel, simplifié',
                     'subtitle': 'Créez votre site VTC professionnel en quelques minutes. Gestion complète, réservations, paiements, tout inclus.',
                     'primary_button_text': '🚀 Démarrer gratuitement',
                     'primary_button_link': '/register',
@@ -353,7 +353,7 @@ class Command(BaseCommand):
                 'data': {
                     'title': 'Documentation',
                     'quick_start_title': '🚀 Démarrage rapide',
-                    'quick_start_text': 'Nouveau sur VTCBuilder ? Suivez notre guide de démarrage pour créer votre site en 10 minutes.',
+                    'quick_start_text': 'Nouveau sur CMS CRM Solutions ? Suivez notre guide de démarrage pour créer votre site en 10 minutes.',
                     'quick_start_button_text': 'Créer mon compte →',
                     'quick_start_button_link': '/register',
                     'sections': [
@@ -361,7 +361,7 @@ class Command(BaseCommand):
                             'icon': '🚀',
                             'title': 'Premiers pas',
                             'items': [
-                                {'title': 'Créer votre compte', 'description': 'Guide complet pour créer votre compte VTCBuilder', 'href': '/docs/getting-started'},
+                                {'title': 'Créer votre compte', 'description': 'Guide complet pour créer votre compte CMS CRM Solutions', 'href': '/docs/getting-started'},
                                 {'title': 'Configuration initiale', 'description': 'Configurez votre premier site en quelques minutes', 'href': '/docs/initial-setup'},
                                 {'title': 'Première réservation', 'description': 'Comment accepter et gérer votre première réservation', 'href': '/docs/first-booking'},
                             ]
@@ -417,7 +417,7 @@ class Command(BaseCommand):
                             'title': 'Avancé',
                             'items': [
                                 {'title': 'Nom de domaine personnalisé', 'description': 'Connectez votre propre domaine', 'href': '/docs/custom-domain'},
-                                {'title': 'API et intégrations', 'description': 'Intégrez VTCBuilder avec vos outils', 'href': '/docs/api'},
+                                {'title': 'API et intégrations', 'description': 'Intégrez CMS CRM Solutions avec vos outils', 'href': '/docs/api'},
                                 {'title': 'Personnalisation avancée', 'description': 'Options de personnalisation avancées', 'href': '/docs/advanced'},
                             ]
                         },
@@ -440,7 +440,7 @@ class Command(BaseCommand):
                 'type': 'contact_info',
                 'data': {
                     'title': 'Nos coordonnées',
-                    'email': 'support@vtcbuilder.com',
+                    'email': 'support@cms-crm-solutions.com',
                     'phone': '+33 1 23 45 67 89',
                     'address': '123 Avenue des Exemples\n75000 PARIS\nFrance',
                     'show_hours': True,
@@ -456,8 +456,8 @@ class Command(BaseCommand):
                     'title': 'Questions fréquentes',
                     'show_categories': True,
                     'items': [
-                        {'category': 'general', 'question': 'Qu\'est-ce que VTCBuilder ?', 'answer': 'VTCBuilder est une plateforme SaaS complète qui permet aux chauffeurs VTC de créer et gérer leur site web professionnel. Vous pouvez gérer vos réservations, paiements, véhicules et équipe depuis une interface unique et intuitive.'},
-                        {'category': 'general', 'question': 'Combien coûte VTCBuilder ?', 'answer': 'Nous proposons plusieurs plans tarifaires adaptés à vos besoins, allant de 19€/mois pour le plan Starter jusqu\'à 79€/mois pour le plan Entreprise. Tous les plans incluent un essai gratuit de 14 jours, sans engagement.'},
+                        {'category': 'general', 'question': 'Qu\'est-ce que CMS CRM Solutions ?', 'answer': 'CMS CRM Solutions est une plateforme SaaS complète qui permet aux utilisateurs de créer et gérer leur site web professionnel. Vous pouvez gérer vos réservations, paiements, services et équipe depuis une interface unique et intuitive.'},
+                        {'category': 'general', 'question': 'Combien coûte CMS CRM Solutions ?', 'answer': 'Nous proposons plusieurs plans tarifaires adaptés à vos besoins, allant de 19€/mois pour le plan Starter jusqu\'à 79€/mois pour le plan Entreprise. Tous les plans incluent un essai gratuit de 14 jours, sans engagement.'},
                         {'category': 'account', 'question': 'Comment créer mon compte ?', 'answer': 'Cliquez sur "Créer un compte" en haut à droite, remplissez le formulaire avec vos informations, et vous recevrez un email de confirmation. Une fois votre compte créé, vous pourrez configurer votre site en quelques minutes.'},
                         {'category': 'account', 'question': 'Puis-je essayer gratuitement ?', 'answer': 'Oui ! Tous nos plans incluent un essai gratuit de 14 jours. Vous pouvez tester toutes les fonctionnalités sans carte bancaire. À la fin de l\'essai, vous choisissez de continuer avec un plan payant ou d\'annuler sans frais.'},
                         {'category': 'account', 'question': 'Puis-je changer de plan plus tard ?', 'answer': 'Absolument ! Vous pouvez passer à un plan supérieur ou inférieur à tout moment depuis votre tableau de bord. Les changements sont appliqués immédiatement, et nous ajustons la facturation au prorata.'},
@@ -498,12 +498,12 @@ class Command(BaseCommand):
                         {
                             'title': '1. Objet',
                             'level': 2,
-                            'content': 'Les présentes Conditions Générales de Vente (CGV) régissent l\'utilisation de la plateforme VTCBuilder, un service SaaS (Software as a Service) permettant aux professionnels du secteur VTC de créer et gérer leur site web professionnel, leurs réservations, leur facturation et leur équipe.\n\nEn souscrivant à un abonnement VTCBuilder, le Client accepte sans réserve les présentes CGV.',
+                            'content': 'Les présentes Conditions Générales de Vente (CGV) régissent l\'utilisation de la plateforme CMS CRM Solutions, un service SaaS (Software as a Service) permettant aux professionnels du secteur VTC de créer et gérer leur site web professionnel, leurs réservations, leur facturation et leur équipe.\n\nEn souscrivant à un abonnement CMS CRM Solutions, le Client accepte sans réserve les présentes CGV.',
                         },
                         {
                             'title': '2. Services proposés',
                             'level': 2,
-                            'content': 'VTCBuilder propose plusieurs formules d\'abonnement :\n\n• Plan Starter : Formule de base avec fonctionnalités essentielles\n• Plan Business : Formule complète avec fonctionnalités avancées\n• Plan Entreprise : Formule premium avec toutes les fonctionnalités et support prioritaire\n\nLes caractéristiques détaillées de chaque plan sont disponibles sur notre site web à l\'adresse vtcbuilder.com/#pricing.',
+                            'content': 'CMS CRM Solutions propose plusieurs formules d\'abonnement :\n\n• Plan Starter : Formule de base avec fonctionnalités essentielles\n• Plan Business : Formule complète avec fonctionnalités avancées\n• Plan Entreprise : Formule premium avec toutes les fonctionnalités et support prioritaire\n\nLes caractéristiques détaillées de chaque plan sont disponibles sur notre site web à l\'adresse cms-crm-solutions.com/#pricing.',
                         },
                         {
                             'title': '3. Tarifs et modalités de paiement',
@@ -513,32 +513,32 @@ class Command(BaseCommand):
                         {
                             'title': '4. Obligations du Client',
                             'level': 2,
-                            'content': 'Le Client s\'engage à :\n\n• Fournir des informations exactes et à jour lors de l\'inscription\n• Maintenir la confidentialité de ses identifiants de connexion\n• Utiliser la plateforme conformément à sa destination et aux lois en vigueur\n• Ne pas tenter de contourner les mesures de sécurité mises en place\n• Respecter les droits de propriété intellectuelle de VTCBuilder',
+                            'content': 'Le Client s\'engage à :\n\n• Fournir des informations exactes et à jour lors de l\'inscription\n• Maintenir la confidentialité de ses identifiants de connexion\n• Utiliser la plateforme conformément à sa destination et aux lois en vigueur\n• Ne pas tenter de contourner les mesures de sécurité mises en place\n• Respecter les droits de propriété intellectuelle de CMS CRM Solutions',
                         },
                         {
-                            'title': '5. Obligations de VTCBuilder',
+                            'title': '5. Obligations de CMS CRM Solutions',
                             'level': 2,
-                            'content': 'VTCBuilder s\'engage à :\n\n• Assurer la disponibilité et la sécurité de la plateforme dans les meilleures conditions\n• Effectuer des sauvegardes régulières des données du Client\n• Respecter la confidentialité des données du Client conformément au RGPD\n• Maintenir un support client réactif',
+                            'content': 'CMS CRM Solutions s\'engage à :\n\n• Assurer la disponibilité et la sécurité de la plateforme dans les meilleures conditions\n• Effectuer des sauvegardes régulières des données du Client\n• Respecter la confidentialité des données du Client conformément au RGPD\n• Maintenir un support client réactif',
                         },
                         {
                             'title': '6. Résiliation',
                             'level': 2,
-                            'content': 'Le Client peut résilier son abonnement à tout moment depuis son tableau de bord. La résiliation prend effet à la fin de la période payée. Aucun remboursement n\'est effectué pour la période en cours.\n\nVTCBuilder se réserve le droit de suspendre ou résilier l\'accès d\'un Client en cas de manquement grave aux présentes CGV, notamment en cas d\'utilisation frauduleuse ou de non-paiement.',
+                            'content': 'Le Client peut résilier son abonnement à tout moment depuis son tableau de bord. La résiliation prend effet à la fin de la période payée. Aucun remboursement n\'est effectué pour la période en cours.\n\nCMS CRM Solutions se réserve le droit de suspendre ou résilier l\'accès d\'un Client en cas de manquement grave aux présentes CGV, notamment en cas d\'utilisation frauduleuse ou de non-paiement.',
                         },
                         {
                             'title': '7. Propriété intellectuelle',
                             'level': 2,
-                            'content': 'La plateforme VTCBuilder, ses composants, son code source, ses logos et marques sont la propriété exclusive de VTCBuilder. Le Client dispose d\'un droit d\'utilisation non exclusif et non transférable dans le cadre de son abonnement.',
+                            'content': 'La plateforme CMS CRM Solutions, ses composants, son code source, ses logos et marques sont la propriété exclusive de CMS CRM Solutions. Le Client dispose d\'un droit d\'utilisation non exclusif et non transférable dans le cadre de son abonnement.',
                         },
                         {
                             'title': '8. Protection des données',
                             'level': 2,
-                            'content': 'Le traitement des données personnelles est décrit dans notre Politique de Confidentialité. VTCBuilder s\'engage à respecter le Règlement Général sur la Protection des Données (RGPD).',
+                            'content': 'Le traitement des données personnelles est décrit dans notre Politique de Confidentialité. CMS CRM Solutions s\'engage à respecter le Règlement Général sur la Protection des Données (RGPD).',
                         },
                         {
                             'title': '9. Responsabilité',
                             'level': 2,
-                            'content': 'VTCBuilder ne pourra être tenu responsable des dommages indirects résultant de l\'utilisation ou de l\'impossibilité d\'utiliser la plateforme. La responsabilité de VTCBuilder est limitée au montant des sommes versées par le Client au titre de l\'abonnement en cours.',
+                            'content': 'CMS CRM Solutions ne pourra être tenu responsable des dommages indirects résultant de l\'utilisation ou de l\'impossibilité d\'utiliser la plateforme. La responsabilité de CMS CRM Solutions est limitée au montant des sommes versées par le Client au titre de l\'abonnement en cours.',
                         },
                         {
                             'title': '10. Droit applicable et juridiction',
@@ -548,7 +548,7 @@ class Command(BaseCommand):
                         {
                             'title': '11. Contact',
                             'level': 2,
-                            'content': 'Pour toute question concernant les présentes CGV, vous pouvez nous contacter à :\n\nVTCBuilder\nEmail : legal@vtcbuilder.com\nAdresse : 123 Avenue des Exemples, 75000 PARIS, France',
+                            'content': 'Pour toute question concernant les présentes CGV, vous pouvez nous contacter à :\n\nCMS CRM Solutions\nEmail : legal@cms-crm-solutions.com\nAdresse : 123 Avenue des Exemples, 75000 PARIS, France',
                         },
                     ],
                 }
@@ -566,7 +566,7 @@ class Command(BaseCommand):
                         {
                             'title': '1. Introduction',
                             'level': 2,
-                            'content': 'VTCBuilder ("nous", "notre", "nos") s\'engage à protéger la confidentialité de vos données personnelles. Cette Politique de Confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos informations personnelles conformément au Règlement Général sur la Protection des Données (RGPD).',
+                            'content': 'CMS CRM Solutions ("nous", "notre", "nos") s\'engage à protéger la confidentialité de vos données personnelles. Cette Politique de Confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos informations personnelles conformément au Règlement Général sur la Protection des Données (RGPD).',
                         },
                         {
                             'title': '2. Données collectées',
@@ -596,7 +596,7 @@ class Command(BaseCommand):
                         {
                             'title': '7. Vos droits',
                             'level': 2,
-                            'content': 'Conformément au RGPD, vous disposez des droits suivants :\n• Droit d\'accès : Vous pouvez demander une copie de vos données personnelles\n• Droit de rectification : Vous pouvez corriger vos données inexactes\n• Droit à l\'effacement : Vous pouvez demander la suppression de vos données\n• Droit à la limitation : Vous pouvez demander la limitation du traitement\n• Droit à la portabilité : Vous pouvez récupérer vos données dans un format structuré\n• Droit d\'opposition : Vous pouvez vous opposer à certains traitements\n• Droit de retirer votre consentement : À tout moment pour les traitements basés sur le consentement\n\nPour exercer ces droits, contactez-nous à l\'adresse : privacy@vtcbuilder.com',
+                            'content': 'Conformément au RGPD, vous disposez des droits suivants :\n• Droit d\'accès : Vous pouvez demander une copie de vos données personnelles\n• Droit de rectification : Vous pouvez corriger vos données inexactes\n• Droit à l\'effacement : Vous pouvez demander la suppression de vos données\n• Droit à la limitation : Vous pouvez demander la limitation du traitement\n• Droit à la portabilité : Vous pouvez récupérer vos données dans un format structuré\n• Droit d\'opposition : Vous pouvez vous opposer à certains traitements\n• Droit de retirer votre consentement : À tout moment pour les traitements basés sur le consentement\n\nPour exercer ces droits, contactez-nous à l\'adresse : privacy@cms-crm-solutions.com',
                         },
                         {
                             'title': '8. Cookies',
@@ -621,7 +621,7 @@ class Command(BaseCommand):
                         {
                             'title': '12. Contact',
                             'level': 2,
-                            'content': 'Pour toute question concernant cette Politique de Confidentialité ou pour exercer vos droits, contactez :\n\nDélégué à la Protection des Données (DPO)\nVTCBuilder\nEmail : privacy@vtcbuilder.com\nAdresse : 123 Avenue des Exemples, 75000 PARIS, France\n\nVous avez également le droit de déposer une plainte auprès de la CNIL (Commission Nationale de l\'Informatique et des Libertés) si vous estimez que vos droits ne sont pas respectés.',
+                            'content': 'Pour toute question concernant cette Politique de Confidentialité ou pour exercer vos droits, contactez :\n\nDélégué à la Protection des Données (DPO)\nCMS CRM Solutions\nEmail : privacy@cms-crm-solutions.com\nAdresse : 123 Avenue des Exemples, 75000 PARIS, France\n\nVous avez également le droit de déposer une plainte auprès de la CNIL (Commission Nationale de l\'Informatique et des Libertés) si vous estimez que vos droits ne sont pas respectés.',
                         },
                     ],
                 }
@@ -714,7 +714,7 @@ class Command(BaseCommand):
                 'type': 'cta_section',
                 'data': {
                     'title': 'Prêt à utiliser toutes ces fonctionnalités ?',
-                    'description': 'Créez votre compte gratuitement et commencez à utiliser VTCBuilder dès aujourd\'hui.',
+                    'description': 'Créez votre compte gratuitement et commencez à utiliser CMS CRM Solutions dès aujourd\'hui.',
                     'button_text': '🚀 Démarrer gratuitement',
                     'button_link': '/register',
                     'background_gradient': 'from-blue-600 to-purple-600',
@@ -726,21 +726,21 @@ class Command(BaseCommand):
         pages_to_create = {
             'home': {
                 'title': 'Accueil',
-                'description': 'Page d\'accueil VTCBuilder',
+                'description': 'Page d\'accueil CMS CRM Solutions',
                 'slug': 'home',
                 'blocks': homepage_blocks,
-                'meta_title': 'VTCBuilder - Le WordPress des chauffeurs VTC',
+                'meta_title': 'CMS CRM Solutions - Le WordPress des utilisateurs',
                 'meta_description': 'Plateforme complète pour créer et gérer votre site VTC professionnel',
                 'is_active': True,
                 'order': 1,
             },
             'docs': {
                 'title': 'Documentation',
-                'description': 'Documentation complète de VTCBuilder',
+                'description': 'Documentation complète de CMS CRM Solutions',
                 'slug': 'docs',
                 'blocks': docs_blocks,
-                'meta_title': 'Documentation - VTCBuilder',
-                'meta_description': 'Documentation complète pour utiliser VTCBuilder',
+                'meta_title': 'Documentation - CMS CRM Solutions',
+                'meta_description': 'Documentation complète pour utiliser CMS CRM Solutions',
                 'is_active': True,
                 'order': 2,
             },
@@ -749,8 +749,8 @@ class Command(BaseCommand):
                 'description': 'Page de contact avec formulaire',
                 'slug': 'contact',
                 'blocks': contact_blocks,
-                'meta_title': 'Contact - VTCBuilder',
-                'meta_description': 'Contactez l\'équipe VTCBuilder',
+                'meta_title': 'Contact - CMS CRM Solutions',
+                'meta_description': 'Contactez l\'équipe CMS CRM Solutions',
                 'is_active': True,
                 'order': 3,
             },
@@ -759,17 +759,17 @@ class Command(BaseCommand):
                 'description': 'Questions fréquemment posées',
                 'slug': 'faq',
                 'blocks': faq_blocks,
-                'meta_title': 'FAQ - VTCBuilder',
+                'meta_title': 'FAQ - CMS CRM Solutions',
                 'meta_description': 'Réponses aux questions fréquemment posées',
                 'is_active': True,
                 'order': 4,
             },
             'legal/terms': {
                 'title': 'Conditions Générales de Vente',
-                'description': 'CGV de VTCBuilder',
+                'description': 'CGV de CMS CRM Solutions',
                 'slug': 'legal/terms',
                 'blocks': terms_blocks,
-                'meta_title': 'CGV - VTCBuilder',
+                'meta_title': 'CGV - CMS CRM Solutions',
                 'meta_description': 'Conditions Générales de Vente',
                 'is_active': True,
                 'order': 5,
@@ -779,18 +779,18 @@ class Command(BaseCommand):
                 'description': 'Politique de confidentialité',
                 'slug': 'legal/privacy',
                 'blocks': privacy_blocks,
-                'meta_title': 'Politique de Confidentialité - VTCBuilder',
+                'meta_title': 'Politique de Confidentialité - CMS CRM Solutions',
                 'meta_description': 'Politique de confidentialité et protection des données',
                 'is_active': True,
                 'order': 6,
             },
             'features': {
                 'title': 'Fonctionnalités',
-                'description': 'Toutes les fonctionnalités de VTCBuilder',
+                'description': 'Toutes les fonctionnalités de CMS CRM Solutions',
                 'slug': 'features',
                 'blocks': features_blocks,
-                'meta_title': 'Fonctionnalités - VTCBuilder',
-                'meta_description': 'Découvrez toutes les fonctionnalités de VTCBuilder',
+                'meta_title': 'Fonctionnalités - CMS CRM Solutions',
+                'meta_description': 'Découvrez toutes les fonctionnalités de CMS CRM Solutions',
                 'is_active': True,
                 'order': 7,
             },

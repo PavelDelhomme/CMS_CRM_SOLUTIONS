@@ -165,7 +165,7 @@ export default function AdminSidebar({ isOpen: externalIsOpen, onClose }: AdminS
       >
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-blue-600">VTCBuilder</h2>
+            <h2 className="text-2xl font-bold text-blue-600">CMS CRM Solutions</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400" suppressHydrationWarning>
               {mounted ? 'Super Admin' : 'Admin'}
             </p>

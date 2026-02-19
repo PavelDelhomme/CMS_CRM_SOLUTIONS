@@ -24,7 +24,7 @@ const DEFAULT_PUBLIC_PAGES: Omit<PublicPage, 'id'>[] = [
   {
     slug: 'home',
     title: 'Page d\'accueil',
-    description: 'Page principale du site public VTCBuilder',
+    description: 'Page principale du site public',
     blocks: [],
     is_active: true,
     order: 1,
@@ -56,7 +56,7 @@ const DEFAULT_PUBLIC_PAGES: Omit<PublicPage, 'id'>[] = [
   {
     slug: 'legal/terms',
     title: 'Conditions Générales de Vente',
-    description: 'CGV de VTCBuilder',
+    description: 'Conditions générales de vente',
     blocks: [],
     is_active: true,
     order: 5,
@@ -64,7 +64,7 @@ const DEFAULT_PUBLIC_PAGES: Omit<PublicPage, 'id'>[] = [
   {
     slug: 'legal/privacy',
     title: 'Politique de Confidentialité',
-    description: 'Politique de confidentialité de VTCBuilder',
+    description: 'Politique de confidentialité',
     blocks: [],
     is_active: true,
     order: 6,
@@ -99,7 +99,7 @@ export default function PublicPagesManagement() {
           id: 'home',
           slug: 'home',
           title: 'Page d\'accueil',
-          description: 'Page principale du site public VTCBuilder',
+          description: 'Page principale du site public',
           blocks: data.public_homepage_blocks || [],
           meta_title: data.public_homepage_meta_title,
           meta_description: data.public_homepage_meta_description,

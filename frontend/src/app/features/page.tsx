@@ -6,7 +6,7 @@ export default function FeaturesPage() {
   return (
     <PublicLayout
       title="Fonctionnalités"
-      description="Tout ce dont vous avez besoin pour créer et gérer votre site VTC professionnel"
+      description="Tout ce dont vous avez besoin pour créer et gérer votre site professionnel"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -14,7 +14,7 @@ export default function FeaturesPage() {
             {
               icon: '🎨',
               title: 'Site Professionnel',
-              description: 'Créez un site web moderne et responsive pour votre activité VTC. Personnalisez les couleurs, les polices et la mise en page sans coder.',
+              description: 'Créez un site web moderne et responsive. Personnalisez les couleurs, les polices et la mise en page sans coder.',
               features: ['Templates pré-conçus', 'Éditeur visuel', 'Responsive design', 'SEO intégré']
             },
             {
@@ -50,7 +50,7 @@ export default function FeaturesPage() {
             {
               icon: '👥',
               title: 'Gestion d\'Équipe',
-              description: 'Gérez plusieurs chauffeurs et opérateurs. Définissez les permissions et les rôles de chaque membre.',
+              description: 'Gérez plusieurs collaborateurs et opérateurs. Définissez les permissions et les rôles de chaque membre.',
               features: ['Gestion multi-utilisateurs', 'Rôles et permissions', 'Planification d\'équipe', 'Communication interne']
             },
             {
@@ -106,7 +106,7 @@ export default function FeaturesPage() {
             Prêt à utiliser toutes ces fonctionnalités ?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Créez votre compte gratuitement et commencez à utiliser VTCBuilder dès aujourd'hui.
+            Créez votre compte gratuitement et commencez à utiliser CMS CRM Solutions dès aujourd'hui.
           </p>
           <a
             href="/register"

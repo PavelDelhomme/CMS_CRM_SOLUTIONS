@@ -943,7 +943,7 @@ Vous pouvez accéder à votre facture et effectuer le paiement en cliquant sur l
 Pour toute question, n'hésitez pas à nous contacter.
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
                 ''',
                 html_message=f'''
                 <html>
@@ -959,7 +959,7 @@ L'équipe VTCBuilder
                     </p>
                     <p>Pour toute question, n'hésitez pas à nous contacter.</p>
                     <hr>
-                    <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                    <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe CMS CRM Solutions</p>
                 </body>
                 </html>
                 ''',
@@ -1172,7 +1172,7 @@ L'équipe VTCBuilder
     
     <div class="footer">
         <p>Merci de votre confiance !</p>
-        <p>Pour toute question concernant cette facture, contactez-nous à support@vtcbuilder.com</p>
+        <p>Pour toute question concernant cette facture, contactez-nous à support@cms-crm-solutions.com</p>
     </div>
 </body>
 </html>

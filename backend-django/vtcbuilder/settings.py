@@ -1,5 +1,5 @@
 """
-Django settings for VTCBuilder project.
+Django settings (legacy) - utiliser config.core.settings pour CMS CRM Solutions.
 """
 
 import os
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'vtcbuilder.cors_middleware.CORSAlwaysMiddleware',  # Garantir CORS même en cas d'erreur
+    'apps.api.middleware.CORSResponseMiddleware',  # Garantir CORS même en cas d'erreur
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -64,8 +64,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'vtcbuilder.urls'
-PUBLIC_SCHEMA_URLCONF = 'vtcbuilder.urls_public'
+ROOT_URLCONF = 'config.core.urls'
+PUBLIC_SCHEMA_URLCONF = 'config.core.urls'
 
 # Disable APPEND_SLASH to avoid redirect issues with POST requests
 APPEND_SLASH = False
@@ -86,15 +86,15 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'vtcbuilder.wsgi.application'
+WSGI_APPLICATION = 'config.core.wsgi.application'
 
 # Database
 DATABASES = {
     'default': {
         'ENGINE': 'django_tenants.postgresql_backend',
-        'NAME': config('DB_NAME', default='vtcbuilder'),
-        'USER': config('DB_USER', default='vtcbuilder_user'),
-        'PASSWORD': config('DB_PASSWORD', default='vtcbuilder_password'),
+        'NAME': config('DB_NAME', default='cmscrm'),
+        'USER': config('DB_USER', default='cmscrm_user'),
+        'PASSWORD': config('DB_PASSWORD', default='cmscrm_password'),
         'HOST': config('DB_HOST', default='postgres'),
         'PORT': config('DB_PORT', default='5432'),
         'OPTIONS': {
@@ -195,7 +195,7 @@ else:
         "http://api.localhost:9400",
     ]
     CORS_ALLOWED_ORIGIN_REGEXES = [
-        r"^https://.*\.vtcbuilder\.com$",  # Tous les sous-domaines en production
+        r"^https://.*\.cms-crm-solutions\.com$",  # Tous les sous-domaines en production
     ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -222,7 +222,7 @@ CORS_ALLOW_METHODS = [
 
 # Session Configuration (for impersonation)
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_NAME = 'vtcbuilder_sessionid'
+SESSION_COOKIE_NAME = 'cmscrm_sessionid'
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG  # Only in production
@@ -250,8 +250,8 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@vtcbuilder.com')
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:9494')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@cms-crm-solutions.com')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:9194')
 
 # Automatically choose backend based on configuration
 # Force SMTP if variables are set, otherwise use console

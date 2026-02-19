@@ -19,7 +19,7 @@ echo -e "${GREEN}🔐 Vérification de l'Accès aux Features${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 # Vérifier que le backend est démarré
-if ! docker ps | grep -q vtcbuilder-backend; then
+if ! docker ps | grep -q cms_crm_backend; then
     echo -e "${YELLOW}⚠️  Le backend n'est pas démarré. Démarrage...${NC}"
     cd "$PROJECT_ROOT" && make start
     sleep 10
@@ -30,7 +30,7 @@ cd "$BACKEND_DIR"
 echo -e "\n${BLUE}📋 Vérification de l'accès aux features selon les plans...${NC}"
 
 # Exécuter un script Python pour vérifier l'accès
-docker exec vtcbuilder-backend python -c "
+docker exec cms_crm_backend python -c "
 import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings')

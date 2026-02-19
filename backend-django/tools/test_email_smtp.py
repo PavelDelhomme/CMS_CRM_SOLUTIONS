@@ -13,7 +13,7 @@ from email.mime.multipart import MIMEMultipart
 
 # Setup Django
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.core.settings')
 django.setup()
 
 from django.conf import settings
@@ -107,7 +107,7 @@ def test_django_send():
         print()
         
         send_mail(
-            subject='🧪 TEST EMAIL SMTP - VTCBuilder',
+            subject='🧪 TEST EMAIL SMTP - CMS CRM Solutions',
             message=f'''
 Ceci est un email de TEST pour vérifier que la configuration SMTP fonctionne.
 
@@ -118,12 +118,12 @@ Backend: {settings.EMAIL_BACKEND}
 Host: {settings.EMAIL_HOST}:{settings.EMAIL_PORT}
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
             ''',
             html_message=f'''
             <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                <h2>🧪 TEST EMAIL SMTP - VTCBuilder</h2>
+                <h2>🧪 TEST EMAIL SMTP - CMS CRM Solutions</h2>
                 <p>Ceci est un email de <strong>TEST</strong> pour vérifier que la configuration SMTP fonctionne.</p>
                 <p>Si vous recevez cet email, c'est que la configuration SMTP est <strong style="color: green;">CORRECTE</strong> !</p>
                 <hr>
@@ -132,7 +132,7 @@ L'équipe VTCBuilder
                     Backend: {settings.EMAIL_BACKEND}<br>
                     Host: {settings.EMAIL_HOST}:{settings.EMAIL_PORT}
                 </p>
-                <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe VTCBuilder</p>
+                <p style="color: #666; font-size: 12px;">Cordialement,<br>L'équipe CMS CRM Solutions</p>
             </body>
             </html>
             ''',

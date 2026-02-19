@@ -16,14 +16,14 @@ echo ""
 cd "$(dirname "$0")/../../frontend" || exit 1
 
 # Vérifier si le container est en cours d'exécution
-if ! docker ps | grep -q vtcbuilder-frontend; then
+if ! docker ps | grep -q cms_crm_frontend; then
     echo -e "${RED}❌ Le container frontend n'est pas en cours d'exécution${NC}"
     exit 1
 fi
 
 # Vérifier la syntaxe TypeScript (exclure les fichiers de test)
 echo -e "${YELLOW}📝 Vérification de la syntaxe TypeScript...${NC}"
-TSC_OUTPUT=$(docker exec vtcbuilder-frontend npm run type-check 2>&1 || true)
+TSC_OUTPUT=$(docker exec cms_crm_frontend npm run type-check 2>&1 || true)
 # Filtrer les erreurs pour exclure les fichiers de test (qui nécessitent @types/jest)
 TSC_ERRORS=$(echo "$TSC_OUTPUT" | grep -E "error TS[0-9]+" | grep -v "__tests__" || true)
 
@@ -46,7 +46,7 @@ fi
 
 # Vérifier les erreurs ESLint
 echo -e "${YELLOW}📝 Vérification ESLint...${NC}"
-ESLINT_OUTPUT=$(docker exec vtcbuilder-frontend npm run lint 2>&1 || true)
+ESLINT_OUTPUT=$(docker exec cms_crm_frontend npm run lint 2>&1 || true)
 ESLINT_ERRORS=$(echo "$ESLINT_OUTPUT" | grep -E "Error:|error" || true)
 
 if [ -n "$ESLINT_ERRORS" ]; then

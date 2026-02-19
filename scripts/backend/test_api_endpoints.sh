@@ -21,7 +21,7 @@ echo -e "${GREEN}🧪 Tests des Endpoints API${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 # Vérifier que le backend est démarré
-if ! docker ps | grep -q vtcbuilder-backend; then
+if ! docker ps | grep -q cms_crm_backend; then
     echo -e "${YELLOW}⚠️  Le backend n'est pas démarré. Démarrage...${NC}"
     cd "$PROJECT_ROOT" && make start
     echo -e "${BLUE}⏳ Attente du démarrage du backend...${NC}"
@@ -32,7 +32,7 @@ fi
 echo -e "${BLUE}📋 Exécution des tests...${NC}"
 cd "$BACKEND_DIR"
 
-if docker exec vtcbuilder-backend python tests/api/test_all_endpoints.py; then
+if docker exec cms_crm_backend python tests/api/test_all_endpoints.py; then
     echo -e "\n${GREEN}✅ Tests terminés avec succès !${NC}"
     exit 0
 else

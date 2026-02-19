@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         tenant_slug = 'demo-vtc-company'
-        tenant_name = 'Demo VTC Company'
+        tenant_name = 'Demo Entreprise'
         admin_email = 'admin@demo-vtc-company.com'
         password = options.get('password')
 
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             admin_user.tenant = tenant
             admin_user.role = 'tenant-admin'
             admin_user.first_name = 'Admin'
-            admin_user.last_name = 'Demo VTC Company'
+            admin_user.last_name = 'Demo Entreprise'
             
             # Set password if provided
             if password:
@@ -80,7 +80,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f'✅ Utilisateur "{admin_email}" mis à jour'))
         else:
             # Create new admin user
-            username = 'admin_demo_vtc_company'
+            username = 'admin_demo_entreprise'
             
             if password:
                 admin_user = User.objects.create_user(
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                     email=admin_email,
                     password=password,
                     first_name='Admin',
-                    last_name='Demo VTC Company',
+                    last_name='Demo Entreprise',
                     tenant=tenant,
                     role='tenant-admin',
                     status='active'
@@ -101,7 +101,7 @@ class Command(BaseCommand):
                     email=admin_email,
                     password=random_password,
                     first_name='Admin',
-                    last_name='Demo VTC Company',
+                    last_name='Demo Entreprise',
                     tenant=tenant,
                     role='tenant-admin',
                     status='pending'

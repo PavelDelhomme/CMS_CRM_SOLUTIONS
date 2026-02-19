@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '--name',
-            default='Demo VTC Company',
+            default='Demo Entreprise',
             help='Name of the demo tenant',
         )
         parser.add_argument(

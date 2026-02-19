@@ -16,12 +16,12 @@ export default function FAQPage() {
   const faqs: FAQItem[] = [
     {
       category: 'general',
-      question: 'Qu\'est-ce que VTCBuilder ?',
-      answer: 'VTCBuilder est une plateforme SaaS complète qui permet aux chauffeurs VTC de créer et gérer leur site web professionnel. Vous pouvez gérer vos réservations, paiements, véhicules et équipe depuis une interface unique et intuitive.'
+      question: 'Qu\'est-ce que CMS CRM Solutions ?',
+      answer: 'CMS CRM Solutions est une plateforme SaaS complète pour créer et gérer votre site web professionnel. Vous pouvez gérer vos réservations, paiements, services et équipe depuis une interface unique et intuitive.'
     },
     {
       category: 'general',
-      question: 'Combien coûte VTCBuilder ?',
+      question: 'Combien coûte CMS CRM Solutions ?',
       answer: 'Nous proposons plusieurs plans tarifaires adaptés à vos besoins, allant de 19€/mois pour le plan Starter jusqu\'à 79€/mois pour le plan Entreprise. Tous les plans incluent un essai gratuit de 14 jours, sans engagement.'
     },
     {
@@ -111,7 +111,7 @@ export default function FAQPage() {
   return (
     <PublicLayout
       title="Questions fréquentes"
-      description="Trouvez rapidement des réponses à vos questions sur VTCBuilder"
+      description="Trouvez rapidement des réponses à vos questions sur CMS CRM Solutions"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Categories */}

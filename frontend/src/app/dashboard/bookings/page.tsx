@@ -126,7 +126,7 @@ export default function BookingsPage() {
   return (
     <TenantLayout 
       title="Réservations" 
-      subtitle="Gérez toutes vos réservations VTC"
+      subtitle="Gérez toutes vos réservations"
     >
       <div className="space-y-6">
         {/* Filters */}

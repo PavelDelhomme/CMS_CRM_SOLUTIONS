@@ -206,7 +206,7 @@ export default function TenantUsersPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="operator">Opérateur</option>
-                    <option value="driver">Chauffeur</option>
+                    <option value="driver">Collaborateur</option>
                     <option value="tenant-admin">Administrateur</option>
                   </select>
                 </div>
@@ -253,7 +253,7 @@ export default function TenantUsersPage() {
             </td>
             <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
               <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadge(user.role)}`}>
-                {user.role === 'tenant-admin' ? 'Administrateur' : user.role === 'driver' ? 'Chauffeur' : 'Opérateur'}
+                {user.role === 'tenant-admin' ? 'Administrateur' : user.role === 'driver' ? 'Collaborateur' : 'Opérateur'}
               </span>
             </td>
             <td className="px-4 sm:px-6 py-4 whitespace-nowrap">

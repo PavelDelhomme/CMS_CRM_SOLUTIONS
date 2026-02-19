@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react'
 import PublicFooter from '@/components/PublicFooter'
 
 describe('PublicFooter', () => {
-  it('should render VTCBuilder branding', () => {
+  it('should render CMS_CRM_SOLUTIONS branding', () => {
     render(<PublicFooter />)
 
-    expect(screen.getByText('VTCBuilder')).toBeInTheDocument()
+    expect(screen.getByText('CMS_CRM_SOLUTIONS')).toBeInTheDocument()
   })
 
   it('should render product links', () => {
@@ -34,7 +34,7 @@ describe('PublicFooter', () => {
   it('should render copyright', () => {
     render(<PublicFooter />)
 
-    expect(screen.getByText(/2025 VTCBuilder/i)).toBeInTheDocument()
+    expect(screen.getByText(/2025 CMS_CRM_SOLUTIONS/i)).toBeInTheDocument()
   })
 })
 

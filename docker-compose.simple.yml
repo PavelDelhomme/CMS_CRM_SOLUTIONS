@@ -11,9 +11,9 @@ services:
     image: postgres:15-alpine
     container_name: cms_crm_postgres
     environment:
-      POSTGRES_DB: cms_crm_solutions
-      POSTGRES_USER: cms_crm_user
-      POSTGRES_PASSWORD: cms_crm_password
+      POSTGRES_DB: cmscrm
+      POSTGRES_USER: cmscrm_user
+      POSTGRES_PASSWORD: cmscrm_password
     ports:
       - "9496:5432"
     volumes:
@@ -50,15 +50,15 @@ services:
       - ./backend-django/logs:/var/log
     environment:
       DB_ENGINE: django_tenants.postgresql_backend
-      DB_NAME: cms_crm_solutions
-      DB_USER: cms_crm_user
-      DB_PASSWORD: cms_crm_password
+      DB_NAME: cmscrm
+      DB_USER: cmscrm_user
+      DB_PASSWORD: cmscrm_password
       DB_HOST: postgres
       DB_PORT: 5432
       REDIS_URL: redis://redis:6379/0
       SECRET_KEY: django-insecure-change-this-in-production-key
       DEBUG: 1
-      DJANGO_SETTINGS_MODULE: core.settings
+      DJANGO_SETTINGS_MODULE: config.core.settings
       ALLOWED_HOSTS: "*"
       # Email SMTP Configuration (OVH Mail)
       EMAIL_HOST: ssl0.ovh.net
@@ -68,7 +68,7 @@ services:
       EMAIL_HOST_USER: test@delhomme.ovh
       EMAIL_HOST_PASSWORD: t^^SAjZJ9!9kjPn#
       DEFAULT_FROM_EMAIL: noreply@cms-crm-solutions.com
-      FRONTEND_URL: http://localhost:9494
+      FRONTEND_URL: http://localhost:9194
     ports:
       - "9495:8000"  # Django sur le port 9495
     depends_on:

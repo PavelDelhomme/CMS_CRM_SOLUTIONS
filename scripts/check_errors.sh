@@ -3,7 +3,7 @@
 # Script de vérification des erreurs dans le projet
 # Usage: ./scripts/check_errors.sh
 
-echo "🔍 Vérification des erreurs dans le projet VTCBuilder"
+echo "🔍 Vérification des erreurs dans le projet CMS CRM Solutions"
 echo "======================================================"
 echo ""
 

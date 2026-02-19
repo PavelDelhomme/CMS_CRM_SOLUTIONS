@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 """
-Script pour activer et configurer l'utilisateur admin du tenant Demo VTC Company
+Script pour activer et configurer l'utilisateur admin du tenant Demo Entreprise
 """
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.core.settings')
 django.setup()
 
 from tenants.models import Client, User
 
-# Trouver le tenant Demo VTC Company
+# Trouver le tenant Demo Entreprise
 tenant = Client.objects.filter(name__icontains="Demo VTC").first()
 
 if not tenant:
-    print("❌ Tenant Demo VTC Company non trouvé")
+    print("❌ Tenant Demo Entreprise non trouvé")
     exit(1)
 
 print(f"✅ Tenant trouvé: {tenant.name} (ID: {tenant.id})")

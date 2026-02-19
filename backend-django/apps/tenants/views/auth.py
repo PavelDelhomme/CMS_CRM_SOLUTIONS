@@ -241,11 +241,11 @@ def register_with_plan_view(request):
         
         try:
             send_mail(
-                subject='Bienvenue sur VTCBuilder ! 🚀',
+                subject='Bienvenue sur CMS CRM Solutions ! 🚀',
                 message=f'''
 Bonjour {admin_user.get_full_name() or admin_user.email},
 
-Bienvenue sur VTCBuilder ! Votre compte a été créé avec succès.
+Bienvenue sur CMS CRM Solutions ! Votre compte a été créé avec succès.
 
 Informations de votre compte :
 - Nom du tenant : {tenant_name}
@@ -260,14 +260,14 @@ Votre site public sera disponible à :
 {tenant_url}
 
 Cordialement,
-L'équipe VTCBuilder
+L'équipe CMS CRM Solutions
                 ''',
                 html_message=f'''
                 <html>
                 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                    <h2>Bienvenue sur VTCBuilder ! 🚀</h2>
+                    <h2>Bienvenue sur CMS CRM Solutions ! 🚀</h2>
                     <p>Bonjour {admin_user.get_full_name() or admin_user.email},</p>
-                    <p>Bienvenue sur VTCBuilder ! Votre compte a été créé avec succès.</p>
+                    <p>Bienvenue sur CMS CRM Solutions ! Votre compte a été créé avec succès.</p>
                     
                     <div style="background-color: #f0f9ff; padding: 20px; border-radius: 5px; margin: 20px 0;">
                         <h3>Informations de votre compte :</h3>
@@ -287,11 +287,11 @@ L'équipe VTCBuilder
                     
                     <p>Votre site public sera disponible à : <a href="{tenant_url}">{tenant_url}</a></p>
                     
-                    <p>Cordialement,<br>L'équipe VTCBuilder</p>
+                    <p>Cordialement,<br>L'équipe CMS CRM Solutions</p>
                 </body>
                 </html>
                 ''',
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@vtcbuilder.com'),
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@cms-crm-solutions.com'),
                 recipient_list=[tenant_email],
                 fail_silently=False,
             )

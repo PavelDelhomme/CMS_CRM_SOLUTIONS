@@ -81,7 +81,7 @@ export default function ServicesPage() {
 
   if (loading) {
     return (
-      <TenantLayout title="Services VTC" subtitle="Gestion de vos services">
+      <TenantLayout title="Services" subtitle="Gestion de vos services">
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -94,7 +94,7 @@ export default function ServicesPage() {
 
   return (
     <TenantLayout 
-      title="Services VTC" 
+      title="Services" 
       subtitle="Gérez vos services de transport"
       headerActions={headerActions}
     >
@@ -120,7 +120,7 @@ export default function ServicesPage() {
               {search ? 'Aucun service trouvé' : 'Aucun service'}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {search ? 'Essayez une autre recherche' : 'Créez votre premier service VTC'}
+              {search ? 'Essayez une autre recherche' : 'Créez votre premier service'}
             </p>
             {!search && (
               <button

@@ -29,9 +29,9 @@ services:
     image: postgres:15-alpine
     container_name: cms_crm_postgres
     environment:
-      POSTGRES_DB: cms_crm_solutions
-      POSTGRES_USER: cms_crm_solutions_user
-      POSTGRES_PASSWORD: cms_crm_solutions_password
+      POSTGRES_DB: cmscrm
+      POSTGRES_USER: cmscrm_user
+      POSTGRES_PASSWORD: cmscrm_password
     ports:
       - "9496:5432"
     volumes:
@@ -39,7 +39,7 @@ services:
     networks:
       - cms_crm_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cms_crm_solutions_user -d cms_crm_solutions"]
+      test: ["CMD-SHELL", "pg_isready -U cmscrm_user -d cmscrm"]
       interval: 10s
       timeout: 5s
       retries: 5

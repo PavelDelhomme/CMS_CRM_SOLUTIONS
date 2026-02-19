@@ -54,9 +54,9 @@ def test_create_page():
     )
     assert page.title == "Test"
 =======
-# 🧪 Système de Tests Automatisés - VTCBuilder
+# 🧪 Système de Tests Automatisés - CMS CRM Solutions
 
-Ce répertoire contient tous les tests automatisés pour le projet VTCBuilder.
+Ce répertoire contient tous les tests automatisés pour le projet CMS CRM Solutions.
 
 ## 📋 Structure
 

@@ -204,7 +204,7 @@
 - ✅ `UserSerializer.create()` : Vérification quota utilisateurs
 - ✅ `UserSerializer.update()` : Support mises à jour partielles (username/email optionnels)
 
-#### Settings (`backend-django/vtcbuilder/settings.py`)
+#### Settings (`backend-django/config/core/settings.py`)
 - ✅ Configuration email automatique (SMTP si credentials, sinon console)
 - ✅ Configuration SMTP OVH (ssl0.ovh.net:587)
 - ✅ Variables d'environnement pour email (docker-compose.simple.yml)
@@ -288,7 +288,7 @@
 
 #### Corrections Erreurs CORS et 500
 1. ✅ **Middleware CORS personnalisé** - Garantir headers CORS même en cas d'erreur 500
-   - Création de `CORSAlwaysMiddleware` dans `backend-django/vtcbuilder/cors_middleware.py`
+   - Création de `CORSAlwaysMiddleware` dans `backend-django/apps/api/middleware (CORS)`
    - Ajout dans `MIDDLEWARE` après `corsheaders.middleware.CorsMiddleware`
    - `process_response`: Ajoute headers CORS à toutes les réponses
    - `process_exception`: Retourne réponse d'erreur avec headers CORS en cas d'exception

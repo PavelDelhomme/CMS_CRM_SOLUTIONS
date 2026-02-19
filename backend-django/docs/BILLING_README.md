@@ -1,4 +1,4 @@
-# 💳 Système de Facturation VTCBuilder
+# 💳 Système de Facturation CMS CRM Solutions
 
 Documentation complète du système de facturation, paiement et plans tarifaires.
 

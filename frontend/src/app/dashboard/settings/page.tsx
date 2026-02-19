@@ -74,7 +74,7 @@ export default function SettingsPage() {
   return (
     <TenantLayout 
       title="Paramètres" 
-      subtitle="Configurez votre site VTC"
+      subtitle="Configurez votre site"
     >
       <div className="space-y-6">
         {/* General Settings */}
@@ -93,7 +93,7 @@ export default function SettingsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ma Société VTC"
+                placeholder="Mon Entreprise"
               />
             </div>
 

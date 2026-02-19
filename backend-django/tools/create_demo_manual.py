@@ -7,7 +7,7 @@ import sys
 import django
 
 # Configuration Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vtcbuilder.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.core.settings')
 django.setup()
 
 from tenants.models import Client, User
@@ -22,7 +22,7 @@ def create_demo_tenant():
     except User.DoesNotExist:
         super_admin = User.objects.create_superuser(
             username='superadmin',
-            email='admin@vtcbuilder.com',
+            email='admin@cms-crm-solutions.com',
             password='admin123',
             first_name='Super',
             last_name='Admin',
@@ -34,7 +34,7 @@ def create_demo_tenant():
     tenant, created = Client.objects.get_or_create(
         email='demo@vtccompany.com',
         defaults={
-            'name': 'Demo VTC Company',
+            'name': 'Demo Entreprise',
             'slug': 'demo-vtc-company',
             'plan': 'business',
             'status': 'active',
