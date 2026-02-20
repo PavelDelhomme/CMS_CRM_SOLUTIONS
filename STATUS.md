@@ -59,6 +59,82 @@
 
 ---
 
+---
+
+## 🧭 **MIGRATION RUST + SVELTEKIT (Strangler fig)**
+
+**Choix retenus** : Backend **Rust** (Axum), Frontend **SvelteKit**, BDD **PostgreSQL**, Cache **Redis**, Orchestration **Docker Compose**. Stratégie **Option C : Strangler fig** (par domaine métier). Référence : **docs/MIGRATION_STACK.md**.
+
+**Règle** : ne pas supprimer le code existant (Django / Next.js) tant que le nouveau (Rust / SvelteKit) n’offre pas la même fonctionnalité, vérifiée par tests et usage. S’appuyer sur l’existant pour valider la parité.
+
+### Étapes à réaliser (ordre indicatif)
+
+#### Phase 0 : Préparation
+- [ ] Créer la branche dédiée (ex. `feature/migration-rust-sveltekit`).
+- [ ] Documenter l’API Django actuelle (endpoints, corps des requêtes/réponses) — OpenAPI/Swagger ou doc manuelle.
+- [ ] Lister les **bounded contexts** : auth, tenants (public), pages/CMS, content/blocs, media, billing, bookings, admin/settings.
+- [ ] Préparer le routage Nginx/Traefik (ex. `/api/v2/*` ou par préfixe par module vers le backend Rust).
+
+#### Phase 1 : Backend Rust (premier module — Auth)
+- [ ] Initialiser le projet Rust (Axum + SQLx ou Diesel) dans un répertoire dédié (ex. `backend-rust/`).
+- [ ] Connexion PostgreSQL (même instance que Django) ; lecture/écriture des schémas existants (public + tenants).
+- [ ] Implémenter **auth** : login, refresh JWT, reset password (même format de tokens que Django si possible).
+- [ ] Exposer les routes sous un préfixe (ex. `/api/auth/*`) ; le reste du trafic reste vers Django.
+- [ ] Tests (unitaires + intégration) ; comparer les réponses avec l’API Django pour les mêmes entrées.
+- [ ] Mettre à jour Nginx/Traefik pour router `/api/auth/*` vers le backend Rust (optionnel au début : tout peut encore aller vers Django, le Rust étant testé en parallèle).
+
+#### Phase 2 : Backend Rust (modules suivants)
+- [ ] **Tenants / schéma public** : lecture Client, Domain ; création tenant si besoin (aligné sur Django).
+- [ ] **Pages / CMS** : CRUD pages, même structure que l’API Django ; vérifier parité avec l’existant.
+- [ ] **Content / Blocs** : CRUD blocs, rendu si applicable.
+- [ ] **Médias** : upload, liste, suppression ; même contrat que Django.
+- [ ] **Billing** : plans, abonnements, Stripe webhooks ; idempotence et même comportement que Django.
+- [ ] **Réservations / services** : CRUD bookings, services ; parité avec l’existant.
+- [ ] **Admin / paramètres** : endpoints nécessaires pour le super-admin et paramètres système.
+- Pour chaque module : tests + comparaison avec le comportement Django avant de faire router le trafic vers Rust.
+
+#### Phase 3 : Frontend SvelteKit
+- [ ] Initialiser un projet SvelteKit (ex. `frontend-sveltekit/` ou sous-dossier) ; ne pas remplacer encore le frontend Next.js.
+- [ ] Reproduire les écrans principaux : login, dashboard, liste/édition pages, blocs, médias, utilisateurs, facturation, paramètres.
+- [ ] Utiliser la **même API** que le frontend actuel (Django ou Rust selon ce qui est routé) ; configurer l’URL de l’API (ex. env).
+- [ ] Auth : JWT, refresh, redirection selon rôles (admin tenant, super-admin).
+- [ ] Éditeur de blocs : même fonctionnalité que l’existant (création/édition/suppression, rendu).
+- [ ] Stripe côté client (Checkout / Elements) si utilisé.
+- [ ] Tests E2E (Playwright ou équivalent) ; comparer le comportement avec le frontend Next.js actuel.
+
+#### Phase 4 : Routage et bascule progressive
+- [ ] Configurer le reverse proxy pour envoyer un sous-ensemble du trafic vers Rust (ex. par path ou header).
+- [ ] Valider en dev/staging que tout fonctionne (auth, pages, billing, etc.) avec le backend Rust + frontend SvelteKit.
+- [ ] Étendre progressivement le routage (plus de chemins vers Rust) jusqu’à ce que tout le trafic API puisse aller vers Rust.
+- [ ] Optionnel : proposer le frontend SvelteKit en parallèle du Next.js (autre path ou sous-domaine) pour comparaison.
+
+#### Phase 5 : Consolidation (après parité validée)
+- [ ] Quand la parité est validée (tests E2E, scénarios métier, Stripe) : documenter la bascule définitive.
+- [ ] Ne supprimer ou désactiver Django/Next.js qu’après décision explicite et bascule en prod du nouveau stack.
+- [ ] Docker Compose : ajouter les services `backend-rust` et `frontend-sveltekit` ; conserver les anciens services jusqu’à la bascule.
+
+### Checklist parité fonctionnelle (avant de considérer un module terminé)
+
+- [ ] **Auth** : login, logout, refresh JWT, reset password, rôles (admin tenant, super-admin).
+- [ ] **Multi-tenant** : création tenant, domaine/sous-domaine, isolation par schéma.
+- [ ] **CMS** : pages, contenu, médias, éditeur de blocs (CRUD + rendu).
+- [ ] **Réservations / services** : CRUD, même comportement que Django.
+- [ ] **Facturation** : Stripe (abonnements, webhooks), factures.
+- [ ] **Admin** : interface équivalente (super-admin, paramètres système).
+- [ ] **Plugins** : si conservés, même comportement.
+- [ ] **Sécurité** : CORS, CSRF, headers, Redis (sessions/cache).
+
+### Fichiers / dossiers à créer (sans toucher à l’existant)
+
+- `backend-rust/` : projet Rust (Axum, SQLx/Diesel), Cargo.toml, structure par module (auth, tenants, pages, etc.).
+- `frontend-sveltekit/` (ou emplacement choisi) : projet SvelteKit, même structure logique que le frontend actuel (pages, composants, appels API).
+- Mise à jour de `docker-compose.yml` (ou fichier dédié) pour ajouter les services Rust et SvelteKit ; Nginx/Traefik pour le routage.
+- **Ne pas supprimer** `backend-django/` ni `frontend/` tant que la migration n’est pas validée.
+
+**Dernière mise à jour plan migration** : 2026-02-20.
+
+---
+
 ## 🚧 **EN COURS / À FAIRE**
 
 ### 🔴 **PRIORITÉ HAUTE**

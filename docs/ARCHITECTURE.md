@@ -58,6 +58,8 @@ CMS_CRM_SOLUTIONS/
 
 Stack actuel (choix cohérent avec l’architecture multi-tenant et le coût en ressources). Pour un **comparatif complet des alternatives** (Python, Go, Rust, Node, React, Vue, Svelte, PostgreSQL, MySQL, MariaDB, Redis, Docker Compose, Kubernetes, etc.) et le “moins coûteux en ressources”, voir **docs/PERFORMANCE_OPTIONS.md**.
 
+**Cible de migration (choix projet)** : Backend **Rust** (Axum), Frontend **SvelteKit**, BDD **PostgreSQL** et **Redis** conservés, **Docker Compose** conservé. Stratégie **Strangler fig** (voir **docs/MIGRATION_STACK.md**). Plan des étapes : **STATUS.md**.
+
 ### Backend
 
 - **Django 5.0.1** : Framework web Python

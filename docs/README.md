@@ -1,6 +1,6 @@
 # 📚 Documentation CMS CRM Solutions
 
-Pour le **comparatif complet des options technologiques** (backend, frontend, BDD, cache, orchestration) et le **moins coûteux en ressources** (tout sous Docker), voir **[PERFORMANCE_OPTIONS.md](PERFORMANCE_OPTIONS.md)**.
+Pour le **comparatif complet des options technologiques** (backend, frontend, BDD, cache, orchestration) et le **moins coûteux en ressources** (tout sous Docker), voir **[PERFORMANCE_OPTIONS.md](PERFORMANCE_OPTIONS.md)**. **Choix de migration** : Backend **Rust**, Frontend **SvelteKit**, stratégie **Strangler fig** — voir **[MIGRATION_STACK.md](MIGRATION_STACK.md)** et **[../STATUS.md](../STATUS.md)** pour le plan des étapes.
 
 Ce dossier contient toute la documentation du projet, organisée par catégories.
 

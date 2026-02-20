@@ -4,6 +4,21 @@ Ce document décrit une **stratégie de migration** vers un backend plus léger 
 
 ---
 
+## Choix retenus (décision projet)
+
+| Composant | Choix retenu | Détail |
+|-----------|--------------|--------|
+| **Backend** | **Rust** | Axum + SQLx ou Diesel ; même API REST que Django, schémas PostgreSQL par tenant. |
+| **Frontend** | **SvelteKit** | SSR, auth, éditeur de blocs ; même contrat d'API que l'existant. |
+| **Base de données** | **PostgreSQL** | Conservée (schémas multi-tenant). |
+| **Cache** | **Redis** | Conservé (sessions, cache, broker si besoin). |
+| **Orchestration** | **Docker Compose** | Conservée ; tous les services en conteneurs. |
+| **Stratégie** | **Option C : Strangler fig** | Par domaine métier ; module par module ; l'existant reste en place jusqu'à parité validée. |
+
+**Principe** : ne rien supprimer de l'existant tant que le nouveau (Rust + SvelteKit) n'a pas la même fonctionnalité (vérification par tests et usage). Détail des étapes : **STATUS.md**.
+
+---
+
 ## 1. Objectifs
 
 - **Backend** : langage plus bas niveau (Rust, Go, C++) pour réduire RAM/CPU et améliorer fluidité.
@@ -66,13 +81,14 @@ Ce document décrit une **stratégie de migration** vers un backend plus léger 
 4. **Frontend** : soit garder Next.js en ne changeant que l’URL de l’API, soit migrer vers SvelteKit/Vite en réutilisant les mêmes appels API.
 5. **Docker** : un seul `docker-compose` avec le nouveau backend + frontend + PostgreSQL + Redis.
 
-### Option C : Strangler fig (par domaine métier)
+### Option C : Strangler fig (par domaine métier) — **CHOISI**
 
 1. Identifier des **bounded contexts** (ex. auth, pages/CMS, billing, bookings).
 2. Implémenter le nouveau backend **module par module** (ex. d’abord auth + JWT, puis pages, puis billing).
 3. Router (Nginx/Traefik) : envoyer `/api/auth/*` vers le nouveau backend, le reste vers Django ; étendre progressivement.
 4. Garder **une seule base PostgreSQL** (même schémas) ; le nouveau backend lit/écrit les mêmes tables/schémas que Django pendant la transition.
 5. Valider chaque module (tests E2E, Stripe webhooks) avant de passer au suivant.
+6. **Ne pas supprimer** le code Django/Next.js existant tant que la parité n’est pas validée ; s’en servir de référence pour vérifier que le nouveau comportement est identique.
 
 ### Option D : Canary / pourcentage de trafic
 
