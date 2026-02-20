@@ -70,10 +70,10 @@
 ### Étapes à réaliser (ordre indicatif)
 
 #### Phase 0 : Préparation
-- [ ] Créer la branche dédiée (ex. `feature/migration-rust-sveltekit`).
-- [ ] Documenter l’API Django actuelle (endpoints, corps des requêtes/réponses) — OpenAPI/Swagger ou doc manuelle.
-- [ ] Lister les **bounded contexts** : auth, tenants (public), pages/CMS, content/blocs, media, billing, bookings, admin/settings.
-- [ ] Préparer le routage Nginx/Traefik (ex. `/api/v2/*` ou par préfixe par module vers le backend Rust).
+- [x] Créer la branche dédiée (`feature/migration-rust-sveltekit`).
+- [x] Documenter l’API Django actuelle (endpoints, corps des requêtes/réponses) — **docs/migration/API_DJANGO_REFERENCE.md** ; Swagger : `GET /api/docs/`.
+- [x] Lister les **bounded contexts** : auth, tenants, system-settings, pages/CMS, content/blocs, media, services, bookings, billing, plugins, stats (voir docs/migration/API_DJANGO_REFERENCE.md).
+- [x] Préparer le routage Nginx (upstream + location `/api/auth/` commentés dans `docker/nginx/nginx.conf`).
 
 #### Phase 1 : Backend Rust (premier module — Auth)
 - [ ] Initialiser le projet Rust (Axum + SQLx ou Diesel) dans un répertoire dédié (ex. `backend-rust/`).
